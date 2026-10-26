@@ -6,7 +6,7 @@
  *   dataset cannot produce the frame's national/state figures. City-level screens read the dataset instead:
  *   the fixture city "Cidade Exemplo" reproduces the frame's numbers exactly.
  */
-import frame from '../../../reference/05-estado.texts.json'
+import frame from '../../../reference/05-estado.texts.json' with { type: 'json' }
 
 export const frameTexts: { x: number; y: number; w: number; h: number; text: string }[] = frame.texts
 export const fixtureRoute = '/rj/'
