@@ -1,0 +1,33 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      # Behaviour only: route smoke, frontend-only, 390 px layout. Screenshot baselines are per platform and not run in CI.
+      - run: npm run test:e2e
+      - name: e2e under the GitHub Pages base path
+        run: npm run test:e2e
+        env:
+          SITE_BASE: /voto-a-voto/
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-results
+          path: site/test-results

@@ -1,0 +1,84 @@
+{
+ "frame": "4 Mostrar QR",
+ "width": 390,
+ "height": 844,
+ "texts": [
+  {
+   "x": 20,
+   "y": 8,
+   "w": 200,
+   "h": 28,
+   "text": "Voto a Voto"
+  },
+  {
+   "x": 142,
+   "y": 14,
+   "w": 150,
+   "h": 14,
+   "text": "Presidente 2026"
+  },
+  {
+   "x": 316,
+   "y": 14,
+   "w": 54,
+   "h": 18,
+   "text": "9:41"
+  },
+  {
+   "x": 0,
+   "y": 50,
+   "w": 390,
+   "h": 13,
+   "text": "EXEMPLO  ·  QR ILUSTRATIVO, NÃO ESCANEÁVEL"
+  },
+  {
+   "x": 24,
+   "y": 88,
+   "w": 70,
+   "h": 17,
+   "text": "‹ Fechar"
+  },
+  {
+   "x": 20,
+   "y": 128,
+   "w": 350,
+   "h": 36,
+   "text": "Mostrar QR"
+  },
+  {
+   "x": 20,
+   "y": 162,
+   "w": 350,
+   "h": 16,
+   "text": "Presidente 2026 · Cidade Exemplo"
+  },
+  {
+   "x": 0,
+   "y": 500,
+   "w": 390,
+   "h": 13,
+   "text": "PLACEHOLDER"
+  },
+  {
+   "x": 20,
+   "y": 530,
+   "w": 350,
+   "h": 21,
+   "text": "votoavoto.exemplo.br/rj/cidade-exemplo"
+  },
+  {
+   "x": 40,
+   "y": 570,
+   "w": 310,
+   "h": 48,
+   "text": "Use esta tela para mostrar o QR a outra pessoa, em outra tela, ou para imprimir. Se você vai enviar por mensagem, use o botão Compartilhar."
+  },
+  {
+   "x": 20,
+   "y": 716,
+   "w": 350,
+   "h": 17,
+   "text": "Voltar"
+  }
+ ]
+}

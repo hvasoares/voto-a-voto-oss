@@ -1,0 +1,210 @@
+{
+ "frame": "14 Sobre os dados",
+ "width": 390,
+ "height": 1123,
+ "texts": [
+  {
+   "x": 20,
+   "y": 5,
+   "w": 200,
+   "h": 28,
+   "text": "Voto a Voto"
+  },
+  {
+   "x": 142,
+   "y": 11,
+   "w": 150,
+   "h": 14,
+   "text": "Presidente 2026"
+  },
+  {
+   "x": 316,
+   "y": 11,
+   "w": 54,
+   "h": 18,
+   "text": "9:41"
+  },
+  {
+   "x": 24,
+   "y": 51,
+   "w": 70,
+   "h": 17,
+   "text": "‹ Início"
+  },
+  {
+   "x": 20,
+   "y": 84,
+   "w": 350,
+   "h": 36,
+   "text": "Sobre os dados"
+  },
+  {
+   "x": 20,
+   "y": 140,
+   "w": 350,
+   "h": 25,
+   "text": "De onde vêm os números"
+  },
+  {
+   "x": 20,
+   "y": 167,
+   "w": 350,
+   "h": 45,
+   "text": "Os resultados de 2026 vêm do TSE (resultados.tse.jus.br) e estão finalizados nos dois turnos: 5.571 municípios e 497.897 de 497.897 seções apuradas."
+  },
+  {
+   "x": 20,
+   "y": 214,
+   "w": 350,
+   "h": 30,
+   "text": "Os resultados de 2018 e 2022 vêm dos dados abertos do TSE (votação por município e zona)."
+  },
+  {
+   "x": 20,
+   "y": 266,
+   "w": 350,
+   "h": 25,
+   "text": "O que foi conferido"
+  },
+  {
+   "x": 20,
+   "y": 294,
+   "w": 350,
+   "h": 30,
+   "text": "• Os votos válidos do 2º turno de 2026 somam o total nacional: Lula 64.056.078 e Flavio Bolsonaro 59.654.544."
+  },
+  {
+   "x": 20,
+   "y": 328,
+   "w": 350,
+   "h": 15,
+   "text": "• 5.570 municípios foram cruzados entre 2026 e 2022."
+  },
+  {
+   "x": 20,
+   "y": 346,
+   "w": 350,
+   "h": 45,
+   "text": "• As cidades vencidas no 2º turno batem com o total nacional: 2.875 para Lula, 2.695 para Flavio Bolsonaro e 1 empate."
+  },
+  {
+   "x": 20,
+   "y": 412,
+   "w": 350,
+   "h": 25,
+   "text": "O que ainda não temos"
+  },
+  {
+   "x": 20,
+   "y": 440,
+   "w": 350,
+   "h": 30,
+   "text": "Abstenção, brancos e nulos de 2018 e 2022 ainda não foram coletados."
+  },
+  {
+   "x": 20,
+   "y": 472,
+   "w": 350,
+   "h": 45,
+   "text": "Esta versão não traz análise do horário de votação, porque ela depende de dados por seção que ainda não foram coletados."
+  },
+  {
+   "x": 20,
+   "y": 538,
+   "w": 350,
+   "h": 25,
+   "text": "Limites"
+  },
+  {
+   "x": 20,
+   "y": 566,
+   "w": 350,
+   "h": 30,
+   "text": "• Os percentuais de 2018 e 2022 usam os dois candidatos do 2º turno como base."
+  },
+  {
+   "x": 20,
+   "y": 599,
+   "w": 350,
+   "h": 30,
+   "text": "• Um município falta nos arquivos de 2018 e 2022 (5.570 de 5.571)."
+  },
+  {
+   "x": 20,
+   "y": 633,
+   "w": 350,
+   "h": 15,
+   "text": "• O mapa mostra área, não eleitores."
+  },
+  {
+   "x": 20,
+   "y": 652,
+   "w": 350,
+   "h": 30,
+   "text": "• Compare cidades por pontos percentuais, não por votos absolutos."
+  },
+  {
+   "x": 20,
+   "y": 704,
+   "w": 350,
+   "h": 25,
+   "text": "Confira você mesmo"
+  },
+  {
+   "x": 20,
+   "y": 732,
+   "w": 350,
+   "h": 30,
+   "text": "1. Baixe o arquivo de resultados do TSE (resultados.tse.jus.br)."
+  },
+  {
+   "x": 20,
+   "y": 766,
+   "w": 350,
+   "h": 15,
+   "text": "2. Some os votos do município que você quer conferir."
+  },
+  {
+   "x": 20,
+   "y": 786,
+   "w": 350,
+   "h": 15,
+   "text": "3. Compare a soma com o número da página da cidade."
+  },
+  {
+   "x": 20,
+   "y": 806,
+   "w": 350,
+   "h": 30,
+   "text": "4. Veja o código e os cálculos em github.com/hvasoares/voto-a-voto"
+  },
+  {
+   "x": 20,
+   "y": 860,
+   "w": 350,
+   "h": 25,
+   "text": "Código aberto"
+  },
+  {
+   "x": 20,
+   "y": 889,
+   "w": 350,
+   "h": 15,
+   "text": "Página do projeto: github.com/hvasoares/voto-a-voto"
+  },
+  {
+   "x": 20,
+   "y": 909,
+   "w": 350,
+   "h": 15,
+   "text": "Os dados e o código ficam abertos para conferência."
+  },
+  {
+   "x": 20,
+   "y": 943,
+   "w": 350,
+   "h": 12,
+   "text": "Fonte: TSE, dados finais"
+  }
+ ]
+}
