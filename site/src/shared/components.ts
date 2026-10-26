@@ -10,7 +10,7 @@ import { html, Raw } from './html'
 const ph = (name: string, ticket: number, body: Raw | string) =>
   html`<div class="ph" data-placeholder="${name}" data-ticket="${ticket}"><span class="ph__tag">placeholder · ${name} · #${ticket}</span>${body}</div>`
 
-export type CandidateKind = 'a' | 'b' | 'abstencao' | 'brancos' | 'nulos'
+export type CandidateKind = 'a' | 'b' | 'outros' | 'abstencao' | 'brancos' | 'nulos'
 
 /** Voted / not-voted bar of the city card (frames 2, 3, 9). Real implementation: ticket #5. */
 export interface TurnoutBarProps {
@@ -19,7 +19,9 @@ export interface TurnoutBarProps {
   /** 100 - votedPct, split into abstention / blank / null (each % of the non-voters, summing to 100). */
   notVoted: { abstencaoPct: number; brancosPct: number; nulosPct: number }
   /** Split of the voted bar between the two candidates (% of valid votes). */
-  candidates: { a: { label: string; pct: number }; b: { label: string; pct: number } }
+  candidates: { a: { label: string; pct: number; votos?: number }; b: { label: string; pct: number; votos?: number } }
+  /** Round 1 only: everyone but the two leaders as one segment ("Outros candidatos (N)"); the three shares add up to 100. */
+  others?: { label: string; pct: number; votos?: number }
 }
 export function turnoutBar(p: TurnoutBarProps): Raw {
   return ph(
