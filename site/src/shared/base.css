@@ -106,7 +106,7 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .home-row__text { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .home-row__text strong { font: 700 var(--fs-body)/18px var(--font-sans); }
 .home-row__text span { font-size: var(--fs-small); line-height: 14px; color: var(--c-muted); }
-.home-row__chev { width: 40px; text-align: right; color: var(--c-accent); font-size: 26px; line-height: 28px; padding-top: 2px; }
+.home-row__chev { flex: none; margin: 8px -1px 0 0; color: var(--c-accent); }
 .home-footer { margin: 8px var(--gutter) 0; padding: 8px 0 24px; border-top: 1px solid var(--c-rule); font-size: 12.3px; line-height: 15px; }
 .home-results { margin-top: 4px; border: 1px solid var(--c-rule); border-radius: var(--radius); background: var(--c-paper); }
 .home-result { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); min-height: 48px; padding: 0 var(--sp-3); color: var(--c-ink); }

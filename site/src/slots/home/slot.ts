@@ -104,7 +104,7 @@ export const slot: Slot = {
       </nav>
       <h2 class="home__section">Para explorar</h2>
       <ul class="home-list">
-        ${EXPLORE.map((e) => html`<li><a class="home-row" href="${ctx.href(e.to)}"><span class="home-row__text"><strong>${e.title}</strong><span>${e.sub}</span></span><span class="home-row__chev" aria-hidden="true">›</span></a></li>`)}
+        ${EXPLORE.map((e) => html`<li><a class="home-row" href="${ctx.href(e.to)}"><span class="home-row__text"><strong>${e.title}</strong><span>${e.sub}</span></span><svg class="home-row__chev" viewBox="0 0 6 10" width="6" height="10" aria-hidden="true" focusable="false"><path d="M0.7 0.5 4 4.6 0.7 8.7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>`)}
       </ul>
     </main>
     <footer class="home-footer source-footer" data-component="source-footer">Dados oficiais do TSE · <a href="${ctx.href('/sobre-os-dados/')}">Sobre os dados ›</a></footer>
