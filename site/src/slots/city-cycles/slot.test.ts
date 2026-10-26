@@ -70,6 +70,14 @@ describe('city-cycles page (fixture city that reproduces the frame)', () => {
     }
   })
 
+  it('every segment carries its vote count, percent and (candidates) ballot number as data attributes', async () => {
+    const b = blocks(panel(await render(), 1))[0]!
+    expect(b).toContain('data-numero="91" data-votos="43450" data-pct="55"')
+    expect(b).toContain('data-numero="92" data-votos="35550" data-pct="45"')
+    expect(b).toMatch(/bar__seg--abstencao"[^>]*data-votos="17220" data-pct="82"/)
+    expect(b).toContain('43.450 votos')
+  })
+
   it('states the ordering rule once, in one sentence', async () => {
     const t = text(await render())
     expect(t).toContain('O candidato de menor número na urna fica à esquerda')
