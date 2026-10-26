@@ -48,11 +48,80 @@ test('the 404.html fallback works with the real dataset (client loads the real C
   await expect(page.locator('[data-not-found]')).toBeVisible()
 })
 
-test('state pages of the real dataset list their municipalities', async ({ page }) => {
-  await page.goto('/rj/')
-  await waitReady(page)
-  await expect(page.locator('h1')).toHaveText('Estado selecionado: RJ')
-  await expect(page.locator('ul[aria-label="Municípios"] li')).toHaveCount(92)
+/* ---- state (#4): every state page against cities.csv ---- */
+const byUf = new Map<string, number>()
+for (const c of cities) if (c.uf !== 'zz') byUf.set(c.uf, (byUf.get(c.uf) ?? 0) + 1)
+
+test.describe('state pages on the real dataset', () => {
+  test('there are 27 states and every one lists exactly the cities of cities.csv, as anchors to existing city pages', async ({ page, baseURL }) => {
+    expect(byUf.size).toBe(27)
+    for (const [uf, n] of byUf) {
+      await page.goto(`/${uf}/`)
+      await waitReady(page)
+      await expect(page.locator('h1')).toHaveText(`Estado selecionado: ${uf.toUpperCase()}`)
+      await expect(page.locator('.page__subtitle')).toHaveText(n === 1 ? "1 município" : `${n} municípios`)
+      expect(await page.locator('[data-state-list] a.state-row').count(), uf).toBe(n)
+      const hrefs = await page.locator('[data-state-list] a.state-row').evaluateAll((els) => els.map((e) => e.getAttribute('href')!))
+      expect(new Set(hrefs).size, uf).toBe(n)
+      expect(hrefs.every((h) => h.startsWith(`/${uf}/`))).toBe(true)
+    }
+  })
+
+  test('RJ shows 92 and SP 645; the list is plain anchors without JavaScript', async ({ page, browser }) => {
+    expect(byUf.get('rj')).toBe(92)
+    expect(byUf.get('sp')).toBe(645)
+    await page.goto('/rj/')
+    await waitReady(page)
+    await expect(page.locator('.page__subtitle')).toHaveText('92 municípios')
+    const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL: page.url().replace(/\/rj\/$/, '') })
+    const plain = await ctx.newPage()
+    await plain.goto('/sp/')
+    await expect(plain.locator('[data-state-list] a.state-row')).toHaveCount(645)
+    await ctx.close()
+  })
+
+  test('sampled links resolve to the right city page', async ({ page, baseURL }) => {
+    await page.goto('/sp/')
+    await waitReady(page)
+    const hrefs = await page.locator('[data-state-list] a.state-row').evaluateAll((els) => els.filter((_, i) => i % 40 === 0).map((e) => e.getAttribute('href')!))
+    expect(hrefs.length).toBeGreaterThan(10)
+    for (const h of hrefs) expect((await page.request.get(new URL(h, baseURL!).toString())).status(), h).toBe(200)
+    const first = page.locator('[data-state-list] a.state-row').first()
+    const href = await first.getAttribute('href')
+    await first.click()
+    await expect(page).toHaveURL(new RegExp(`${href}$`))
+  })
+
+  test('scoped search returns only cities of that state, ignoring accents', async ({ page }) => {
+    await page.goto('/sp/')
+    await waitReady(page)
+    await page.getByRole('searchbox').fill('sao')
+    await expect(page.locator('[data-state-results] a.state-row').first()).toBeVisible()
+    const hrefs = await page.locator('[data-state-results] a.state-row').evaluateAll((els) => els.map((e) => e.getAttribute('href')!))
+    expect(hrefs.length).toBeGreaterThan(5)
+    expect(hrefs.every((h) => h.startsWith('/sp/'))).toBe(true)
+    await page.getByRole('searchbox').fill('belem')
+    await expect(page.getByText('Nenhuma cidade encontrada em SP.')).toBeVisible()
+    await page.goto('/pa/')
+    await waitReady(page)
+    await page.getByRole('searchbox').fill('belem')
+    await expect(page.locator('[data-state-results] a.state-row').first()).toContainText('Belém')
+  })
+
+  test('overseas has no state page', async ({ page }) => {
+    expect((await page.goto('/zz/'))?.status()).toBe(404)
+  })
+
+  test('the largest state makes no foreign request and does not scroll sideways', async ({ page, baseURL }) => {
+    const seen = collectRequests(page)
+    await page.goto('/sp/')
+    await waitReady(page)
+    await page.getByRole('searchbox').fill('campinas')
+    await page.waitForLoadState('networkidle')
+    expect(violations(seen, new URL(baseURL!).origin)).toEqual([])
+    const { sw, iw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: window.innerWidth }))
+    expect(sw).toBeLessThanOrEqual(iw)
+  })
 })
 
 /* ---- home (#3): search over the real 5,760 cities ---- */
