@@ -15,6 +15,7 @@ export const colors = {
   flag: '#d9a21b', // v2/flag ("EXEMPLO" banner)
   'cand-a': '#2a2926', // v2/cand-a
   'cand-b': '#8b8274', // v2/cand-b
+  'cand-outros': '#b6ae9d', // round 1: all candidates but the two leaders (added by #5; not a Sketch swatch)
   abstencao: '#d5cfbf', // v2/abstencao
   brancos: '#e3decf', // v2/brancos
   nulos: '#ede9db', // v2/nulos

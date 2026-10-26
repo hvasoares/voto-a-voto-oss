@@ -55,7 +55,7 @@ test.describe('real paths and GitHub Pages behaviour', () => {
     await expect(page).toHaveURL(new RegExp(`${base}rj/$`))
     await page.goto(`${base}rj/cidade-exemplo/`)
     await page.getByRole('link', { name: 'Compartilhar' }).click()
-    await expect(page).toHaveURL(/\/compartilhar\/$/)
+    await expect(page).toHaveURL(/\/compartilhar\/(\?ciclo=\d{4}&turno=[12])?$/)
     expect(new URL(page.url()).hash).toBe('')
   })
 

@@ -1,3 +1,4 @@
+import { formatInt } from './city-model'
 import { html, Raw } from './html'
 
 /*
@@ -12,7 +13,12 @@ const ph = (name: string, ticket: number, body: Raw | string) =>
 
 export type CandidateKind = 'a' | 'b' | 'outros' | 'abstencao' | 'brancos' | 'nulos'
 
-/** Voted / not-voted bar of the city card (frames 2, 3, 9). Real implementation: ticket #5. */
+/**
+ * Voted / not-voted bars of the city card (frames 2, 3, 9). Implemented by #5; #6 draws three of them, #7 draws the
+ * same numbers on a canvas. Markup contract: `<section class="turnout">` with two headings and two `.bar`s whose
+ * `.bar__seg--{kind}` segments are sized by `flex-grow: pct`. The text of a segment shrinks with its width
+ * (see `segmentText`); the full text is always in the `title` attribute.
+ */
 export interface TurnoutBarProps {
   /** Share of the electorate that voted (valid votes), 0-100. */
   votedPct: number
@@ -23,12 +29,53 @@ export interface TurnoutBarProps {
   /** Round 1 only: everyone but the two leaders as one segment ("Outros candidatos (N)"); the three shares add up to 100. */
   others?: { label: string; pct: number; votos?: number }
 }
+
+/** Text tiers of a bar segment: the first tier whose `min` (percent of the bar) is reached wins; below every tier the segment has no text. */
+const TIERS: Record<CandidateKind, { min: number; text: (pct: number) => string }[]> = {
+  a: [{ min: 33, text: (p) => `A  ${p}% dos votos` }, { min: 14, text: (p) => `A  ${p}%` }, { min: 6, text: () => 'A' }],
+  b: [{ min: 33, text: (p) => `B  ${p}% dos votos` }, { min: 14, text: (p) => `B  ${p}%` }, { min: 6, text: () => 'B' }],
+  outros: [{ min: 33, text: (p) => `Outros  ${p}% dos votos` }, { min: 20, text: (p) => `Outros  ${p}%` }, { min: 12, text: () => 'Outros' }, { min: 8, text: () => 'Ou' }],
+  abstencao: [{ min: 66, text: (p) => `Abstenção ${p}% dos que não votaram` }, { min: 30, text: (p) => `Abstenção ${p}%` }, { min: 20, text: () => 'Abstenção' }, { min: 8, text: () => 'Ab' }],
+  brancos: [{ min: 66, text: (p) => `Brancos ${p}% dos que não votaram` }, { min: 30, text: (p) => `Brancos ${p}%` }, { min: 20, text: () => 'Brancos' }, { min: 8, text: () => 'Br' }],
+  nulos: [{ min: 66, text: (p) => `Nulos ${p}% dos que não votaram` }, { min: 30, text: (p) => `Nulos ${p}%` }, { min: 20, text: () => 'Nulos' }, { min: 8, text: () => 'Nu' }],
+}
+
+/** The text that fits a segment of `pct` percent of its bar ('' when it is too narrow for any). */
+export function segmentText(kind: CandidateKind, pct: number): string {
+  return TIERS[kind].find((t) => pct >= t.min)?.text(pct) ?? ''
+}
+
+interface BarSegment {
+  kind: CandidateKind
+  pct: number
+  title: string
+}
+
+const bar = (label: string, segs: BarSegment[]) =>
+  html`<div class="bar" role="img" aria-label="${label}">${segs
+    .filter((s) => s.pct > 0)
+    .map((s) => html`<span class="bar__seg bar__seg--${s.kind}" style="flex-grow:${s.pct}" title="${s.title}">${segmentText(s.kind, s.pct)}</span>`)}</div>`
+
 export function turnoutBar(p: TurnoutBarProps): Raw {
-  return ph(
-    'turnout-bar',
-    5,
-    html`<p>Votaram ${p.votedPct}% · não votaram ${100 - p.votedPct}%. ${p.candidates.a.label} ${p.candidates.a.pct}% · ${p.candidates.b.label} ${p.candidates.b.pct}%. Abstenção ${p.notVoted.abstencaoPct}% · brancos ${p.notVoted.brancosPct}% · nulos ${p.notVoted.nulosPct}%.</p>`,
-  )
+  const { a, b } = p.candidates
+  const voted: BarSegment[] = [
+    { kind: 'a', pct: a.pct, title: `${a.label}: ${a.pct}% dos votos` },
+    { kind: 'b', pct: b.pct, title: `${b.label}: ${b.pct}% dos votos` },
+    ...(p.others ? [{ kind: 'outros' as const, pct: p.others.pct, title: `${p.others.label}: ${p.others.pct}% dos votos` }] : []),
+  ]
+  const n = p.notVoted
+  const notVoted: BarSegment[] = [
+    { kind: 'abstencao', pct: n.abstencaoPct, title: `Abstenção: ${n.abstencaoPct}% dos que não votaram` },
+    { kind: 'brancos', pct: n.brancosPct, title: `Brancos: ${n.brancosPct}% dos que não votaram` },
+    { kind: 'nulos', pct: n.nulosPct, title: `Nulos: ${n.nulosPct}% dos que não votaram` },
+  ]
+  const notVotedPct = 100 - p.votedPct
+  return html`<section class="turnout" data-component="turnout-bar">
+    <h2 class="turnout__title">Votaram <span class="turnout__sep" aria-hidden="true">·</span> ${p.votedPct}% do eleitorado</h2>
+    ${bar('Votaram, por candidato', voted)}
+    <h2 class="turnout__title">Não votaram <span class="turnout__sep" aria-hidden="true">·</span> ${notVotedPct}% do eleitorado</h2>
+    ${bar('Não votaram, por tipo', notVoted)}
+  </section>`
 }
 
 /** Cycle tabs 2018 | 2022 | 2026 (frame 2). Real implementation: ticket #6. */
@@ -42,16 +89,22 @@ export function cycleTabs(p: CycleTabsProps): Raw {
   return ph('cycle-tabs', 6, html`<nav class="tabs" aria-label="Ciclo">${p.cycles.map((c) => html`<a class="tabs__tab" href="${p.hrefFor(c)}" aria-current="${c === p.active ? 'true' : 'false'}">${c}</a>`)}</nav>`)
 }
 
-/** Round tabs 1º turno | 2º turno (frames 2, 9). Real implementation: ticket #5. */
+/**
+ * Round tabs 1º turno | 2º turno (frames 2, 9). Implemented by #5: plain links (work without JavaScript), the active one has
+ * aria-current="true"; each link carries data-turno for the progressive enhancement of the city slot.
+ */
 export interface RoundTabsProps {
   active: 1 | 2
   hrefFor(turno: 1 | 2): string
 }
 export function roundTabs(p: RoundTabsProps): Raw {
-  return ph('round-tabs', 5, html`<nav class="tabs" aria-label="Turno">${([1, 2] as const).map((t) => html`<a class="tabs__tab" href="${p.hrefFor(t)}" aria-current="${t === p.active ? 'true' : 'false'}">${t}º turno</a>`)}</nav>`)
+  return html`<nav class="tabs" aria-label="Turno" data-component="round-tabs">${([1, 2] as const).map((t) => html`<a class="tabs__tab" href="${p.hrefFor(t)}" data-turno="${t}" aria-current="${t === p.active ? 'true' : 'false'}">${t}º turno</a>`)}</nav>`
 }
 
-/** Legend row of the city card: swatch, name, "36.400 · 52% dos votos" (frame 2). Real implementation: ticket #5. */
+/**
+ * Legend row of the city card: swatch, name, "36.400 · 52% dos votos" (frame 2). Implemented by #5. Renders an `<li>`:
+ * put the rows in a `<ul class="legend">`.
+ */
 export interface CandidateRowProps {
   kind: CandidateKind
   /** "Candidato A", "Abstenção", ... */
@@ -62,7 +115,7 @@ export interface CandidateRowProps {
   shareLabel: string
 }
 export function candidateRow(p: CandidateRowProps): Raw {
-  return ph('candidate-row', 5, html`<p>[${p.kind}] ${p.label}: ${p.votes.toLocaleString('pt-BR')} · ${p.shareLabel}</p>`)
+  return html`<li class="legend__row" data-kind="${p.kind}"><span class="legend__swatch legend__swatch--${p.kind}" aria-hidden="true"></span><span class="legend__label">${p.label}</span><span class="legend__value">${formatInt(p.votes)} · ${p.shareLabel}</span></li>`
 }
 
 /** Item of the reports hub (frame 6): bold title, one-line headline number, chevron. Real implementation: ticket #12. */
