@@ -1,0 +1,22 @@
+import { slot as home } from './home/slot'
+import { slot as city } from './city/slot'
+import { slot as share } from './share/slot'
+import { slot as qr } from './qr/slot'
+import { slot as state } from './state/slot'
+import { slot as reports } from './reports/slot'
+import { slot as flippedCities } from './flipped-cities/slot'
+import { slot as brasil } from './brasil/slot'
+import { slot as cityCycles } from './city-cycles/slot'
+import { slot as stateMap } from './state-map/slot'
+import { slot as stateMapFlip } from './state-map-flip/slot'
+import { slot as compare2022 } from './compare-2022/slot'
+import { slot as compare2018 } from './compare-2018/slot'
+import { slot as cohorts } from './cohorts/slot'
+import { slot as stateCycles } from './state-cycles/slot'
+import { slot as about } from './about/slot'
+import { slot as reportUndesigned } from './report-undesigned/slot'
+import { slot as regionDetail } from './region-detail/slot'
+import type { Slot } from '../shared/slot'
+
+/** All slots. Add a line here only when creating a NEW slot (not when hydrating one). */
+export const slots: Slot[] = [home, city, share, qr, state, reports, flippedCities, brasil, cityCycles, stateMap, stateMapFlip, compare2022, compare2018, cohorts, stateCycles, about, reportUndesigned, regionDetail]

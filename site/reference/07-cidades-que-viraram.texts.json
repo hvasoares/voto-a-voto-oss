@@ -1,0 +1,182 @@
+{
+ "frame": "7 Relatório: cidades que viraram",
+ "width": 390,
+ "height": 844,
+ "texts": [
+  {
+   "x": 20,
+   "y": 8,
+   "w": 200,
+   "h": 28,
+   "text": "Voto a Voto"
+  },
+  {
+   "x": 142,
+   "y": 14,
+   "w": 150,
+   "h": 14,
+   "text": "Presidente 2026"
+  },
+  {
+   "x": 316,
+   "y": 14,
+   "w": 54,
+   "h": 18,
+   "text": "9:41"
+  },
+  {
+   "x": 24,
+   "y": 60,
+   "w": 110,
+   "h": 17,
+   "text": "‹ Relatórios"
+  },
+  {
+   "x": 20,
+   "y": 104,
+   "w": 350,
+   "h": 30,
+   "text": "Cidades que viraram no 2º turno"
+  },
+  {
+   "x": 20,
+   "y": 136,
+   "w": 350,
+   "h": 42,
+   "text": "Maiores viradas para Lula, cidades com 5 mil+ votos válidos. Margem = % de Lula menos % de Flavio Bolsonaro, em pontos percentuais (pp) dos votos válidos."
+  },
+  {
+   "x": 20,
+   "y": 196,
+   "w": 350,
+   "h": 13,
+   "text": "Margem no 1º turno  →  margem no 2º turno"
+  },
+  {
+   "x": 76,
+   "y": 228,
+   "w": 285,
+   "h": 18,
+   "text": "Itabirito/MG"
+  },
+  {
+   "x": 32,
+   "y": 239,
+   "w": 32,
+   "h": 17,
+   "text": "1"
+  },
+  {
+   "x": 76,
+   "y": 252,
+   "w": 285,
+   "h": 15,
+   "text": "Margem -4,5 pp → +5,0 pp  ·  34.159 votos válidos"
+  },
+  {
+   "x": 76,
+   "y": 296,
+   "w": 285,
+   "h": 18,
+   "text": "Barra do Piraí/RJ"
+  },
+  {
+   "x": 32,
+   "y": 307,
+   "w": 32,
+   "h": 17,
+   "text": "2"
+  },
+  {
+   "x": 76,
+   "y": 320,
+   "w": 285,
+   "h": 15,
+   "text": "Margem -5,1 pp → +4,2 pp  ·  51.929 votos válidos"
+  },
+  {
+   "x": 76,
+   "y": 364,
+   "w": 285,
+   "h": 18,
+   "text": "João Monlevade/MG"
+  },
+  {
+   "x": 32,
+   "y": 375,
+   "w": 32,
+   "h": 17,
+   "text": "3"
+  },
+  {
+   "x": 76,
+   "y": 388,
+   "w": 285,
+   "h": 15,
+   "text": "Margem -5,1 pp → +4,1 pp  ·  46.754 votos válidos"
+  },
+  {
+   "x": 76,
+   "y": 432,
+   "w": 285,
+   "h": 18,
+   "text": "Pirapora do Bom Jesus/SP"
+  },
+  {
+   "x": 32,
+   "y": 443,
+   "w": 32,
+   "h": 17,
+   "text": "4"
+  },
+  {
+   "x": 76,
+   "y": 456,
+   "w": 285,
+   "h": 15,
+   "text": "Margem -0,1 pp → +8,8 pp  ·  10.714 votos válidos"
+  },
+  {
+   "x": 76,
+   "y": 500,
+   "w": 285,
+   "h": 18,
+   "text": "São Vicente/SP"
+  },
+  {
+   "x": 32,
+   "y": 511,
+   "w": 32,
+   "h": 17,
+   "text": "5"
+  },
+  {
+   "x": 76,
+   "y": 524,
+   "w": 285,
+   "h": 15,
+   "text": "Margem -7,7 pp → +0,7 pp  ·  189.233 votos válidos"
+  },
+  {
+   "x": 32,
+   "y": 574,
+   "w": 326,
+   "h": 30,
+   "text": "ⓘ  Compare por pontos percentuais, não por votos absolutos"
+  },
+  {
+   "x": 20,
+   "y": 704,
+   "w": 350,
+   "h": 17,
+   "text": "Compartilhar"
+  },
+  {
+   "x": 20,
+   "y": 790,
+   "w": 350,
+   "h": 12,
+   "text": "Fonte: TSE, dados finais · Sobre os dados ›"
+  }
+ ]
+}

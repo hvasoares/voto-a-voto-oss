@@ -1,0 +1,210 @@
+{
+ "frame": "12 Como cada grupo votou",
+ "width": 390,
+ "height": 844,
+ "texts": [
+  {
+   "x": 20,
+   "y": 8,
+   "w": 200,
+   "h": 28,
+   "text": "Voto a Voto"
+  },
+  {
+   "x": 142,
+   "y": 14,
+   "w": 150,
+   "h": 14,
+   "text": "Presidente 2026"
+  },
+  {
+   "x": 316,
+   "y": 14,
+   "w": 54,
+   "h": 18,
+   "text": "9:41"
+  },
+  {
+   "x": 24,
+   "y": 60,
+   "w": 110,
+   "h": 17,
+   "text": "‹ Relatórios"
+  },
+  {
+   "x": 20,
+   "y": 100,
+   "w": 350,
+   "h": 36,
+   "text": "Como cada grupo votou"
+  },
+  {
+   "x": 20,
+   "y": 132,
+   "w": 350,
+   "h": 28,
+   "text": "Presidente 2026: cidades agrupadas pelo vencedor do 2º turno em 2018 e 2022, e o resultado de 2026 em cada grupo."
+  },
+  {
+   "x": 36,
+   "y": 188,
+   "w": 318,
+   "h": 17,
+   "text": "Venceu em 2018 e 2022: PT"
+  },
+  {
+   "x": 36,
+   "y": 210,
+   "w": 318,
+   "h": 12,
+   "text": "2.755 cidades · 40.955.646 votos válidos (2º turno 2026)"
+  },
+  {
+   "x": 36,
+   "y": 232,
+   "w": 318,
+   "h": 12,
+   "text": "Vencedor do 2º turno de 2026, % das cidades do grupo"
+  },
+  {
+   "x": 52,
+   "y": 282,
+   "w": 130,
+   "h": 12,
+   "text": "Lula 94,8% (2.613)"
+  },
+  {
+   "x": 206,
+   "y": 282,
+   "w": 150,
+   "h": 12,
+   "text": "Flavio 5,1% (141)"
+  },
+  {
+   "x": 36,
+   "y": 308,
+   "w": 318,
+   "h": 24,
+   "text": "1 cidade empatou em 2026 e não está nas barras: 2.755 cidades = 2.613 + 141 + 1."
+  },
+  {
+   "x": 36,
+   "y": 356,
+   "w": 318,
+   "h": 17,
+   "text": "Venceu em 2018 e 2022: Bolsonaro"
+  },
+  {
+   "x": 36,
+   "y": 378,
+   "w": 318,
+   "h": 12,
+   "text": "2.391 cidades · 64.886.493 votos válidos (2º turno 2026)"
+  },
+  {
+   "x": 36,
+   "y": 400,
+   "w": 318,
+   "h": 12,
+   "text": "Vencedor do 2º turno de 2026, % das cidades do grupo"
+  },
+  {
+   "x": 52,
+   "y": 450,
+   "w": 130,
+   "h": 12,
+   "text": "Lula 1,1% (27)"
+  },
+  {
+   "x": 206,
+   "y": 450,
+   "w": 150,
+   "h": 12,
+   "text": "Flavio 98,9% (2.364)"
+  },
+  {
+   "x": 36,
+   "y": 498,
+   "w": 318,
+   "h": 17,
+   "text": "Venceu em 2018: Bolsonaro. Em 2022: Lula"
+  },
+  {
+   "x": 36,
+   "y": 520,
+   "w": 318,
+   "h": 12,
+   "text": "368 cidades · 17.479.900 votos válidos (2º turno 2026)"
+  },
+  {
+   "x": 36,
+   "y": 542,
+   "w": 318,
+   "h": 12,
+   "text": "Vencedor do 2º turno de 2026, % das cidades do grupo"
+  },
+  {
+   "x": 52,
+   "y": 592,
+   "w": 130,
+   "h": 12,
+   "text": "Lula 62,8% (231)"
+  },
+  {
+   "x": 206,
+   "y": 592,
+   "w": 150,
+   "h": 12,
+   "text": "Flavio 37,2% (137)"
+  },
+  {
+   "x": 36,
+   "y": 640,
+   "w": 318,
+   "h": 17,
+   "text": "Venceu em 2018: PT. Em 2022: Bolsonaro"
+  },
+  {
+   "x": 36,
+   "y": 662,
+   "w": 318,
+   "h": 12,
+   "text": "54 cidades · 372.409 votos válidos (2º turno 2026)"
+  },
+  {
+   "x": 36,
+   "y": 684,
+   "w": 318,
+   "h": 12,
+   "text": "Vencedor do 2º turno de 2026, % das cidades do grupo"
+  },
+  {
+   "x": 52,
+   "y": 734,
+   "w": 130,
+   "h": 12,
+   "text": "Lula 7,4% (4)"
+  },
+  {
+   "x": 206,
+   "y": 734,
+   "w": 150,
+   "h": 12,
+   "text": "Flavio 92,6% (50)"
+  },
+  {
+   "x": 20,
+   "y": 774,
+   "w": 350,
+   "h": 24,
+   "text": "Não mostrado: 2 cidades com empate em 2018 ou 2022, ambas vencidas por Flavio em 2026. Venceu = mais votos que o outro candidato do 2º turno."
+  },
+  {
+   "x": 20,
+   "y": 808,
+   "w": 350,
+   "h": 12,
+   "text": "Fonte: TSE, dados finais · Sobre os dados ›"
+  }
+ ]
+}

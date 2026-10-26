@@ -1,0 +1,31 @@
+{
+  "name": "voto-a-voto-site",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Voto a Voto: static, mobile-first SPA shell (walking skeleton)",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsx scripts/build.ts",
+    "serve": "tsx scripts/serve.ts",
+    "dev": "tsx scripts/dev.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test --project=phone",
+    "test:all": "npm run typecheck && npm test && npm run test:e2e",
+    "check-slot": "tsx scripts/check-slot.ts",
+    "slots": "tsx scripts/slots-status.ts",
+    "approve-baseline": "tsx scripts/approve-baseline.ts",
+    "test:baseline": "playwright test --project=baseline"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.5",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

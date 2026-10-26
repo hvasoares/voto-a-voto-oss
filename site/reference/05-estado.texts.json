@@ -1,0 +1,189 @@
+{
+ "frame": "5 Estado (opcional)",
+ "width": 390,
+ "height": 844,
+ "texts": [
+  {
+   "x": 20,
+   "y": 8,
+   "w": 200,
+   "h": 28,
+   "text": "Voto a Voto"
+  },
+  {
+   "x": 142,
+   "y": 14,
+   "w": 150,
+   "h": 14,
+   "text": "Presidente 2026"
+  },
+  {
+   "x": 316,
+   "y": 14,
+   "w": 54,
+   "h": 18,
+   "text": "9:41"
+  },
+  {
+   "x": 0,
+   "y": 50,
+   "w": 390,
+   "h": 13,
+   "text": "EXEMPLO  ·  NOMES E MAPA ILUSTRATIVOS"
+  },
+  {
+   "x": 24,
+   "y": 88,
+   "w": 70,
+   "h": 17,
+   "text": "‹ Início"
+  },
+  {
+   "x": 20,
+   "y": 128,
+   "w": 350,
+   "h": 36,
+   "text": "Estado selecionado: RJ"
+  },
+  {
+   "x": 20,
+   "y": 160,
+   "w": 350,
+   "h": 16,
+   "text": "92 municípios (exemplo)"
+  },
+  {
+   "x": 20,
+   "y": 364,
+   "w": 350,
+   "h": 24,
+   "text": "Mapa ilustrativo. Sem cores de dados: falta o cruzamento dos códigos TSE com os do IBGE."
+  },
+  {
+   "x": 36,
+   "y": 419,
+   "w": 320,
+   "h": 17,
+   "text": "Busque sua cidade em RJ"
+  },
+  {
+   "x": 20,
+   "y": 470,
+   "w": 280,
+   "h": 17,
+   "text": "Cidade Exemplo A"
+  },
+  {
+   "x": 340,
+   "y": 476,
+   "w": 30,
+   "h": 23,
+   "text": "›"
+  },
+  {
+   "x": 20,
+   "y": 490,
+   "w": 280,
+   "h": 14,
+   "text": "Município fictício · RJ"
+  },
+  {
+   "x": 20,
+   "y": 526,
+   "w": 280,
+   "h": 17,
+   "text": "Cidade Exemplo B"
+  },
+  {
+   "x": 340,
+   "y": 532,
+   "w": 30,
+   "h": 23,
+   "text": "›"
+  },
+  {
+   "x": 20,
+   "y": 546,
+   "w": 280,
+   "h": 14,
+   "text": "Município fictício · RJ"
+  },
+  {
+   "x": 20,
+   "y": 582,
+   "w": 280,
+   "h": 17,
+   "text": "Cidade Exemplo C"
+  },
+  {
+   "x": 340,
+   "y": 588,
+   "w": 30,
+   "h": 23,
+   "text": "›"
+  },
+  {
+   "x": 20,
+   "y": 602,
+   "w": 280,
+   "h": 14,
+   "text": "Município fictício · RJ"
+  },
+  {
+   "x": 20,
+   "y": 638,
+   "w": 280,
+   "h": 17,
+   "text": "Cidade Exemplo D"
+  },
+  {
+   "x": 340,
+   "y": 644,
+   "w": 30,
+   "h": 23,
+   "text": "›"
+  },
+  {
+   "x": 20,
+   "y": 658,
+   "w": 280,
+   "h": 14,
+   "text": "Município fictício · RJ"
+  },
+  {
+   "x": 20,
+   "y": 694,
+   "w": 280,
+   "h": 17,
+   "text": "Cidade Exemplo E"
+  },
+  {
+   "x": 340,
+   "y": 700,
+   "w": 30,
+   "h": 23,
+   "text": "›"
+  },
+  {
+   "x": 20,
+   "y": 714,
+   "w": 280,
+   "h": 14,
+   "text": "Município fictício · RJ"
+  },
+  {
+   "x": 20,
+   "y": 758,
+   "w": 160,
+   "h": 16,
+   "text": "Ver mapa por estado ›"
+  },
+  {
+   "x": 196,
+   "y": 758,
+   "w": 174,
+   "h": 32,
+   "text": "Ver os três ciclos do estado ›"
+  }
+ ]
+}
