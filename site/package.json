@@ -18,6 +18,7 @@
     "check-slot": "tsx scripts/check-slot.ts",
     "slots": "tsx scripts/slots-status.ts",
     "approve-baseline": "tsx scripts/approve-baseline.ts",
+    "test:real": "DATA_DIR=../data E2E_PORT=4175 playwright test --project=real",
     "test:baseline": "playwright test --project=baseline"
   },
   "devDependencies": {

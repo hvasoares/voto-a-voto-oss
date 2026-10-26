@@ -46,10 +46,10 @@ export const slot: Slot = {
   /** Set to true when you replace the blank render below (and flip the test in slot.test.ts). */
   hydrated: false,
   async render(ctx) {
-    const uf = ctx.params.uf!.toUpperCase()
+    const uf = ctx.params.uf!.toLowerCase()
     const cities = await ctx.data.citiesByUf(uf)
     if (!cities.length) throw new Error(`state not found: ${uf}`)
-    const pageTitle = `Estado selecionado: ${uf}`
+    const pageTitle = `Estado selecionado: ${uf.toUpperCase()}`
     return {
       title: pageTitle,
       html: pageFrame({

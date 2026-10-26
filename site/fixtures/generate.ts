@@ -14,11 +14,11 @@ mkdirSync(out, { recursive: true })
 
 interface Spec { uf: string; cd: string; ibge: string; nome: string; slug: string; regiao: string; ciclos: number[] }
 const cities: Spec[] = [
-  { uf: 'RJ', cd: '99001', ibge: '3399001', nome: 'Cidade Exemplo', slug: 'cidade-exemplo', regiao: 'Sudeste', ciclos: [2018, 2022, 2026] },
-  ...['A', 'B', 'C', 'D', 'E'].map((l, i): Spec => ({ uf: 'RJ', cd: `9900${i + 2}`, ibge: `339900${i + 2}`, nome: `Cidade Exemplo ${l}`, slug: `cidade-exemplo-${l.toLowerCase()}`, regiao: 'Sudeste', ciclos: [2018, 2022, 2026] })),
-  { uf: 'SP', cd: '99101', ibge: '3599101', nome: 'Cidade Exemplo Paulista', slug: 'cidade-exemplo-paulista', regiao: 'Sudeste', ciclos: [2018, 2022, 2026] },
-  { uf: 'MT', cd: '99201', ibge: '5199201', nome: 'Boa Esperança do Norte', slug: 'boa-esperanca-do-norte', regiao: 'Centro-Oeste', ciclos: [2026] },
-  { uf: 'ZZ', cd: '99301', ibge: '', nome: 'Exterior (posto exemplo)', slug: 'exterior-exemplo', regiao: 'Exterior', ciclos: [2018, 2022, 2026] },
+  { uf: 'rj', cd: '99001', ibge: '3399001', nome: 'Cidade Exemplo', slug: 'cidade-exemplo', regiao: 'sudeste', ciclos: [2018, 2022, 2026] },
+  ...['A', 'B', 'C', 'D', 'E'].map((l, i): Spec => ({ uf: 'rj', cd: `9900${i + 2}`, ibge: `339900${i + 2}`, nome: `Cidade Exemplo ${l}`, slug: `cidade-exemplo-${l.toLowerCase()}`, regiao: 'sudeste', ciclos: [2018, 2022, 2026] })),
+  { uf: 'sp', cd: '99101', ibge: '3599101', nome: 'Cidade Exemplo Paulista', slug: 'cidade-exemplo-paulista', regiao: 'sudeste', ciclos: [2018, 2022, 2026] },
+  { uf: 'mt', cd: '99201', ibge: '5199201', nome: 'Boa Esperança do Norte', slug: 'boa-esperanca-do-norte', regiao: 'centro-oeste', ciclos: [2026] },
+  { uf: 'zz', cd: '99301', ibge: '', nome: 'Exterior (posto exemplo)', slug: 'exterior-exemplo', regiao: 'exterior', ciclos: [2018, 2022, 2026] },
 ]
 
 /** Exact figures for Cidade Exemplo, round 1, from the Sketch frames (aptos 100.000). */

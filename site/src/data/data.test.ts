@@ -27,7 +27,7 @@ describe('fixture dataset through the DataStore', () => {
   it('has a 2026-only city, an overseas post and all-three-cycle cities', async () => {
     const cities = await store.cities()
     expect(cities.find((c) => c.slug === 'boa-esperanca-do-norte')?.ciclos).toEqual([2026])
-    expect(cities.find((c) => c.uf === 'ZZ')).toBeDefined()
+    expect(cities.find((c) => c.uf === 'zz')).toBeDefined()
     expect(cities.filter((c) => c.ciclos.length === 3).length).toBeGreaterThanOrEqual(3)
   })
 
@@ -38,8 +38,8 @@ describe('fixture dataset through the DataStore', () => {
 
   it('lists states without the overseas post', async () => {
     const states = await store.states()
-    expect(states.map((s) => s.uf)).toEqual(['MT', 'RJ', 'SP'])
-    expect(states.find((s) => s.uf === 'RJ')?.municipios).toBe(6)
+    expect(states.map((s) => s.uf)).toEqual(['mt', 'rj', 'sp'])
+    expect(states.find((s) => s.uf === 'rj')?.municipios).toBe(6)
   })
 
   it('turnout rows satisfy the dataset identities for every row', async () => {

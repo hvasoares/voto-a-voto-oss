@@ -14,6 +14,7 @@ API, no tile service. Hosted on GitHub Pages. Today every screen is a blank, cle
 | `npm run dev` | rebuild on change + serve |
 | `npm test` | unit/logic tests (vitest) |
 | `npm run typecheck` | `tsc --noEmit` |
+| `npm run test:real` | same kind of checks against the real dataset in `../data` (builds with `DATA_DIR=../data`; skipped when missing) |
 | `npm run test:e2e` | Playwright at 390x844: route smoke over every page, frontend-only check, 390 px layout |
 | `npm run test:all` | typecheck + unit + e2e |
 | `npm run slots` | list slots, owning ticket, hydrated or "not yet hydrated" |
@@ -98,6 +99,8 @@ Typed interface `DataStore` in `src/data/types.ts`: `cities()`, `city(uf, slug)`
 `turnout.csv`, `votes.csv`, `candidates.csv`, `manifest.json`); the CSV header is validated and a missing column or a
 non-integer count fails loudly naming file and column. Slots receive it as `ctx.data` and never touch files or `fetch`.
 
+- **UF is lowercase everywhere** (`rj`, `zz` for overseas), as in the dataset and in routes. Parsers lowercase it, lookups are case-insensitive, display uppercases it only where the design shows it ("RJ").
+- **Real data numbers** (5,760 cities): 23,113 pages, build about 4 s, `dist/` 63 MB (56 MB without `data/`, which is 7.3 MB), average page 2.3 KB (city 3.7 KB, share/qr/ciclos 1.5 to 3 KB, largest = state pages 47 KB).
 - **Build time (Node):** reads the directory in `DATA_DIR` (default `fixtures/data`). Real data: `DATA_DIR=../data npm run build`.
 - **Browser:** fetches `<base>data/<file>` from the site's own origin; the build copies the chosen directory to `dist/data/`.
 - Swapping fixtures for real data therefore changes no screen. The fixture manifest has `"fixture": true`, which makes

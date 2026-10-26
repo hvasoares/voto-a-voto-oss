@@ -73,7 +73,7 @@ export const slot: Slot = {
         banner: await fixtureBanner(ctx),
         footer: { text: 'Dados oficiais do TSE', aboutLink: true },
         children: html`${notHydratedMarker(meta)}${html`<p class="ph" data-placeholder="search-box" data-ticket="3"><span class="ph__tag">placeholder · busca · #3</span>Busque sua cidade</p>
-        <ul class="slot-links" aria-label="Estados">${states.map((s) => html`<li><a href="${ctx.href('/:uf/', { uf: s.uf.toLowerCase() })}">${s.uf}</a></li>`)}</ul>`}${navLinks(ctx, meta)}`,
+        <ul class="slot-links" aria-label="Estados">${states.map((s) => html`<li><a href="${ctx.href('/:uf/', { uf: s.uf })}">${s.uf.toUpperCase()}</a></li>`)}</ul>`}${navLinks(ctx, meta)}`,
       }),
     }
   },
