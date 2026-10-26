@@ -2,7 +2,7 @@ import type { Turno } from '../../data'
 import { loadCityResult } from '../../shared/city-figures'
 import { CYCLES, type CityResult } from '../../shared/city-model'
 import { displayName, ufLabel } from '../../shared/city-search'
-import { roundTabs } from '../../shared/components'
+import { cycleTabs, roundTabs } from '../../shared/components'
 import { html } from '../../shared/html'
 import { fixtureBanner, linkHref, type Slot, type SlotMeta } from '../../shared/slot'
 import { viewPanel } from './card'
@@ -93,7 +93,7 @@ export const slot: Slot = {
       <a class="back" href="${link(ctx, 0)}">‹ Início</a>
       <h1 class="page__title">${name}</h1>
       <p class="page__subtitle">${sub}</p>
-      <nav class="tabs" aria-label="Ciclo" data-component="cycle-tabs">${CYCLES.map((c) => html`<a class="tabs__tab" href="${viewHref(here, { ano: c, turno: view.turno })}" data-ciclo="${c}" aria-current="${c === view.ano ? 'true' : 'false'}">${c}</a>`)}</nav>
+      ${cycleTabs({ cycles: [...CYCLES], active: view.ano, hrefFor: (c) => viewHref(here, { ano: c, turno: view.turno }) })}
       ${roundTabs({ active: view.turno, hrefFor: (t) => viewHref(here, { ano: view.ano, turno: t }) })}
       <div class="city-card" data-city-card data-view="${viewId(view)}" data-path="${here}" data-uf="${city.uf}" data-slug="${city.slug}">${[...results].map(([id, r]) => html`<div class="city-panel" data-view="${id}" ${id === viewId(view) ? '' : 'hidden'}>${viewPanel(r, name)}</div>`)}</div>
       <a class="city-share" href="${link(ctx, 1)}?ciclo=${view.ano}&turno=${view.turno}" data-share data-base="${link(ctx, 1)}">Compartilhar</a>

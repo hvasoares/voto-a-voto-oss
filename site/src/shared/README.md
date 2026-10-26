@@ -8,7 +8,7 @@ stable; add, do not rename. Adding a prop is fine if optional.
 | `tokens.ts`, `base.css` | #2 (skeleton); any ticket may ADD a token/class, never change or remove one | colours come from the Sketch `v2/*` swatches |
 | `page-frame.ts` | #2 | header, back button, title, "Fonte: TSE" footer, consent mount point |
 | `components.ts`: `turnoutBar`, `roundTabs`, `candidateRow` | #5 (done) | implemented; props interface kept, optional `others` and kind `'outros'` added. CSS: `.turnout`, `.bar`, `.legend` in `base.css` |
-| `components.ts`: `cycleTabs` | #6 | same |
+| `components.ts`: `cycleTabs` | #6 (done) | implemented, plain links with `data-ciclo`; the city card uses it |
 | `components.ts`: `reportListItem` | #12 | same |
 | `components.ts`: `consentBanner`, `../analytics` provider | #20 | |
 | `city-model.ts` | #5 | PURE number model of the city card (no HTML, no data access); #6 and #7 reuse it, API below |
