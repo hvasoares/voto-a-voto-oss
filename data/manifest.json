@@ -1,0 +1,208 @@
+{
+  "national_reference": {
+    "2018-1": {
+      "brancos": 3106937,
+      "candidates": {
+        "12": 13344371,
+        "13": 31342051,
+        "17": 49277010,
+        "45": 5096350
+      },
+      "comparecimento": 117364654,
+      "nulos": 7206222,
+      "source": "TSE published national totals, Eleições 2018, Presidente, Brasil (inclui Exterior)",
+      "validos": 107050749
+    },
+    "2018-2": {
+      "aptos": 147306294,
+      "brancos": 2486593,
+      "candidates": {
+        "13": 47040906,
+        "17": 57797847
+      },
+      "comparecimento": 115933451,
+      "nulos": 8608105,
+      "source": "TSE published national totals, Eleições 2018, Presidente, Brasil (inclui Exterior)",
+      "validos": 104838753
+    },
+    "2022-1": {
+      "aptos": 156454011,
+      "brancos": 1964779,
+      "candidates": {
+        "12": 3599287,
+        "13": 57259504,
+        "15": 4915423,
+        "22": 51072345
+      },
+      "comparecimento": 123682372,
+      "nulos": 3487874,
+      "source": "TSE published national totals, Eleições 2022, Presidente, Brasil (inclui Exterior)",
+      "validos": 118229719
+    },
+    "2022-2": {
+      "aptos": 156454011,
+      "brancos": 1769678,
+      "candidates": {
+        "13": 60345999,
+        "22": 58206354
+      },
+      "comparecimento": 124252796,
+      "nulos": 3930765,
+      "source": "TSE published national totals, Eleições 2022, Presidente, Brasil (inclui Exterior)",
+      "validos": 118552353
+    },
+    "2026-1": {
+      "abstencoes": 33469244,
+      "aptos": 158745502,
+      "brancos": 2300798,
+      "candidates": {
+        "13": 53879538,
+        "14": 2675887,
+        "16": 43103,
+        "21": 22693,
+        "22": 56104503,
+        "27": 40043,
+        "29": 15024,
+        "30": 326488,
+        "35": 16881,
+        "55": 2605148,
+        "70": 3448569,
+        "80": 122911
+      },
+      "comparecimento": 125275835,
+      "nulos": 3674249,
+      "source": "TSE national file br-c0001-e006257-u.jws",
+      "validos": 119300788
+    },
+    "2026-2": {
+      "abstencoes": 30509005,
+      "aptos": 158745502,
+      "brancos": 1430496,
+      "candidates": {
+        "13": 64256232,
+        "22": 59826041
+      },
+      "comparecimento": 128236074,
+      "nulos": 2723305,
+      "source": "TSE national file br-c0001-e006258-u.jws",
+      "validos": 124082273
+    }
+  },
+  "outputs": {
+    "candidates.csv": {
+      "bytes": 1210,
+      "rows": 42,
+      "sha256": "2f14be28331480d641e66e141184838ac2efd1a05ecc2f81d43f36a0bc48a31e"
+    },
+    "cities.csv": {
+      "bytes": 373759,
+      "rows": 5760,
+      "sha256": "84129d7d660bf3e6634c068a302d7391852438eab930dad1c89f7b0c2ba71809"
+    },
+    "turnout.csv": {
+      "bytes": 1593550,
+      "rows": 34498,
+      "sha256": "d6d7af5369579ceaf09e045703dd6e5023893092ed45a146bc17e600a1b566de"
+    },
+    "votes.csv": {
+      "bytes": 5370300,
+      "rows": 240981,
+      "sha256": "7353e7f416163fefee3ccc55c608187422ad895a6d181a2686d77efb942c86df"
+    }
+  },
+  "schema_version": 1,
+  "sources": [
+    {
+      "bytes": 395389280,
+      "id": "votacao_candidato_munzona_2018",
+      "kind": "opendata",
+      "member": "votacao_candidato_munzona_2018_BR.csv",
+      "retrieved_at": "2026-10-26T21:55:20Z",
+      "rows": 93600,
+      "sha256": "f880848ef4ba340b15cb91ff0754aa370d34ca7b7e605d6607c0f2a75009adc8",
+      "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2018.zip"
+    },
+    {
+      "bytes": 4269741,
+      "id": "detalhe_votacao_munzona_2018",
+      "kind": "opendata",
+      "member": "detalhe_votacao_munzona_2018_BR.csv",
+      "retrieved_at": "2026-10-26T21:55:28Z",
+      "rows": 12546,
+      "sha256": "df68c258a2261dff37b379f65ea5f2e8de7b3d824bb2340d8f4830274a3fabb5",
+      "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_munzona/detalhe_votacao_munzona_2018.zip"
+    },
+    {
+      "bytes": 642592078,
+      "id": "votacao_candidato_munzona_2022",
+      "kind": "opendata",
+      "member": "votacao_candidato_munzona_2022_BR.csv",
+      "retrieved_at": "2026-10-26T21:55:27Z",
+      "rows": 81679,
+      "sha256": "56265a50afc3765efeabc3d88b1e8ef35796ac38572fb1344496f3d3c8543369",
+      "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2022.zip"
+    },
+    {
+      "bytes": 4429327,
+      "id": "detalhe_votacao_munzona_2022",
+      "kind": "opendata",
+      "member": "detalhe_votacao_munzona_2022_BR.csv",
+      "retrieved_at": "2026-10-26T21:55:28Z",
+      "rows": 12566,
+      "sha256": "dbf41c5e95c2efedc72848bd0ec70a47f419b539c82e893388314749617ea2f4",
+      "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_munzona/detalhe_votacao_munzona_2022.zip"
+    },
+    {
+      "base_url": "https://resultados.tse.jus.br/oficial/ele2026",
+      "cities": 5757,
+      "digest": "62db05bd3b2b103ea650e58e63d52b4fa08943b120ada2520823ea46b78ee10f",
+      "elections": {
+        "1": "6257",
+        "2": "6258"
+      },
+      "files": 11517,
+      "final": 11516,
+      "id": "tse_results_2026",
+      "kind": "results_site",
+      "newest_generation": "2026-10-25T23:27:44"
+    }
+  ],
+  "turnout_identity": [
+    {
+      "ano": 2018,
+      "aptos_menos_comparecimento_menos_abstencoes": 470,
+      "eleitores_secoes_nao_instaladas_informado": 470,
+      "turno": 1
+    },
+    {
+      "ano": 2018,
+      "aptos_menos_comparecimento_menos_abstencoes": 470,
+      "eleitores_secoes_nao_instaladas_informado": 470,
+      "turno": 2
+    },
+    {
+      "ano": 2022,
+      "aptos_menos_comparecimento_menos_abstencoes": 657,
+      "eleitores_secoes_nao_instaladas_informado": 657,
+      "turno": 1
+    },
+    {
+      "ano": 2022,
+      "aptos_menos_comparecimento_menos_abstencoes": 657,
+      "eleitores_secoes_nao_instaladas_informado": 657,
+      "turno": 2
+    },
+    {
+      "ano": 2026,
+      "aptos_menos_comparecimento_menos_abstencoes": 423,
+      "eleitores_secoes_nao_instaladas_informado": null,
+      "turno": 1
+    },
+    {
+      "ano": 2026,
+      "aptos_menos_comparecimento_menos_abstencoes": 423,
+      "eleitores_secoes_nao_instaladas_informado": null,
+      "turno": 2
+    }
+  ]
+}

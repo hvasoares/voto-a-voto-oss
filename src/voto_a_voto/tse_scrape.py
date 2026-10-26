@@ -18,6 +18,7 @@ import time
 import urllib.parse
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
 from pathlib import Path
 
 BASE_URL = "https://resultados.tse.jus.br/oficial"
@@ -25,10 +26,36 @@ CYCLE = "ele2026"
 PRESIDENT = "0001"
 DEFAULT_ELECTIONS = {1: "6257", 2: "6258"}
 ALL_UFS = "ac al am ap ba ce df es go ma mg ms mt pa pb pe pi pr rj rn ro rr rs sc se sp to".split()
+OVERSEAS = "zz"
 CSV_COLUMNS = [
-    "turno", "uf", "codigo_municipio", "municipio", "situacao", "secoes_total", "secoes_apuradas",
-    "eleitorado", "comparecimento", "votos_validos", "candidato_numero", "candidato", "votos",
+    "turno", "uf", "codigo_municipio", "codigo_ibge", "municipio", "situacao", "secoes_total", "secoes_apuradas",
+    "eleitorado", "comparecimento", "abstencoes", "votos_validos", "brancos", "nulos",
+    "candidato_numero", "candidato", "votos",
 ]
+
+
+@dataclass(frozen=True)
+class Municipality:
+    """One city (or overseas post) of the TSE config. ``ibge`` is empty for overseas posts."""
+
+    uf: str
+    code: str
+    name: str
+    ibge: str = ""
+
+
+class OfflineCacheMissError(LookupError):
+    """An offline run needed a file that is not in the cache."""
+
+
+class NonFinalResultsError(RuntimeError):
+    """Raised when a city is missing or not marked final by the TSE; ``cities`` lists ``(uf, code, name, turno)``."""
+
+    def __init__(self, cities: list[tuple[str, str, str, int]]):
+        self.cities = cities
+        listing = ", ".join(f"{uf}/{name} ({code}) turno {turno}" for uf, code, name, turno in cities[:20])
+        more = f" and {len(cities) - 20} more" if len(cities) > 20 else ""
+        super().__init__(f"{len(cities)} city results are missing or not final: {listing}{more}")
 
 
 def decode_jws(text: str) -> dict:
@@ -38,18 +65,28 @@ def decode_jws(text: str) -> dict:
 
 def parse_municipality(payload: dict) -> dict:
     candidates = {}
+    parties = {}
     for group in payload["carg"][0].get("agr", []):
         for party in group.get("par", []):
             for candidate in party.get("cand", []):
                 candidates[candidate["n"]] = (candidate["nmu"], int(candidate["vap"]))
+                parties[candidate["n"]] = party["sg"]
     return {
         "status": payload["and"],
         "sections_total": int(payload["s"]["ts"]),
         "sections_counted": int(payload["s"]["st"]),
         "voters": int(payload["e"]["te"]),
         "turnout": int(payload["e"]["c"]),
+        "abstentions": int(payload["e"]["a"]),
         "valid_votes": int(payload["v"]["vvc"]),
+        "blank": int(payload["v"]["vb"]),
+        # ``tvn`` (total nulos) = ``vn`` + ``vnt`` (technical nulls). Only ``tvn`` closes
+        # valid + blank + null == turnout in every one of the 11,142 final files; ``vn`` does not.
+        "null": int(payload["v"]["tvn"]),
+        # The 2026 files have no annulled-in-separate-tally count: van, vansj, vsan and vscv are 0 in all
+        # 11,516 final files, and valid + blank + tvn == turnout everywhere.
         "candidates": candidates,
+        "parties": parties,
     }
 
 
@@ -103,11 +140,14 @@ def max_age(headers: dict) -> int:
 class CachedFetcher:
     """Downloads signed TSE files, reusing a copy on disk whenever the server says it is still current."""
 
-    def __init__(self, cache_dir, transport=None, refresh=False, clock=time.time):
+    def __init__(self, cache_dir, transport=None, refresh=False, clock=time.time, offline=False):
         self.cache_dir = Path(cache_dir)
         self.transport = transport or with_retries(keepalive_transport)
         self.refresh = refresh
         self.clock = clock
+        self.offline = offline
+        self._used: dict[Path, None] = {}
+        self._used_lock = threading.Lock()
         self.stats = Counter(downloaded=0, not_modified=0, final_from_cache=0, fresh_from_cache=0)
 
     def _paths(self, url: str) -> tuple[Path, Path]:
@@ -115,9 +155,27 @@ class CachedFetcher:
         return self.cache_dir / name, self.cache_dir / (name + ".meta.json")
 
     def get_text(self, url: str) -> str | None:
+        text = self._get_text(url)
+        if text is not None:
+            body_path, _ = self._paths(url)
+            with self._used_lock:
+                self._used[body_path] = None
+        return text
+
+    @property
+    def used(self) -> list[Path]:
+        """Cache files served so far, in first-use order."""
+        return list(self._used)
+
+    def _get_text(self, url: str) -> str | None:
         body_path, meta_path = self._paths(url)
         cached = body_path.exists() and meta_path.exists() and not self.refresh
         meta = json.loads(meta_path.read_text(encoding="utf-8")) if cached else {}
+        if self.offline:
+            if not (body_path.exists() and meta_path.exists()):
+                raise OfflineCacheMissError(f"not in cache (offline run): {url}")
+            self.stats["offline_from_cache"] += 1
+            return body_path.read_text(encoding="utf-8")
         if cached and meta.get("final"):
             self.stats["final_from_cache"] += 1
             return body_path.read_text(encoding="utf-8")
@@ -161,24 +219,45 @@ def municipality_url(election: str, uf: str, code: str) -> str:
     return f"{BASE_URL}/{CYCLE}/{election}/dados/{uf}/{uf}{code}-c{PRESIDENT}-e00{election}-u.jws"
 
 
-def list_municipalities(fetcher: CachedFetcher, election: str, ufs) -> list[tuple[str, str, str]]:
+def list_municipalities(fetcher: CachedFetcher, election: str, ufs) -> list[Municipality]:
     payload = fetcher.get_payload(f"{BASE_URL}/{CYCLE}/{election}/config/mun-e00{election}-cm.jws")
-    return [(state["cd"], city["cd"], city["nm"]) for state in payload["abr"] if state["cd"] in ufs for city in state["mu"]]
+    return [
+        Municipality(uf=state["cd"], code=city["cd"], name=city["nm"], ibge=city.get("cdi", ""))
+        for state in payload["abr"]
+        if state["cd"] in ufs
+        for city in state["mu"]
+    ]
 
 
 def scrape_municipalities(fetcher: CachedFetcher, municipalities, elections: dict, workers: int = 8) -> list[dict]:
-    """One result per municipality: ``{"uf", "code", "name", "rounds": {turno: parsed or None}}``."""
+    """One result per municipality: ``{"uf", "code", "name", "ibge", "rounds": {turno: parsed or None}}``."""
 
-    def one(municipality):
-        uf, code, name = municipality
+    def one(municipality: Municipality):
         rounds = {}
         for turno, election in elections.items():
-            payload = fetcher.get_payload(municipality_url(election, uf, code))
+            payload = fetcher.get_payload(municipality_url(election, municipality.uf, municipality.code))
             rounds[turno] = None if payload is None else parse_municipality(payload)
-        return {"uf": uf, "code": code, "name": name, "rounds": rounds}
+        return {
+            "uf": municipality.uf, "code": municipality.code, "name": municipality.name,
+            "ibge": municipality.ibge, "rounds": rounds,
+        }
 
     with ThreadPoolExecutor(max_workers=workers) as pool:
         return list(pool.map(one, municipalities))
+
+
+def check_final(results: list[dict], allow_partial: bool) -> None:
+    """Fails (listing every city) when a round is missing or not marked final by the TSE, unless ``allow_partial``."""
+    if allow_partial:
+        return
+    offenders = [
+        (result["uf"], result["code"], result["name"], turno)
+        for result in results
+        for turno, parsed in sorted(result["rounds"].items())
+        if parsed is None or parsed["status"] != "f"
+    ]
+    if offenders:
+        raise NonFinalResultsError(offenders)
 
 
 def to_rows(results: list[dict]) -> list[dict]:
@@ -189,10 +268,11 @@ def to_rows(results: list[dict]) -> list[dict]:
                 continue
             for number, (name, votes) in parsed["candidates"].items():
                 rows.append({
-                    "turno": turno, "uf": result["uf"], "codigo_municipio": result["code"], "municipio": result["name"],
-                    "situacao": parsed["status"], "secoes_total": parsed["sections_total"],
+                    "turno": turno, "uf": result["uf"], "codigo_municipio": result["code"],
+                    "codigo_ibge": result["ibge"], "municipio": result["name"], "situacao": parsed["status"], "secoes_total": parsed["sections_total"],
                     "secoes_apuradas": parsed["sections_counted"], "eleitorado": parsed["voters"],
-                    "comparecimento": parsed["turnout"], "votos_validos": parsed["valid_votes"],
+                    "comparecimento": parsed["turnout"], "abstencoes": parsed["abstentions"],
+                    "votos_validos": parsed["valid_votes"], "brancos": parsed["blank"], "nulos": parsed["null"],
                     "candidato_numero": number, "candidato": name, "votos": votes,
                 })
     return rows
@@ -211,7 +291,8 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="Baixa o resultado de Presidente por município no TSE, com cache.")
     parser.add_argument("--out", default="outbox/tse/presidente_municipios.csv")
     parser.add_argument("--cache-dir", default=".cache/tse")
-    parser.add_argument("--ufs", default=",".join(ALL_UFS), help="siglas separadas por vírgula (padrão: todos)")
+    parser.add_argument("--ufs", default=",".join([*ALL_UFS, OVERSEAS]),
+                        help="siglas separadas por vírgula, 'zz' = exterior (padrão: todos)")
     parser.add_argument("--turno1", default=DEFAULT_ELECTIONS[1], help="código da eleição do 1º turno")
     parser.add_argument("--turno2", default=DEFAULT_ELECTIONS[2], help="código da eleição do 2º turno")
     parser.add_argument("--workers", type=int, default=8)
