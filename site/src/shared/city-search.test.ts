@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { City } from '../../data'
-import { buildIndex, displayName, fold, MIN_QUERY, searchCities, ufLabel } from './search'
+import type { City } from '../data'
+import { buildIndex, displayName, fold, MIN_QUERY, searchCities, ufLabel } from './city-search'
 
 const city = (uf: string, nome: string, slug = fold(nome).replace(/ /g, '-')): City => ({ uf, cdMunicipio: `${uf}${slug}`, cdIbge: '', nome, slug, regiao: 'x', ciclos: [2026] })
 

@@ -3,7 +3,7 @@ import type { Analytics } from '../../analytics'
 import type { City } from '../../data'
 import type { SlotContext } from '../../shared/slot'
 import { html } from '../../shared/html'
-import { buildIndex, fold, MIN_QUERY, searchCities, type SearchHit } from './search'
+import { buildIndex, fold, MIN_QUERY, searchCities, type SearchHit } from '../../shared/city-search'
 
 export interface SearchView {
   state: 'short' | 'empty' | 'results'
