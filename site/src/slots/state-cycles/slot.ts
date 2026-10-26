@@ -51,7 +51,7 @@ export const slot: Slot = {
       title: pageTitle,
       html: pageFrame({
         base: ctx.base,
-        title: pageTitle,
+        title: 'Três ciclos por estado',
         subtitle: 'Presidente 2026 (2º turno) comparado com 2022 e 2018, no mesmo estado.',
         back: { label: 'Início', href: ctx.href('/') },
         banner: await fixtureBanner(ctx),
