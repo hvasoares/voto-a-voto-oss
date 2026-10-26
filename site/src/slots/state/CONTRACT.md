@@ -36,3 +36,9 @@ Emit events through `ctx.analytics` only (no-op today). Properties are simple va
 3. Run `npm run check-slot -- state`: behaviour tests, then the fixture-state screenshot for review (`docs/screenshot-review-protocol.md`).
 4. Do not import from other slots; do not edit other slots.
 
+
+## Hydrated (ticket #4)
+- Map area contract for #16/#17: `<div class="state-map" data-placeholder="state-map" data-ticket="16 17" data-uf="rj" data-map-area>` between the subtitle and the search box (about 220 px high); the map ticket replaces the content of that div, nothing else on the page depends on it.
+- The full list is plain anchors (`[data-state-list] a.state-row`); search (`mount`) reads those rows from the page, makes no request, and shows ranked results in `[data-state-results]`.
+- `?fixture=sketch` (fixtureRoute) draws the frame's illustrative figures ("92 municípios (exemplo)", cities A to E, frame banner, no footer) read from `frameTexts`; rows still link to dataset cities. Without it the page shows the dataset (fixture RJ: 6 municipalities).
+- Events: `search {scope:'state', uf, results, query_length}`, `search_result_tap {scope, uf, position}`, `city_list_tap {uf, position}`, `state_link_tap {uf, link}`. Never the typed text.
