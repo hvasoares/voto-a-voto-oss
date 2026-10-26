@@ -51,8 +51,9 @@ test.describe('real paths and GitHub Pages behaviour', () => {
 
   test('links navigate by real path (no hash routes)', async ({ page }) => {
     await page.goto(base)
-    await page.getByRole('link', { name: 'Cidade Exemplo (resultado da busca)' }).click()
-    await expect(page).toHaveURL(new RegExp(`${base}rj/cidade-exemplo/$`))
+    await page.getByRole('link', { name: 'RJ', exact: true }).click()
+    await expect(page).toHaveURL(new RegExp(`${base}rj/$`))
+    await page.goto(`${base}rj/cidade-exemplo/`)
     await page.getByRole('link', { name: 'Compartilhar' }).click()
     await expect(page).toHaveURL(/\/compartilhar\/$/)
     expect(new URL(page.url()).hash).toBe('')

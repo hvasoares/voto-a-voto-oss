@@ -27,7 +27,8 @@ async function graph(): Promise<Map<string, Set<string>>> {
 
 /** Arrows of the Sketch page "Fluxo" (plus link texts inside the frames). */
 const FLOW: [string, string][] = [
-  ['home', 'city'], ['home', 'state'], ['home', 'brasil'], ['home', 'state-map'], ['home', 'reports'], ['home', 'state-cycles'], ['home', 'about'],
+  // home -> city is a search result created in the browser (ticket #3), not a pre-rendered link: see RUNTIME_ARROWS.
+  ['home', 'state'], ['home', 'brasil'], ['home', 'state-map'], ['home', 'reports'], ['home', 'state-cycles'], ['home', 'about'],
   ['city', 'share'], ['city', 'city-cycles'], ['city', 'compare-2022'], ['city', 'state'], ['city', 'home'],
   ['share', 'qr'], ['share', 'city'], ['qr', 'share'], ['qr', 'city'],
   ['state', 'state-map'], ['state', 'state-cycles'], ['state', 'city'], ['state', 'home'],
@@ -39,6 +40,9 @@ const FLOW: [string, string][] = [
   ['state-cycles', 'state'], ['state-cycles', 'city-cycles'],
 ]
 
+/** Arrows that exist only after JavaScript ran; their behaviour is proven in e2e/home-search.spec.ts. */
+export const RUNTIME_ARROWS: [string, string][] = [['home', 'city']]
+
 describe('prototype flow ("Fluxo") is clickable end to end', () => {
   it('has every arrow of the prototype as a real link, and no link goes to a missing page', async () => {
     const g = await graph()
@@ -49,6 +53,7 @@ describe('prototype flow ("Fluxo") is clickable end to end', () => {
     const g = await graph()
     const seen = new Set<string>(['home'])
     const queue = ['home']
+    for (const [from, to] of RUNTIME_ARROWS) g.get(from)?.add(to)
     while (queue.length) for (const to of g.get(queue.shift()!) ?? []) if (!seen.has(to)) (seen.add(to), queue.push(to))
     expect([...seen].sort()).toEqual(slots.map((s) => s.meta.id).sort())
   })
