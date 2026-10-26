@@ -1,0 +1,329 @@
+{
+ "frame": "8 Brasil e regiões",
+ "width": 390,
+ "height": 844,
+ "texts": [
+  {
+   "x": 20,
+   "y": 8,
+   "w": 200,
+   "h": 28,
+   "text": "Voto a Voto"
+  },
+  {
+   "x": 142,
+   "y": 14,
+   "w": 150,
+   "h": 14,
+   "text": "Presidente 2026"
+  },
+  {
+   "x": 316,
+   "y": 14,
+   "w": 54,
+   "h": 18,
+   "text": "9:41"
+  },
+  {
+   "x": 24,
+   "y": 60,
+   "w": 110,
+   "h": 17,
+   "text": "‹ Início"
+  },
+  {
+   "x": 20,
+   "y": 104,
+   "w": 350,
+   "h": 36,
+   "text": "Brasil e regiões"
+  },
+  {
+   "x": 20,
+   "y": 136,
+   "w": 350,
+   "h": 16,
+   "text": "2º turno de 2026"
+  },
+  {
+   "x": 36,
+   "y": 176,
+   "w": 318,
+   "h": 16,
+   "text": "Brasil, votos válidos"
+  },
+  {
+   "x": 36,
+   "y": 207,
+   "w": 165,
+   "h": 12,
+   "text": "Lula 64.056.078 · 51,78%"
+  },
+  {
+   "x": 201,
+   "y": 207,
+   "w": 153,
+   "h": 12,
+   "text": "Flavio 59.654.544"
+  },
+  {
+   "x": 36,
+   "y": 238,
+   "w": 318,
+   "h": 12,
+   "text": "100% da barra = votos válidos de Lula + Flavio Bolsonaro"
+  },
+  {
+   "x": 20,
+   "y": 278,
+   "w": 350,
+   "h": 17,
+   "text": "Por região"
+  },
+  {
+   "x": 20,
+   "y": 298,
+   "w": 350,
+   "h": 24,
+   "text": "Barra de cima: % dos votos válidos. Barra de baixo: % do eleitorado (Não = não compareceram)."
+  },
+  {
+   "x": 20,
+   "y": 332,
+   "w": 150,
+   "h": 16,
+   "text": "Sudeste"
+  },
+  {
+   "x": 150,
+   "y": 333,
+   "w": 220,
+   "h": 12,
+   "text": "41,1% dos votos válidos do país"
+  },
+  {
+   "x": 20,
+   "y": 357,
+   "w": 165,
+   "h": 12,
+   "text": "Lula 47,2%"
+  },
+  {
+   "x": 185,
+   "y": 357,
+   "w": 185,
+   "h": 12,
+   "text": "Flavio 52,8%"
+  },
+  {
+   "x": 20,
+   "y": 385,
+   "w": 279,
+   "h": 12,
+   "text": "Compareceram 79,7%"
+  },
+  {
+   "x": 299,
+   "y": 385,
+   "w": 71,
+   "h": 12,
+   "text": "Não 20,3%"
+  },
+  {
+   "x": 20,
+   "y": 406,
+   "w": 150,
+   "h": 16,
+   "text": "Nordeste"
+  },
+  {
+   "x": 150,
+   "y": 407,
+   "w": 220,
+   "h": 12,
+   "text": "28,5% dos votos válidos do país"
+  },
+  {
+   "x": 20,
+   "y": 431,
+   "w": 243,
+   "h": 12,
+   "text": "Lula 69,4%"
+  },
+  {
+   "x": 263,
+   "y": 431,
+   "w": 107,
+   "h": 12,
+   "text": "Flavio 30,6%"
+  },
+  {
+   "x": 20,
+   "y": 459,
+   "w": 292,
+   "h": 12,
+   "text": "Compareceram 83,5%"
+  },
+  {
+   "x": 312,
+   "y": 459,
+   "w": 58,
+   "h": 12,
+   "text": "Não 16,5%"
+  },
+  {
+   "x": 20,
+   "y": 480,
+   "w": 150,
+   "h": 16,
+   "text": "Sul"
+  },
+  {
+   "x": 150,
+   "y": 481,
+   "w": 220,
+   "h": 12,
+   "text": "14,7% dos votos válidos do país"
+  },
+  {
+   "x": 20,
+   "y": 505,
+   "w": 131,
+   "h": 12,
+   "text": "Lula 37,4%"
+  },
+  {
+   "x": 151,
+   "y": 505,
+   "w": 219,
+   "h": 12,
+   "text": "Flavio 62,6%"
+  },
+  {
+   "x": 20,
+   "y": 533,
+   "w": 286,
+   "h": 12,
+   "text": "Compareceram 81,8%"
+  },
+  {
+   "x": 306,
+   "y": 533,
+   "w": 64,
+   "h": 12,
+   "text": "Não 18,2%"
+  },
+  {
+   "x": 20,
+   "y": 554,
+   "w": 150,
+   "h": 16,
+   "text": "Norte"
+  },
+  {
+   "x": 150,
+   "y": 555,
+   "w": 220,
+   "h": 12,
+   "text": "8,1% dos votos válidos do país"
+  },
+  {
+   "x": 20,
+   "y": 579,
+   "w": 175,
+   "h": 12,
+   "text": "Lula 50,0%"
+  },
+  {
+   "x": 195,
+   "y": 579,
+   "w": 175,
+   "h": 12,
+   "text": "Flavio 50,0%"
+  },
+  {
+   "x": 20,
+   "y": 607,
+   "w": 276,
+   "h": 12,
+   "text": "Compareceram 78,8%"
+  },
+  {
+   "x": 296,
+   "y": 607,
+   "w": 74,
+   "h": 12,
+   "text": "Não 21,2%"
+  },
+  {
+   "x": 20,
+   "y": 628,
+   "w": 150,
+   "h": 16,
+   "text": "Centro-Oeste"
+  },
+  {
+   "x": 150,
+   "y": 629,
+   "w": 220,
+   "h": 12,
+   "text": "7,5% dos votos válidos do país"
+  },
+  {
+   "x": 20,
+   "y": 653,
+   "w": 140,
+   "h": 12,
+   "text": "Lula 40,0%"
+  },
+  {
+   "x": 160,
+   "y": 653,
+   "w": 210,
+   "h": 12,
+   "text": "Flavio 60,0%"
+  },
+  {
+   "x": 20,
+   "y": 681,
+   "w": 280,
+   "h": 12,
+   "text": "Compareceram 79,9%"
+  },
+  {
+   "x": 300,
+   "y": 681,
+   "w": 70,
+   "h": 12,
+   "text": "Não 20,1%"
+  },
+  {
+   "x": 20,
+   "y": 704,
+   "w": 350,
+   "h": 36,
+   "text": "Não compareceram = 100% menos comparecimento. O arquivo não separa brancos e nulos, por isso não há essa divisão aqui. Flavio Bolsonaro = o restante dos votos válidos de cada região."
+  },
+  {
+   "x": 20,
+   "y": 764,
+   "w": 350,
+   "h": 17,
+   "text": "Ver mapa por estado ›"
+  },
+  {
+   "x": 20,
+   "y": 802,
+   "w": 350,
+   "h": 12,
+   "text": "Fonte: TSE, dados finais"
+  },
+  {
+   "x": 20,
+   "y": 808,
+   "w": 350,
+   "h": 12,
+   "text": "Fonte: TSE, dados finais · Sobre os dados ›"
+  }
+ ]
+}

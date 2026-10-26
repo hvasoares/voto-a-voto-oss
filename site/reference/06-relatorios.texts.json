@@ -1,0 +1,203 @@
+{
+ "frame": "6 Relatórios",
+ "width": 390,
+ "height": 844,
+ "texts": [
+  {
+   "x": 20,
+   "y": 8,
+   "w": 200,
+   "h": 28,
+   "text": "Voto a Voto"
+  },
+  {
+   "x": 142,
+   "y": 14,
+   "w": 150,
+   "h": 14,
+   "text": "Presidente 2026"
+  },
+  {
+   "x": 316,
+   "y": 14,
+   "w": 54,
+   "h": 18,
+   "text": "9:41"
+  },
+  {
+   "x": 24,
+   "y": 60,
+   "w": 70,
+   "h": 17,
+   "text": "‹ Início"
+  },
+  {
+   "x": 20,
+   "y": 104,
+   "w": 350,
+   "h": 36,
+   "text": "Relatórios"
+  },
+  {
+   "x": 20,
+   "y": 136,
+   "w": 350,
+   "h": 16,
+   "text": "2º turno de 2026 e comparação com 2022"
+  },
+  {
+   "x": 20,
+   "y": 180,
+   "w": 296,
+   "h": 18,
+   "text": "Cidades que viraram no 2º turno"
+  },
+  {
+   "x": 330,
+   "y": 187,
+   "w": 40,
+   "h": 28,
+   "text": "›"
+  },
+  {
+   "x": 20,
+   "y": 201,
+   "w": 296,
+   "h": 14,
+   "text": "Lula virou 211 cidades; Flavio Bolsonaro virou 1"
+  },
+  {
+   "x": 20,
+   "y": 245,
+   "w": 296,
+   "h": 36,
+   "text": "Maiores viradas, cidades de 100 mil+ votos"
+  },
+  {
+   "x": 330,
+   "y": 261,
+   "w": 40,
+   "h": 28,
+   "text": "›"
+  },
+  {
+   "x": 20,
+   "y": 285,
+   "w": 296,
+   "h": 14,
+   "text": "Maior variação: Campos dos Goytacazes/RJ, +9,8 pp"
+  },
+  {
+   "x": 20,
+   "y": 329,
+   "w": 296,
+   "h": 18,
+   "text": "Votos ganhos e perdidos vs. 2022"
+  },
+  {
+   "x": 330,
+   "y": 336,
+   "w": 40,
+   "h": 28,
+   "text": "›"
+  },
+  {
+   "x": 20,
+   "y": 350,
+   "w": 296,
+   "h": 14,
+   "text": "Lula: +3.862.039 votos no país"
+  },
+  {
+   "x": 20,
+   "y": 394,
+   "w": 296,
+   "h": 18,
+   "text": "Disputas mais apertadas"
+  },
+  {
+   "x": 330,
+   "y": 401,
+   "w": 40,
+   "h": 28,
+   "text": "›"
+  },
+  {
+   "x": 20,
+   "y": 415,
+   "w": 296,
+   "h": 14,
+   "text": "Marquinho/PR: empate, diferença de 0 votos"
+  },
+  {
+   "x": 20,
+   "y": 459,
+   "w": 296,
+   "h": 18,
+   "text": "Comparecimento mais alto e mais baixo"
+  },
+  {
+   "x": 330,
+   "y": 474,
+   "w": 40,
+   "h": 28,
+   "text": "›"
+  },
+  {
+   "x": 20,
+   "y": 480,
+   "w": 296,
+   "h": 28,
+   "text": "Mais alto: Santa Maria do Herval/RS, 90,5%. Mais baixo: Itaubal/AP, 59,0%"
+  },
+  {
+   "x": 20,
+   "y": 540,
+   "w": 296,
+   "h": 18,
+   "text": "Comparar com 2022 e 2018"
+  },
+  {
+   "x": 330,
+   "y": 555,
+   "w": 40,
+   "h": 28,
+   "text": "›"
+  },
+  {
+   "x": 20,
+   "y": 561,
+   "w": 296,
+   "h": 28,
+   "text": "Os seis maiores estados: Lula e Flavio, votos e percentuais"
+  },
+  {
+   "x": 20,
+   "y": 621,
+   "w": 296,
+   "h": 18,
+   "text": "Como cada grupo votou"
+  },
+  {
+   "x": 330,
+   "y": 636,
+   "w": 40,
+   "h": 28,
+   "text": "›"
+  },
+  {
+   "x": 20,
+   "y": 642,
+   "w": 296,
+   "h": 14,
+   "text": "Cidades agrupadas por quem venceu em 2018 e 2022"
+  },
+  {
+   "x": 20,
+   "y": 790,
+   "w": 350,
+   "h": 12,
+   "text": "Fonte: TSE, dados finais · Sobre os dados ›"
+  }
+ ]
+}
