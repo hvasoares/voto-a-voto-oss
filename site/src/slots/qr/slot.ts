@@ -47,7 +47,7 @@ export const slot: Slot = {
       title: pageTitle,
       html: pageFrame({
         base: ctx.base,
-        title: pageTitle,
+        title: 'Mostrar QR',
         subtitle: `Presidente 2026 · ${city.nome}`,
         back: { label: 'Fechar', href: ctx.href('/:uf/:slug/') },
         banner: await fixtureBanner(ctx),

@@ -50,7 +50,7 @@ export const slot: Slot = {
       title: pageTitle,
       html: pageFrame({
         base: ctx.base,
-        title: pageTitle,
+        title: 'Três ciclos',
         subtitle: `Presidente 2018, 2022 e 2026 · ${city.nome} (1º turno)`,
         back: { label: 'Início', href: ctx.href('/') },
         banner: await fixtureBanner(ctx),
