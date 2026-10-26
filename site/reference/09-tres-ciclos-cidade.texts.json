@@ -1,0 +1,238 @@
+{
+ "frame": "9 Três ciclos (cidade)",
+ "width": 390,
+ "height": 844,
+ "texts": [
+  {
+   "x": 20,
+   "y": 8,
+   "w": 200,
+   "h": 28,
+   "text": "Voto a Voto"
+  },
+  {
+   "x": 142,
+   "y": 14,
+   "w": 150,
+   "h": 14,
+   "text": "Presidente 2026"
+  },
+  {
+   "x": 316,
+   "y": 14,
+   "w": 54,
+   "h": 18,
+   "text": "9:41"
+  },
+  {
+   "x": 0,
+   "y": 50,
+   "w": 390,
+   "h": 13,
+   "text": "EXEMPLO  ·  DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS"
+  },
+  {
+   "x": 24,
+   "y": 88,
+   "w": 70,
+   "h": 17,
+   "text": "‹ Início"
+  },
+  {
+   "x": 20,
+   "y": 128,
+   "w": 350,
+   "h": 36,
+   "text": "Três ciclos"
+  },
+  {
+   "x": 20,
+   "y": 160,
+   "w": 350,
+   "h": 14,
+   "text": "Presidente 2018, 2022 e 2026 · Cidade Exemplo (1º turno)"
+  },
+  {
+   "x": 36,
+   "y": 202,
+   "w": 80,
+   "h": 18,
+   "text": "2018"
+  },
+  {
+   "x": 36,
+   "y": 226,
+   "w": 318,
+   "h": 12,
+   "text": "Votaram 79% do eleitorado (barra: % dos votos)"
+  },
+  {
+   "x": 36,
+   "y": 248,
+   "w": 175,
+   "h": 12,
+   "text": "A 55%"
+  },
+  {
+   "x": 211,
+   "y": 248,
+   "w": 143,
+   "h": 12,
+   "text": "B 45%"
+  },
+  {
+   "x": 36,
+   "y": 278,
+   "w": 318,
+   "h": 12,
+   "text": "Não votaram 21% do eleitorado (barra: % dos que não votaram)"
+  },
+  {
+   "x": 36,
+   "y": 300,
+   "w": 261,
+   "h": 12,
+   "text": "Abstenção 82%"
+  },
+  {
+   "x": 297,
+   "y": 300,
+   "w": 25,
+   "h": 12,
+   "text": "Br"
+  },
+  {
+   "x": 322,
+   "y": 300,
+   "w": 32,
+   "h": 12,
+   "text": "Nu"
+  },
+  {
+   "x": 36,
+   "y": 352,
+   "w": 80,
+   "h": 18,
+   "text": "2022"
+  },
+  {
+   "x": 36,
+   "y": 376,
+   "w": 318,
+   "h": 12,
+   "text": "Votaram 80% do eleitorado (barra: % dos votos)"
+  },
+  {
+   "x": 36,
+   "y": 398,
+   "w": 156,
+   "h": 12,
+   "text": "A 49%"
+  },
+  {
+   "x": 192,
+   "y": 398,
+   "w": 162,
+   "h": 12,
+   "text": "B 51%"
+  },
+  {
+   "x": 36,
+   "y": 428,
+   "w": 318,
+   "h": 12,
+   "text": "Não votaram 20% do eleitorado (barra: % dos que não votaram)"
+  },
+  {
+   "x": 36,
+   "y": 450,
+   "w": 270,
+   "h": 12,
+   "text": "Abstenção 85%"
+  },
+  {
+   "x": 306,
+   "y": 450,
+   "w": 22,
+   "h": 12,
+   "text": "Br"
+  },
+  {
+   "x": 329,
+   "y": 450,
+   "w": 25,
+   "h": 12,
+   "text": "Nu"
+  },
+  {
+   "x": 36,
+   "y": 502,
+   "w": 80,
+   "h": 18,
+   "text": "2026"
+  },
+  {
+   "x": 36,
+   "y": 526,
+   "w": 318,
+   "h": 12,
+   "text": "Votaram 70% do eleitorado (barra: % dos votos)"
+  },
+  {
+   "x": 36,
+   "y": 548,
+   "w": 165,
+   "h": 12,
+   "text": "A 52%"
+  },
+  {
+   "x": 201,
+   "y": 548,
+   "w": 153,
+   "h": 12,
+   "text": "B 48%"
+  },
+  {
+   "x": 36,
+   "y": 578,
+   "w": 318,
+   "h": 12,
+   "text": "Não votaram 30% do eleitorado (barra: % dos que não votaram)"
+  },
+  {
+   "x": 36,
+   "y": 600,
+   "w": 248,
+   "h": 12,
+   "text": "Abstenção 78%"
+  },
+  {
+   "x": 284,
+   "y": 600,
+   "w": 32,
+   "h": 12,
+   "text": "Br"
+  },
+  {
+   "x": 316,
+   "y": 600,
+   "w": 38,
+   "h": 12,
+   "text": "Nu"
+  },
+  {
+   "x": 20,
+   "y": 646,
+   "w": 350,
+   "h": 24,
+   "text": "Br = brancos · Nu = nulos. Candidato A: base escura; Candidato B: base cinza média."
+  },
+  {
+   "x": 32,
+   "y": 702,
+   "w": 326,
+   "h": 14,
+   "text": "Dados de 2018 e 2022 ainda não foram coletados"
+  }
+ ]
+}

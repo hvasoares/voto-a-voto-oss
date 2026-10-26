@@ -1,0 +1,357 @@
+{
+ "frame": "3 Folha de compartilhamento",
+ "width": 390,
+ "height": 844,
+ "texts": [
+  {
+   "x": 20,
+   "y": 8,
+   "w": 200,
+   "h": 28,
+   "text": "Voto a Voto"
+  },
+  {
+   "x": 142,
+   "y": 14,
+   "w": 150,
+   "h": 14,
+   "text": "Presidente 2026"
+  },
+  {
+   "x": 316,
+   "y": 14,
+   "w": 54,
+   "h": 18,
+   "text": "9:41"
+  },
+  {
+   "x": 0,
+   "y": 50,
+   "w": 390,
+   "h": 13,
+   "text": "EXEMPLO  ·  DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS"
+  },
+  {
+   "x": 24,
+   "y": 88,
+   "w": 70,
+   "h": 17,
+   "text": "‹ Início"
+  },
+  {
+   "x": 20,
+   "y": 128,
+   "w": 350,
+   "h": 36,
+   "text": "Cidade Exemplo"
+  },
+  {
+   "x": 20,
+   "y": 160,
+   "w": 350,
+   "h": 16,
+   "text": "Município fictício · UF"
+  },
+  {
+   "x": 24,
+   "y": 205,
+   "w": 112,
+   "h": 16,
+   "text": "2018"
+  },
+  {
+   "x": 140,
+   "y": 205,
+   "w": 112,
+   "h": 16,
+   "text": "2022"
+  },
+  {
+   "x": 254,
+   "y": 205,
+   "w": 112,
+   "h": 17,
+   "text": "2026"
+  },
+  {
+   "x": 24,
+   "y": 259,
+   "w": 169,
+   "h": 17,
+   "text": "1º turno"
+  },
+  {
+   "x": 197,
+   "y": 259,
+   "w": 169,
+   "h": 16,
+   "text": "2º turno"
+  },
+  {
+   "x": 36,
+   "y": 316,
+   "w": 318,
+   "h": 16,
+   "text": "Votaram  ·  70% do eleitorado"
+  },
+  {
+   "x": 20,
+   "y": 326,
+   "w": 350,
+   "h": 28,
+   "text": "Compartilhar resultado"
+  },
+  {
+   "x": 296,
+   "y": 330,
+   "w": 74,
+   "h": 17,
+   "text": "Fechar"
+  },
+  {
+   "x": 36,
+   "y": 352,
+   "w": 165,
+   "h": 13,
+   "text": "A  52% dos votos"
+  },
+  {
+   "x": 201,
+   "y": 352,
+   "w": 153,
+   "h": 13,
+   "text": "B  48% dos votos"
+  },
+  {
+   "x": 171,
+   "y": 374,
+   "w": 114,
+   "h": 11,
+   "text": "Presidente 2026"
+  },
+  {
+   "x": 105,
+   "y": 375,
+   "w": 58,
+   "h": 11,
+   "text": "EXEMPLO"
+  },
+  {
+   "x": 36,
+   "y": 396,
+   "w": 318,
+   "h": 16,
+   "text": "Não votaram  ·  30% do eleitorado"
+  },
+  {
+   "x": 105,
+   "y": 396,
+   "w": 180,
+   "h": 33,
+   "text": "Cidade Exemplo"
+  },
+  {
+   "x": 105,
+   "y": 428,
+   "w": 180,
+   "h": 12,
+   "text": "2026 · 1º turno · UF"
+  },
+  {
+   "x": 36,
+   "y": 432,
+   "w": 248,
+   "h": 15,
+   "text": "Abstenção 78% dos que não votaram"
+  },
+  {
+   "x": 284,
+   "y": 432,
+   "w": 32,
+   "h": 15,
+   "text": "Br"
+  },
+  {
+   "x": 316,
+   "y": 432,
+   "w": 38,
+   "h": 15,
+   "text": "Nu"
+  },
+  {
+   "x": 105,
+   "y": 454,
+   "w": 180,
+   "h": 11,
+   "text": "Votaram: 70% do eleitorado"
+  },
+  {
+   "x": 105,
+   "y": 475,
+   "w": 94,
+   "h": 11,
+   "text": "A 52%"
+  },
+  {
+   "x": 199,
+   "y": 475,
+   "w": 86,
+   "h": 11,
+   "text": "B 48%"
+  },
+  {
+   "x": 58,
+   "y": 476,
+   "w": 160,
+   "h": 15,
+   "text": "Candidato A"
+  },
+  {
+   "x": 124,
+   "y": 477,
+   "w": 230,
+   "h": 12,
+   "text": "36.400 · 52% dos votos"
+  },
+  {
+   "x": 58,
+   "y": 500,
+   "w": 160,
+   "h": 15,
+   "text": "Candidato B"
+  },
+  {
+   "x": 105,
+   "y": 500,
+   "w": 180,
+   "h": 11,
+   "text": "Não votaram: 30% do eleitorado"
+  },
+  {
+   "x": 124,
+   "y": 501,
+   "w": 230,
+   "h": 12,
+   "text": "33.600 · 48% dos votos"
+  },
+  {
+   "x": 105,
+   "y": 521,
+   "w": 140,
+   "h": 11,
+   "text": "Abstenção 78%"
+  },
+  {
+   "x": 245,
+   "y": 521,
+   "w": 18,
+   "h": 10,
+   "text": "Br"
+  },
+  {
+   "x": 263,
+   "y": 521,
+   "w": 22,
+   "h": 10,
+   "text": "Nu"
+  },
+  {
+   "x": 58,
+   "y": 524,
+   "w": 160,
+   "h": 15,
+   "text": "Abstenção"
+  },
+  {
+   "x": 124,
+   "y": 525,
+   "w": 230,
+   "h": 12,
+   "text": "23.400 · 78% dos que não votaram"
+  },
+  {
+   "x": 58,
+   "y": 548,
+   "w": 160,
+   "h": 15,
+   "text": "Brancos"
+  },
+  {
+   "x": 124,
+   "y": 549,
+   "w": 230,
+   "h": 12,
+   "text": "3.000 · 10% dos que não votaram"
+  },
+  {
+   "x": 95,
+   "y": 552,
+   "w": 200,
+   "h": 11,
+   "text": "votoavoto.exemplo.br/rj/cidade-exemplo"
+  },
+  {
+   "x": 58,
+   "y": 572,
+   "w": 160,
+   "h": 15,
+   "text": "Nulos"
+  },
+  {
+   "x": 200,
+   "y": 572,
+   "w": 154,
+   "h": 15,
+   "text": "3.600"
+  },
+  {
+   "x": 30,
+   "y": 584,
+   "w": 330,
+   "h": 28,
+   "text": "O link vai no texto da mensagem; a imagem leva só o endereço curto, sem QR."
+  },
+  {
+   "x": 20,
+   "y": 626,
+   "w": 350,
+   "h": 48,
+   "text": "Em Cidade Exemplo, no 1º turno de 2026, 30% do eleitorado não votou, quase tanto quanto o Candidato B recebeu (33,6%)."
+  },
+  {
+   "x": 20,
+   "y": 646,
+   "w": 350,
+   "h": 18,
+   "text": "Compartilhar"
+  },
+  {
+   "x": 20,
+   "y": 702,
+   "w": 350,
+   "h": 18,
+   "text": "Baixar imagem"
+  },
+  {
+   "x": 20,
+   "y": 716,
+   "w": 350,
+   "h": 17,
+   "text": "Compartilhar"
+  },
+  {
+   "x": 20,
+   "y": 758,
+   "w": 350,
+   "h": 18,
+   "text": "Mostrar QR"
+  },
+  {
+   "x": 20,
+   "y": 764,
+   "w": 350,
+   "h": 12,
+   "text": "Dados fictícios para ilustrar o layout. Fonte real: TSE."
+  }
+ ]
+}
