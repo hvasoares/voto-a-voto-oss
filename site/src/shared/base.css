@@ -152,3 +152,59 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .state-links a { font: 700 13px/16px var(--font-sans); color: var(--c-accent); }
 .state-links a:first-child { flex: 0 0 160px; }
 .state-links a:last-child { flex: 0 0 150px; text-align: right; }
+
+/* ---- city card (#5): shared bars (.turnout, .bar, .legend) are owned by #5 and reused by #6/#7; `.city-*` and `.city-page` belong to the city slot ---- */
+.turnout__title { font: 600 13px/16px var(--font-sans); }
+.turnout__sep { margin: 0 3.5px; }
+.bar { display: flex; gap: 2px; height: 38px; margin-top: 9px; }
+.bar__seg {
+  flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;
+  padding-bottom: 2px; font: 600 12px/15px var(--font-sans); white-space: pre; color: var(--c-ink);
+}
+.bar__seg--a, .bar__seg--b, .bar__seg--outros { font-size: 11px; }
+.bar__seg--a { background: var(--c-cand-a); color: var(--c-accent-fg); }
+.bar__seg--b { background: var(--c-cand-b); color: var(--c-accent-fg); }
+.bar__seg--outros { background: var(--c-cand-outros); color: var(--c-ink); }
+.bar__seg--abstencao { background: var(--c-abstencao); }
+.bar__seg--brancos { background: var(--c-brancos); }
+.bar__seg--nulos { background: var(--c-nulos); }
+.legend { display: flex; flex-direction: column; }
+.legend__row { display: flex; align-items: center; gap: 10px; height: 24px; }
+.legend__swatch { flex: none; width: 12px; height: 12px; border-radius: 2px; border: 1px solid var(--c-rule); }
+.legend__swatch--a { background: var(--c-cand-a); border-color: var(--c-cand-a); }
+.legend__swatch--b { background: var(--c-cand-b); border-color: var(--c-cand-b); }
+.legend__swatch--outros { background: var(--c-cand-outros); border-color: var(--c-cand-outros); }
+.legend__swatch--abstencao { background: var(--c-abstencao); }
+.legend__swatch--brancos { background: var(--c-brancos); }
+.legend__swatch--nulos { background: var(--c-nulos); }
+.legend__label { flex: 1; min-width: 0; font: 400 13px/15px var(--font-sans); overflow-wrap: anywhere; }
+.legend__value { flex: none; font-size: 11px; line-height: 14px; color: var(--c-muted); }
+
+.city-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
+.city-page .app-header__context { font-size: 12px; }
+.city-page .banner { font-size: 11px; font-weight: 600; letter-spacing: 0; line-height: 14px; padding: 6px var(--gutter) 0; height: 28px; white-space: pre; overflow: hidden; }
+.city-page .page__main { padding: 4px var(--gutter) var(--sp-4); }
+.city-page .back { min-width: 84px; margin: 0 0 8px -8px; font-size: 15px; padding: 0 12px; }
+.city-page .page__title { font-size: 26px; line-height: 36px; }
+.city-page .page__subtitle { font-size: 14px; line-height: 16px; margin-top: -4px; }
+.city-page .tabs { margin-top: 14px; padding: 2px 4px; }
+.city-page .tabs + .tabs { margin-top: 6px; }
+.city-page .tabs__tab { min-height: 44px; font-size: 14px; }
+.city-card { margin-top: 8px; padding: 0 16px; border-top: 1px solid var(--c-rule); }
+.city-card .turnout__title:first-child { margin-top: 15px; }
+.city-card .bar + .turnout__title { margin-top: 17px; }
+.city-card .legend { margin-top: 12px; }
+.city-takeaway { font: 400 15px/21px var(--font-serif); margin: 35px -16px 0; }
+.city-nodata { margin: 24px 0; font-size: var(--fs-lead); color: var(--c-muted); }
+.city-share {
+  display: flex; align-items: center; justify-content: center; height: 48px; margin-top: 13px;
+  background: var(--c-accent); color: var(--c-accent-fg); border-radius: var(--radius); font-size: 15px; padding-bottom: 1px;
+}
+.city-links { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 7px; padding-top: 15px; border-top: 1px solid var(--c-rule); }
+.city-links a { text-align: center; font: 600 11px/16px var(--font-sans); color: var(--c-accent); }
+.city-page .page__main { padding-bottom: 0; }
+.city-page .source-footer { padding: 19px var(--gutter) 24px; color: var(--c-muted); font-size: 11px; line-height: 14px; }
+.source-footer__about {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+.source-footer__about:focus-visible { position: static; width: auto; height: auto; clip-path: none; display: block; margin-top: 4px; color: var(--c-accent); }

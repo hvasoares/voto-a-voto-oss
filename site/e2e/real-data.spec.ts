@@ -1,7 +1,9 @@
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
+import { readFileSync } from 'node:fs'
 import { createNodeStore } from '../src/data/node'
+import { displayName } from '../src/shared/city-search'
 import { collectRequests, violations, waitReady } from './helpers'
 
 /*
@@ -32,8 +34,9 @@ for (const c of samples) {
       expect((await page.goto(path))?.status()).toBe(200)
       await waitReady(page)
       await page.waitForLoadState('networkidle')
-      if (sub === '') await expect(page.locator('h1')).toHaveText(c.nome)
-      await expect(page.locator('[data-not-hydrated]')).toBeVisible()
+      if (sub === '') await expect(page.locator('h1')).toHaveText(displayName(c.nome))
+      if (sub === '') await expect(page.locator('[data-not-hydrated]')).toHaveCount(0)
+      else await expect(page.locator('[data-not-hydrated]')).toBeVisible()
       expect(errors).toEqual([])
       expect(violations(seen, new URL(baseURL!).origin)).toEqual([])
       const { sw, iw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: window.innerWidth }))
@@ -198,5 +201,139 @@ test.describe('home search on the real dataset', () => {
     expect(violations(seen, new URL(baseURL!).origin)).toEqual([])
     const files = seen.map((r) => new URL(r.url).pathname).filter((p) => p.includes('/data/'))
     expect(files.every((p) => p.endsWith('/cities.csv') || p.endsWith('/manifest.json'))).toBe(true)
+  })
+})
+
+/* ---- city card (#5): shown numbers against values computed here from turnout.csv and votes.csv ---- */
+type T = { aptos: number; comparecimento: number; brancos: number; nulos: number; anulados: number; validos: number }
+const rows = (file: string) => (present ? readFileSync(resolve(dir, file), 'utf8').trim().split('\n').slice(1).map((l) => l.split(',')) : [])
+const turnoutOf = new Map<string, T>()
+for (const r of rows('turnout.csv')) turnoutOf.set(`${r[0]}|${r[1]}|${r[2]}|${r[3]}`, { aptos: +r[4]!, comparecimento: +r[5]!, brancos: +r[7]!, nulos: +r[8]!, anulados: +r[9]!, validos: +r[10]! })
+const votesOf = new Map<string, Map<number, number>>()
+for (const r of rows('votes.csv')) {
+  const k = `${r[0]}|${r[1]}|${r[2]}|${r[3]}`
+  if (!votesOf.has(k)) votesOf.set(k, new Map())
+  votesOf.get(k)!.set(+r[4]!, +r[5]!)
+}
+const key = (c: (typeof cities)[number], ano: number, turno: number) => `${ano}|${turno}|${c.uf}|${c.cdMunicipio}`
+const dot = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+/** Independent largest-remainder (written here, not imported). */
+function lr(parts: number[]): number[] {
+  const sum = parts.reduce((a, b) => a + b, 0)
+  if (!sum) return parts.map(() => 0)
+  const exact = parts.map((p) => (p * 100) / sum)
+  const out = exact.map(Math.floor)
+  let left = 100 - out.reduce((a, b) => a + b, 0)
+  exact.map((e, i) => [e - out[i]!, i] as const).sort((a, b) => b[0] - a[0] || a[1] - b[1]).forEach(([, i]) => left-- > 0 && out[i]!++)
+  return out
+}
+const sao = pick((c) => c.uf === 'sp' && c.slug === 'sao-paulo')
+const domestic = cities.filter((c) => c.uf !== 'zz')
+const tiny = domestic.filter((c) => turnoutOf.has(key(c, 2026, 2))).sort((a, b) => turnoutOf.get(key(a, 2026, 2))!.aptos - turnoutOf.get(key(b, 2026, 2))!.aptos)[0]
+const tops = (c: (typeof cities)[number], ano: number, turno: number) => [...(votesOf.get(key(c, ano, turno)) ?? new Map()).values()].sort((a, b) => b - a)
+let tie: (typeof cities)[number] | undefined
+let near: (typeof cities)[number] | undefined
+let nearGap = Infinity
+for (const c of domestic) {
+  const [x, y] = tops(c, 2022, 1)
+  if (x === undefined || y === undefined) continue
+  if (x === y && !tie) tie = c
+  if (x !== y && x - y < nearGap && x > 1000) (nearGap = x - y), (near = c)
+}
+const noTurnout = cities.find((c) => c.uf === 'zz' && turnoutOf.get(key(c, 2018, 1))?.comparecimento === 0 && turnoutOf.get(key(c, 2018, 1))!.aptos > 0)
+const cardSamples = [
+  [sao, 2026, 2], [sao, 2026, 1], [sao, 2018, 1], [tiny, 2026, 2], [tiny, 2022, 1], [tie, 2022, 1], [near, 2022, 1],
+  [noTurnout, 2018, 1], [pick((c) => c.slug === 'boa-esperanca-do-norte'), 2026, 2], [pick((c) => c.slug === 'boa-esperanca-do-norte'), 2026, 1],
+  [pick((c) => c.uf !== 'zz' && /[^\x00-\x7f]/.test(c.nome) && c.slug !== 'sao-paulo'), 2026, 1],
+] as const
+
+test.describe('city card on the real dataset', () => {
+  test('samples exist', () => {
+    for (const s of [sao, tiny, tie, near, noTurnout]) expect(s).toBeDefined()
+  })
+  for (const [c, ano, turno] of cardSamples) {
+    if (!c) continue
+    test(`${c.uf}/${c.slug} ${ano} round ${turno}: shown numbers equal the CSVs, parts add up to 100`, async ({ page, baseURL }) => {
+      const seen = collectRequests(page)
+      const errors: string[] = []
+      page.on('pageerror', (e) => errors.push(String(e)))
+      await page.goto(`/${c.uf}/${c.slug}/?ciclo=${ano}&turno=${turno}`)
+      await waitReady(page)
+      await page.waitForLoadState('networkidle')
+      const t = turnoutOf.get(key(c, ano, turno))!
+      const panel = page.locator('[data-city-card] [data-view]:not([hidden])')
+      await expect(page.locator('h1')).toHaveText(displayName(c.nome))
+      const naoVotaram = t.aptos - t.validos
+      const [votedPct, notPct] = lr([t.validos, naoVotaram])
+      expect(votedPct + notPct).toBe(t.aptos ? 100 : 0)
+      const titles = await panel.locator('.turnout__title').allInnerTexts()
+      expect(titles.map((x) => x.replace(/\s+/g, ' '))).toEqual([`Votaram · ${votedPct}% do eleitorado`, `Não votaram · ${notPct}% do eleitorado`])
+      const legend = await panel.locator('.legend__row .legend__value').allInnerTexts()
+      const kinds = await panel.locator('.legend__row').evaluateAll((els) => els.map((e) => (e as HTMLElement).dataset.kind))
+      const shown = Object.fromEntries(kinds.map((k, i) => [k, legend[i]!.replace(/\s+/g, ' ')]))
+      const sorted = [...(votesOf.get(key(c, ano, turno)) ?? new Map<number, number>()).values()].sort((a, b) => b - a)
+      const resto = Math.max(naoVotaram - t.brancos - t.nulos - t.anulados, 0)
+      const nulos = t.nulos + t.anulados
+      const nv = lr([resto, t.brancos, nulos])
+      expect(shown.abstencao).toBe(`${dot(resto)} · ${nv[0]}% dos que não votaram`)
+      expect(shown.brancos).toBe(`${dot(t.brancos)} · ${nv[1]}% dos que não votaram`)
+      expect(shown.nulos).toBe(`${dot(nulos)} · ${nv[2]}% dos que não votaram`)
+      // candidates: the votes shown for A and B are the two largest in the file
+      expect(shown.a!.startsWith(`${dot(sorted[0] ?? 0)} · `)).toBe(true)
+      expect(shown.b!.startsWith(`${dot(sorted[1] ?? 0)} · `)).toBe(true)
+      const pcts = (await panel.locator('.legend__row').allInnerTexts()).map((x) => Number(/·\s*(\d+)%/.exec(x.replace(/\s+/g, ' '))![1]))
+      const voted = pcts.slice(0, kinds.indexOf('abstencao'))
+      expect(voted.reduce((a, b) => a + b, 0)).toBe(t.validos ? 100 : 0)
+      expect(pcts.slice(kinds.indexOf('abstencao')).reduce((a, b) => a + b, 0)).toBe(naoVotaram ? 100 : 0)
+      const outros = sorted.slice(2).reduce((a, b) => a + b, 0)
+      if (kinds.includes('outros')) expect(shown.outros!.startsWith(`${dot(outros)} · `)).toBe(true)
+      else expect(sorted.length).toBeLessThanOrEqual(2)
+      await expect(panel.locator('.city-takeaway')).toContainText(`no ${turno}º turno de ${ano}`)
+      expect(errors).toEqual([])
+      expect(violations(seen, new URL(baseURL!).origin)).toEqual([])
+      const { sw, iw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: window.innerWidth }))
+      expect(sw).toBeLessThanOrEqual(iw)
+    })
+  }
+
+  test('Sao Paulo 2026 round 2 shows Lula and Flavio Bolsonaro votes exactly as in the dataset', async ({ page }) => {
+    await page.goto('/sp/sao-paulo/')
+    await waitReady(page)
+    const v = votesOf.get(key(sao!, 2026, 2))!
+    const text = await page.locator('[data-city-card] [data-view]:not([hidden]) .legend').innerText()
+    expect(text.replace(/\s+/g, ' ')).toContain(`Lula ${dot(v.get(13)!)} ·`)
+    expect(text.replace(/\s+/g, ' ')).toContain(`Flavio Bolsonaro ${dot(v.get(22)!)} ·`)
+    expect(v.get(13)).toBe(3864354)
+  })
+
+  test('the overseas post without turnout says nobody turned out and shows the whole electorate as not voting', async ({ page }) => {
+    await page.goto(`/${noTurnout!.uf}/${noTurnout!.slug}/?ciclo=2018&turno=1`)
+    await waitReady(page)
+    const t = turnoutOf.get(key(noTurnout!, 2018, 1))!
+    await expect(page.locator('.city-takeaway:visible')).toContainText(`nenhum dos ${dot(t.aptos)} eleitores aptos compareceu`)
+    await expect(page.locator('.turnout__title:visible').first()).toContainText('Votaram · 0% do eleitorado')
+  })
+
+  test('Boa Esperança do Norte: only 2026 has data; 2018 and 2022 say so, both rounds of 2026 render', async ({ page }) => {
+    await page.goto('/mt/boa-esperanca-do-norte/?ciclo=2018&turno=1')
+    await waitReady(page)
+    await expect(page.locator('[data-nodata]:visible')).toHaveText('Sem dados nesse ciclo.')
+    await page.goto('/mt/boa-esperanca-do-norte/')
+    await waitReady(page)
+    await expect(page.locator('.turnout:visible')).toHaveCount(1)
+    await page.getByRole('link', { name: '1º turno' }).click()
+    await expect(page.locator('.city-takeaway:visible')).toContainText('no 1º turno de 2026')
+  })
+
+  test('the card renders for both rounds of every sampled city without a foreign request', async ({ page, baseURL }) => {
+    const seen = collectRequests(page)
+    for (const c of [sao, tiny, tie]) {
+      for (const turno of [1, 2]) {
+        await page.goto(`/${c!.uf}/${c!.slug}/?turno=${turno}`)
+        await waitReady(page)
+        await expect(page.locator('.turnout:visible')).toHaveCount(1)
+      }
+    }
+    expect(violations(seen, new URL(baseURL!).origin)).toEqual([])
   })
 })
