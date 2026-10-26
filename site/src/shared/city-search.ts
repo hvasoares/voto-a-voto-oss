@@ -4,7 +4,7 @@
  * narrows the result. Ranking: exact name, name prefix, word prefix, substring; overseas posts come after
  * domestic cities of the same rank. No network, no state outside the index.
  */
-import type { City } from '../../data'
+import type { City } from '../data'
 
 /** Fewer characters than this are not searched (one letter matches thousands of cities). */
 export const MIN_QUERY = 2
