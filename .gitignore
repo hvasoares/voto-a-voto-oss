@@ -1,0 +1,15 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Downloaded and generated data (rebuild with `make tse-scrape`)
+.cache/
+outbox/
+.DS_Store
