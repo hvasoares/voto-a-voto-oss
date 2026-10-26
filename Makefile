@@ -1,4 +1,4 @@
-.PHONY: test tse-scrape
+.PHONY: test tse-scrape data data-2018 data-2022 data-2026 data-check
 
 test:
 	uv run pytest
@@ -6,3 +6,15 @@ test:
 # Baixa o resultado de Presidente por município (cache em .cache/tse; só baixa o que mudou).
 tse-scrape:
 	uv run tse-scrape $(if $(UFS),--ufs $(UFS)) $(if $(OUT),--out $(OUT)) $(EXTRA)
+
+# Baixa (só o que falta ou mudou), reconcilia e escreve data/ (CSVs + manifest.json). CYCLES=2018,2022 e EXTRA=--offline|--allow-partial.
+data:
+	uv run voto-data build $(if $(CYCLES),--cycles $(CYCLES)) $(EXTRA)
+
+# Atualiza um só ciclo; os outros vêm do cache.
+data-2026 data-2022 data-2018:
+	uv run voto-data build --cycles $(subst data-,,$@)
+
+# Valida data/ sem rede: hashes do manifest, contagens, identidades e totais nacionais do TSE.
+data-check:
+	uv run voto-data check
