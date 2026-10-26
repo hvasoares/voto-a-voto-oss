@@ -115,3 +115,40 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .home-result__uf { flex: none; font-size: var(--fs-small); color: var(--c-muted); }
 .home-result:focus-visible { outline: 2px solid var(--c-accent); outline-offset: -2px; }
 .home-results__note { font-size: var(--fs-small); line-height: 16px; color: var(--c-muted); margin-top: var(--sp-2); }
+
+/* ---- state (#4): classes prefixed state- are owned by the state slot; `.state-page` scopes its frame to the Sketch frame "5 Estado" ---- */
+.state-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 11px; }
+.state-page .app-header__context { font-size: 12px; }
+.state-page .banner { font-size: 11px; font-weight: 600; letter-spacing: 0; line-height: 14px; padding: 5px var(--gutter); height: 24px; white-space: pre; overflow: hidden; }
+.state-page .page__main { padding: 8px var(--gutter) var(--sp-4); }
+.state-page .back { min-width: 84px; margin: 0 0 8px -8px; font-size: 15px; padding: 0 12px; }
+.state-page .page__title { font-size: 26px; line-height: 36px; }
+.state-page .page__subtitle { font-size: 14px; line-height: 16px; margin-top: -4px; }
+.state-map {
+  display: flex; align-items: center; justify-content: center; height: 220px; margin-top: 4px;
+  border: 1px dashed var(--c-ring); border-radius: var(--radius); background: var(--c-paper-2);
+  font-size: var(--fs-small); color: var(--c-muted); text-align: center;
+}
+.state-search { margin-top: 6px; }
+.state-search__input {
+  display: block; width: 100%; height: 44px; padding: 0 16px; border: 1px solid var(--c-rule); border-radius: var(--radius);
+  background: var(--c-paper); color: var(--c-ink); font: 400 var(--fs-body)/17px var(--font-sans); appearance: none; -webkit-appearance: none;
+}
+.state-search__input::placeholder { color: var(--c-muted); opacity: 1; }
+.state-search__input:focus { outline: 2px solid var(--c-accent); outline-offset: 1px; }
+.state-search__input::-webkit-search-cancel-button { appearance: none; }
+.state-note { font-size: var(--fs-small); line-height: 16px; color: var(--c-muted); margin-top: var(--sp-2); }
+.state-list, .state-results ul { margin-top: 12px; }
+.state-row { position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 3px; min-height: 56px; padding: 0 32px 6px 0; border-bottom: 1px solid var(--c-rule); color: var(--c-ink); }
+.state-list li, .state-results li { content-visibility: auto; contain-intrinsic-size: auto 56px; }
+.state-row > span { font: 400 var(--fs-body)/17px var(--font-sans); overflow-wrap: anywhere; }
+.state-row > small { font-size: var(--fs-small); line-height: 14px; color: var(--c-muted); }
+.state-row::after {
+  content: ""; position: absolute; right: 2px; top: 50%; width: 4px; height: 4px; margin-top: -3px;
+  border-top: 1.6px solid var(--c-muted); border-right: 1.6px solid var(--c-muted); transform: rotate(45deg);
+}
+.state-row:focus-visible, .state-links a:focus-visible { outline: 2px solid var(--c-accent); outline-offset: -2px; }
+.state-links { display: flex; justify-content: space-between; align-items: flex-start; border-top: 1px solid var(--c-rule); margin-top: 5px; padding-top: 10px; }
+.state-links a { font: 700 13px/16px var(--font-sans); color: var(--c-accent); }
+.state-links a:first-child { flex: 0 0 160px; }
+.state-links a:last-child { flex: 0 0 150px; text-align: right; }
