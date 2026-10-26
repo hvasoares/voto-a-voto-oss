@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Candidate, Turno, Turnout, Vote } from '../../data'
 import { buildCityResult } from '../../shared/city-model'
-import { buildCycleBlock, noDataReason, orderedSides, parseTurno, sideText } from './cycles-model'
+import { buildCycleBlock, noDataReason, notVotedText, orderedSides, parseTurno, sideText } from './cycles-model'
 
 const turnout = (ano: number, turno: Turno, o: Partial<Turnout> = {}): Turnout => ({
   ano, turno, uf: 'xx', cdMunicipio: '1', aptos: 1000, comparecimento: 800, abstencoes: 200, brancos: 20, nulos: 30, anuladosApuSep: 0, validos: 750, ...o,
@@ -110,4 +110,16 @@ describe('sideText: the text that fits the segment', () => {
   it('first name when the full name does not fit but the first does', () => expect(sideText(side('Flavio Bolsonaro', 40))).toBe('Flavio 40%'))
   it('nothing in a sliver', () => expect(sideText(side('Lula', 3))).toBe(''))
   it('"Candidato A" is shown as the frame does: "A 55%"', () => expect(sideText(side('Candidato A', 55))).toBe('A 55%'))
+})
+
+describe('notVotedText: compact, the heading already says "% dos que não votaram"', () => {
+  it.each([
+    ['abstencao', 82, 'Abstenção 82%'],
+    ['abstencao', 25, 'Abstenção'],
+    ['abstencao', 10, 'Ab'],
+    ['brancos', 6, 'Br'],
+    ['nulos', 9, 'Nu'],
+    ['brancos', 40, 'Brancos 40%'],
+    ['nulos', 5, ''],
+  ] as const)('%s at %s%% -> %j', (key, pct, want) => expect(notVotedText(key, pct)).toBe(want))
 })

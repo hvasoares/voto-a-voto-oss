@@ -83,3 +83,16 @@ export function sideText(s: Pick<Side, 'key' | 'label' | 'pct'>): string {
   const tries = [`${name} ${s.pct}%`, `${name.split(' ')[0]} ${s.pct}%`, `${s.pct}%`]
   return tries.find((t) => t.length <= room) ?? ''
 }
+
+type NotVotedKey = 'abstencao' | 'brancos' | 'nulos'
+const NOT_VOTED: Record<NotVotedKey, { word: string; short: string }> = {
+  abstencao: { word: 'Abstenção', short: 'Ab' },
+  brancos: { word: 'Brancos', short: 'Br' },
+  nulos: { word: 'Nulos', short: 'Nu' },
+}
+
+/** Text of a "Não votaram" segment: "Abstenção 82%", "Br", "Nu" (the heading already says the bar is % of the non-voters). */
+export function notVotedText(key: NotVotedKey, pct: number): string {
+  const { word, short } = NOT_VOTED[key]
+  return pct >= 30 ? `${word} ${pct}%` : pct >= 20 ? word : pct >= 6 ? short : ''
+}
