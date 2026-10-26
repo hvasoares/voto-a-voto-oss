@@ -208,3 +208,36 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
   position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
 }
 .source-footer__about:focus-visible { position: static; width: auto; height: auto; clip-path: none; display: block; margin-top: 4px; color: var(--c-accent); }
+
+/* ---- three cycles of a city (#6): `.cycles-*` and `.cycle*` belong to the city-cycles slot; the bars reuse the shared .bar / .bar__seg ---- */
+.cycles-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
+.cycles-page .app-header__context { font-size: 12px; }
+.cycles-page .banner { font-size: 11px; font-weight: 600; letter-spacing: 0; line-height: 14px; padding: 6px var(--gutter) 0; height: 28px; white-space: pre; overflow: hidden; }
+.cycles-page .page__main { padding: 4px var(--gutter) 0; }
+.cycles-page .back { min-width: 84px; margin: 0 0 8px -8px; font-size: 15px; padding: 0 12px; }
+.cycles-page .page__title { font-size: 26px; line-height: 36px; }
+.cycles-page .page__subtitle { font-size: 12px; line-height: 14px; margin-top: -4px; margin-bottom: 18px; }
+.cycles__round + .cycles__round { margin-top: 24px; }
+.cycle { box-sizing: border-box; height: 150px; margin: 0 0 0; padding: 9px 16px 0; border-top: 1px solid var(--c-rule); }
+.cycle__year { font: 700 15px/18px var(--font-sans); margin: 0; }
+.cycle__label { margin: 6px 0 0; font: 400 10px/12px var(--font-sans); color: var(--c-muted); }
+.cycle__label--second { margin-top: 12px; }
+.cycle .bar { height: 24px; margin: 4px 1px 0; gap: 0; }
+.cycle .bar__seg { padding-bottom: 0; font-size: 10px; line-height: 13px; background-clip: padding-box; }
+.cycle .bar__seg + .bar__seg { border-left: 2px solid var(--c-paper); }
+.bar__seg--empty { background: var(--c-paper-2); color: var(--c-muted); font-weight: 400; }
+.cycle--nodata .cycle__nodata { margin: 24px 0 0; font: 600 14px/18px var(--font-sans); color: var(--c-muted); }
+.cycle--nodata .cycle__reason { margin: 4px 0 0; font: 400 12px/16px var(--font-sans); color: var(--c-muted); }
+.cycles__legend { margin: 4px 0 0; font: 400 11px/12px var(--font-sans); color: var(--c-muted); }
+.cycles-switch {
+  display: flex; align-items: center; justify-content: center; min-height: 44px; margin-top: 19px; border: 1px solid var(--c-rule);
+  border-radius: var(--radius); background: var(--c-paper-2); font: 400 13px/16px var(--font-sans); color: var(--c-ink);
+}
+.cycles-links { margin-top: 12px; text-align: center; }
+.cycles-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; font: 600 13px/16px var(--font-sans); color: var(--c-accent); }
+.cycles-page .source-footer { padding: 19px var(--gutter) 24px; color: var(--c-muted); font-size: 11px; line-height: 14px; }
+/* Without JavaScript both rounds are shown stacked and the (useless) switch link is hidden. */
+@media (scripting: none) {
+  .cycles__round[hidden] { display: block; }
+  .cycles-switch { display: none; }
+}

@@ -1,8 +1,12 @@
+import type { Turno } from '../../data'
+import { loadCityResult } from '../../shared/city-figures'
+import { CYCLES } from '../../shared/city-model'
+import { displayName } from '../../shared/city-search'
 import { html } from '../../shared/html'
-import { pageFrame } from '../../shared/page-frame'
-import { fixtureBanner, navLinks, notHydratedMarker, type Slot, type SlotMeta } from '../../shared/slot'
-import { turnoutBar } from '../../shared/components'
-import { turnoutBarProps } from '../../shared/city-figures'
+import { fixtureBanner, linkHref, type Slot, type SlotMeta } from '../../shared/slot'
+import { buildCycleBlock, DEFAULT_TURNO } from './cycles-model'
+import { mountCycles } from './cycles-mount'
+import { roundPanel } from './cycles-view'
 
 /** Contract: see CONTRACT.md next to this file. Edit ONLY files in this directory (plus src/shared if the contract says so). */
 export const meta: SlotMeta = {
@@ -34,28 +38,50 @@ export const meta: SlotMeta = {
       "to": "/:uf/:slug/"
     }
   ],
-  "fixtureRoute": "/rj/cidade-exemplo/tres-ciclos/"
+  "fixtureRoute": "/rj/cidade-exemplo/tres-ciclos/?turno=1"
 }
+
+const TURNOS: readonly Turno[] = [1, 2]
 
 export const slot: Slot = {
   meta,
-  /** Set to true when you replace the blank render below (and flip the test in slot.test.ts). */
-  hydrated: false,
+  hydrated: true,
+  mount(root, ctx) {
+    mountCycles(root, ctx)
+  },
   async render(ctx) {
     const city = await ctx.data.city(ctx.params.uf!, ctx.params.slug!)
     if (!city) throw new Error(`city not found: ${ctx.params.uf}/${ctx.params.slug}`)
-    const bars = await Promise.all([2018, 2022, 2026].map(async (ano) => ({ ano, bar: await turnoutBarProps(ctx.data, city, ano, 1) })))
-    const pageTitle = `Três ciclos · ${city.nome}`
+    const name = displayName(city.nome)
+    const here = ctx.href('/:uf/:slug/tres-ciclos/')
+    const panels = []
+    for (const turno of TURNOS) {
+      const blocks = []
+      for (const ano of CYCLES) blocks.push(buildCycleBlock({ ano, turno, city, result: await loadCityResult(ctx.data, city, ano, turno) }))
+      panels.push(roundPanel({ turno, subtitle: `Presidente 2018, 2022 e 2026 · ${name} (${turno}º turno)`, blocks, hidden: turno !== DEFAULT_TURNO }))
+    }
+    const banner = await fixtureBanner(ctx)
+    const other = DEFAULT_TURNO === 2 ? 1 : 2
     return {
-      title: pageTitle,
-      html: pageFrame({
-        base: ctx.base,
-        title: 'Três ciclos',
-        subtitle: `Presidente 2018, 2022 e 2026 · ${city.nome} (1º turno)`,
-        back: { label: 'Início', href: ctx.href('/') },
-        banner: await fixtureBanner(ctx),
-        children: html`${notHydratedMarker(meta)}${html`${bars.map(({ ano, bar }) => html`<h2>${ano}</h2>${bar ? turnoutBar(bar) : html`<p>sem dados nesse ciclo</p>`}`)}`}${navLinks(ctx, meta)}`,
-      }),
+      title: `Três ciclos · ${name}`,
+      html: html`<div class="page cycles-page" data-component="page-frame">
+    <header class="app-header">
+      <a class="brand" href="${ctx.href('/')}">Voto a Voto</a>
+      <span class="app-header__sep" aria-hidden="true"></span>
+      <span class="app-header__context">Presidente 2026</span>
+    </header>
+    ${banner ? html`<div class="banner" role="note">${banner.replace(' · ', '  ·  ')}</div>` : ''}
+    <main class="page__main" id="main">
+      <a class="back" href="${linkHref(ctx, meta.links[0]!)}">‹ Início</a>
+      <h1 class="page__title">Três ciclos</h1>
+      <div class="cycles" data-cycles data-turno="${DEFAULT_TURNO}" data-path="${here}" data-uf="${city.uf}" data-slug="${city.slug}">${panels}</div>
+      <p class="cycles__legend">Br = brancos · Nu = nulos. O candidato de menor número na urna fica à esquerda, com a base escura, em todos os ciclos.</p>
+      <a class="cycles-switch" href="${here}?turno=${other}" data-switch data-base="${here}">Ver o ${other}º turno ›</a>
+      <nav class="cycles-links" aria-label="Mais sobre a cidade"><a href="${linkHref(ctx, meta.links[1]!)}">Cartão da cidade</a></nav>
+    </main>
+    <footer class="source-footer" data-component="source-footer">Fonte: TSE, dados finais<a class="source-footer__about" href="${ctx.href('/sobre-os-dados/')}">Sobre os dados ›</a></footer>
+    <div id="consent-slot" data-placeholder="consent-banner" data-ticket="20" hidden></div>
+  </div>`,
     }
   },
 }
