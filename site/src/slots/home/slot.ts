@@ -1,5 +1,6 @@
 import { html } from '../../shared/html'
 import type { Slot, SlotContext, SlotMeta } from '../../shared/slot'
+import { mountSearch } from './search-ui'
 import { UF_TILES, type UfTile } from './uf-grid'
 
 
@@ -77,6 +78,9 @@ function tile(ctx: SlotContext, t: UfTile, linked: boolean) {
 export const slot: Slot = {
   meta,
   hydrated: true,
+  mount(root, ctx) {
+    mountSearch(root, ctx)
+  },
   async render(ctx: SlotContext) {
     // A tile is a link when the dataset has that state; otherwise it is drawn but inert (a fixture dataset has 3 states, never a dead link).
     const available = new Set((await ctx.data.states()).map((s) => s.uf))
@@ -92,6 +96,8 @@ export const slot: Slot = {
         ${SEARCH_ICON}
         <input class="home-search__input" type="search" name="q" placeholder="Busque sua cidade" aria-label="Busque sua cidade" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
       </div>
+      <div class="home-results-box" data-home-results aria-live="polite"></div>
+      <noscript><p class="home__hint">A busca precisa de JavaScript. Escolha um estado abaixo.</p></noscript>
       <p class="home__hint">Ou escolha um estado. Toque para ver os municípios.</p>
       <nav class="uf-grid" aria-label="Estados" data-uf-grid>
         ${UF_TILES.map((t) => tile(ctx, t, available.has(t.uf)))}
