@@ -264,7 +264,7 @@ test.describe('city card on the real dataset', () => {
       const panel = page.locator('[data-city-card] [data-view]:not([hidden])')
       await expect(page.locator('h1')).toHaveText(displayName(c.nome))
       const naoVotaram = t.aptos - t.validos
-      const [votedPct, notPct] = lr([t.validos, naoVotaram])
+      const [votedPct = 0, notPct = 0] = lr([t.validos, naoVotaram])
       expect(votedPct + notPct).toBe(t.aptos ? 100 : 0)
       const titles = await panel.locator('.turnout__title').allInnerTexts()
       expect(titles.map((x) => x.replace(/\s+/g, ' '))).toEqual([`Votaram · ${votedPct}% do eleitorado`, `Não votaram · ${notPct}% do eleitorado`])
