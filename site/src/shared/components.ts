@@ -78,7 +78,10 @@ export function turnoutBar(p: TurnoutBarProps): Raw {
   </section>`
 }
 
-/** Cycle tabs 2018 | 2022 | 2026 (frame 2). Real implementation: ticket #6. */
+/**
+ * Cycle tabs 2018 | 2022 | 2026 (frame 2). Implemented by #6: plain links (work without JavaScript), the active one has
+ * aria-current="true"; each link carries data-ciclo for the progressive enhancement of the city slot.
+ */
 export interface CycleTabsProps {
   cycles: number[]
   active: number
@@ -86,7 +89,7 @@ export interface CycleTabsProps {
   hrefFor(cycle: number): string
 }
 export function cycleTabs(p: CycleTabsProps): Raw {
-  return ph('cycle-tabs', 6, html`<nav class="tabs" aria-label="Ciclo">${p.cycles.map((c) => html`<a class="tabs__tab" href="${p.hrefFor(c)}" aria-current="${c === p.active ? 'true' : 'false'}">${c}</a>`)}</nav>`)
+  return html`<nav class="tabs" aria-label="Ciclo" data-component="cycle-tabs">${p.cycles.map((c) => html`<a class="tabs__tab" href="${p.hrefFor(c)}" data-ciclo="${c}" aria-current="${c === p.active ? 'true' : 'false'}">${c}</a>`)}</nav>`
 }
 
 /**

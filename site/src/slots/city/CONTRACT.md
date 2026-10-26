@@ -77,8 +77,7 @@ Emit events through `ctx.analytics` only (no-op today). Properties are simple va
   (ciclo-turno); the visible one has no `hidden`. Tabs: `a[data-ciclo]` and `a[data-turno]` with `aria-current`.
 - "Compartilhar" is `a.city-share[data-share]`; its href carries `?ciclo=&turno=` of the shown view so #7 knows what to
   draw. `/compartilhar/` itself is #7's.
-- Cycle tabs are built in `slot.ts` with the shared `.tabs` classes, because `cycleTabs()` in `components.ts` belongs to #6
-  (still the placeholder). #6 can swap the slot's inline nav for `cycleTabs()` once it renders the same markup.
+- Cycle tabs use the shared `cycleTabs()` (implemented by #6, same markup as the inline nav it replaced)
 - Footer: frame text for fixture data ("Dados fictícios para ilustrar o layout. Fonte real: TSE."), "Fonte: TSE, dados
   finais" for real data, plus a "Sobre os dados ›" link that is visually hidden until keyboard focus (every result screen must link to it, `flow.test.ts`; the frame has no such visible link, and the screenshot review does not allow extra visible elements).
 - The frame subtitle "Município fictício · UF" literally says "UF" (placeholder); the page prints the real UF ("RJ").

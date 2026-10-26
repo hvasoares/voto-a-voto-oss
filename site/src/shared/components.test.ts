@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { candidateRow, roundTabs, segmentText, turnoutBar } from './components'
+import { candidateRow, roundTabs, segmentText, turnoutBar , cycleTabs } from './components'
 
 const text = (markup: { value: string }) => markup.value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
 
@@ -69,5 +69,15 @@ describe('roundTabs', () => {
     expect(out).toMatch(/href="\/x\/\?turno=2"[^>]*aria-current="true"/)
     expect(out).toMatch(/href="\/x\/\?turno=1"[^>]*aria-current="false"/)
     expect(text({ value: out })).toBe('1º turno 2º turno')
+  })
+})
+
+describe('cycleTabs (#6): plain links, same markup the city card used inline', () => {
+  const out = cycleTabs({ cycles: [2018, 2022, 2026], active: 2022, hrefFor: (c) => `/x/?ciclo=${c}` }).value
+  it('is not a placeholder any more', () => expect(out).not.toContain('data-placeholder'))
+  it('one link per cycle with its href and data-ciclo; the active one has aria-current=true', () => {
+    expect(out).toContain('<nav class="tabs" aria-label="Ciclo" data-component="cycle-tabs">')
+    expect(out).toContain('<a class="tabs__tab" href="/x/?ciclo=2018" data-ciclo="2018" aria-current="false">2018</a>')
+    expect(out).toContain('href="/x/?ciclo=2022" data-ciclo="2022" aria-current="true"')
   })
 })
