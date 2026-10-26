@@ -36,6 +36,7 @@ for (const c of samples) {
       await page.waitForLoadState('networkidle')
       if (sub === '') await expect(page.locator('h1')).toHaveText(displayName(c.nome))
       if (sub === '') await expect(page.locator('[data-not-hydrated]')).toHaveCount(0)
+      else if (sub === 'tres-ciclos/') await expect(page.locator('[data-not-hydrated]')).toHaveCount(0)
       else await expect(page.locator('[data-not-hydrated]')).toBeVisible()
       expect(errors).toEqual([])
       expect(violations(seen, new URL(baseURL!).origin)).toEqual([])
@@ -335,5 +336,128 @@ test.describe('city card on the real dataset', () => {
       }
     }
     expect(violations(seen, new URL(baseURL!).origin)).toEqual([])
+  })
+})
+
+/* ---- three cycles (#6): every shown number against values read here from turnout.csv, votes.csv and candidates.csv ---- */
+const candRows = rows('candidates.csv').map((r) => ({ ano: +r[0]!, turno: +r[1]!, numero: +r[2]!, nome: r[3]! }))
+const smallOverseas = cities.find((c) => c.uf === 'zz' && !!noTurnout && c !== noTurnout && turnoutOf.has(key(c, 2022, 2)))
+const cyclesSamples = [sao, pick((c) => c.slug === 'boa-esperanca-do-norte'), noTurnout, smallOverseas, tiny, pick((c) => c.uf !== 'zz' && /[^\x00-\x7f]/.test(c.nome) && c.slug !== 'sao-paulo')].filter(
+  (c): c is NonNullable<typeof c> => !!c,
+)
+const sumPct = (a: number[]) => a.reduce((x, y) => x + y, 0)
+
+/** Expected voted-bar sides of a cycle, computed here: round 2 the two runoff candidates, round 1 the two leaders of the city plus the rest; the lower number first. */
+function expectedSides(c: (typeof cities)[number], ano: number, turno: number) {
+  const v = votesOf.get(key(c, ano, turno)) ?? new Map<number, number>()
+  const numbers = new Set([...candRows.filter((r) => r.ano === ano && r.turno === turno).map((r) => r.numero), ...v.keys()])
+  const ranked = [...numbers].map((n) => ({ n, votos: v.get(n) ?? 0 })).sort((a, b) => b.votos - a.votos || a.n - b.n)
+  const leaders = ranked.slice(0, 2).sort((a, b) => a.n - b.n)
+  const rest = ranked.slice(2)
+  return { leaders, outros: rest.reduce((x, r) => x + r.votos, 0), hasOutros: rest.length > 0 }
+}
+
+test.describe('three cycles on the real dataset', () => {
+  test('samples exist', () => {
+    for (const s of [sao, tiny, noTurnout, smallOverseas]) expect(s).toBeDefined()
+    expect(cyclesSamples.length).toBeGreaterThanOrEqual(5)
+  })
+  for (const c of cyclesSamples) {
+    for (const turno of [1, 2] as const) {
+      test(`${c.uf}/${c.slug} round ${turno}: per cycle the numbers equal the CSVs, parts add up to 100, same side order`, async ({ page, baseURL }) => {
+        const seen = collectRequests(page)
+        const errors: string[] = []
+        page.on('pageerror', (e) => errors.push(String(e)))
+        await page.goto(`/${c.uf}/${c.slug}/tres-ciclos/?turno=${turno}`)
+        await waitReady(page)
+        await page.waitForLoadState('networkidle')
+        await expect(page.locator('[data-not-hydrated]')).toHaveCount(0)
+        await expect(page.locator('h1')).toHaveText('Três ciclos')
+        await expect(page.locator('.banner')).toHaveCount(0)
+        await expect(page.locator('.cycles__round:not([hidden]) .page__subtitle')).toHaveText(`Presidente 2018, 2022 e 2026 · ${displayName(c.nome)} (${turno}º turno)`)
+        const orders: string[] = []
+        for (const ano of [2018, 2022, 2026]) {
+          const block = page.locator(`.cycles__round:not([hidden]) .cycle[data-ano="${ano}"]`)
+          const t = turnoutOf.get(key(c, ano, turno))
+          if (!t) {
+            await expect(block).toHaveClass(/cycle--nodata/)
+            await expect(block).toContainText('sem dados nesse ciclo')
+            await expect(block).not.toContainText('Votaram')
+            continue
+          }
+          const naoVotaram = t.aptos - t.validos
+          const [votedPct = 0, notPct = 0] = lr([t.validos, naoVotaram])
+          expect(votedPct + notPct).toBe(100)
+          const labels = (await block.locator('.cycle__label').allInnerTexts()).map((x) => x.replace(/\s+/g, ' '))
+          expect(labels).toEqual([`Votaram ${votedPct}% do eleitorado (barra: % dos votos)`, `Não votaram ${notPct}% do eleitorado (barra: % dos que não votaram)`])
+          const seg = (bar: number) => block.locator('.bar').nth(bar).locator('.bar__seg[data-votos]').evaluateAll((els) => els.map((e) => ({ k: e.className.replace(/.*bar__seg--(\w+).*/, '$1'), v: Number(e.getAttribute('data-votos')), p: Number(e.getAttribute('data-pct')), n: e.getAttribute('data-numero') })))
+          const voted = await seg(0)
+          const not = await seg(1)
+          const ex = expectedSides(c, ano, turno)
+          const wantVoted = [...ex.leaders.map((l) => ({ n: String(l.n), v: l.votos })), ...(ex.hasOutros ? [{ n: '', v: ex.outros }] : [])]
+          if (t.validos > 0) {
+            // zero-vote segments are not drawn; compare the drawn ones against the same list without zeros
+            expect(voted.map((s) => ({ n: s.n, v: s.v }))).toEqual(wantVoted.filter((s) => s.v > 0).map((s) => ({ n: s.n, v: s.v })))
+            expect(sumPct(voted.map((s) => s.p))).toBe(100)
+            const wantPct = lr(wantVoted.map((s) => s.v)).filter((_, i) => wantVoted[i]!.v > 0)
+            expect(voted.map((s) => s.p)).toEqual(wantPct)
+          } else await expect(block.locator('.bar__seg--empty')).toHaveCount(1)
+          const resto = Math.max(naoVotaram - t.brancos - t.nulos - t.anulados, 0)
+          const wantNot = [resto, t.brancos, t.nulos + t.anulados]
+          expect(not.map((s) => s.v)).toEqual(wantNot.filter((v) => v > 0))
+          if (naoVotaram > 0) {
+            expect(sumPct(not.map((s) => s.p))).toBe(100)
+            expect(not.map((s) => s.p)).toEqual(lr(wantNot).filter((_, i) => wantNot[i]! > 0))
+          }
+          // side order: ballot number ascending in every cycle (nothing says a candidate wins)
+          const nums = voted.filter((s) => s.n).map((s) => Number(s.n))
+          expect(nums).toEqual([...nums].sort((a, b) => a - b))
+          if (turno === 2 && t.validos > 0) orders.push(ex.leaders.map((l) => l.n).join('<'))
+          // names come from candidates.csv keyed by cycle, round and number
+          for (const l of ex.leaders) {
+            const name = candRows.find((r) => r.ano === ano && r.turno === turno && r.numero === l.n)?.nome
+            expect(name, `${ano} ${turno} ${l.n}`).toBeDefined()
+            if (l.votos > 0) expect(await block.locator(`.bar__seg[data-numero="${l.n}"]`).getAttribute('title')).toContain(`(${dot(l.votos)} votos)`)
+          }
+        }
+        if (turno === 2) expect(orders.every((o) => /^\d+<\d+$/.test(o))).toBe(true)
+        expect(errors).toEqual([])
+        expect(violations(seen, new URL(baseURL!).origin)).toEqual([])
+        const { sw, iw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: window.innerWidth }))
+        expect(sw).toBeLessThanOrEqual(iw)
+      })
+    }
+
+    test(`${c.uf}/${c.slug}: complete with JavaScript disabled (both rounds, six cycle blocks)`, async ({ browser, baseURL }) => {
+      const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: { width: 390, height: 844 } })
+      const plain = await ctx.newPage()
+      await plain.goto(`/${c.uf}/${c.slug}/tres-ciclos/`)
+      await expect(plain.locator('.cycles__round:visible')).toHaveCount(2)
+      await expect(plain.locator('.cycle:visible')).toHaveCount(6)
+      const present = [2018, 2022, 2026].flatMap((ano) => [1, 2].map((turno) => turnoutOf.has(key(c, ano, turno))))
+      await expect(plain.locator('.cycle:visible:not(.cycle--nodata)')).toHaveCount(present.filter(Boolean).length)
+      await ctx.close()
+    })
+  }
+
+  test('Sao Paulo round 2: 13 is on the left in all three cycles; the right side is 17, 22, 22 by cycle, named from candidates.csv', async ({ page }) => {
+    await page.goto('/sp/sao-paulo/tres-ciclos/?turno=2')
+    await waitReady(page)
+    const pairs = await page.locator('.cycles__round:not([hidden]) .cycle').evaluateAll((els) => els.map((e) => [...e.querySelectorAll('.bar:first-of-type .bar__seg')].map((s) => s.getAttribute('data-numero'))))
+    expect(pairs).toEqual([['13', '17'], ['13', '22'], ['13', '22']])
+    const names = await page.locator('.cycles__round:not([hidden]) .cycle .bar:first-of-type .bar__seg').evaluateAll((els) => els.map((e) => e.getAttribute('title')!.split(':')[0]))
+    const want = [[2018, 13], [2018, 17], [2022, 13], [2022, 22], [2026, 13], [2026, 22]].map(([a, n]) => displayName(candRows.find((r) => r.ano === a && r.turno === 2 && r.numero === n)!.nome))
+    expect(names).toEqual(want)
+  })
+
+  test('Boa Esperanca do Norte: 2018 and 2022 are the no-data block with the reason, 2026 has data, in both rounds', async ({ page }) => {
+    for (const turno of [1, 2]) {
+      await page.goto(`/mt/boa-esperanca-do-norte/tres-ciclos/?turno=${turno}`)
+      await waitReady(page)
+      const nd = page.locator('.cycles__round:not([hidden]) [data-nodata]')
+      await expect(nd).toHaveCount(2)
+      await expect(nd.first()).toContainText('Este município só tem dados a partir de 2026.')
+      await expect(page.locator('.cycles__round:not([hidden]) .cycle[data-ano="2026"]')).toContainText('Votaram')
+    }
   })
 })

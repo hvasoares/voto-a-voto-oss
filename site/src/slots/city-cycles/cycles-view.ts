@@ -1,7 +1,7 @@
 import type { Turno } from '../../data'
+import { formatInt, type Segment } from '../../shared/city-model'
 import { html, type Raw } from '../../shared/html'
 import { notVotedText, sideText, type CycleBlock, type Side } from './cycles-model'
-import type { Segment } from '../../shared/city-model'
 
 /** Markup of the three-cycle page body: pure functions from the model to HTML (runs in Node and in the browser). */
 
@@ -10,14 +10,14 @@ const sideBar = (b: Extract<CycleBlock, { status: 'data' }>): Raw =>
     ? html`<div class="bar" role="img" aria-label="Votaram, por candidato: nenhum voto válido"><span class="bar__seg bar__seg--empty">Nenhum voto válido</span></div>`
     : html`<div class="bar" role="img" aria-label="Votaram, por candidato">${b.sides
         .filter((s: Side) => s.pct > 0)
-        .map((s: Side) => html`<span class="bar__seg bar__seg--${s.key}" style="flex-grow:${s.pct}" title="${s.label}: ${s.pct}% dos votos">${sideText(s)}</span>`)}</div>`
+        .map((s: Side) => html`<span class="bar__seg bar__seg--${s.key}" style="flex-grow:${s.pct}" data-numero="${s.numero ?? ''}" data-votos="${s.votos}" data-pct="${s.pct}" title="${s.label}: ${s.pct}% dos votos (${formatInt(s.votos)} votos)">${sideText(s)}</span>`)}</div>`
 
 const notVotedBar = (segs: Segment[]): Raw =>
   html`<div class="bar" role="img" aria-label="Não votaram, por tipo">${segs
     .filter((s) => s.pct > 0)
     .map((s) => {
       const key = s.key as 'abstencao' | 'brancos' | 'nulos'
-      return html`<span class="bar__seg bar__seg--${key}" style="flex-grow:${s.pct}" title="${s.label}: ${s.pct}% dos que não votaram">${notVotedText(key, s.pct)}</span>`
+      return html`<span class="bar__seg bar__seg--${key}" style="flex-grow:${s.pct}" data-votos="${s.votos}" data-pct="${s.pct}" title="${s.label}: ${s.pct}% dos que não votaram (${formatInt(s.votos)})">${notVotedText(key, s.pct)}</span>`
     })}</div>`
 
 export function cycleBlock(b: CycleBlock): Raw {
