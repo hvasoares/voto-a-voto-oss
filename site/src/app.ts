@@ -27,8 +27,8 @@ export async function enumerateRoutes(slots: Slot[], data: DataStore): Promise<R
     const names = paramNames(slot.meta.route)
     let combos: Params[]
     if (names.length === 0) combos = [{}]
-    else if (names.length === 1 && names[0] === 'uf') combos = states.map((s) => ({ uf: s.uf.toLowerCase() }))
-    else if (names.length === 2 && names[0] === 'uf' && names[1] === 'slug') combos = cities.map((c) => ({ uf: c.uf.toLowerCase(), slug: c.slug }))
+    else if (names.length === 1 && names[0] === 'uf') combos = states.map((s) => ({ uf: s.uf }))
+    else if (names.length === 2 && names[0] === 'uf' && names[1] === 'slug') combos = cities.map((c) => ({ uf: c.uf, slug: c.slug }))
     else {
       const [name] = names
       const values = slot.meta.paramValues?.[name!]
@@ -49,7 +49,7 @@ export async function resolveRoute(path: string, slots: Slot[], data: DataStore)
     const names = paramNames(slot.meta.route)
     if (names.length === 0) return { slot, params }
     if (names.length === 1 && names[0] === 'uf') {
-      return (await data.states()).some((s) => s.uf.toLowerCase() === params.uf) ? { slot, params } : undefined
+      return (await data.states()).some((s) => s.uf === params.uf) ? { slot, params } : undefined
     }
     if (names.length === 2 && names[0] === 'uf' && names[1] === 'slug') {
       return (await data.city(params.uf!, params.slug!)) ? { slot, params } : undefined

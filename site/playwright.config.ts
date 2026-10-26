@@ -28,8 +28,9 @@ export default defineConfig({
     env: { PORT: String(PORT) },
   },
   projects: [
-    { name: 'phone', testIgnore: /baseline|slot-screenshot/, use: { browserName: 'chromium' } },
+    { name: 'phone', testIgnore: /baseline|slot-screenshot|real-data/, use: { browserName: 'chromium' } },
     { name: 'capture', testMatch: /slot-screenshot/, use: { browserName: 'chromium' } },
+    { name: 'real', testMatch: /real-data/, use: { browserName: 'chromium' } },
     { name: 'baseline', testMatch: /baseline/, use: { browserName: 'chromium' } },
   ],
 })

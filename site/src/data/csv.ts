@@ -63,7 +63,7 @@ export const CANDIDATE_COLUMNS = ['ano', 'turno', 'candidato_numero', 'nome_urna
 export function parseCities(text: string): City[] {
   const f = 'cities.csv'
   return records(f, text, CITY_COLUMNS).map((r) => ({
-    uf: r.uf!,
+    uf: r.uf!.toLowerCase(),
     cdMunicipio: r.cd_municipio!,
     cdIbge: r.cd_ibge!,
     nome: r.nome!,
@@ -78,7 +78,7 @@ export function parseTurnout(text: string): Turnout[] {
   return records(f, text, TURNOUT_COLUMNS).map((r) => ({
     ano: int(f, 'ano', r.ano),
     turno: turno(f, r.turno),
-    uf: r.uf!,
+    uf: r.uf!.toLowerCase(),
     cdMunicipio: r.cd_municipio!,
     aptos: int(f, 'aptos', r.aptos),
     comparecimento: int(f, 'comparecimento', r.comparecimento),
@@ -95,7 +95,7 @@ export function parseVotes(text: string): Vote[] {
   return records(f, text, VOTE_COLUMNS).map((r) => ({
     ano: int(f, 'ano', r.ano),
     turno: turno(f, r.turno),
-    uf: r.uf!,
+    uf: r.uf!.toLowerCase(),
     cdMunicipio: r.cd_municipio!,
     candidatoNumero: int(f, 'candidato_numero', r.candidato_numero),
     votos: int(f, 'votos', r.votos),

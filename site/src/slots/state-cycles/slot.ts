@@ -55,7 +55,7 @@ export const slot: Slot = {
         subtitle: 'Presidente 2026 (2º turno) comparado com 2022 e 2018, no mesmo estado.',
         back: { label: 'Início', href: ctx.href('/') },
         banner: await fixtureBanner(ctx),
-        children: html`${notHydratedMarker(meta)}${html`<ul class="slot-links" aria-label="Estados">${states.map((s) => html`<li><a href="${ctx.href('/tres-ciclos/:uf/', { uf: s.uf.toLowerCase() })}">${s.uf}</a></li>`)}</ul>`}${navLinks(ctx, meta)}`,
+        children: html`${notHydratedMarker(meta)}${html`<ul class="slot-links" aria-label="Estados">${states.map((s) => html`<li><a href="${ctx.href('/tres-ciclos/:uf/', { uf: s.uf })}">${s.uf.toUpperCase()}</a></li>`)}</ul>`}${navLinks(ctx, meta)}`,
       }),
     }
   },

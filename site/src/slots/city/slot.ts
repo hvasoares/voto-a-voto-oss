@@ -71,13 +71,13 @@ export const slot: Slot = {
       html: pageFrame({
         base: ctx.base,
         title: pageTitle,
-        subtitle: `Município · ${city.uf}`,
+        subtitle: `Município · ${city.uf.toUpperCase()}`,
         back: { label: 'Início', href: ctx.href('/') },
         banner: await fixtureBanner(ctx),
         children: html`${notHydratedMarker(meta)}${html`${cycleTabs({ cycles: city.ciclos, active: ano, hrefFor: (c) => `${here}?ciclo=${c}&turno=${turno}` })}
         ${roundTabs({ active: turno, hrefFor: (t) => `${here}?ciclo=${ano}&turno=${t}` })}
         ${bar ? turnoutBar(bar) : html`<p>sem dados nesse ciclo</p>`}
-        ${rows.map(candidateRow)}`}${navLinks(ctx, meta, (l) => l.label.startsWith('‹') || (city.uf === 'ZZ' && l.to === '/:uf/'))}`,
+        ${rows.map(candidateRow)}`}${navLinks(ctx, meta, (l) => l.label.startsWith('‹') || (city.uf === 'zz' && l.to === '/:uf/'))}`,
       }),
     }
   },

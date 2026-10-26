@@ -8,7 +8,7 @@
 export type Turno = 1 | 2
 
 export interface City {
-  /** Upper-case UF code from TSE, e.g. 'RJ'. Overseas posts use 'ZZ'. */
+  /** Lower-case UF code (as in the dataset and in routes), e.g. 'rj'. Overseas posts use 'zz'. Display upper-case only where the design shows it. */
   uf: string
   cdMunicipio: string
   cdIbge: string
@@ -52,7 +52,7 @@ export interface Candidate {
 }
 
 export interface State {
-  /** Upper-case UF code. Overseas ('ZZ') is never listed as a state. */
+  /** Lower-case UF code. Overseas ('zz') is never listed as a state. */
   uf: string
   regiao: string
   municipios: number
@@ -82,7 +82,7 @@ export interface TurnoutQuery extends Partial<CityKey> {
  */
 export interface DataStore {
   cities(): Promise<City[]>
-  /** `uf` is case-insensitive. */
+  /** `uf` is case-insensitive (stored lower-case). */
   city(uf: string, slug: string): Promise<City | undefined>
   citiesByUf(uf: string): Promise<City[]>
   /** The states (no overseas post), sorted by UF. */
