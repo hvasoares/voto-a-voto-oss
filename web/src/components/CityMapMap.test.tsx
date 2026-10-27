@@ -9,10 +9,11 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { noopAnalytics, setAnalytics, type Analytics } from '@site/analytics'
-import CityMapMap, { type CityMapProps } from './CityMapMap'
+import CityMapMap, { placeLabels, type CityMapProps } from './CityMapMap'
 import type { CityMapData } from '@/lib/city-map-data'
 import type { CityMarginRow } from '@/lib/margins-city'
-import type { MunicipalityMesh } from '@/lib/municipality-geo'
+import type { JoinedShape, MunicipalityMesh } from '@/lib/municipality-geo'
+import { fgOf } from '@/lib/scale'
 
 const rj = (nome: string, cd: string, ibge: string, slug: string, validos2: number): CityMarginRow => ({
   cdMunicipio: cd,
@@ -122,6 +123,8 @@ describe('CityMapMap island (lista)', () => {
     expect(panel.textContent).toContain('Votos válidos (2º turno): 200')
     expect(panel.textContent).toContain('Margem (Maria Souza − João Costa): +50,0 pp')
     expect(panel.textContent).toContain('Na eleição anterior: +10,0 pp. Variação: +40,0 pp.')
+    // the big figure never wraps: number and unit stay together even under a two-line title
+    expect(panel.querySelector<HTMLElement>('.whitespace-nowrap')!.textContent).toContain('+50,0 pp')
     expect((screen.getByRole('link', { name: 'Abrir cidade' }) as HTMLAnchorElement).getAttribute('href')).toBe('/s/rj/rio-de-janeiro/')
   })
 
@@ -216,5 +219,87 @@ describe('CityMapMap island (pre-hydration tap and deep link)', () => {
     const { fetch } = setup()
     await waitFor(() => expect(fetch).toHaveBeenCalled())
     expect(document.querySelector('[data-slot="mapa-municipios"]')).toBeTruthy()
+  })
+})
+
+describe('CityMapMap: the label placement pass (placeLabels)', () => {
+  const WIN = { x: 0, y: 0, w: 100, h: 60 }
+  /** A ≥7-point ring with an exact bbox and centroid, in viewBox units (largura 100 => pxUnit 3.5). */
+  const SH = (codarea: string, cx: number, cy: number, w = 15, h = 10): JoinedShape => ({
+    codarea,
+    pts: [
+      [cx - w / 2, cy - h / 2],
+      [cx + w / 2, cy - h / 2],
+      [cx + w / 2, cy],
+      [cx + w / 2, cy + h / 2],
+      [cx, cy + h / 2],
+      [cx - w / 2, cy + h / 2],
+      [cx - w / 2, cy],
+    ],
+    cx,
+    cy,
+  })
+  const rowWith = (cdIbge: string, margin2: number): [string, CityMarginRow] => [
+    cdIbge,
+    { ...rj('RIO DE JANEIRO', '01', cdIbge, 'rio-de-janeiro', 200), margin2 },
+  ]
+
+  it('a colliding neighbour loses its inline value (the bigger one claims it first)', () => {
+    // '+50,0' and '+8,0' at cx 30 / 45: the two value boxes overlap (half-widths 16.5 and 13.2)
+    const labels = placeLabels([SH('3390001', 30, 15), SH('3390002', 45, 15)], new Map([rowWith('3390001', 50), rowWith('3390002', 8)]), WIN)
+    expect(labels.get('3390001')).toMatchObject({ value: true, nome: false }) // name clips at the left edge
+    expect(labels.get('3390002')).toMatchObject({ value: false, nome: true }) // name fits under the winner
+  })
+
+  it('no label crosses the container: boxes past the edge are dropped, not clipped', () => {
+    const labels = placeLabels([SH('3390001', 92, 15)], new Map([rowWith('3390001', 50)]), WIN)
+    expect(labels.get('3390001')).toMatchObject({ value: false, nome: false })
+  })
+
+  it('a lone big shape shows its value above its name (no numbers under the name)', () => {
+    const labels = placeLabels([SH('3390001', 50, 35, 60, 30)], new Map([rowWith('3390001', 50)]), WIN)
+    expect(labels.get('3390001')).toMatchObject({ value: true, nome: true })
+  })
+
+  it('the island renders exactly the admitted labels: value above the name', async () => {
+    fetchJson = {
+      fonte: 'teste', metodo: 'teste', uf: 'rj', cdUf: '33', largura: 100, altura: 80,
+      formas: {
+        '3399001': { p: [[20, 20], [80, 20], [80, 35], [80, 50], [50, 50], [20, 50], [20, 35], [20, 20]], c: [50, 35] },
+        '3399002': { p: [[12.5, 67], [27.5, 67], [27.5, 72], [27.5, 77], [20, 77], [12.5, 77], [12.5, 72], [12.5, 67]], c: [20, 72] },
+      },
+    }
+    try {
+      const { user } = setup()
+      await user.click(screen.getByRole('link', { name: 'Mapa' }))
+      await waitFor(() => expect(document.querySelector('[data-slot="mapa-municipios"]')?.querySelectorAll('a[data-cd-ibge]')).toHaveLength(2))
+      // Rio, the bigger shape: both labels — the value above the name, paper ink on the dark pos3 fill
+      const anchor = document.querySelector('a[data-cd-ibge="3399001"]')!
+      const texts = [...anchor.querySelectorAll('text')]
+      expect(texts).toHaveLength(2)
+      expect(texts[0]!.getAttribute('y')).toBe('33') // shape.cy - 2
+      expect(texts[0]!.textContent).toBe('+50,0')
+      expect(texts[0]!.getAttribute('fill')).toBe('var(--background)')
+      expect(texts[1]!.getAttribute('y')).toBe('45') // shape.cy + 10: the name never prints under the value
+      expect(texts[1]!.textContent).toBe('Rio de Janeiro')
+      // Carmo's own name falls past the container edge; its value still prints, the text stays
+      const carmo = document.querySelector('a[data-cd-ibge="3399002"]')!
+      expect(carmo.querySelectorAll('text')).toHaveLength(1)
+      expect(carmo.getAttribute('aria-label')).toContain('+50,0 pp')
+    } finally {
+      fetchJson = MESH
+    }
+  })
+})
+
+describe('fgOf: the label ink from the fill luminance', () => {
+  it('paper (white) only on the saturated steps; dark ink on the mid and light ones', () => {
+    expect(fgOf('neg3')).toBe('var(--background)')
+    expect(fgOf('pos3')).toBe('var(--background)')
+    expect(fgOf('neg2')).toBe('var(--foreground)')
+    expect(fgOf('pos2')).toBe('var(--foreground)')
+    expect(fgOf('neg1')).toBe('var(--foreground)')
+    expect(fgOf('zero')).toBe('var(--foreground)')
+    expect(fgOf('pos1')).toBe('var(--foreground)')
   })
 })

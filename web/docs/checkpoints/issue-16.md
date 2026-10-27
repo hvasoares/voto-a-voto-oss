@@ -49,6 +49,28 @@ is — the page file is the only `rj`-specific piece.
 
    Status: DONE — commit "web: /mapa/rj/ page and CityMapMap island … (issue-16 checkpoint 2)".
 
+3. **Capture-review fixes (fresh-context review of the real 390x844 captures, 4 blockers).**
+   `src/components/CityMapMap.tsx` grew a greedy
+   LABEL-PLACEMENT PASS (`placeLabels`): a value or a name is admitted only if its estimated box
+   (per-character width estimate, padding included) stays inside the SVG viewport at the CURRENT
+   zoom and free of every already-placed box — bigger shapes (then bigger margins) claim their
+   labels first, every value is tried before any name, and a label the pass drops keeps its full
+   text in the row's aria-label and tooltip. This removed the value collisions of the fit-all
+   view (the Baixada cluster printed its numbers through each other) and the clipped/truncated
+   names at the container edges ("Resende", "Rio das O…", "Nova Friburgo"); the pass re-runs on
+   every pan/zoom, so labels return as shapes grow. `src/lib/scale.ts`: `fgOf` is now derived from
+   the FILL'S LUMINANCE (WCAG relative luminance of the Sketch swatches in tokens.ts; ink is
+   whichever of text/background contrasts more with the bin's own fill) — paper white is left to
+   the two saturated steps (neg3/pos3); the mid steps (neg2/pos2) take dark ink. That fixed the
+   white-on-light numerals of the capture and also helps the state map when a state sits in a mid
+   bin. The selected panel's big figure never wraps (number and unit stay together with
+   `whitespace-nowrap` under a two-line title). Unit tests: placement collision/edge/stacking
+   (pure `placeLabels`, plus an island test of the rendered texts and fills) and the `fgOf`
+   luminance pins; captures re-taken (`.captures/mapa-rj/`).
+
+   Status: DONE — commit "web: capture-review fixes — label placement pass, luminance ink, panel
+   figure nowrap (issue-16 checkpoint 3)".
+
    Deviations from the frames / parent plan, deliberate:
    - The ROUTE is `/mapa/rj/` (the ticket's own placeholder page): ticket #50 will port the state
      page and host this island under `data-placeholder="state-map"`; until then this is the state's
