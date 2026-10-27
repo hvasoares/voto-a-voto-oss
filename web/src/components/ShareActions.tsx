@@ -26,6 +26,10 @@ export interface ShareActionsProps {
   primaryLabel?: string
   /** One primary action only: no message text, and "Baixar imagem" only where the browser has no system share sheet (the recap's frame). */
   compact?: boolean
+  /** The label of the download button ("Baixar imagem" by default). */
+  downloadLabel?: string
+  /** The download comes first, as the primary action, and stays even where the system sheet exists (the sticker's frame). */
+  downloadFirst?: boolean
   /** A screen's own counters, called besides the share ones: when the actions open and when a share completes (#28's recap_opened, recap_shared). */
   onOpened?: () => void
   onShared?: () => void
@@ -46,7 +50,7 @@ const BTN = 'min-h-11 w-full rounded-md text-body font-bold'
 const BTN_PRIMARY = `${BTN} text-primary-foreground`
 const BTN_OUTLINE = `${BTN} border border-border bg-background text-foreground`
 
-export default function ShareActions({ text, svg, filename, link, primaryLabel = 'Compartilhar', compact = false, onOpened, onShared }: ShareActionsProps) {
+export default function ShareActions({ text, svg, filename, link, primaryLabel = 'Compartilhar', downloadLabel = 'Baixar imagem', downloadFirst = false, compact = false, onOpened, onShared }: ShareActionsProps) {
   const [mounted, setMounted] = useState(false)
   // Feature-detected after hydration (the server cannot know): where the browser has no Web Share API (most desktop
   // browsers) the native share button is hidden and "Copiar link" takes its place (#52).
@@ -138,14 +142,14 @@ export default function ShareActions({ text, svg, filename, link, primaryLabel =
             Este navegador não oferece o compartilhamento do sistema. Copie o link ou baixe a imagem.
           </p>
         )}
-        <Button className={BTN_PRIMARY} {...show(mounted && canShare)} onClick={onShare} data-act="share">
+        <Button variant={downloadFirst ? 'outline' : undefined} className={downloadFirst ? BTN_OUTLINE : BTN_PRIMARY} {...show(mounted && canShare)} onClick={onShare} data-act="share">
           {primaryLabel}
         </Button>
         <Button className={BTN_PRIMARY} {...show(mounted && !canShare && !!navigator.clipboard)} onClick={onCopyLink} data-act="copy-link">
           Copiar link
         </Button>
-        <Button variant="outline" className={BTN_OUTLINE} {...show(mounted && !(compact && canShare))} onClick={onDownload} data-act="download">
-          Baixar imagem
+        <Button variant={downloadFirst ? undefined : 'outline'} className={downloadFirst ? `${BTN_PRIMARY} order-first` : BTN_OUTLINE} {...show(mounted && !(compact && canShare && !downloadFirst))} onClick={onDownload} data-act="download">
+          {downloadLabel}
         </Button>
         <p className="min-h-6 text-small leading-[17px] text-muted-foreground" role="status" aria-live="polite" data-status>
           {status}

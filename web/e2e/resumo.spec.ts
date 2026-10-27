@@ -26,7 +26,7 @@ async function open(page: Page, mode: 'files' | 'none', route = path) {
         const rec: Record<string, unknown> = { files: (d.files ?? []).map((f) => ({ name: f.name, type: f.type })), text: d.text }
         w.__shares.push(rec)
         const f = d.files?.[0]
-        if (f) void f.arrayBuffer().then((b) => (rec.png = { w: new DataView(b).getUint32(16), signature: [...new Uint8Array(b, 0, 8)].join(',') }))
+        if (f) void f.arrayBuffer().then((b) => (rec.png = { w: new DataView(b).getUint32(16), h: new DataView(b).getUint32(20), signature: [...new Uint8Array(b, 0, 8)].join(',') }))
         return Promise.resolve()
       },
     })
@@ -35,7 +35,7 @@ async function open(page: Page, mode: 'files' | 'none', route = path) {
   await page.waitForFunction(() => { const i = document.querySelector('astro-island'); return !!i && !i.hasAttribute('ssr') })
   await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
 }
-const shares = (page: Page) => page.evaluate(() => (window as unknown as { __shares: { files: { name: string; type: string }[]; text: string; png?: { w: number; signature: string } }[] }).__shares)
+const shares = (page: Page) => page.evaluate(() => (window as unknown as { __shares: { files: { name: string; type: string }[]; text: string; png?: { w: number; h: number; signature: string } }[] }).__shares)
 
 test.describe('state recap', () => {
   test('shows the three cycles of the state with the base of the percentages, in the words of the catalog', async ({ page }) => {
@@ -70,7 +70,8 @@ test.describe('state recap', () => {
     await expect.poll(async () => (await shares(page))[0]?.png).toBeTruthy()
     const [s] = await shares(page)
     expect(s!.files[0]).toMatchObject({ name: 'voto-a-voto-rj-resumo-do-estado.png', type: 'image/png' })
-    expect(s!.png).toEqual({ w: 1080, signature: SIG })
+    const height = Number(/viewBox="0 0 1080 (\d+)"/.exec((await page.locator('[data-recap-picture] svg').evaluate((e) => e.outerHTML)))![1])
+    expect(s!.png).toEqual({ w: 1080, h: height, signature: SIG })
     expect(s!.text).toContain('Em Rio de Janeiro, no 2º turno, os votos válidos foram:')
     expect(s!.text).toContain(`https://votoavoto.exemplo.br${base}rj/resumo/`)
   })

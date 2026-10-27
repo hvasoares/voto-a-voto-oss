@@ -11,8 +11,14 @@ const loadImage = (url: string) =>
     img.src = url
   })
 
+/** The pixel size a picture is drawn at: its own viewBox (cards are not all the same shape), the share card's when it has none. */
+export function pictureSize(svg: string): { width: number; height: number } {
+  const m = /^<svg\b[^>]*\sviewBox="0 0 (\d+) (\d+)"/.exec(svg)
+  return m ? { width: Number(m[1]), height: Number(m[2]) } : SHARE_CARD_SIZE
+}
+
 /** `size` is the picture's own pixel size (the viewBox): the share card's by default, the stat card's for the generator (#25). */
-export async function svgToPng(svg: string, filename: string, size: { width: number; height: number } = SHARE_CARD_SIZE): Promise<File> {
+export async function svgToPng(svg: string, filename: string, size: { width: number; height: number } = pictureSize(svg)): Promise<File> {
   const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }))
   try {
     const img = await loadImage(url)

@@ -1,12 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
-import { SHARD_VERSION } from 'virtual:data-shards'
+import { useMemo, useState } from 'react'
 import { getAnalytics } from '@/analytics'
 import PlacePicker, { type PickedPlace } from '@/components/PlacePicker'
 import ShareActions from '@/components/ShareActions'
-import { withBase } from '@/paths'
-import type { CityShard } from '@/lib/city-shard'
+import { usePlaceCards } from '@/components/use-place-cards'
 import type { CycleBlock } from '@/slots/city-cycles/cycles-model'
-import { buildPlaceCard, parsePlaces, placesQuery, ROLES, type PlaceCard, type PlaceRef, type Role } from '@/lib/meu-brasil'
+import { placesQuery, ROLES, type PlaceCard, type Role } from '@/lib/meu-brasil'
 import { meuBrasilContent } from '@/lib/meu-brasil-content'
 import { DEFAULT_VOICE, message, type MessageKey } from '@/lib/sentences/catalog'
 import { readRegister } from '@/lib/sentences/register-store'
@@ -25,8 +23,6 @@ export interface MeuBrasilProps {
   edition: string
 }
 
-type Shards = Record<string, CityShard | 'failed'>
-const keyOf = (r: PlaceRef) => `${r.uf}/${r.slug}`
 const say = (key: MessageKey) => message(DEFAULT_VOICE, key)
 
 const SIDE_FILL = { a: 'bg-[var(--c-cand-a)]', b: 'bg-[var(--c-cand-b)]', outros: 'bg-[var(--c-cand-outros)]' } as const
@@ -66,30 +62,8 @@ function PlaceColumn({ card }: { card: PlaceCard }) {
 }
 
 export default function MeuBrasil({ base, origin, fixture, edition }: MeuBrasilProps) {
-  const [refs, setRefs] = useState<PlaceRef[]>([])
-  const [shards, setShards] = useState<Shards>({})
+  const { refs, setRefs, cards, failed } = usePlaceCards(base)
   const [picked, setPicked] = useState<Partial<Record<Role, PickedPlace>>>({})
-
-  // The address asks for the places: read once, in the browser.
-  useEffect(() => setRefs(parsePlaces(location.search)), [])
-
-  // Each place needs its own shard, once.
-  useEffect(() => {
-    for (const r of refs) {
-      const k = keyOf(r)
-      if (shards[k]) continue
-      setShards((s) => ({ ...s, [k]: s[k] ?? ('failed' as const) }))
-      fetch(withBase(base, `data/v${SHARD_VERSION}/city/${k}.json`))
-        .then((res) => (res.ok ? (res.json() as Promise<CityShard>) : Promise.reject(new Error(`city shard: HTTP ${res.status}`))))
-        .then((shard) => setShards((s) => ({ ...s, [k]: shard })))
-        .catch(() => setShards((s) => ({ ...s, [k]: 'failed' })))
-    }
-  }, [refs, shards, base])
-
-  const cards = useMemo<PlaceCard[]>(
-    () => refs.flatMap((r) => { const sh = shards[keyOf(r)]; return sh && sh !== 'failed' ? [buildPlaceCard(r, sh)] : [] }),
-    [refs, shards],
-  )
   const content = useMemo(() => (cards.length ? meuBrasilContent(cards, { origin, base, fixture, edition }) : undefined), [cards, origin, base, fixture, edition])
   const register = typeof window === 'undefined' ? 'standard' : readRegister()
 
@@ -109,7 +83,6 @@ export default function MeuBrasil({ base, origin, fixture, edition }: MeuBrasilP
     const card = cards.find((c) => c.ref.role === role)
     return card ? { uf: r.uf, slug: r.slug, nome: card.name } : { uf: r.uf, slug: r.slug, nome: r.slug }
   }
-  const failed = refs.some((r) => shards[keyOf(r)] === 'failed')
 
   return (
     <div data-meu-brasil data-places={refs.length} data-ready={content ? 'yes' : 'no'}>
