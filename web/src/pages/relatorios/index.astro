@@ -1,7 +1,8 @@
 ---
 // The reports hub (frame "6 Relatórios", ticket #12). Seven rows, each with its headline figure,
-// computed at build time from the dataset (nothing here is a copied constant). The one built report
-// is a link; the rows of tickets #13-15 keep their headline and are marked "Em breve".
+// computed at build time from the dataset (nothing here is a copied constant). Six are built reports
+// and link through (cidades-que-viraram #12; the four of #13; como-cada-grupo-votou #15); the row of
+// #14 stays a stub and shows "Em breve".
 import Base from '@/layouts/Base.astro'
 import { computeReports } from '@/lib/reports/compute'
 import { hubRows } from '@/lib/reports/hub'

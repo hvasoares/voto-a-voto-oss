@@ -225,6 +225,8 @@ export interface ClosestRace {
   diff: number
   margin: number
   validos2: number
+  /** The two exact votes, so the page can write "empate, 1.530 a 1.530" and name who is ahead. */
+  votos: { primeiro: number; segundo: number }
 }
 
 /** The closest races of the runoff, smallest absolute difference first, biggest city as the tie-break. */
@@ -238,6 +240,7 @@ export function closestRaces(rows: CityMargin[]): ClosestRace[] {
       diff: Math.abs(r.votos2.primeiro - r.votos2.segundo),
       margin: r.margin2,
       validos2: r.validos2,
+      votos: r.votos2,
     }))
     .sort((a, b) => a.diff - b.diff || b.validos2 - a.validos2 || a.nome.localeCompare(b.nome, 'pt'))
 }

@@ -225,7 +225,8 @@ describe.skipIf(!existsSync(resolve(REAL_DATA, 'cities.csv')))('real data (data/
 
   it('closest race: Marquinho/PR tied, difference of 0 votes', async () => {
     const races = closestRaces(computeReports(await inputFrom(REAL_DATA)).margins)
-    expect(races[0]).toMatchObject({ nome: 'MARQUINHO', uf: 'pr', diff: 0, validos2: 3060 })
+    expect(races[0]).toMatchObject({ nome: 'MARQUINHO', uf: 'pr', diff: 0, validos2: 3060, votos: { primeiro: 1530, segundo: 1530 } })
+    expect(races[1]).toMatchObject({ nome: 'APIACÁ', uf: 'es', diff: 1, votos: { primeiro: 2366, segundo: 2365 } })
   })
 
   it('turnout extremes of the 5k+ electorate: Santa Maria do Herval/RS 90,5%, Itaubal/AP 59,0%', async () => {
