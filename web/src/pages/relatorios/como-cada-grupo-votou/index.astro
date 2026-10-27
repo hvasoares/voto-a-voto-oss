@@ -1,0 +1,119 @@
+---
+import Base from '@/layouts/Base.astro'
+import { loadCohortData } from '@/lib/cohorts-load'
+import { dataDir } from '@/lib/data-dir'
+import { segmentColor, type CohortGroup } from '@/lib/cohorts'
+import { formatInt } from '@site/shared/city-model'
+import { normalizeBase, withBase } from '@site/paths'
+import { colors } from '@site/shared/tokens'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
+/*
+ * Screen 12, "Como cada grupo votou" (ticket #15). Static, like /sobre-os-dados/: the whole report
+ * is baked at build time by loadCohortReport (src/lib/cohorts-load.ts) and this page never ships
+ * JavaScript of its own — the pure model in src/lib/cohorts.ts is the source of the numbers, pinned
+ * to the reference cohort table by src/lib/cohorts.test.ts on the committed data/.
+ */
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const { report, labels } = await loadCohortData()
+const manifest = JSON.parse(readFileSync(resolve(dataDir(), 'manifest.json'), 'utf8')) as { fixture?: boolean; note?: string }
+const banner = manifest.fixture ? 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS' : undefined
+
+const fmt = formatInt
+const pct = (x: number): string => `${String(Number(x.toFixed(1))).replace('.', ',')}%`
+
+/** Swatch hex of a bar segment: candidate 13/22 carry the Sketch swatches, anything else is neutral. */
+const color = (candidate: number, index: number): string => colors[segmentColor(candidate, index) as keyof typeof colors]
+
+const label2026 = (candidate: number): string => {
+  for (const g of report.groups) for (const p of g.parts) if (p.candidate === candidate) return p.label
+  throw new Error(`cohorts page: no bar label for candidate ${candidate}`)
+}
+
+/** Closing note over one city outside the groups (tie in 2018/2022, or no earlier data). */
+const outside = (name: string, uf: string, cause: string, outcome2026: string): string => `${name}/${uf.toUpperCase()} — ${cause}; em 2026, ${outcome2026}.`
+const decided2026 = (kind: 'won' | 'tie' | 'no-data', candidate?: number): string =>
+  kind === 'won' ? `vencida por ${label2026(candidate!)}` : kind === 'tie' ? 'empate' : 'sem dados'
+
+/** The group word of a candidate of an earlier cycle ("PT", "Bolsonaro"), as the cards name them. */
+const groupOf = (ano: number, candidate: number): string => {
+  const l = labels[`${ano}|${candidate}`]
+  if (!l) throw new Error(`cohorts page: no group word for candidate ${candidate} of ${ano}`)
+  return l.group
+}
+
+const outsideLines = [
+  ...report.tieCases.map((t) =>
+    outside(
+      t.ref.nome,
+      t.ref.uf,
+      `empate no 2º turno de ${t.tieIn}${t.otherWinner ? ` (em ${t.otherWinner.ano} venceu ${groupOf(t.otherWinner.ano, t.otherWinner.candidate)})` : ''}`,
+      decided2026(t.outcome2026.kind, t.outcome2026.kind === 'won' ? t.outcome2026.candidate : undefined),
+    ),
+  ),
+  ...report.noData.map((n) =>
+    outside(n.ref.nome, n.ref.uf, 'sem dados de 2018 e 2022 (existe só no 2º turno de 2026)', decided2026(n.outcome2026.kind, n.outcome2026.kind === 'won' ? n.outcome2026.candidate : undefined)),
+  ),
+]
+
+/** Equation under a card with a 2026 tie: os totais fecham (2.755 = 2.613 + 141 + 1). */
+const tieNote = (g: CohortGroup): string => {
+  const [first] = g.parts
+  if (!first || g.ties2026 === 0) return ''
+  const parts = g.parts.map((p) => fmt(p.cities)).join(' + ')
+  const cities = g.ties2026 === 1 ? `${fmt(g.cities)} cidades = ${parts} + ${fmt(g.ties2026)} empatada` : `${fmt(g.cities)} cidades = ${parts} + ${fmt(g.ties2026)} empatadas`
+  return `${g.ties2026 === 1 ? '1 cidade empatou' : `${fmt(g.ties2026)} cidades empataram`} no 2º turno de 2026 e ${g.ties2026 === 1 ? 'não está' : 'não estão'} nas barras: ${cities}.`
+}
+
+const totalLine = `${fmt(report.totals.cities2026)} cidades do 2º turno de 2026 (sem os postos do exterior) = ${fmt(report.totals.grouped)} em grupos${report.tieCases.length ? ` + ${fmt(report.tieCases.length)} com empate antes de 2026` : ''}${report.noData.length ? ` + ${fmt(report.noData.length)} sem dados` : ''}.`
+---
+<Base title="Como cada grupo votou · Voto a Voto">
+  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16" id="main" data-page="cohorts">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px]" href={href('/relatorios/')}>‹ Relatórios</a>
+    {banner && <p class="mt-2 border border-border bg-secondary px-3 py-2 text-body font-bold" data-component="fixture-banner">{banner}</p>}
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">Como cada grupo votou</h1>
+    <p class="mt-[5px]" data-component="lead">Presidente 2026: cidades agrupadas pelo vencedor do 2º turno em 2018 e 2022, e o resultado de 2026 em cada grupo.</p>
+
+    <section class="mt-2 border-t border-border pt-[7px]" data-component="groups">
+      {report.groups.map((g) => (
+        <article class="mt-2 border-t border-border pb-2 first:border-t-0" data-component="group-card" data-winner2018={g.winner2018} data-winner2022={g.winner2022}>
+          <h2 class="mt-2 text-body font-bold leading-[18px]">{g.title}</h2>
+          <p class="mt-[3px] text-muted-foreground" data-component="group-meta">{fmt(g.cities)} {g.cities === 1 ? 'cidade' : 'cidades'} · {fmt(g.validos2026)} votos válidos (2º turno 2026)</p>
+          <p class="mt-[5px]">Vencedor do 2º turno de 2026, % das cidades do grupo</p>
+          <div
+            class="mt-1 flex h-3 w-full overflow-hidden rounded-[2px]"
+            role="img"
+            aria-label={g.parts.map((p) => `${p.label} ${pct(p.pct)}`).join(', ')}
+          >
+            <Fragment set:html={g.parts.map((p, i) => `<div style="background:${color(p.candidate, i)};width:${p.pct}%"></div>`).join('')} />
+          </div>
+          <ul class="mt-[5px] list-none p-0" data-component="group-parts">
+            {g.parts.map((p, i) => (
+              <li class="inline-flex items-center gap-[5px] pr-4 text-body" data-component="group-part" data-candidate={p.candidate}>
+                <span aria-hidden="true" class="inline-block h-[10px] w-[10px] rounded-[1px]" style={`background:${color(p.candidate, i)}`} />
+                <span>{p.label} {pct(p.pct)} (<abbr class="no-underline" title="cidades">{fmt(p.cities)}</abbr>)</span>
+              </li>
+            ))}
+          </ul>
+          {g.ties2026 > 0 && <p class="mt-[5px] text-small leading-[14px] text-muted-foreground" data-component="group-tie">{tieNote(g)}</p>}
+        </article>
+      ))}
+    </section>
+
+    <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="fora-dos-grupos">
+      <h2 class="font-serif text-section font-normal leading-[25px]" id="fora-dos-grupos">Fora dos grupos</h2>
+      <p class="mt-[5px]" data-component="total-line">{totalLine}</p>
+      {outsideLines.length > 0 && (
+        <ul class="mt-[5px] list-disc space-y-1 pl-5" data-component="outside-list">
+          {outsideLines.map((line) => <li>{line}</li>)}
+        </ul>
+      )}
+      <p class="mt-1" data-component="definition">Venceu quem teve mais votos que o outro candidato do 2º turno; empate é o mesmo número de votos. Os percentuais das barras são das cidades decididas (maior resto, décimo: somam exatamente 100%).</p>
+    </section>
+  </main>
+  <footer class="mx-auto w-full max-w-[430px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+    Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados</a>
+  </footer>
+</Base>
