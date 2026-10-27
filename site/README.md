@@ -26,6 +26,9 @@ API, no tile service. Hosted on GitHub Pages. Today every screen is a blank, cle
 
 ## Toolchain decision
 
+> **Superseded for new work:** the user decided to rebuild the site on Astro + React islands + shadcn/ui (ticket #48). The new app is in `../web/`
+> (see `web/README.md`); this vanilla site stays until ticket #50 removes it. The text below describes the old decision.
+
 **TypeScript + esbuild + a ~100-line build script; vitest; Playwright. No UI framework.**
 
 Why: the product is a handful of read-only screens over static CSVs. Needed: static build, pre-rendered real paths,

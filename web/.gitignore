@@ -5,3 +5,4 @@ test-results/
 playwright-report/
 .captures/
 public/data/
+dist-production/

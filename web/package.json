@@ -41,6 +41,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test --project=phone",
     "test:real": "DATA_DIR=../data E2E_PORT=4176 playwright test --project=real",
-    "capture": "playwright test --project=capture"
+    "capture": "playwright test --project=capture",
+    "build:production": "BUILD_TARGET=production OUT_DIR=dist-production astro build"
   }
 }
