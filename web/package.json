@@ -52,6 +52,7 @@
     "capture": "playwright test --project=capture",
     "build:production": "BUILD_TARGET=production OUT_DIR=dist-production astro build",
     "test:cdn": "playwright test -c playwright.cdn.config.ts",
+    "test:e2e:donation": "PUBLIC_DONATION_URL=https://doacao.example.test/apoie playwright test --project=phone donation",
     "test:e2e:production": "E2E_MODE=production playwright test --project=phone"
   }
 }

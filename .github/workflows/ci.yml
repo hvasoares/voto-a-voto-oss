@@ -26,6 +26,8 @@ jobs:
         run: npm run test:e2e
         env:
           SITE_BASE: /voto-a-voto-oss/
+          # A donation address (a placeholder: no real one is committed) so this pass exercises the link; the first pass has none.
+          PUBLIC_DONATION_URL: https://doacao.example.test/apoie
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

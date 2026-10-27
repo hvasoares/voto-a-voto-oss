@@ -41,6 +41,8 @@ jobs:
           # Ticket #20 consent-first GA4: Astro inlines only PUBLIC_-prefixed vars into client
           # bundles; empty/unset keeps analytics a strict no-op.
           PUBLIC_GA_MEASUREMENT_ID: ${{ vars.PUBLIC_GA_MEASUREMENT_ID }}
+          # Ticket #36: the donation page address (https). Unset or empty: the donation link is not drawn anywhere.
+          PUBLIC_DONATION_URL: ${{ vars.PUBLIC_DONATION_URL }}
       - uses: actions/configure-pages@v5
         with:
           # Create the Pages site on first deploy instead of failing if it does not exist yet.

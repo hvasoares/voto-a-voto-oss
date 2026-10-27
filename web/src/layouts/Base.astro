@@ -5,6 +5,7 @@ import '../styles/global.css'
 import { normalizeBase, withBase } from '@/paths'
 import type { PreviewHead } from '@/lib/link-preview'
 import ConsentBanner from '@/components/ConsentBanner.astro'
+import DonationLink from '@/components/DonationLink.astro'
 
 interface Props {
   title: string
@@ -55,9 +56,10 @@ const privacyHref = withBase(base, 'sobre-os-dados/#privacidade')
     <div class="flex min-h-screen min-w-0 flex-col">
       <slot />
       {/* NOT a <footer> element: every page carries its own (<footer data-component="source-footer">) and
-          the e2e specs resolve single-footer locators; this one line adds the privacy/consent link (#20). */}
+          the e2e specs resolve single-footer locators; this one line adds the privacy/consent link (#20) and, when a donation address is configured, the donation link (#36). */}
       <div class="mx-auto w-full max-w-[430px] px-5 pb-6 pt-2 text-center text-[11px] leading-[15px]" data-component="consent-footer">
         <a href={privacyHref}>Privacidade</a>
+        <DonationLink />
       </div>
       <ConsentBanner privacyHref={privacyHref} />
     </div>

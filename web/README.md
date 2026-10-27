@@ -97,6 +97,11 @@ default `fixtures/data` (committed fixtures), real data `DATA_DIR=../data`. `OUT
   Use Astro's `client:visible` / `client:idle` only where eager enough is wanted. Tests wait for `astro-island` to lose its `ssr` attribute (`activateSearch` in `e2e/helpers.ts`).
 - **Theme**: Sketch tokens live in `src/shared/tokens.ts`; `src/theme.ts` maps them to the shadcn variables
   (`--background`, `--primary`, ...) and `--sketch-*`; `src/styles/global.css` only wires variables to Tailwind utilities (`text-title`, `font-serif`, `bg-muted`...). No custom CSS beyond that. No dark mode.
+- **Donation link (#36)**: `PUBLIC_DONATION_URL` (an https address, build time; the deploy reads the repository variable of the same name)
+  draws "Apoie o projeto" in the footer line of every page and as a button in the data page's section; unset or not https, nothing is drawn
+  and the build passes. `npm run test:e2e:donation` runs `e2e/donation.spec.ts` with a placeholder address. There is no ad network anywhere (`src/lib/donation.test.ts`).
+- **What stays on the visitor's device (#35)**: `src/lib/storage-keys.ts` lists every localStorage key the site writes; "esquecer meus dados" on Home clears
+  them and the privacy text of the data page is drawn from the same list (`stored-items.ts`). A new key must be added there.
 - **Data (shards since #49)**: the build turns `DATA_DIR` into versioned JSON shards under `public/data/v<fingerprint>/`
   (`integrations/dataset.ts` calls `integrations/shards.ts`; the directory holds no CSV). The fingerprint is a sha256 over the
   five dataset files, so paths change with the data and a stale copy is never served. Client code learns the version through
