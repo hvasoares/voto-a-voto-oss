@@ -117,7 +117,8 @@ describe('buildBrasil: tiny hand-made scope', () => {
 })
 
 describe('buildBrasil: the committed fixture dataset (fixtures/data, 2026 round 2)', () => {
-  const fixtures = resolve('fixtures', 'data')
+  // the committed fixture dataset lives at web/fixtures/data since the #50 reorganization (import-relative, not cwd-relative)
+  const fixtures = resolve(import.meta.dirname, '../../fixtures/data')
   expect(existsSync(fixtures), 'fixtures dataset missing').toBe(true)
 
   const scope = (dir: string, ano = 2026, turno = 2 as const) => {
