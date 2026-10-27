@@ -1,4 +1,4 @@
-import { getAnalytics } from '@/analytics'
+import { getAnalytics, onAnalyticsReady } from '@/analytics'
 
 /**
  * Plain-HTML script of the report pages of ticket #12 (no island, no React, like tile-analytics.ts):
@@ -7,9 +7,11 @@ import { getAnalytics } from '@/analytics'
  *   the clipboard (method "clipboard"), both with event report_shared {report, method};
  * - clipboard copying answers with "Link copiado!" in an aria-live status, so the visitor sees it worked.
  * A visitor who cancels the native sheet (or denies clipboard permission) shares nothing and gets no event.
+ * The load emission goes through onAnalyticsReady (#20): page scripts run before the consent boot, so a
+ * remembered consent flushes it to the provider and an undecided/refused visitor drops it — never replayed.
  */
 const main = document.querySelector<HTMLElement>('[data-report]')
-if (main) getAnalytics().event('report_opened', { report: main.dataset.report ?? '' })
+onAnalyticsReady((a) => a.event('report_opened', { report: main?.dataset.report ?? '' }))
 
 const feedback = document.querySelector('[data-share-feedback]')
 

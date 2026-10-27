@@ -37,7 +37,7 @@ test.describe('mapa/rj: content', () => {
     await expect(page.locator('[data-slot="mapa-selecionado"]')).toContainText('Votos válidos (2º turno): 68.434')
     await expect(page.locator('[data-slot="mapa-selecionado"]')).toContainText(/Na eleição anterior: \+4,0 pp\. Variação: -3,1 pp\./)
     await expect(page.locator('footer')).toContainText('fronteiras: malhas do IBGE')
-    await expect(page.locator('#consent-slot')).toHaveCount(1)
+    await expect(page.locator('#consent-banner')).toHaveCount(1)
   })
 
   test('one link per municipality, ordered by round-2 valid votes, carrying the signed pp', async ({ page }) => {

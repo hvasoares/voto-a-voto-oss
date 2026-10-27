@@ -3,8 +3,9 @@
  * The Mostrar QR screen + printable poster (ticket #9's markup moved here by the parent glue that ports the
  * real city route /:uf/:slug/qr/ next to the demo /qr/): a pure template over the props. The QR is a
  * deterministic build-time glyph from src/lib/qr-code.ts (its SVG arrives built), the poster is CSS
- * (@media print / @page A4) and printing comes from the browser's own print command. The analytics markers
- * (data-ticket="20") stay inert until ticket #20 wires the events.
+ * (@media print / @page A4) and printing comes from the browser's own print command. The analytics events
+ * (qr_screen_shown, poster_printed — ticket #20) are wired by the dedicated script src/scripts/qr-analytics.ts,
+ * which the pages carrying this template import; they only reach a provider after the consent boot (#20).
  */
 import Base from '@/layouts/Base.astro'
 import { shortAddress } from '@/lib/share-text'
@@ -43,8 +44,8 @@ const address = shortAddress(url)
           enviar por mensagem, use o botão Compartilhar.
         </p>
         <a class="mt-[84px] flex min-h-12 items-center justify-center rounded-md border border-border bg-background text-body text-foreground" href={backHref} data-back>Voltar</a>
-        {/* data-ticket="20": analytics qr_screen_shown / poster_printed (the interface comes with #20); inert today, nothing is emitted. */}
-        <div data-placeholder="qr-analytics" data-ticket="20" data-events="qr_screen_shown,poster_printed" hidden></div>
+        {/* Events of ticket #20 via src/scripts/qr-analytics.ts: qr_screen_shown on load, poster_printed on print. */}
+        <div data-events="qr_screen_shown,poster_printed" hidden></div>
       </div>
     </section>
 
@@ -70,5 +71,9 @@ const address = shortAddress(url)
         margin: 12mm;
       }
     </style>
+    {/* The two QR events are a tiny dedicated script (ticket #20): still no island — the screen stays static. */}
+    <script>
+      import '@/scripts/qr-analytics'
+    </script>
   </main>
 </Base>

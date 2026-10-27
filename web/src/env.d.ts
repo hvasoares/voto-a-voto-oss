@@ -11,6 +11,17 @@ declare module 'virtual:data-shards' {
   export const SHARD_VERSION: string
 }
 
+interface ImportMetaEnv {
+  /** GA4 measurement id of ticket #20 ("G-…"), empty/absent → analytics is a strict no-op and the build passes. */
+  readonly PUBLIC_GA_MEASUREMENT_ID?: string
+  /** Unprefixed alias accepted when a build pipes the id through (the browser bundle sees PUBLIC_* only). */
+  readonly GA_MEASUREMENT_ID?: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
+
 declare namespace astroHTML.JSX {
   interface IntrinsicAttributes {
     'client:interaction'?: boolean
