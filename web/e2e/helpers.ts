@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import type { Page } from '@playwright/test'
 import { normalizeBase } from '../../site/src/paths'
 
@@ -9,8 +11,8 @@ export const ANALYTICS_ORIGINS: string[] = []
 
 /** Approved CDN origins: only the production build may use them. Empty until the user chooses a provider (see README). */
 export async function approvedCdnOrigins(): Promise<string[]> {
-  const { approvedOrigins } = (await import('../cdn.config.json', { with: { type: 'json' } })).default as { approvedOrigins: string[] }
-  return approvedOrigins
+  const file = resolve(process.env.CDN_CONFIG ?? 'cdn.config.json')
+  return (JSON.parse(readFileSync(file, 'utf8')) as { approvedOrigins: string[] }).approvedOrigins
 }
 
 export async function allowedOrigins(siteOrigin: string): Promise<string[]> {

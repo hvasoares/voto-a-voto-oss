@@ -2,6 +2,7 @@ import react from '@astrojs/react'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'astro/config'
 import { fileURLToPath } from 'node:url'
+import { cdn } from './integrations/cdn'
 import { dataset } from './integrations/dataset'
 import { interaction } from './integrations/interaction'
 import { themePlugin } from './integrations/theme'
@@ -15,7 +16,7 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   build: { format: 'directory' },
-  integrations: [dataset(), interaction(), react()],
+  integrations: [dataset(), interaction(), cdn(), react()],
   vite: {
     plugins: [themePlugin(), tailwindcss()],
     resolve: {

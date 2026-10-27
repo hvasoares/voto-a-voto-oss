@@ -70,6 +70,17 @@ test.describe('home: only the search is an island, hydrated on interaction', () 
     await expect.poll(() => seen.some((r) => r.url.endsWith('/data/cities.csv'))).toBe(true)
   })
 
+  test('exactly one copy of React/ReactDOM runs on the page', async ({ page }) => {
+    const copies: string[] = []
+    page.on('response', async (r) => {
+      if (r.request().resourceType() === 'script' && (await r.text().catch(() => '')).includes('react.memo_cache_sentinel')) copies.push(new URL(r.url()).pathname)
+    })
+    await page.goto(base)
+    await (await activateSearch(page)).fill('cidade')
+    await page.waitForLoadState('networkidle')
+    expect(copies).toHaveLength(1)
+  })
+
   test('what is typed before React takes over is not lost', async ({ page }) => {
     await page.goto(base)
     await page.getByRole('combobox', { name: 'Busque sua cidade' }).pressSequentially('boa esperanca', { delay: 0 })
