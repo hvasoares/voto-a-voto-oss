@@ -19,7 +19,7 @@ import { UF_TILES } from '@site/slots/home/uf-grid'
 import { getAnalytics } from '@site/analytics'
 import { formatSwing } from '@/lib/margins'
 import type { StateMapData, StateMapRow } from '@/lib/state-map-data'
-import { BIN_COLOR, marginBin, marginLegend, swingBin, swingLegend, tileEdge, type DivBin } from '@/lib/scale'
+import { BIN_COLOR, fgOf, marginBin, marginLegend, swingBin, swingLegend, tileEdge, type DivBin } from '@/lib/scale'
 import { CALLOUT_LEFT, CALLOUT_RIGHT, UF_SHAPES } from '@/lib/uf-polygons'
 
 export type MapKind = 'margin' | 'swing'
@@ -59,10 +59,6 @@ const valueText = (rows: readonly StateMapRow[], uf: string, kind: MapKind, lado
   return kind === 'margin' ? `${ahead} à frente` : `variação para ${ahead}`
 }
 
-/** Dark ink on the light steps, paper on the dark ones (contrast, like the frames). */
-export function fgOf(bin: DivBin): 'var(--foreground)' | 'var(--background)' {
-  return bin === 'zero' || bin === 'neg1' || bin === 'pos1' ? 'var(--foreground)' : 'var(--background)'
-}
 
 const fmt = formatSwing
 const fmtInt = formatInt
