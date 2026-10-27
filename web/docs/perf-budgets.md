@@ -1,0 +1,85 @@
+---
+title: Budgets de peso e carregamento (ticket #19)
+description: O que as páginas dos quatro roteiros auditados pesam, o que é carregado, e quem vigia os números.
+---
+
+# Peso e carregamento das rotas auditadas
+
+Ticket #19. Dois números convivem aqui, e nenhuma cifra abaixo foi inventada: **tudo é medido no
+build** pelo script `scripts/perf-budgets.ts`, que lê o HTML construído das quatro rotas e soma,
+com gzip (node:zlib sobre os bytes construídos — o que um celular em 4G baixaria com a compressão
+simples do servidor), o que o navegador transfere. Rodar com `npm run build && npm run check:perf`
+(existe também como `npm run check:perf` sozinho); o script **falha** quando um orçamento é
+estourado, então os números de uma tabela não podem divergir silenciosamente do código.
+
+O que o script soma por rota:
+
+- **html** — o documento da página;
+- **css** — todo stylesheet que o documento liga (o site manda um CSS compartilhado);
+- **eagerJs** — todo `<script src>` no documento (scripts de página; ilhas contam em islandJs);
+- **islandJs** — toda ilha React que a rota declara (`component-url` e `renderer-url` de
+  astro-island), com a nota de que as ilhas `client:interaction` **não carregam isso no carregamento
+  da página**: o download acontece no primeiro toque/foco. O custo de react-dom está contido aqui.
+
+## Orçamentos
+
+| Rota | html | css | eagerJs | islandJs | total medido |
+|---|---|---|---|---|---|
+| `/` (home) | 12 KB | 16 KB | 3 KB | 120 KB | **101.0K** |
+| `/rj/cidade-exemplo/` (cartão) | 3 KB | 16 KB | 3 KB | 3 KB | **15.2K** |
+| `/mapa/` (tile map por estado) | 12 KB | 16 KB | 3 KB | 85 KB | **92.9K** |
+| `/relatorios/cidades-que-viraram/` (relatório) | 12 KB | 16 KB | 3 KB | 3 KB | **14.1K** |
+
+Os orçamentos foram calibrados para o site já passar de folga — a intenção do ticket foi
+**fixar o piso atual como linha de base**, para que regressões de peso (voltar a CDNs, importar
+uma biblioteca de animação, soltar um CSS duplicado) quebrem o CI em vez de entrar mudo.
+
+## Números medidos (build do fixture)
+
+As quatro rotas atendem aos orçamentos. Em K gzip:
+
+| Rota | html | css | eagerJs | islandJs | **No carregamento** (html+css+eagerJs) |
+|---|---|---|---|---|---|
+| home | 5.9K | 12.2K | 0.2K | 82.7K (CitySearch 19.3K + client 63.4K) | **18.3K** |
+| cartão da cidade | 2.3K | 12.2K | 0.7K | 0 | **15.2K** |
+| mapa | 5.1K | 12.2K | 0.1K | 75.6K (StateMapMap 12.2K + client 63.4K) | **17.4K** |
+| relatório | 1.9K | 12.2K | 0.1K | 0 | **14.2K** |
+
+Duas notas que o orçamento não esconde:
+
+- **react-dom (o `client.` de 63.4K) é o custo fixo das páginas com ilha.** As ilhas desta base são
+  todas `client:interaction`, então esse download só sai quando o campo de busca da home ou a
+  malha/troca de vista do mapa é tocado; está contabilizado no "total" e separado acima.
+- A home carrega **um único shard** de dados (`search.json`) e **só quando o campo ganha foco** —
+  isso é pinado em e2e (`home.spec`); o mapa puxa a malha de municípios **só quando a vista Mapa
+  abre** — pinado em `mapa-rj.spec`.
+
+## O que já foi podado neste ticket
+
+- `tw-animate-css` saiu de `styles/global.css` (as animações dele só fariam sentido num componente
+  animado; nenhum existe hoje) — CSS crú de 66.7K para 61.8K, gzip medido 12.2K. Voltar com ele
+  na primeira animação de verdade (o comentário no CSS documenta isso).
+- Nada mais precisou podar: as rotas já atendiam seus orçamentos com folga.
+
+## Acessibilidade e movimento, do mesmo ticket (aqui por serem de tela, não de peso)
+
+- `prefers-reduced-motion` é honrado: a base zera animações/transições em CSS, e os componentes
+  que têm transição própria só a carregam via `motion-safe:`.
+- Alvos de toque (44px) foram normalizados via tokens (`--min-tap` / `min-h-11`) na folha de
+  compartilhamento, tela de QR, painel do mapa, linhas dos relatórios e grade da home.
+- Sem "significado só pela cor": os tiles do mapa carregam o valor à vista e o nome do estado numa
+  frase sr-only (o rótulo vem do conteúdo, não de um aria-label), o painel selecionado é
+  `aria-live`, os degraus da escala são numéricos, e o relatório tem as frases equivalentes.
+- Residual documentado: nos degraus positivos da escala do Sketch, o `fgOf` de #16 já escolhe a
+  tinta de maior contraste, e o degrau pos-2 (`#d15c53`) fecha em 4.4:1 nos dois sentidos — a
+  paleta não alcança 4.5:1 aí; e o rótulo permanece legível pois há leitura em texto em dois
+  lugares (sobre o próprio tile — visível e sr-only — e na tabela por estado). O axe roda em CI
+  nas quatro rotas (`e2e/a11y.spec.ts`) com essa e só essa exceção, comentada no arquivo.
+
+## Escala tipográfica (reconciliação limitada do #19)
+
+A regra do ticket foi "tokens ganham": as páginas de relatório já usam a escala de tokens
+(`text-title`, `text-body`, `text-small`…), então não houve nada a reconciliar nelas. Sobram duas
+exceções pontuais, padrão de todo o site e não só dos relatórios — o badge numerado dos rankings
+(`text-[13px]`) e o rodapé de fonte (`text-[12.3px]`) — que ficam como estão: valores únicos numa
+escala compartilhada, mexer neles mudaria o visual que o ticket manda preservar.
