@@ -91,7 +91,7 @@ test.describe('votos ganhos e perdidos on the real dataset', () => {
     const sections = page.locator('[data-candidate-section]')
     await expect(sections).toHaveCount(2)
     const lula = sections.nth(0)
-    await expect(lula.locator('[data-total]')).toContainText('+3.862.039 votos no país: ganhou em 3.428 cidades, perdeu em 2.132 (de 5.570 comparadas)')
+    await expect(lula.locator('[data-total]')).toContainText('+3.862.039 votos no país: ganhou em 3.428 cidades, perdeu em 2.132 cidades (de 5.570 comparadas) · 2 cidades mantiveram o mesmo número de votos em 2022.')
     await expect(lula.locator('[data-gain="0"]')).toContainText('SÃO PAULO/SP')
     await expect(lula.locator('[data-gain="0"]')).toContainText('+186.433 votos · 3.864.354 em 2026')
     await expect(lula.locator('[data-loss="0"]')).toContainText('ITAITUBA/PA')
@@ -126,7 +126,8 @@ test.describe('disputas mais apertadas on the real dataset', () => {
     const second = await rows.nth(1).textContent()
     expect(second).toContain('Apiacá/ES')
     expect(second).toContain('Diferença de 1 voto — Lula à frente (2.366 a 2.365)')
-    const anhanguera = await page.locator('[data-race="anhanguera-go"]').textContent()
+    // The row id is the city slug: the raw name "ANHANGÜERA" lowercases with "ü", the slug is accent-free.
+    const anhanguera = await page.locator('[data-race="anhanguera"]').textContent()
     expect(anhanguera).toContain('Diferença de 1 voto — Flavio Bolsonaro à frente (523 a 522)')
   })
 
