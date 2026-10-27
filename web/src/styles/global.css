@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Values of every variable below come from src/theme.ts (Sketch tokens); this file only wires them to Tailwind utilities. */
+@theme inline {
+  --font-sans: var(--sketch-font-sans);
+  --font-serif: var(--sketch-font-serif);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: var(--radius);
+  --text-title: var(--sketch-text-title);
+  --text-section: var(--sketch-text-section);
+  --text-lead: var(--sketch-text-lead);
+  --text-body: var(--sketch-text-body);
+  --text-small: var(--sketch-text-small);
+}
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { @apply bg-background text-foreground font-sans; font-size: var(--sketch-text-body); line-height: 1.35; margin: 0; }
+  a { color: var(--primary); text-decoration: none; }
+}

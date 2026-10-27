@@ -1,0 +1,56 @@
+---
+import { UF_TILES } from '@site/slots/home/uf-grid'
+import { normalizeBase, withBase } from '@site/paths'
+import CitySearch from '@/components/CitySearch'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { EXPLORE } from '@/lib/explore'
+import { loadStateCodes } from '@/lib/states'
+import Base from '@/layouts/Base.astro'
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const available = new Set(await loadStateCodes())
+const href = (path: string) => withBase(base, path)
+// "Três ciclos por estado" needs a state: the first one the dataset has (as in the vanilla home).
+const firstUf = [...available].sort()[0] ?? 'rj'
+const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md border-border text-body font-bold leading-[17px] text-foreground pb-0.5')
+---
+<Base title="Voto a Voto">
+  <main class="min-w-0 flex-1 px-5 pt-16" id="main">
+    <h1 class="font-serif text-title font-normal leading-[30px] wrap-anywhere">Voto a Voto</h1>
+    <p class="font-serif text-lead leading-[22px]">Eleição presidencial 2026, cidade por cidade.</p>
+    <p class="mt-0.5 text-small leading-[14px] text-muted-foreground">Compare com 2018 e 2022.</p>
+    <CitySearch client:interaction base={base} />
+    <noscript><p class="mt-1.5 text-small leading-[14px]">A busca precisa de JavaScript. Escolha um estado abaixo.</p></noscript>
+    <p class="mt-1.5 text-small leading-[14px]">Ou escolha um estado. Toque para ver os municípios.</p>
+    <nav class="mt-1 grid justify-center gap-px [grid-auto-rows:44px] [grid-template-columns:repeat(7,44px)]" aria-label="Estados" data-uf-grid>
+      {UF_TILES.map((t) =>
+        available.has(t.uf) ? (
+          <a class={tile} style={`grid-column:${t.col};grid-row:${t.row}`} href={href(`/${t.uf}/`)} data-uf={t.uf}>{t.uf.toUpperCase()}</a>
+        ) : (
+          <span class={cn(tile, 'select-none')} style={`grid-column:${t.col};grid-row:${t.row}`} data-uf={t.uf} aria-disabled="true">{t.uf.toUpperCase()}</span>
+        ),
+      )}
+    </nav>
+    <h2 class="mt-2 font-serif text-section font-normal leading-[25px]">Para explorar</h2>
+    <ul class="mt-[5px] list-none p-0">
+      {EXPLORE.map((e) => (
+        <li>
+          <a class="flex min-h-14 items-center border-t border-border pb-[11px] pt-2 text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary" href={href(e.to.replace(':uf', firstUf))}>
+            <span class="flex min-w-0 flex-1 flex-col gap-1">
+              <strong class="text-body font-bold leading-[18px]">{e.title}</strong>
+              <span class="text-small leading-[14px] text-muted-foreground">{e.sub}</span>
+            </span>
+            <svg class="mr-px mt-[7px] flex-none text-primary" viewBox="0 0 6 10" width="5" height="8.5" aria-hidden="true" focusable="false"><path d="M0.7 0.5 4 4.6 0.7 8.7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </main>
+  <footer class="mx-5 mt-2 border-t border-border pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+    Dados oficiais do TSE · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+  </footer>
+  <script>
+    import '@/scripts/tile-analytics'
+  </script>
+</Base>
