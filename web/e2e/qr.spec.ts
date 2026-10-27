@@ -105,11 +105,12 @@ test.describe('qr: the printable poster', () => {
     })
   })
 
-  test('the share sheet links to this screen (the old slot contract navigation, wired by #9)', async ({ page }) => {
+  test('the share sheet explains that the link carries the address, not a QR (stale #9 pin retired)', async ({ page }) => {
+    // The share sheet of #7/#50 no longer links to /qr/ (its note says the image carries only the
+    // short address); this spec used to pin the removed [data-qr-link] navigation, so it now pins
+    // the contract that replaced it.
     await page.goto(`${base}compartilhar/`)
-    const link = page.locator('[data-qr-link]')
-    await expect(link).toHaveText('Mostrar QR')
-    await expect(link).toHaveAttribute('href', `${base}qr/`)
-    expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(44)
+    const note = page.locator('[data-note]')
+    await expect(note).toContainText('sem QR')
   })
 })
