@@ -45,11 +45,13 @@ test.describe('mapa: content', () => {
     await expect(page.locator('[data-uf="zz"]')).toHaveCount(0)
   })
 
-  test('tiles carry the signed value and the side, not only colour', async ({ page }) => {
+  test('tiles carry the signed value and the side, not only colour; named without a bare code', async ({ page }) => {
     await page.goto(`${base}mapa/`)
     const rj = page.locator('a[data-uf="rj"]', { hasText: 'RJ' })
     await expect(rj).toContainText('-0,5')
-    await expect(rj).toHaveAttribute('aria-label', /-0,5 pp, .+ à frente; .+ votos válidos/)
+    // The sr-only sentence names the state and reads the value (issue #19).
+    await expect(rj).toContainText(/Rio de Janeiro: -0,5 pp, .+ à frente; .+ votos válidos/)
+    await expect(rj).not.toHaveAttribute('aria-label', /.+/)
   })
 
   test('the selected panel shows valid votes and both rounds; the tab is aria-current', async ({ page }) => {

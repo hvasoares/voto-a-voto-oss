@@ -18,6 +18,7 @@ import { formatInt } from '@/shared/city-model'
 import { UF_TILES } from '@/slots/home/uf-grid'
 import { getAnalytics } from '@/analytics'
 import { formatSwing } from '@/lib/margins'
+import { ufFullLabel, UF_NAMES } from '@/lib/uf-names'
 import type { StateMapData, StateMapRow } from '@/lib/state-map-data'
 import { BIN_COLOR, fgOf, marginBin, marginLegend, swingBin, swingLegend, tileEdge, type DivBin } from '@/lib/scale'
 import { CALLOUT_LEFT, CALLOUT_RIGHT, UF_SHAPES } from '@/lib/uf-polygons'
@@ -51,12 +52,25 @@ const binOf = (rows: readonly StateMapRow[], uf: string, kind: MapKind): DivBin 
   return kind === 'margin' ? marginBin(row.margin2) : swingBin(row.swing)
 }
 
-/** Why a colour: plain text for the aria-labels (screen readers, and colour is not the only cue). */
+/** Why a colour: plain text for the tile names (screen readers, and colour is not the only cue). */
 const valueText = (rows: readonly StateMapRow[], uf: string, kind: MapKind, ladoANome: string, ladoBNome: string): string => {
   const row = rowOf(rows, uf)
   if (!row) return ''
   const ahead = valueOf(row, kind) < 0 ? ladoBNome : ladoANome
   return kind === 'margin' ? `${ahead} à frente` : `variação para ${ahead}`
+}
+
+/**
+ * Extra name of a tile/shape/callout anchor, read after the visible bits. The anchor label comes
+ * from its CONTENT (visible bits + this sr-only sentence, issue #19): axe's
+ * label-content-name-mismatch fails an `aria-label` that replaces content text ("MT +0,2") with a
+ * full label that does not contain it, and the content-based name keeps the full value in both.
+ */
+const nameDetail = (rows: readonly StateMapRow[], uf: string, kind: MapKind, ladoANome: string, ladoBNome: string): string => {
+  const row = rowOf(rows, uf)
+  if (!row) return ''
+  const name = UF_NAMES[uf.toLowerCase()] ?? uf.toUpperCase()
+  return `${name}: ${fmt(valueOf(row, kind))} pp, ${valueText(rows, uf, kind, ladoANome, ladoBNome)}; ${fmtInt(row.validos2)} votos válidos`
 }
 
 
@@ -138,8 +152,8 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
         {(['mosaico', 'mapa'] as const).map((v) => (
           <a
             key={v}
-            aria-pressed={vista === v}
-            className={'grid min-h-9 min-w-16 place-items-center rounded-md px-3 text-[13px]' + (vista === v ? ' bg-primary font-bold text-primary-foreground' : ' cursor-pointer text-muted-foreground')}
+            aria-current={vista === v ? 'true' : undefined}
+            className={'grid min-h-11 min-w-16 place-items-center rounded-md px-3 text-[13px]' + (vista === v ? ' bg-primary font-bold text-primary-foreground' : ' cursor-pointer text-muted-foreground')}
             href={v === 'mapa' ? '?vista=mapa' : '?'}
             onClick={(e) => {
               e.preventDefault()
@@ -167,7 +181,6 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
             return (
               <a
                 key={uf}
-                aria-label={`${uf.toUpperCase()}: ${fmt(valueOf(row, kind))} pp, ${valueText(rows, uf, kind, ladoANome, ladoBNome)}; ${fmtInt(row.validos2)} votos válidos`}
                 className={tileClass + (selected === uf ? ' border-[2px] border-foreground' : '')}
                 data-uf={uf}
                 href={stateHref(uf)}
@@ -183,6 +196,7 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
               >
                 <span className="text-[14px] font-bold leading-[15px]">{uf.toUpperCase()}</span>
                 <span className="text-[11px] leading-[12px]">{fmt(valueOf(row, kind))}</span>
+                <span className="sr-only">{nameDetail(rows, uf, kind, ladoANome, ladoBNome)}</span>
               </a>
             )
           })}
@@ -218,6 +232,7 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
         <div className="flex items-baseline justify-between gap-3">
           <p aria-live="polite" className="font-serif text-body font-bold">
             {selected.toUpperCase()} · selecionado
+            <span className="sr-only">{` · ${UF_NAMES[selected.toLowerCase()] ?? selected.toUpperCase()}`}</span>
           </p>
           <p className="font-serif text-[28px] font-bold leading-[30px]" aria-hidden="true">
             {fmt((rowOf(rows, selected) && valueOf(rowOf(rows, selected)!, kind)) || 0)} pp
@@ -244,7 +259,7 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
             {sorted.map((row) => (
               <tr key={row.uf} className="border-t border-border">
                 <td className="py-1 text-left">
-                  <a href={stateHref(row.uf)} className={selected === row.uf ? 'font-bold' : ''}>
+                  <a href={stateHref(row.uf)} className={selected === row.uf ? 'font-bold' : ''} aria-label={`${ufFullLabel(row.uf)}: ${fmt(valueOf(row, kind))} pp`}>
                     {row.uf.toUpperCase()}
                   </a>
                 </td>
@@ -327,7 +342,7 @@ function MapView(props: {
           <a
             key={shape.uf}
             className="cursor-pointer"
-            aria-label={`${shape.uf.toUpperCase()}: ${fmt(valueOf(row, kind))} pp, ${valueText(rows, shape.uf, kind, ladoANome, ladoBNome)}; ${fmtInt(row.validos2)} votos válidos`}
+            aria-label={`${ufFullLabel(shape.uf)}: ${fmt(valueOf(row, kind))} pp, ${valueText(rows, shape.uf, kind, ladoANome, ladoBNome)}; ${fmtInt(row.validos2)} votos válidos`}
             data-uf={shape.uf}
             href={stateHref(shape.uf)}
             onClick={(e) => {
@@ -360,7 +375,7 @@ function MapView(props: {
             <line stroke="var(--border)" strokeWidth={1} x1={left ? shape.cx + 6 : shape.cx} y1={shape.cy} x2={left ? x + CALL_W : x} y2={y + CALL_H / 2} />
             <a
               className="cursor-pointer"
-              aria-label={`${uf.toUpperCase()}: ${fmt(valueOf(row, kind))} pp, ${valueText(rows, uf, kind, ladoANome, ladoBNome)}; ${fmtInt(row.validos2)} votos válidos`}
+              aria-label={`${ufFullLabel(uf)}: ${fmt(valueOf(row, kind))} pp, ${valueText(rows, uf, kind, ladoANome, ladoBNome)}; ${fmtInt(row.validos2)} votos válidos`}
               data-uf={uf}
               href={stateHref(uf)}
               onClick={(e) => {

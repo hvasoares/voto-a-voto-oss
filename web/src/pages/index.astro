@@ -6,6 +6,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { EXPLORE } from '@/lib/explore'
 import { loadStateCodes } from '@/lib/states'
+import { ufFullLabel } from '@/lib/uf-names'
 import Base from '@/layouts/Base.astro'
 
 const base = normalizeBase(import.meta.env.BASE_URL)
@@ -27,7 +28,7 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
     <nav class="mt-1 grid justify-center gap-px [grid-auto-rows:44px] [grid-template-columns:repeat(7,44px)]" aria-label="Estados" data-uf-grid>
       {UF_TILES.map((t) =>
         available.has(t.uf) ? (
-          <a class={tile} style={`grid-column:${t.col};grid-row:${t.row}`} href={href(`/${t.uf}/`)} data-uf={t.uf}>{t.uf.toUpperCase()}</a>
+          <a class={tile} style={`grid-column:${t.col};grid-row:${t.row}`} href={href(`/${t.uf}/`)} data-uf={t.uf} aria-label={ufFullLabel(t.uf)}>{t.uf.toUpperCase()}</a>
         ) : (
           <span class={cn(tile, 'select-none')} style={`grid-column:${t.col};grid-row:${t.row}`} data-uf={t.uf} aria-disabled="true">{t.uf.toUpperCase()}</span>
         ),

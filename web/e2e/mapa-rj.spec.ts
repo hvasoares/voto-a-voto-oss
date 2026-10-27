@@ -26,7 +26,7 @@ test.describe('mapa/rj: content', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Mapa por município · Rio de Janeiro')
     await expect(page.getByText(/no 2º turno de 2026, em pontos percentuais \(pp\), nos 6 municípios do estado/)).toBeVisible()
     await expect(page.getByRole('link', { name: '‹ Mapa por estado' })).toHaveAttribute('href', `${base}mapa/`)
-    await expect(page.getByRole('link', { name: 'Lista' })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByRole('link', { name: 'Lista' })).toHaveAttribute('aria-current', 'true')
     await expect(page.getByRole('link', { name: 'Mapa', exact: true })).toHaveAttribute('href', '?vista=mapa')
     await expect(page.locator('[data-slot="mapa-escala"]')).toContainText('+30')
     await expect(page.locator('[data-slot="mapa-selecionado"]')).toContainText('Cidade Exemplo · selecionado')
