@@ -1,7 +1,7 @@
 /**
  * The report list of the hub (frame "6 Relatórios"): seven rows, each with its headline figure,
- * computed at build time (nothing on the hub is a copied constant). Rows whose report is not
- * built yet (tickets #13-15) keep the headline and are not links ("Em breve").
+ * computed at build time (nothing on the hub is a copied constant). Every row is a built report
+ * and links through, except "Comparar com 2022 e 2018" (ticket #14 not built yet: no `to`).
  */
 import { displayName } from '@site/shared/city-search'
 import { biggestSwing, closestRaces, citiesWonInRunoff, MIN_BIG_SWING_VALIDOS, MIN_TURNOUT_APTOS, flipsToLula, flipsToFlavio, turnoutExtremes, type ComputedReports, type MarginInput } from './compute'
@@ -12,7 +12,7 @@ export interface HubRow {
   title: string
   /** The headline figure, computed from the dataset (absent on the two entries that are lists, not reports). */
   headline?: string
-  /** The route of the report; absent while the report page is not built (tickets #13-15). */
+  /** The route of the report; absent while the report page is not built (only #14 today). */
   to?: string
 }
 
@@ -41,13 +41,13 @@ export function hubRows(reports: ComputedReports, input: MarginInput): HubRow[] 
       id: 'maiores-viradas',
       title: 'Maiores viradas, cidades de 100 mil+ votos',
       headline: biggest ? `Maior variação: ${displayName(biggest.nome)}/${biggest.uf.toUpperCase()}, ${formatSignedPp(biggest.swing)}` : `Nenhuma cidade de ${formatInt(MIN_BIG_SWING_VALIDOS)}+ votos válidos`,
-      // Report built by ticket #13.
+      to: '/relatorios/maiores-viradas/',
     },
     {
       id: 'votos-ganhos-e-perdidos',
       title: 'Votos ganhos e perdidos vs. 2022',
       headline: `${lula}: ${formatSignedInt(netVotes.primeiro.total)} votos no país`,
-      // Report built by ticket #13.
+      to: '/relatorios/votos-ganhos-e-perdidos/',
     },
     {
       id: 'disputas-mais-apertadas',
@@ -55,7 +55,7 @@ export function hubRows(reports: ComputedReports, input: MarginInput): HubRow[] 
       headline: race
         ? `${displayName(race.nome)}/${race.uf.toUpperCase()}: ${race.diff === 0 ? `empate, diferença de ${formatInt(race.diff)} votos` : `margem de ${formatSignedPp(race.margin)}`}`
         : undefined,
-      // Report built by ticket #13.
+      to: '/relatorios/disputas-mais-apertadas/',
     },
     {
       id: 'comparecimento',
@@ -64,7 +64,7 @@ export function hubRows(reports: ComputedReports, input: MarginInput): HubRow[] 
         turnout.high && turnout.low
           ? `Mais alto: ${displayName(turnout.high.nome)}/${turnout.high.uf.toUpperCase()}, ${formatFixedPct(turnout.high.rate)}. Mais baixo: ${displayName(turnout.low.nome)}/${turnout.low.uf.toUpperCase()}, ${formatFixedPct(turnout.low.rate)}`
           : `Nenhuma cidade de ${formatInt(MIN_TURNOUT_APTOS)}+ eleitores`,
-      // Report built by ticket #13.
+      to: '/relatorios/comparecimento/',
     },
     {
       id: 'comparar',

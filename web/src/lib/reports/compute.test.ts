@@ -25,6 +25,9 @@ import {
   flipsToLula,
   flipsToFlavio,
   MIN_FLIP_VALIDOS,
+  rankedBigSwings,
+  rankedTurnout,
+  rankedVoteDeltas,
   runoffPair,
   rankedFlipsToFlavio,
   rankedFlipsToLula,
@@ -131,6 +134,55 @@ describe('fixture state (site/fixtures/data)', () => {
   it('exports live up to their definitions (filter constant, flip direction)', () => {
     expect(MIN_FLIP_VALIDOS).toBe(5000)
   })
+
+  it('per-city vs-2022 deltas sum to the net votes (the lists and the totals share one base)', async () => {
+    const { netVotes, voteDeltas } = computeReports(await inputFrom(FIXTURE_DATA))
+    const sum = (rows: { delta: number }[]) => rows.reduce((t, r) => t + r.delta, 0)
+    expect(sum(voteDeltas.primeiro)).toBe(netVotes.primeiro.total)
+    expect(sum(voteDeltas.segundo)).toBe(netVotes.segundo.total)
+  })
+
+  it('ranks the vs-2022 deltas: gains biggest first, losses biggest first, with one row per city', async () => {
+    const { voteDeltas } = computeReports(await inputFrom(FIXTURE_DATA))
+    // In the fixtures every city loses votes for Candidato A and Candidato B keeps three.
+    const primeiro = rankedVoteDeltas(voteDeltas.primeiro)
+    expect(primeiro.gains).toEqual([])
+    expect(primeiro.unchanged).toBe(0)
+    expect(primeiro.losses.map((r) => [r.nome, r.delta])).toEqual([
+      ['Cidade Exemplo', -5914],
+      ['Cidade Exemplo Paulista', -4031],
+      ['Cidade Exemplo A', -1848],
+      ['Cidade Exemplo B', -1441],
+      ['Cidade Exemplo C', -1165],
+      ['Cidade Exemplo D', -396],
+      ['Cidade Exemplo E', -119],
+    ])
+    const segundo = rankedVoteDeltas(voteDeltas.segundo)
+    expect(segundo.gains.map((r) => [r.nome, r.delta])).toEqual([
+      ['Cidade Exemplo', 4356],
+      ['Cidade Exemplo B', 3809],
+      ['Cidade Exemplo C', 3201],
+    ])
+    expect(segundo.losses.map((r) => [r.nome, r.delta])).toEqual([
+      ['Cidade Exemplo E', -8644],
+      ['Cidade Exemplo Paulista', -2592],
+      ['Cidade Exemplo D', -1457],
+      ['Cidade Exemplo A', -340],
+    ])
+  })
+
+  it('no 100 mil+ city in the fixtures: the big-swing list is empty and nothing moved away', async () => {
+    const big = rankedBigSwings(computeReports(await inputFrom(FIXTURE_DATA)).margins)
+    expect(big.toward).toEqual([])
+    expect(big.awayCount).toBe(0)
+  })
+
+  it('turnout is ranked both ways; every rate carries its volume; the overseas post stays out', async () => {
+    const ranked = rankedTurnout(await inputFrom(FIXTURE_DATA))
+    expect(ranked.compared).toBe(8) // nine 2026 round-2 turnout rows, Exterior (posto exemplo) excluded
+    expect(ranked.highest[0]).toMatchObject({ nome: 'Cidade Exemplo C', rate: expect.closeTo(78.152, 2), comparecimento: 53040, aptos: 67868 })
+    expect(ranked.lowest[0]).toMatchObject({ nome: 'Cidade Exemplo E', rate: expect.closeTo(70.489, 2), comparecimento: 67175, aptos: 95294 })
+  })
 })
 
 describe.skipIf(!existsSync(resolve(REAL_DATA, 'cities.csv')))('real data (data/, figures cited in the repo notes)', () => {
@@ -173,7 +225,8 @@ describe.skipIf(!existsSync(resolve(REAL_DATA, 'cities.csv')))('real data (data/
 
   it('closest race: Marquinho/PR tied, difference of 0 votes', async () => {
     const races = closestRaces(computeReports(await inputFrom(REAL_DATA)).margins)
-    expect(races[0]).toMatchObject({ nome: 'MARQUINHO', uf: 'pr', diff: 0, validos2: 3060 })
+    expect(races[0]).toMatchObject({ nome: 'MARQUINHO', uf: 'pr', diff: 0, validos2: 3060, votos: { primeiro: 1530, segundo: 1530 } })
+    expect(races[1]).toMatchObject({ nome: 'APIACÁ', uf: 'es', diff: 1, votos: { primeiro: 2366, segundo: 2365 } })
   })
 
   it('turnout extremes of the 5k+ electorate: Santa Maria do Herval/RS 90,5%, Itaubal/AP 59,0%', async () => {
@@ -188,5 +241,87 @@ describe.skipIf(!existsSync(resolve(REAL_DATA, 'cities.csv')))('real data (data/
     const { netVotes } = computeReports(await inputFrom(REAL_DATA))
     expect(netVotes.primeiro).toEqual({ total: 3862039, cities: { gained: 3428, lost: 2132 } })
     expect(netVotes.segundo).toEqual({ total: 1591101, cities: { gained: 5118, lost: 451 } })
+  })
+
+  it('the vs-2022 lists and the net-vote totals share one base (sums close)', async () => {
+    const { netVotes, voteDeltas } = computeReports(await inputFrom(REAL_DATA))
+    const sum = (rows: { delta: number }[]) => rows.reduce((t, r) => t + r.delta, 0)
+    expect(sum(voteDeltas.primeiro)).toBe(netVotes.primeiro.total)
+    expect(sum(voteDeltas.segundo)).toBe(netVotes.segundo.total)
+  })
+
+  it('Lula gained votes in São Paulo (+186.433 de 6.962.277 válidos), Rio e Brasília; lost most in Itaituba (-2.403)', async () => {
+    const { voteDeltas } = computeReports(await inputFrom(REAL_DATA))
+    const ranked = rankedVoteDeltas(voteDeltas.primeiro)
+    expect(ranked.gains.slice(0, 3).map((r) => `${r.nome}/${r.uf.toUpperCase()}`)).toEqual(['SÃO PAULO/SP', 'RIO DE JANEIRO/RJ', 'BRASÍLIA/DF'])
+    expect(ranked.gains[0]).toMatchObject({ delta: 186433, votos2026: 3864354, validos2: 6962277 })
+    expect(ranked.gains[1]).toMatchObject({ delta: 164232 })
+    expect(ranked.gains[2]).toMatchObject({ delta: 95929 })
+    expect(ranked.losses.slice(0, 3).map((r) => `${r.nome}/${r.uf.toUpperCase()}`)).toEqual(['ITAITUBA/PA', 'RIO GRANDE/RS', 'CATALÃO/GO'])
+    expect(ranked.losses[0]).toMatchObject({ delta: -2403, votos2026: 19123, validos2: 61152 })
+    expect(ranked.losses[1]).toMatchObject({ delta: -2205 })
+    expect(ranked.losses[2]).toMatchObject({ delta: -1731 })
+  })
+
+  it('Flavio gained in Maricá (+14.831), Sinop e Canaã dos Carajás; lost most in Rio (-144.011) e São Paulo', async () => {
+    const { voteDeltas } = computeReports(await inputFrom(REAL_DATA))
+    const ranked = rankedVoteDeltas(voteDeltas.segundo)
+    expect(ranked.gains.slice(0, 3).map((r) => `${r.nome}/${r.uf.toUpperCase()}`)).toEqual(['MARICÁ/RJ', 'SINOP/MT', 'CANAÃ DOS CARAJÁS/PA'])
+    expect(ranked.gains[0]).toMatchObject({ delta: 14831, votos2026: 72786, validos2: 143341 })
+    expect(ranked.gains[1]).toMatchObject({ delta: 12295 })
+    expect(ranked.gains[2]).toMatchObject({ delta: 11657 })
+    expect(ranked.losses.slice(0, 3).map((r) => `${r.nome}/${r.uf.toUpperCase()}`)).toEqual(['RIO DE JANEIRO/RJ', 'SÃO PAULO/SP', 'BELO HORIZONTE/MG'])
+    expect(ranked.losses[0]).toMatchObject({ delta: -144011, votos2026: 1785198 })
+    expect(ranked.losses[1]).toMatchObject({ delta: -93561 })
+    expect(ranked.losses[2]).toMatchObject({ delta: -69237 })
+  })
+
+  it('the 100 mil+ list: Campos dos Goytacazes +9,8 pp no topo (still lost), Sobral e N. Sora. do Socorro em seguida', async () => {
+    const big = rankedBigSwings(computeReports(await inputFrom(REAL_DATA)).margins)
+    expect(big.toward).toHaveLength(173) // every 100 mil+ city moved toward Lula; none the other way
+    expect(big.awayCount).toBe(0)
+    const [first, second, third] = big.toward
+    expect(`${first!.nome}/${first!.uf.toUpperCase()}`).toBe('CAMPOS DOS GOYTACAZES/RJ')
+    expect(first!.swing).toBeCloseTo(9.82, 2)
+    expect(first!.margin1).toBeCloseTo(-25.6, 1)
+    expect(first!.margin2).toBeCloseTo(-15.8, 1) // still lost by 15,8 pp (highlights note)
+    expect(first!.validos2).toBe(275397)
+    expect(`${second!.nome}/${second!.uf.toUpperCase()}`).toBe('SOBRAL/CE')
+    expect(second!.swing).toBeCloseTo(8.83, 2)
+    expect(`${third!.nome}/${third!.uf.toUpperCase()}`).toBe('NOSSA SENHORA DO SOCORRO/SE')
+  })
+
+  it('the turnout ranking over 5 mil+ aptos: Santa Maria do Herval/RS no topo, Itaubal/AP na base', async () => {
+    const ranked = rankedTurnout(await inputFrom(REAL_DATA))
+    expect(ranked.compared).toBe(4139)
+    const [high, h2, h3] = ranked.highest
+    expect(`${high!.nome}/${high!.uf.toUpperCase()}`).toBe('SANTA MARIA DO HERVAL/RS')
+    expect(high!.rate).toBeCloseTo(90.46, 2)
+    expect(`${h2!.nome}`).toBe('RIACHO DAS ALMAS')
+    expect(`${h3!.nome}`).toBe('CÂNDIDO GODÓI')
+    const [low, l2, l3] = ranked.lowest
+    expect(`${low!.nome}/${low!.uf.toUpperCase()}`).toBe('ITAUBAL/AP')
+    expect(low!.rate).toBeCloseTo(58.99, 2)
+    expect(low!.aptos).toBe(8881)
+    expect(`${l2!.nome}/${l2!.uf.toUpperCase()}`).toBe('BARCELOS/AM')
+    expect(l2!.rate).toBeCloseTo(59.27, 2)
+    expect(`${l3!.nome}/${l3!.uf.toUpperCase()}`).toBe('MARECHAL THAUMATURGO/AC')
+    expect(l3!.rate).toBeCloseTo(59.35, 2)
+  })
+
+  it('after the tie, the closest races are one-vote margins both ways: Apiacá (+) e Anhangüera (-)', async () => {
+    const races = closestRaces(computeReports(await inputFrom(REAL_DATA)).margins)
+    // Six cities with a difference of one vote or less: 1 tie + 5 margins of a single vote, three for each side.
+    const one = races.filter((r) => r.diff === 1)
+    expect(one).toHaveLength(5)
+    expect(one.map((r) => `${r.nome}/${r.uf.toUpperCase()} ${r.margin > 0 ? '+' : '-'}`)).toEqual([
+      'APIACÁ/ES +',
+      'ALTAMIRA DO PARANÁ/PR +',
+      'NOVA LUZITÂNIA/SP -',
+      "SÃO JOÃO DO PAU D'ALHO/SP +",
+      'ANHANGÜERA/GO -',
+    ])
+    expect(one[0]).toMatchObject({ margin: expect.closeTo(0.021, 3), validos2: 4731 })
+    expect(one[4]).toMatchObject({ margin: expect.closeTo(-0.096, 3), validos2: 1045 })
   })
 })

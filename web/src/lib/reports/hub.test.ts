@@ -6,7 +6,7 @@
  * - "Marquinho/PR: empate, diferença de 0 votos"
  * - "Mais alto: Santa Maria do Herval/RS, 90,5%. Mais baixo: Itaubal/AP, 59,0%"
  * The two rows that are lists (Comparar, Como cada grupo votou) carry a descriptive headline,
- * like the frame. Rows without a built report (tickets #13-15) have no `to`.
+ * like the frame. Since tickets #13 and #15, only Comparar (ticket #14) has no `to`.
  */
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -46,16 +46,17 @@ describe('hub rows (fixture state)', () => {
     })
   })
 
-  it('five rows are stubs (como-cada-grupo-votou is built, ticket #15): headline computed, no route', async () => {
+  it('the six built reports are links; only comparar (ticket #14) is a stub with a computed headline', async () => {
     const input = await fixtureInput()
     const rows = hubRows(computeReports(input), input)
-    expect(rows.filter((r) => r.to === undefined)).toHaveLength(5)
-    expect(rows[1]).toMatchObject({ id: 'maiores-viradas', headline: `Nenhuma cidade de ${formatInt(MIN_BIG_SWING_VALIDOS)}+ votos válidos` }) // the fixtures have no 100 mil+ city
-    expect(rows[2]).toMatchObject({ id: 'votos-ganhos-e-perdidos', headline: 'Candidato A: -14.914 votos no país' })
-    expect(rows[3]).toMatchObject({ id: 'disputas-mais-apertadas', headline: 'Cidade Exemplo A/RJ: margem de -0,1 pp' })
-    expect(rows[4]).toMatchObject({ id: 'comparecimento' })
+    expect(rows.filter((r) => r.to === undefined)).toHaveLength(1)
+    expect(rows[1]).toMatchObject({ id: 'maiores-viradas', to: '/relatorios/maiores-viradas/', headline: `Nenhuma cidade de ${formatInt(MIN_BIG_SWING_VALIDOS)}+ votos válidos` }) // the fixtures have no 100 mil+ city
+    expect(rows[2]).toMatchObject({ id: 'votos-ganhos-e-perdidos', to: '/relatorios/votos-ganhos-e-perdidos/', headline: 'Candidato A: -14.914 votos no país' })
+    expect(rows[3]).toMatchObject({ id: 'disputas-mais-apertadas', to: '/relatorios/disputas-mais-apertadas/', headline: 'Cidade Exemplo A/RJ: margem de -0,1 pp' })
+    expect(rows[4]).toMatchObject({ id: 'comparecimento', to: '/relatorios/comparecimento/' })
     expect(rows[4]!.headline).toContain('Cidade Exemplo C/RJ, 78,2%. Mais baixo: Cidade Exemplo E/RJ, 70,5%')
     expect(rows[5]).toMatchObject({ id: 'comparar', headline: 'Os seis maiores estados: Candidato A e Candidato B, votos e percentuais' })
+    expect(rows[5]!.to).toBeUndefined()
     expect(rows[6]).toMatchObject({ id: 'como-cada-grupo-votou', headline: 'Cidades agrupadas por quem venceu em 2018 e 2022', to: '/relatorios/como-cada-grupo-votou/' })
   })
 })
