@@ -30,11 +30,11 @@ test.describe('reports hub page', () => {
     await expect(page.locator('[data-report="cidades-que-viraram"]')).toHaveAttribute('href', base + 'relatorios/cidades-que-viraram/')
   })
 
-  test('marks the six not-built reports with "Em breve" and no route of their own', async ({ page }) => {
+  test('marks the not-built reports with "Em breve" and no route of their own', async ({ page }) => {
     await page.goto(base + 'relatorios/')
-    await expect(page.getByText('Em breve')).toHaveCount(6)
+    await expect(page.getByText('Em breve')).toHaveCount(5) // six stubs minus como-cada-grupo-votou, built by ticket #15
     const hrefs = await page.locator('nav[aria-label="Relatórios"] a').evaluateAll((els) => els.map((e) => e.getAttribute('href')))
-    expect(hrefs).toEqual([base + 'relatorios/cidades-que-viraram/'])
+    expect(hrefs).toEqual([base + 'relatorios/cidades-que-viraram/', base + 'relatorios/como-cada-grupo-votou/'])
   })
 
   test('backs to the home page and cites the source with the data page', async ({ page }) => {

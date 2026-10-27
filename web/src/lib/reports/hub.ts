@@ -76,7 +76,7 @@ export function hubRows(reports: ComputedReports, input: MarginInput): HubRow[] 
       id: 'como-cada-grupo-votou',
       title: 'Como cada grupo votou',
       headline: 'Cidades agrupadas por quem venceu em 2018 e 2022',
-      // Report built by ticket #15.
+      to: '/relatorios/como-cada-grupo-votou/', // built by ticket #15
     },
   ]
 }
