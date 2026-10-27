@@ -5,12 +5,12 @@ import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { setAnalytics, noopAnalytics, type Analytics } from '@site/analytics'
 import CitySearch from './CitySearch'
 
-const CSV = [
-  'uf,cd_municipio,cd_ibge,nome,slug,regiao,ciclos',
-  'rj,1,1,Cidade Exemplo,cidade-exemplo,sudeste,2026',
-  'sp,2,2,Cidade Exemplo Paulista,cidade-exemplo-paulista,sudeste,2026',
-  ...Array.from({ length: 30 }, (_, i) => `mg,${10 + i},${10 + i},SANTA LUZIA ${i},santa-luzia-${i},sudeste,2026`),
-].join('\n')
+const SEARCH_ROWDATA: [string, string, string][] = [
+  ['Cidade Exemplo', 'cidade-exemplo', 'rj'],
+  ['Cidade Exemplo Paulista', 'cidade-exemplo-paulista', 'sp'],
+  ...Array.from({ length: 30 }, (_, i) => [`SANTA LUZIA ${i}`, `santa-luzia-${i}`, 'mg'] as [string, string, string]),
+]
+const SEARCH = JSON.stringify(SEARCH_ROWDATA)
 
 const events: [string, unknown][] = []
 
@@ -29,7 +29,7 @@ afterEach(() => {
 })
 
 function setup() {
-  vi.stubGlobal('fetch', vi.fn(async () => new Response(CSV)))
+  vi.stubGlobal('fetch', vi.fn(async () => new Response(SEARCH)))
   const analytics: Analytics = { pageView() {}, event: (n, p) => void events.push([n, p]) }
   setAnalytics(analytics)
   render(<CitySearch base="/voto-a-voto/" />)
@@ -55,7 +55,7 @@ describe('CitySearch island', () => {
   it('reports one search with result count and query length, never the typed text', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-    vi.stubGlobal('fetch', vi.fn(async () => new Response(CSV)))
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(SEARCH)))
     setAnalytics({ pageView() {}, event: (n, p) => void events.push([n, p]) })
     render(<CitySearch base="/" />)
     await user.type(screen.getByRole('combobox'), 'cidade exemplo')

@@ -29,7 +29,7 @@ test.describe(`network allow-list (${mode} build)`, () => {
   test('the check catches a non-GET request to the site (canary)', async ({ page, baseURL }) => {
     const seen = collectRequests(page)
     await page.goto(base)
-    await page.evaluate((b) => fetch(b + 'data/cities.csv', { method: 'POST' }).catch(() => undefined), base)
+    await page.evaluate((b) => fetch(b, { method: 'POST' }).catch(() => undefined), base)
     expect(violations(seen, await allowedOrigins(new URL(baseURL!).origin)).some((v) => v.startsWith('POST'))).toBe(true)
   })
 })
