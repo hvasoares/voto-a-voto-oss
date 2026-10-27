@@ -27,6 +27,10 @@ export function shadcnVariables(): Record<string, string> {
     '--input': colors.rule,
     '--ring': colors.accent,
     '--radius': `${radius.control}px`,
+    // Every Sketch swatch as --c-<name>, so markup can use arbitrary-value utilities
+    // (bg-[var(--c-lula)], text-[var(--c-muted-foreground)]...). The shadcn variables above
+    // cover named UI roles; bars and banners need the raw swatches (ticket #10).
+    ...Object.fromEntries(Object.entries(colors).map(([k, v]) => [`--c-${k}`, v])),
     '--sketch-font-sans': fonts.sans,
     '--sketch-font-serif': fonts.serif,
     '--gutter': `${layout.gutter}px`,
