@@ -6,6 +6,7 @@
  *   v<fingerprint>/city/<uf>/<slug>.json  one city: identity + turnout and votes per cycle and round + candidates
  *   v<fingerprint>/state/<uf>.json        one state: its cities with the fields a list needs (name and slug)
  *   v<fingerprint>/totals.json            national and per-region sums of turnout and votes, per cycle and round
+ *   v<fingerprint>/peers.json             the closest peer cities of every city (ticket #23, src/lib/peers.ts)
  *
  * The fingerprint is a sha256 over the five dataset files, so the paths change whenever the dataset changes and
  * a stale copy is never served (web/docs/shards.md records layout and budgets). Everything here is deterministic:
@@ -25,10 +26,11 @@ import {
 } from '@/data'
 import { parseCandidates, parseCities, parseTurnout, parseVotes } from '@/data/csv'
 import { dataDir } from '../src/lib/data-dir'
+import { computePeers, encodePeers } from '../src/lib/peers'
 import { datasetFingerprint, type ShardSources } from './shards-fingerprint'
 
 /** Bumped when the shard layout changes: a cached version directory is rebuilt when this does not match. */
-export const SHARD_GENERATOR = 'voto-shards/1'
+export const SHARD_GENERATOR = 'voto-shards/2'
 
 export const TURNOUT_FIELDS = ['aptos', 'comparecimento', 'abstencoes', 'brancos', 'nulos', 'anuladosApuSep', 'validos'] as const
 type TurnoutFields = Pick<Turnout, (typeof TURNOUT_FIELDS)[number]>
@@ -152,7 +154,10 @@ export function buildShards(sources: ShardSources): BuiltShards {
   }
 
   const fingerprint = datasetFingerprint(sources)
-  return { fingerprint, files: composeShards(`v${fingerprint}`, byCity, national, regions, candidatesByRound) }
+  const files = composeShards(`v${fingerprint}`, byCity, national, regions, candidatesByRound)
+  // Peer cities (#23): one small index-encoded file; overseas posts are left out by the method itself.
+  files.push({ path: `v${fingerprint}/peers.json`, json: JSON.stringify(encodePeers(computePeers({ cities, turnout, votes }))) })
+  return { fingerprint, files }
 }
 
 function numberedObject(map: Map<number, number>): Record<string, number> {

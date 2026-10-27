@@ -44,6 +44,7 @@
     "test": "vitest run",
     "check:shards": "tsx scripts/shard-check.ts",
     "check:perf": "tsx scripts/perf-budgets.ts",
+    "check:peers": "tsx scripts/peers-check.ts",
     "check:shards:real": "DATA_DIR=../data tsx scripts/shard-check.ts",
     "check:tse-live": "DATA_DIR=../data tsx scripts/verify-tse-live.ts",
     "test:e2e": "playwright test --project=phone",

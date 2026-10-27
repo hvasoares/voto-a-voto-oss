@@ -259,3 +259,29 @@ describe('verify catches broken shards', () => {
     expect(problems.some((problem) => problem.includes('no shard city/aa/alfa-city.json'))).toBe(true)
   })
 })
+
+describe('peers.json (#23)', () => {
+  const built = buildFixture()
+  const peers = jsonOf(built, 'peers.json') as { k: number; cities: string[]; peers: number[][] }
+
+  it('is part of the shards, well formed, one peer list per city and every index valid', () => {
+    expect(peers.k).toBe(5)
+    expect(peers.peers).toHaveLength(peers.cities.length)
+    for (const [i, list] of peers.peers.entries()) {
+      expect(list.length).toBeLessThanOrEqual(peers.k)
+      for (const j of list) {
+        expect(j).toBeGreaterThanOrEqual(0)
+        expect(j).toBeLessThan(peers.cities.length)
+        expect(j).not.toBe(i)
+      }
+    }
+  })
+  it('lists every city of the fixture except the overseas post', () => {
+    const search = jsonOf(built, 'search.json') as [string, string, string][]
+    expect(peers.cities).toEqual(search.filter(([, , uf]) => uf !== 'zz').map(([, slug, uf]) => `${uf}/${slug}`).sort(byText))
+    expect(peers.cities.some((c) => c.startsWith('zz/'))).toBe(false)
+  })
+  it('regenerating gives the same bytes', () => {
+    expect(fileOf(buildFixture(), 'peers.json')).toBe(fileOf(built, 'peers.json'))
+  })
+})

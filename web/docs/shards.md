@@ -15,6 +15,7 @@ The version directory changes whenever the dataset changes, so a stale copy is n
 | City | `city/<uf>/<slug>.json` | The city card, one request per page view |
 | State | `state/<uf>.json` | State list pages |
 | Totals | `totals.json` | National and region totals |
+| Peers | `peers.json` | The closest peer cities of every city (#23; method in `peer-similarity.md`; no screen reads it yet) |
 
 `<fingerprint>` is 16 hex characters of sha256 over the five committed dataset files
 (`cities.csv`, `turnout.csv`, `votes.csv`, `candidates.csv`, `manifest.json`). Client and page
