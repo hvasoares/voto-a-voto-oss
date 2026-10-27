@@ -54,21 +54,33 @@ data is fictitious in the description, as the pages do.
 
 ## Build times and memory (real dataset, full build)
 
-- **Cold** (empty cache): previews 53.6 s for 5,760 images (~109.9 MB); whole build ≈ 3 m 33 s; peak RSS
-  ≈ 1.96 GB (measured with `/usr/bin/time -l`; the baseline #50 build was ≈ 2 min / ~1.7 GB, so the
-  rasterisation phase adds ≈ 1 min and ≈ 0.2 GB).
+- **Cold, final clean build** (empty cache): previews **51.7 s** for 5,760 images (5,760 rasterizadas,
+  109.9 MB in file bytes); whole build **2 m 23 s**; peak RSS **2,113,437,696 B ≈ 2.11 GB** (measured with
+  `/usr/bin/time -l`; the baseline #50 build was ≈ 2 min / ~1.7 GB, so the rasterisation phase adds ≈ 1 min
+  and ≈ 0.4 GB).
 - **Warm** (cache from the cold run): previews **0 rasterizadas, 5.760 do cache**, 28.7 s (the copies into
   `public/preview/` dominate); whole build ≈ 3 m; peak RSS ≈ 1.73 GB. The cache makes interrupted builds
   resumable per city (`.part` + atomic rename everywhere) and no-op for an unchanged dataset.
-- Pages: 17,351 pre-rendered pages on the real build (baseline was 17,311 at the #49-era count —
-  the city card routes of #50 are the same here; the delta is fixture/real dataset bookkeeping, not #8).
+- **Caveat: one cache holds one dataset.** The cache keeps only the current fingerprint's version dir, so
+  building the OTHER dataset (fixture e2e vs the real project, e.g. two agents on one checkout) replaces
+  the cached version — the next real build rasterises all 5,760 again. Never run two builds
+  concurrently on one checkout: the loser's `public/` gets overwritten mid-prerender (observed: a
+  fixture build in the middle of the real build left `dist/data` with fixture shards; a clean rerun
+  fixed it).
+- Pages: **17,350** pre-rendered pages on the final clean real build (baseline was 17,311 at the #50 count —
+  the delta is fixture/real dataset bookkeeping, not #8; no route was added).
+- Final clean `dist/` in numbers: **533,348 KiB ≈ 521 MiB** on disk in total — HTML ≈ 384 MB over 17,350
+  pages, `dist/data/` real shards **23,608 KiB ≈ 23 MiB**, `dist/preview/` **116,184 KiB ≈ 113 MiB** over
+  5,760 PNGs (the 109.9 MB of the integration's report is the sum of the file bytes; `du` adds per-file
+  block-rounding overhead on top).
 
 ## Per-route page sizes (real dataset, with the preview tags)
 
 - City card `index.html` (e.g. `/rj/cidade-exemplo/` fixture page): ≈ 18.8 KB, of which ≈ 1.5 KB is the
   og/twitter head block; the overseas/no-image variants tag no og:image (≈ 1.0 KB of head). State pages
   and the other routes are unchanged (they pass no description/preview).
-- `dist/preview/` = 109.9 MB over 5,760 PNGs (+ one `.generator` sentinel per directory).
+- `dist/preview/` = **116,184 KiB ≈ 113 MiB** on disk over 5,760 PNGs (+ one `.generator` sentinel per
+  directory; the sum of the image bytes alone is the 109.9 MB the integration reports).
 
 ## Spot-check procedure (the 10 slugs of the real e2e)
 
