@@ -15,10 +15,8 @@
  * Esperança do Norte exists from 2026). Overseas posts (uf "zz", regiao "exterior") get a city shard and enter the
  * national totals and the "exterior" region totals.
  */
-import { createHash } from 'node:crypto'
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import type { Plugin } from 'vite'
 import {
   DATA_FILES,
   type City,
@@ -27,14 +25,10 @@ import {
 } from '@site/data'
 import { parseCandidates, parseCities, parseTurnout, parseVotes } from '@site/data/csv'
 import { dataDir } from '../src/lib/data-dir'
+import { datasetFingerprint, type ShardSources } from './shards-fingerprint'
 
 /** Bumped when the shard layout changes: a cached version directory is rebuilt when this does not match. */
 export const SHARD_GENERATOR = 'voto-shards/1'
-/** Virtual module that exposes the fingerprint of the dataset being built to client and page code. */
-export const SHARD_VIRTUAL_ID = 'virtual:data-shards'
-
-export type DataFile = (typeof DATA_FILES)[number]
-export type ShardSources = Record<DataFile, string>
 
 export const TURNOUT_FIELDS = ['aptos', 'comparecimento', 'abstencoes', 'brancos', 'nulos', 'anuladosApuSep', 'validos'] as const
 type TurnoutFields = Pick<Turnout, (typeof TURNOUT_FIELDS)[number]>
@@ -54,28 +48,20 @@ export interface ShardRound {
 
 /** Byte-identical regeneration depends on this order, never on the runtime locale. */
 export const byText = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0)
-const byNumber = (a: number, b: number): number => a - b
 const cityKey = (uf: string, cdMunicipio: string): string => `${uf}|${cdMunicipio}`
 
 export class ShardError extends Error {}
 
-/** A short, deterministic digest of the dataset: the shard directory name ("a stale copy is never served"). */
-export function datasetFingerprint(sources: ShardSources): string {
-  const hash = createHash('sha256')
-  for (const f of [...DATA_FILES].sort(byText)) hash.update(f).update('\0').update(sources[f]!).update('\0')
-  return hash.digest('hex').slice(0, 16)
-}
-
-/** The fingerprint of the configured dataset on disk (what the Playwright specs assert against the served build). */
-export async function datasetFingerprintFromDisk(
-  env: Record<string, string | undefined> = process.env,
-  cwd = process.cwd(),
-): Promise<string> {
-  const dir = dataDir(env, cwd)
-  const sources = {} as Record<DataFile, string>
-  for (const f of [...DATA_FILES].sort(byText)) sources[f] = readFileSync(resolve(dir, f), 'utf8')
-  return datasetFingerprint(sources)
-}
+/** The fingerprint helpers live in shards-fingerprint.ts (no `@site` imports there); re-exported for callers. */
+export {
+  builtFingerprint,
+  datasetFingerprint,
+  datasetFingerprintFromDisk,
+  SHARD_VIRTUAL_ID,
+  shardsModule,
+  type DataFile,
+  type ShardSources,
+} from './shards-fingerprint'
 
 type Cycles = Map<number, Map<Turno, ShardRound>>
 type Target = Map<string, Cycles>
@@ -165,7 +151,8 @@ export function buildShards(sources: ShardSources): BuiltShards {
       throw new ShardError(`votes.csv: candidate ${v.candidatoNumero} of ${v.ano} round ${v.turno} (${v.uf} ${v.cdMunicipio}) has no row in candidates.csv`)
   }
 
-  return { fingerprint: datasetFingerprint(sources), files: composeShards(`v${datasetFingerprint(sources)}`, byCity, national, regions, candidatesByRound) }
+  const fingerprint = datasetFingerprint(sources)
+  return { fingerprint, files: composeShards(`v${fingerprint}`, byCity, national, regions, candidatesByRound) }
 }
 
 function numberedObject(map: Map<number, number>): Record<string, number> {
@@ -262,25 +249,6 @@ function composeShards(
 }
 
 /**
- * The fingerprint of the dataset being built, for the virtual module (`virtual:data-shards`) and the dataset
- * integration; both derive it from the same files, so they always agree.
- */
-let fingerprintPromise: Promise<string> | undefined
-export function builtFingerprint(): Promise<string> {
-  return (fingerprintPromise ??= datasetFingerprintFromDisk())
-}
-
-/** Vite plugin exposing `virtual:data-shards`: the only versioned fact the client and page code need. */
-export function shardsModule(): Plugin {
-  return {
-    name: 'voto-shards',
-    resolveId: (source) => (source === SHARD_VIRTUAL_ID ? '\0' + SHARD_VIRTUAL_ID : undefined),
-    load: async (source) =>
-      source === '\0' + SHARD_VIRTUAL_ID ? { code: `export const SHARD_VERSION = ${JSON.stringify(await builtFingerprint())}\n`, map: null } : undefined,
-  }
-}
-
-/**
  * Writes the shards of the configured dataset (env/DATA_DIR, cwd) under public/data and prunes everything else of
  * that directory (older version directories, the previously copied CSVs). The version directory is cached with a
  * `.generator` sentinel, so dev servers re-start fast while the same dataset is in place.
@@ -288,15 +256,15 @@ export function shardsModule(): Plugin {
  */
 export function generateShards(publicData: string, env: Record<string, string | undefined> = process.env, cwd = process.cwd()): string {
   const dir = dataDir(env, cwd)
-  const sources = {} as Record<DataFile, string>
-  for (const f of [...DATA_FILES].sort(byText)) {
+  const sources = {} as Record<string, string>
+  for (const f of DATA_FILES) {
     try {
       sources[f] = readFileSync(resolve(dir, f), 'utf8')
     } catch (error) {
       throw new ShardError(`DATA_DIR ${dir} is missing ${f}: ${(error as Error).message}`)
     }
   }
-  const built = buildShards(sources)
+  const built = buildShards(sources as Parameters<typeof buildShards>[0])
   const versionDir = resolve(publicData, `v${built.fingerprint}`)
   let stale = true
   try {

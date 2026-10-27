@@ -10,7 +10,8 @@ import { resolve } from 'node:path'
 import { DATA_FILES } from '@site/data'
 import { describe, expect, it } from 'vitest'
 import { dataDir } from '../src/lib/data-dir'
-import { buildShards, datasetFingerprint, datasetFingerprintFromDisk, generateShards, ShardError, type ShardSources } from './shards'
+import { buildShards, byText, datasetFingerprint, datasetFingerprintFromDisk, generateShards, ShardError, type ShardSources } from './shards'
+import { FINGERPRINT_FILES } from './shards-fingerprint'
 import { verifyShards } from './shards-verify'
 
 /** Sources of a dataset directory (default: the committed fixture dataset web/ uses). */
@@ -94,6 +95,10 @@ it('the fingerprint changes when the dataset changes and is stable otherwise', (
   const touched: ShardSources = { ...sources, 'cities.csv': `${sources['cities.csv']}# touched\n` }
   expect(datasetFingerprint(touched)).not.toBe(expectedFingerprint)
   expect(expectedFingerprint).toBe(buildFixture().fingerprint)
+})
+
+it('the fingerprint covers exactly the dataset files the app store reads (no drift)', () => {
+  expect([...FINGERPRINT_FILES].sort(byText)).toEqual([...DATA_FILES].sort(byText))
 })
 
 it('the fingerprint on disk agrees with the built shards (nothing stale served)', async () => {
