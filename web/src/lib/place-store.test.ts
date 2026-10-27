@@ -1,0 +1,91 @@
+import { describe, expect, it } from 'vitest'
+import { NOTICE_STORAGE_KEY } from './consent'
+import { forgetAll, placeHref, placeLabel, PLACE_KEY, readPlace, savePlace, STORED_ITEMS } from './place-store'
+import { REGISTER_KEY } from './sentences/register-store'
+
+// A fake storage: the store only needs these four methods, and nothing here touches a browser.
+const memory = () => {
+  const m = new Map<string, string>()
+  return {
+    getItem: (k: string) => m.get(k) ?? null,
+    setItem: (k: string, v: string) => void m.set(k, v),
+    removeItem: (k: string) => void m.delete(k),
+    m,
+  }
+}
+const blocked = {
+  getItem: () => {
+    throw new Error('blocked')
+  },
+  setItem: () => {
+    throw new Error('blocked')
+  },
+  removeItem: () => {
+    throw new Error('blocked')
+  },
+}
+const city = { kind: 'city', uf: 'rj', slug: 'cidade-exemplo', nome: 'Cidade Exemplo' } as const
+
+describe('place store', () => {
+  it('has no place until one is picked', () => {
+    expect(readPlace(memory())).toBeUndefined()
+  })
+
+  it('remembers a city and a state, the last pick replacing the earlier one', () => {
+    const s = memory()
+    savePlace(city, s)
+    expect(readPlace(s)).toEqual(city)
+    savePlace({ kind: 'state', uf: 'mt' }, s)
+    expect(readPlace(s)).toEqual({ kind: 'state', uf: 'mt' })
+  })
+
+  it('keeps only the fields of a place, nothing else the caller passed along', () => {
+    const s = memory()
+    savePlace({ ...city, extra: 'x', lat: -22.9 } as never, s)
+    expect(JSON.parse(s.m.get(PLACE_KEY)!)).toEqual(city)
+  })
+
+  it.each([
+    ['not json', '{'],
+    ['an array', '[]'],
+    ['an unknown kind', '{"kind":"street","uf":"rj"}'],
+    ['a uf that is not two letters', '{"kind":"state","uf":"rio"}'],
+    ['a city without a slug', '{"kind":"city","uf":"rj","nome":"X"}'],
+    ['a slug with a path in it', '{"kind":"city","uf":"rj","slug":"../x","nome":"X"}'],
+  ])('ignores a stored value that is %s', (_label, raw) => {
+    const s = memory()
+    s.setItem(PLACE_KEY, raw)
+    expect(readPlace(s)).toBeUndefined()
+  })
+
+  it('links a city to its page and a state to its page, and names them', () => {
+    expect(placeHref(city)).toBe('/rj/cidade-exemplo/')
+    expect(placeHref({ kind: 'state', uf: 'mt' })).toBe('/mt/')
+    expect(placeLabel(city)).toBe('Cidade Exemplo · RJ')
+    expect(placeLabel({ kind: 'state', uf: 'mt' })).toBe('Mato Grosso')
+  })
+
+  it('forgets everything the site stored, and only that', () => {
+    const s = memory()
+    savePlace(city, s)
+    s.setItem(REGISTER_KEY, 'plain')
+    s.setItem(NOTICE_STORAGE_KEY, 'acknowledged')
+    s.setItem('someone-else', 'kept')
+    forgetAll(s)
+    expect([...s.m.keys()]).toEqual(['someone-else'])
+    expect(readPlace(s)).toBeUndefined()
+  })
+
+  it('lists, for the privacy text, exactly the keys the site writes', () => {
+    expect(STORED_ITEMS.map((i) => i.key).sort()).toEqual([NOTICE_STORAGE_KEY, PLACE_KEY, REGISTER_KEY].sort())
+    for (const item of STORED_ITEMS) expect(item.what.length).toBeGreaterThan(10)
+  })
+
+  it('works with no storage at all, or one that throws on every call', () => {
+    for (const s of [undefined, blocked]) {
+      expect(readPlace(s)).toBeUndefined()
+      expect(() => savePlace(city, s)).not.toThrow()
+      expect(() => forgetAll(s)).not.toThrow()
+    }
+  })
+})
