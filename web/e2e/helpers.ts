@@ -76,3 +76,12 @@ export async function expectNoHorizontalScroll(page: Page): Promise<void> {
 export async function resizeTo(page: Page, width: number): Promise<void> {
   await page.setViewportSize({ width, height: width === 390 ? 844 : 900 })
 }
+
+/** The Home's map lives in a lazy iframe from 1024 px up (#53): the document of the fragment. */
+export const mapFrame = (page: Page) => page.frameLocator('[data-uf-map-frame]')
+
+/** Moves the mouse onto the label of a state (inside its shape; the shape's own bounding box centre may lie over a neighbour). */
+export async function hoverState(page: Page, uf: string) {
+  const box = (await mapFrame(page).locator(`[data-map-uf="${uf}"] text`).boundingBox())!
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+}

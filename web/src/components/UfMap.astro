@@ -1,0 +1,50 @@
+---
+/**
+ * The SVG state map of Brazil (ticket #53; reused by "Mapa por estado", #54), pre-rendered at build time as static inline SVG:
+ * it needs no JavaScript to draw, and every state that has a page is a link with a title and a text label (its abbreviation, or
+ * the value #54 prints). Hover and focus are CSS only (screens.css, `.uf-map`). Geometry: src/lib/uf-map.ts over the committed
+ * file data/geo/uf-outlines.json. A state the dataset has no page for is drawn, not linked (like the inert tiles).
+ */
+import { loadUfMap } from '@/lib/uf-map'
+import { UF_NOME, ufFullLabel } from '@/lib/uf-names'
+import { withBase } from '@/paths'
+
+interface Props {
+  /** UFs that have a page (the dataset's states). */
+  available: Set<string>
+  base: string
+  /** `aria-label` of the drawing. */
+  label?: string
+  /** Link target: `_top` inside a fragment document (an SVG <a> does not take the <base target>). */
+  target?: string
+}
+const { available, base, label = 'Mapa do Brasil por estado', target } = Astro.props
+const map = loadUfMap()
+const KEY = 15
+---
+<svg class="uf-map" viewBox={`0 0 ${map.width} ${map.height}`} role="group" aria-label={label} focusable="false" data-uf-map>
+  {map.shapes.map((s) => {
+    const linked = available.has(s.uf)
+    const c = s.callout
+    const inner = (
+      <>
+        <title>{UF_NOME[s.uf]}</title>
+        <path d={s.d} />
+        {c ? (
+          <>
+            <line x1={c.lineFrom[0]} y1={c.lineFrom[1]} x2={c.lineTo[0]} y2={c.lineTo[1]} />
+            <rect x={c.keyX} y={c.keyY} width={KEY} height={KEY} />
+            <text x={c.textX} y={c.textY}>{s.uf.toUpperCase()}</text>
+          </>
+        ) : (
+          <text x={s.labelX} y={s.labelY + 4} text-anchor="middle">{s.uf.toUpperCase()}</text>
+        )}
+      </>
+    )
+    return linked ? (
+      <a href={withBase(base, `/${s.uf}/`)} target={target} data-map-uf={s.uf} aria-label={ufFullLabel(s.uf)}>{inner}</a>
+    ) : (
+      <g data-map-uf={s.uf} aria-disabled="true">{inner}</g>
+    )
+  })}
+</svg>

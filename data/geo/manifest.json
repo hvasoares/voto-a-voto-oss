@@ -1,16 +1,16 @@
 {
   "outputs": {
     "uf-outlines.json": {
-      "bytes": 34571,
-      "sha256": "7a54eb012f3d9a3fe9c6110bbb5bddc2d695b0a7623e3c4f87abad5511b7c7a1",
+      "bytes": 21524,
+      "sha256": "49ff630e6aef8a6e867bc3d347e5236c74cf5cc68c36e99a3ef6a2f2a91bfb1c",
       "ufs": 27
     }
   },
   "processing": {
     "decimals": 3,
-    "min_ring_area_deg2": 0.06,
+    "min_ring_area_deg2": 0.1,
     "rings": "outer rings only, largest first",
-    "tolerance_degrees": 0.06
+    "tolerance_degrees": 0.1
   },
   "schema_version": 1,
   "sources": [

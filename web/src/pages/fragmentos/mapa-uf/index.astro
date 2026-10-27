@@ -1,0 +1,16 @@
+---
+/**
+ * The Home's SVG state map as a fragment document (#53): embedded by src/pages/index.astro in a lazy iframe that only exists
+ * from 1024 px up. Static inline SVG inside it: no script needed to draw, every state of the dataset a link to its page.
+ */
+import FragmentDoc from '@/layouts/FragmentDoc.astro'
+import UfMap from '@/components/UfMap.astro'
+import { normalizeBase } from '@/paths'
+import { loadStateCodes } from '@/lib/states'
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const available = new Set(await loadStateCodes())
+---
+<FragmentDoc title="Mapa do Brasil por estado">
+  <UfMap available={available} base={base} target="_top" />
+</FragmentDoc>

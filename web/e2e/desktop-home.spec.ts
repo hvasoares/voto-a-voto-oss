@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { activateSearch, base, collectRequests, expectNoHorizontalScroll, resizeTo, WIDTHS } from './helpers'
+import { activateSearch, base, collectRequests, expectNoHorizontalScroll, hoverState, mapFrame, resizeTo, WIDTHS } from './helpers'
 
 /* Ticket #51: the desktop shell and Home. Fixture dataset (states rj, sp, mt). */
 
@@ -116,7 +116,7 @@ test.describe('layout', () => {
   test('at 1440 the state picker sits right of the title, search and "Para explorar"', async ({ page }) => {
     await page.goto(base)
     const left = await page.getByRole('heading', { name: 'Para explorar' }).boundingBox()
-    const picker = await page.locator('[data-uf-grid]').boundingBox()
+    const picker = await page.locator('[data-uf-map-frame]').boundingBox()
     const title = await page.getByText('Eleição presidencial 2026, cidade por cidade.').boundingBox()
     expect(picker!.x).toBeGreaterThan(left!.x + 560)
     expect(picker!.y).toBeLessThan(left!.y)
@@ -131,26 +131,29 @@ test.describe('layout', () => {
     expect(Math.round(main!.x * 2 + main!.width)).toBe(1800)
   })
 
-  test('at 768 Home is one column and the tile grid shows', async ({ page }) => {
-    await resizeTo(page, 768)
-    await page.goto(base)
-    const grid = await page.locator('[data-uf-grid]').boundingBox()
-    const explore = await page.getByRole('heading', { name: 'Para explorar' }).boundingBox()
-    expect(grid!.y).toBeLessThan(explore!.y)
-    await expect(page.locator('[data-uf-grid]')).toBeVisible()
+  test('at 768 and 1023 Home is one column and the tile grid shows (the map is for 1024 and up)', async ({ page }) => {
+    for (const width of [768, 1023]) {
+      await page.setViewportSize({ width, height: 900 })
+      await page.goto(base)
+      const grid = await page.locator('[data-uf-grid]').boundingBox()
+      const explore = await page.getByRole('heading', { name: 'Para explorar' }).boundingBox()
+      expect(grid!.y).toBeLessThan(explore!.y)
+      await expect(page.locator('[data-uf-grid]')).toBeVisible()
+      await expect(page.locator('[data-uf-map-frame]')).toBeHidden()
+    }
   })
 
   test('at 1440 the picker still offers every state of the dataset as a link, with the desktop wording', async ({ page }) => {
     await page.goto(base)
     await expect(page.getByText('Ou escolha um estado. Clique para ver os municípios.')).toBeVisible()
-    await expect(page.locator('a[data-uf]')).toHaveCount(3)
+    await expect(mapFrame(page).locator('a[data-map-uf]')).toHaveCount(3)
   })
 })
 
 test.describe('keyboard and pointer', () => {
   test('every link and tile shows a visible focus ring', async ({ page }) => {
     await page.goto(base)
-    for (const loc of [page.locator('a[data-uf="rj"]'), page.getByRole('link', { name: /Brasil e regiões/ }).last(), page.locator('[data-component="top-bar"] [data-wordmark]'), page.locator('[data-component="top-bar"] nav a').first()]) {
+    for (const loc of [page.getByRole('link', { name: /Brasil e regiões/ }).last(), page.locator('[data-component="top-bar"] [data-wordmark]'), page.locator('[data-component="top-bar"] nav a').first()]) {
       await loc.focus()
       await page.keyboard.press('Shift+Tab')
       await page.keyboard.press('Tab')
@@ -162,10 +165,18 @@ test.describe('keyboard and pointer', () => {
     }
   })
 
+  test('every state of the map shows a visible focus ring (see desktop-map.spec.ts for the stroke)', async ({ page }) => {
+    await page.goto(base)
+    await mapFrame(page).locator('a[data-map-uf="rj"]').focus()
+    await page.keyboard.press('Shift+Tab')
+    await page.keyboard.press('Tab')
+    expect(await mapFrame(page).locator('a[data-map-uf="rj"] path').evaluate((el) => getComputedStyle(el).strokeWidth)).toBe('2.5px')
+  })
+
   test('hover only changes style: nothing appears that a keyboard or touch visitor could not read', async ({ page }) => {
     await page.goto(base)
     const before = await page.locator('main').innerText()
-    await page.locator('a[data-uf="rj"]').hover()
+    await hoverState(page, 'mt')
     expect(await page.locator('main').innerText()).toBe(before)
   })
 })

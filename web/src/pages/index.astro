@@ -6,16 +6,18 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { EXPLORE } from '@/lib/explore'
 import { loadStateCodes } from '@/lib/states'
+import { loadUfMap } from '@/lib/uf-map'
 import { UF_NOME, ufFullLabel } from '@/lib/uf-names'
 import { LOCATE_HINT } from '@/lib/locate-messages'
 import Base from '@/layouts/Base.astro'
 
 const base = normalizeBase(import.meta.env.BASE_URL)
 const available = new Set(await loadStateCodes())
+const ufMap = loadUfMap()
 const href = (path: string) => withBase(base, path)
 // "Três ciclos por estado" needs a state: the first one the dataset has (as in the vanilla home).
 const firstUf = [...available].sort()[0] ?? 'rj'
-const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md border-border text-body font-bold leading-[17px] text-foreground pb-0.5 lg:h-14 lg:w-14 lg:text-[15px]')
+const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md border-border text-body font-bold leading-[17px] text-foreground pb-0.5')
 ---
 <Base title="Voto a Voto">
   {/* Phone: one column. 768 px: the same column, centered. 1024 px and up (#51): the title, search and "Para explorar" on the
@@ -46,7 +48,7 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
     </div>
     <div class="lg:col-start-2 lg:row-span-2 lg:row-start-1">
     <p class="mt-1.5 text-small leading-[14px] lg:mt-[2px] lg:text-body"><span class="lg:hidden">Ou escolha um estado. Toque para ver os municípios.</span><span class="hidden lg:inline">Ou escolha um estado. Clique para ver os municípios.</span></p>
-    <nav class="mt-1 grid justify-center gap-px lg:mt-6 [grid-auto-rows:44px] [grid-template-columns:repeat(7,44px)] lg:justify-start lg:gap-1 lg:[grid-auto-rows:56px] lg:[grid-template-columns:repeat(7,56px)]" aria-label="Estados" data-uf-grid>
+    <nav class="mt-1 grid justify-center gap-px [grid-auto-rows:44px] [grid-template-columns:repeat(7,44px)] lg:hidden" aria-label="Estados" data-uf-grid>
       {UF_TILES.map((t) =>
         available.has(t.uf) ? (
           <a class={tile} style={`grid-column:${t.col};grid-row:${t.row}`} href={href(`/${t.uf}/`)} data-uf={t.uf} data-nome={UF_NOME[t.uf]} aria-label={ufFullLabel(t.uf)}>{t.uf.toUpperCase()}</a>
@@ -55,6 +57,9 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
         ),
       )}
     </nav>
+    {/* 1024 px and up: the SVG map replaces the tile grid (#53). Static inline SVG, every state a link; below 1024 px it is not drawn. */}
+    {/* A lazy iframe that is not drawn is never requested: the phone's HTML carries no map (it would add ~5 KB gzip), see layouts/FragmentDoc.astro. */}
+    <iframe class="mt-6 hidden w-full max-w-[560px] border-0 lg:block" style={`aspect-ratio:${ufMap.width}/${ufMap.height}`} src={href('/fragmentos/mapa-uf/')} title="Mapa do Brasil por estado: escolha um estado" loading="lazy" data-uf-map-frame></iframe>
     </div>
     <div class="lg:col-start-1 lg:row-start-2">
     <h2 class="mt-2 font-serif text-section font-normal leading-[25px] lg:mt-12 lg:text-[22px] lg:leading-[30px]">Para explorar</h2>

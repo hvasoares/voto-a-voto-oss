@@ -1,0 +1,10 @@
+/* The SVG state map (#53 Home, #54 Mapa por estado). Loaded only by the fragment documents (src/pages/fragmentos/), never by a page a phone opens. Hover and focus in CSS only. */
+.uf-map { display: block; width: 100%; max-width: 560px; height: auto; }
+.uf-map path { fill: var(--c-paper-2); stroke: var(--c-ring); stroke-width: 0.8; stroke-linejoin: round; }
+.uf-map text { font: 700 12px var(--sketch-font-sans); fill: var(--c-ink); pointer-events: none; }
+.uf-map line { stroke: var(--c-muted); stroke-width: 0.8; }
+.uf-map rect { fill: var(--c-paper-2); stroke: var(--c-ring); stroke-width: 1; }
+.uf-map a { cursor: pointer; }
+.uf-map a:hover path, .uf-map a:hover rect { fill: var(--c-rule); }
+.uf-map a:focus-visible { outline: none; }
+.uf-map a:focus-visible path, .uf-map a:focus-visible rect { stroke: var(--c-accent); stroke-width: 2.5; fill: var(--c-rule); }

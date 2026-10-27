@@ -33,10 +33,10 @@ UF_BY_CODE = {
     "21": "ma", "22": "pi", "23": "ce", "24": "rn", "25": "pb", "26": "pe", "27": "al", "28": "se", "29": "ba",
     "31": "mg", "32": "es", "33": "rj", "35": "sp", "41": "pr", "42": "sc", "43": "rs", "50": "ms", "51": "mt", "52": "go", "53": "df",
 }
-# Processing (recorded in the manifest): the map is drawn about 14 px per degree, so 0.06 degrees is under a pixel; the file
-# is inlined in the Home page as SVG, so every point costs the phone too (0.015 gave 124 KB, 0.06 gives about 35 KB).
-TOLERANCE_DEGREES = 0.06
-MIN_RING_AREA_DEG2 = 0.06  # about 700 km2: drops islets, keeps Marajo and Florianopolis' island
+# Processing (recorded in the manifest): the map is drawn about 14 px per degree, so 0.1 degrees is one pixel; the file
+# is inlined in the Home page as SVG, so every point costs the phone too (0.015 gave 124 KB, 0.06 35 KB, 0.1 gives 21 KB).
+TOLERANCE_DEGREES = 0.1
+MIN_RING_AREA_DEG2 = 0.1  # about 1,200 km2: drops islets, keeps Marajo and Florianopolis' island
 DECIMALS = 3  # about 110 m
 # Brazil's bounding box (Chui to Oiapoque, Cabo Branco to the Acre border), with a margin.
 LAT_RANGE, LON_RANGE = (-34.0, 5.5), (-74.5, -28.0)
