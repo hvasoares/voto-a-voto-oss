@@ -80,7 +80,7 @@ function setup(props: Partial<CityMapProps> = {}) {
   return {
     user: userEvent.setup(),
     fetch,
-    ...render(<CityMapMap base="/s/" geoUrl="/s/geo/municipios-rj.json" ufNome="Rio de Janeiro" data={DATA} {...props} />),
+    ...render(<CityMapMap base="/s/" geoUrl="/s/geo/municipios-rj.json" ufNome="Rio de Janeiro" semContorno={0} data={DATA} {...props} />),
   }
 }
 
@@ -207,7 +207,7 @@ describe('CityMapMap island (pre-hydration tap and deep link)', () => {
     island.setAttribute('data-pending-cd', '03')
     document.body.appendChild(island)
     render(
-      <CityMapMap base="/s/" geoUrl="/s/geo/municipios-rj.json" ufNome="Rio de Janeiro" data={DATA} />,
+      <CityMapMap base="/s/" geoUrl="/s/geo/municipios-rj.json" ufNome="Rio de Janeiro" semContorno={0} data={DATA} />,
       { container: island },
     )
     const panel = island.querySelector('[data-slot="mapa-selecionado"]') as HTMLElement
@@ -304,5 +304,38 @@ describe('fgOf: the label ink from the fill luminance', () => {
     expect(fgOf('neg1')).toBe('var(--foreground)')
     expect(fgOf('zero')).toBe('var(--foreground)')
     expect(fgOf('pos1')).toBe('var(--foreground)')
+  })
+})
+
+describe('CityMapMap: municipalities without a mesh shape (ticket #17)', () => {
+  it('the build-time count notes the list-only municipalities on the pre-rendered list', () => {
+    setup({ semContorno: 1 })
+    const note = document.querySelector('[data-slot="escala-sem-contorno"]') as HTMLElement
+    expect(note.textContent).toContain('Sem contorno: 1 município não tem fronteira no arquivo do IBGE')
+    expect(note.textContent).toContain('só aparece na lista.')
+  })
+
+  it('several list-only municipalities get the plural wording', () => {
+    setup({ semContorno: 3 })
+    const note = document.querySelector('[data-slot="escala-sem-contorno"]') as HTMLElement
+    expect(note.textContent).toContain('Sem contorno: 3 municípios não têm')
+  })
+
+  it('with the mesh loaded the note keeps counting the same list-only rows (map view)', async () => {
+    // a dataset row the synthetic mesh does not carry (Paraty's shape removed)...
+    try {
+      fetchJson = { ...MESH, formas: { ...MESH.formas } }
+      delete (fetchJson as MunicipalityMesh).formas['3399003']
+      const { user } = setup({ semContorno: 1 })
+      await user.click(screen.getByRole('link', { name: 'Mapa' }))
+      await waitFor(() => expect(document.querySelector('[data-slot="mapa-municipios"]')?.querySelectorAll('a[data-cd-ibge]')).toHaveLength(3))
+      const note = document.querySelector('[data-slot="escala-sem-contorno"]') as HTMLElement
+      expect(note.textContent).toContain('Sem contorno: 1 município')
+      // the other direction: mesh shapes without a dataset row still get their own note
+      const unmatched = document.querySelector('[data-slot="malha-sem-dados"]') as HTMLElement
+      expect(unmatched.textContent).toContain('1 dos municípios do arquivo de fronteiras')
+    } finally {
+      fetchJson = MESH
+    }
   })
 })

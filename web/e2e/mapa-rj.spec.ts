@@ -8,8 +8,12 @@ import { base } from './helpers'
  * ("Cidade Exemplo*", TSE codes 99001-99006, IBGE codes 3399001-3399006). The fixture names do not
  * join the real IBGE mesh (below), which the map view reports as its own note. The real numbers
  * live in real-data-mapa-rj.spec.ts; the island layer is CityMapMap.test.tsx.
+ *
+ * (The pre-#50 predicate ../site/fixtures/data/cities.csv never matches the #50 layout any more,
+ * so this whole file has been SILENTLY SKIPPED since that merge; it points at the committed
+ * web/fixtures/data again. Flagged in web/docs/checkpoints/issue-17.md.)
  */
-test.skip(!existsSync(resolve('../site/fixtures/data/cities.csv')), 'no fixture data')
+test.skip(!existsSync(resolve('fixtures/data/cities.csv')), 'no fixture data')
 
 const ROWS = [
   { cd: '99001', nome: 'Cidade Exemplo', slug: 'cidade-exemplo', pp: '+0,9', validos: '68.434' },
