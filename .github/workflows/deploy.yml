@@ -32,8 +32,10 @@ jobs:
       - name: Build static site
         run: npm run build
         env:
-          # Project site at https://<user>.github.io/voto-a-voto-oss/. Use "/" with a custom domain.
-          SITE_BASE: /voto-a-voto-oss/
+          # Custom domain (web/public/CNAME): the site is served at the apex, so the base is "/".
+          SITE_BASE: /
+          # Scheme + host used by the share/QR/preview URLs (src/lib/share-url.ts).
+          SITE_ORIGIN: https://voto-a-voto.com
           # The committed TSE dataset (5,570 cities) — the walking skeleton's real pages.
           DATA_DIR: ../data
           # Ticket #20 consent-first GA4: Astro inlines only PUBLIC_-prefixed vars into client
