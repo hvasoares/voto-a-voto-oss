@@ -39,6 +39,8 @@
     "serve": "tsx scripts/serve.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "check:shards": "tsx scripts/shard-check.ts",
+    "check:shards:real": "DATA_DIR=../data tsx scripts/shard-check.ts",
     "test:e2e": "playwright test --project=phone",
     "test:real": "DATA_DIR=../data E2E_PORT=4176 playwright test --project=real",
     "capture": "playwright test --project=capture",
