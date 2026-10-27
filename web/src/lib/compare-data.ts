@@ -131,8 +131,7 @@ export function intersection(a: ReadonlyMap<string, unknown> | ReadonlySet<strin
 export function tallyOf(s: StateStats, ano: number, turno: Turno, basis?: ReadonlySet<string>): RunoffTally | undefined {
   const sum = summed(roundOf(s, ano, turno), basis)
   if (!sum) return undefined
-  const pair = runoffPair(ano)
-  return { validos: sum.validos, left: sum.votes.get(pair.left) ?? 0, rival: sum.votes.get(pair.rival) ?? 0 }
+  return tallyFromBasis(sum, ano)
 }
 
 /**
@@ -188,8 +187,13 @@ export function buildCompareRows(stats: readonly StateStats[], ciclo: number, tu
   return sortCompareRows(rows)
 }
 
+/**
+ * The tally of one summed round: sides follow `electPair` — the ticket candidates (13 vs 17 in
+ * 2018, 13 vs 22 later) when that round has votes for both, otherwise the two leaders (the fixture
+ * set's "Candidato A/B"): a state that voted is never rendered as two zeros.
+ */
 function tallyFromBasis(sum: { validos: number; votes: Map<number, number> }, ano: number): RunoffTally {
-  const pair = runoffPair(ano)
+  const pair = electPair(sum.votes, ano)
   return { validos: sum.validos, left: sum.votes.get(pair.left) ?? 0, rival: sum.votes.get(pair.rival) ?? 0 }
 }
 
