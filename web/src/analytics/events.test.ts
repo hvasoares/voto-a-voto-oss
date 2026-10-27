@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { EVENT_PROPS } from './event-props'
 import { EVENTS, EVENT_NAMES, eventDoc, eventProps } from './events'
 
 /** The repo root: every `emitted` path in the table is relative to it. The walk covers the wired sources of src/ (not the tests, not this table, not the provider). */
@@ -34,6 +35,10 @@ function wiredEventNames(): Set<string> {
 }
 
 describe('the events table (ticket #20: every name and property documented in one place)', () => {
+  it('the lean table the browser reads says exactly what the documented table says', () => {
+    expect(EVENT_PROPS).toEqual(Object.fromEntries(EVENTS.map((e) => [e.name, Object.keys(e.props)])))
+  })
+
   it('every event name the site emits is in the table', () => {
     const wired = wiredEventNames()
     // Sanity for the scan itself: the codebase really does emit a full vocabulary, not nothing.

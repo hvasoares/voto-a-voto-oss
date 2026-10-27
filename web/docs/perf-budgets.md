@@ -42,6 +42,14 @@ pré-renderizado, nos dois registros, sem script e sem requisição nova: o html
 (+959 B): cartão de curiosidades do desktop 383 B (escondido no celular, que tem só o link de 23 B para a página própria), linha da margem 266 B (seis vistas,
 dois registros), cidade gêmea 153 B, arco 132 B. O mínimo que cobre o medido com folga de ~0.2 KB; o resto do cartão (css, js) não mudou de orçamento.
 
+**G3 (#25 a #29), nenhum orçamento mudou:** as dez novas linhas da tabela de eventos (`analytics/events.ts`, com prosa) fariam o script que toda
+página carrega passar de 3.1 KB (gzip) e estourar o `eagerJs` de home, mapa e relatório. A tabela foi dividida: `analytics/event-props.ts` traz só o
+que o navegador precisa (nome do evento e propriedades permitidas) e `events.ts`, com as descrições, ficou para os testes e a documentação, com um
+teste que obriga as duas a dizerem o mesmo. Efeito medido (`npm run check:perf`, fixture): o script de todas as páginas caiu de 3.1 KB para 1.4 KB
+gzip; `eagerJs` home 2.8 KB (orçamento 4.2), cartão 2.3 KB (3), mapa e relatório 1.5 KB (3); o html do cartão da cidade continua 6.0 KB (6.2) e o da home
+8.2 KB (12). As páginas novas (`/gerador/`, `/abrir-cartao/`, `/resumo/`, `/meu-brasil/`, `/widget/`) são ilhas `client:load`
+fora das quatro rotas auditadas; o widget (`/embed/…`) não tem script.
+
 Os orçamentos foram calibrados para o site já passar de folga — a intenção do ticket foi
 **fixar o piso atual como linha de base**, para que regressões de peso (voltar a CDNs, importar
 uma biblioteca de animação, soltar um CSS duplicado) quebrem o CI em vez de entrar mudo.

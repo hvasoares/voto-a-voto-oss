@@ -17,7 +17,7 @@
  * goes out as `gtag('event', name, props)` in GA4's own transport.
  */
 import { noopAnalytics, type Analytics, type EventProps } from './index'
-import { eventProps, EVENT_NAMES } from './events'
+import { eventProps, EVENT_NAMES } from './event-props'
 
 export interface Ga4Window {
   dataLayer?: unknown[]
