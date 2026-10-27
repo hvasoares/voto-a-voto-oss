@@ -1,0 +1,94 @@
+---
+/**
+ * Mostrar QR screen (ticket #9): the scannable QR of the city's short address, for showing to someone on
+ * another screen, plus the printable one-page poster. DEMO SHELL on the placeholder route /qr/: it renders
+ * exactly what the city route /:uf/:slug/qr/ will (same props the markup reads), with the fixture city.
+ * Ticket #50 replaces this file's frontmatter with the real route (getStaticPaths over the dataset — nothing
+ * else changes; the markup, the QR and the poster stay as they are here).
+ *
+ * Data: build-time Node reading the dataset through the existing store (never the browser's CSV). The whole
+ * screen is pre-rendered static markup — no JavaScript at all: the QR is a deterministic glyph from
+ * src/lib/qr-code.ts (build time), the poster is CSS (@media print / @page A4), printing comes from the
+ * browser's own print command, and the analytics events (screen shown, poster printed) are ticket #20 (see
+ * the data-ticket="20" marker below — nothing is emitted today, matching every page so far).
+ */
+import { createNodeStore } from '@site/data/node'
+import { displayName } from '@site/shared/city-search'
+import { withBase, normalizeBase } from '@site/paths'
+import Base from '@/layouts/Base.astro'
+import { dataDir } from '@/lib/data-dir'
+import { glyphSvg, qrGlyph } from '@/lib/qr-code'
+import { cityUrl, siteOrigin } from '@/lib/share-url'
+import { shortAddress } from '@/lib/share-text'
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+
+// --- fixture state (ticket #50 replaces from here down with the real route) ---------------------------------------
+const data = createNodeStore(dataDir())
+const city = (await data.city('rj', 'cidade-exemplo'))!
+const fixture = !!(await data.manifest()).fixture
+const cityName = displayName(city.nome)
+const url = cityUrl(siteOrigin(), base, city.uf, city.slug)
+const address = shortAddress(url)
+// Quiet zone: the SVG draws 1 module of it and the card's padding (2.5 px units) completes it visually —
+// the frame's QR card has about 10 px of white before the modules (see the review notes in
+// docs/checkpoints/issue-09.md); scanning keeps the paper background as the rest of the quiet zone.
+const qr = glyphSvg(qrGlyph(url), { label: `QR de ${address}`, margin: 1, paper: '#ffffff' })
+// "‹ Fechar" goes back to the city card; until #50 ports it, the demo points at the home page.
+const closeHref = href('/')
+// "Voltar" goes to the share sheet; the demo points at its own demo route until #50.
+const backHref = href('/compartilhar/')
+---
+<Base title={`Mostrar QR · ${cityName}`}>
+  <main class="min-w-0 flex-1">
+    <section data-qr-screen class="print:hidden">
+      {/* Header metrics match the frame exactly (brand band y14-29; divider a 1px rule at x132 spanning it). */}
+      <header class="flex items-baseline px-5 pt-2" data-header>
+        <span class="font-serif text-[20px] font-bold leading-[28px] tracking-[-0.8px]">Voto a Voto</span>
+        <span class="mx-[9.5px] h-[13px] w-px flex-none self-center bg-border" aria-hidden="true"></span>
+        <span class="relative -top-1 font-sans text-small font-normal text-muted-foreground">Presidente 2026</span>
+      </header>
+      {fixture && <p class="mt-[7px] py-[7px] text-center text-[11px] font-bold tracking-wide" style="background: var(--sketch-color-flag); color: var(--sketch-color-ink)" data-banner>EXEMPLO · QR ILUSTRATIVO, NÃO ESCANEÁVEL</p>}
+      <div class="px-5 pb-6">
+        {/* The frame draws this button 8px left of the Voltar gutter (x12 vs x20) — kept on purpose. */}
+        <a class="mt-1 ml-[-8px] inline-flex min-h-11 items-center rounded-md border border-border bg-background pl-[11px] pr-[17px] text-body text-foreground" href={closeHref} data-close>‹ Fechar</a>
+        <h1 class="mt-[11px] text-center font-serif text-[26px] leading-[30px]">Mostrar QR</h1>
+        <p class="text-center text-[14px] leading-[19px] text-muted-foreground" data-subtitle>Presidente 2026 · {cityName}</p>
+        <div class="mx-auto mt-[30px] max-w-[280px] rounded-md border border-border bg-white px-[7px] py-[7px] [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" data-qr data-url={url} set:html={qr} />
+        <p class="mt-10 text-center text-[17px] leading-[21px] font-bold wrap-anywhere" data-address>{address}</p>
+        <p class="mx-auto mt-[19px] text-center text-[14px] leading-[16px] text-muted-foreground" data-explain>
+          Use esta tela para mostrar o QR a outra pessoa,<br />
+          em outra tela, ou para imprimir. Se você vai<br />
+          enviar por mensagem, use o botão Compartilhar.
+        </p>
+        <a class="mt-[84px] flex min-h-12 items-center justify-center rounded-md border border-border bg-background text-body text-foreground" href={backHref} data-back>Voltar</a>
+        {/* data-ticket="20": analytics qr_screen_shown / poster_printed (the interface comes with #20); inert today, nothing is emitted. */}
+        <div data-placeholder="qr-analytics" data-ticket="20" data-events="qr_screen_shown,poster_printed" hidden></div>
+      </div>
+    </section>
+
+    <!-- data-ticket="50 to replace": the poster is static markup; only the frontmatter drops in with #50. -->
+    <section data-poster class="hidden print:block print:h-[273mm] print:flex print:flex-col" aria-label="Pôster para imprimir">
+      <p class="text-[4.4mm] font-bold font-sans">Voto a Voto <span class="font-normal text-[3.6mm]">· Presidente 2026</span></p>
+      <h1 class="mt-[18mm] text-center font-serif text-[13mm] leading-[16mm]" data-poster-city>{cityName}</h1>
+      <p class="mt-[2mm] text-center text-[4.4mm] text-muted-foreground" data-poster-sub>Presidente 2026</p>
+      <div class="mx-auto mt-[12mm] w-[140mm] [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" data-poster-qr set:html={qr} />
+      <p class="mt-[12mm] text-center text-[6mm] font-bold wrap-anywhere" data-poster-address>{address}</p>
+      <p class="mx-auto mt-[6mm] max-w-[150mm] text-center text-[4.4mm] text-muted-foreground" data-poster-note>
+        Aponte a câmera para o código para abrir a cidade no Voto a Voto.
+      </p>
+      <footer class="print:mt-auto pb-[2mm] text-center text-[3.6mm] text-muted-foreground" data-component="source-footer">
+        {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'}
+      </footer>
+    </section>
+
+    <style is:global>
+      /* The one-page poster (ticket #9): every screen layer hides on print and this section is the page. */
+      @page {
+        size: A4 portrait;
+        margin: 12mm;
+      }
+    </style>
+  </main>
+</Base>
