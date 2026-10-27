@@ -10,9 +10,10 @@ test.describe('404 fallback', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Página em construção')
   })
 
-  test('a valid city route is recognised too', async ({ page }) => {
-    await page.goto(`${base}rj/cidade-exemplo/`)
-    await expect(page.locator('[data-fallback="valid"]')).toBeVisible()
+  test('a valid city route is pre-rendered now (city shards since ticket #49, no fallback)', async ({ page }) => {
+    const res = await page.goto(`${base}rj/cidade-exemplo/`)
+    expect(res!.status()).toBe(200)
+    await expect(page.locator('h1')).toHaveText('Cidade Exemplo')
   })
 
   test('an unknown path is "Página não encontrada" with a way home', async ({ page }) => {
