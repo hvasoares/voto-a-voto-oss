@@ -26,6 +26,9 @@ numeric legend; a sortable table is the non-colour alternative.
    only flip, RJ +7.4/AL +7.3/SE +6.9/PB +6.7/RN +6.5/RO +2.3/AC +2.7/SC +2.8 per the highlights
    note).
 
+   Status: DONE — commit "web: margins, diverging scale and committed UF geometry for the state map
+   (issue-11 checkpoint 1)".
+
 2. **Both pages + island + analytics + e2e + captures.** `src/components/StateMapMap.tsx` (one
    island for both routes, server pre-rendered so the mosaic is plain HTML): Mosaico/Mapa toggle,
    tile grid (size = valid votes, min 40px edge at 390px), SVG map view with callouts for the small
@@ -35,6 +38,33 @@ numeric legend; a sortable table is the non-colour alternative.
    `mapa/index.astro` and `mapa/virada/index.astro`; footer "Fonte: TSE, dados finais · Sobre os
    dados ›". E2e (phone, fixture state; real project for the real numbers), plus captures at
    390x844: mosaic, map, legend, no-JS, real dataset (`.captures/mapa/`).
+
+   Status: DONE — `web: state-map pages /mapa/ and /mapa/virada/ with the island (issue-11
+   checkpoint 2)`.
+
+   Implementation notes (the interaction model of the home page, applied here):
+   - `client:interaction` hydrates the island on the first interaction, so `scripts/map-pending.ts`
+     (page-level, both routes) keeps the first tap: pointerdown records the UF on the island host
+     (`data-pending-uf`), the click is prevented from navigating (the frames say a tap SELECTS) and
+     the island honours it right after hydration. Without JavaScript nothing runs and the tiles
+     stay plain links. The same script plays a synthetic pointerdown when the deep link
+     `?vista=mapa` opens straight into the map view.
+   - The pre-rendered markup is always the mosaic; `?vista=mapa` is honoured on hydration (no SSR
+     mismatch), so `?vista=mapa` without JavaScript keeps the mosaic (the noscript note says the
+     map view needs JavaScript). The "Mosaico|Mapa" anchors carry `?vista=mapa` so the state works
+     as a plain link too.
+
+   Deviations from the frames / contract, deliberate:
+   - The smallest mosaic tile is 40px (TILE_MIN in `src/lib/scale.ts`), slightly under the 44px
+     tap standard: the edge ENCODES the valid votes (sqrt scale 40..48); 48px is the largest that
+     fits 7 columns in 390px at 1px gaps, and the table below repeats every row as text.
+   - The pre-rendered table is sorted by valid votes (frames list states by turnout); in-table
+     sorting stays a hydrated affordance of a later polish (the rows are links meanwhile).
+   - Callout boxes are rendered at ~33px effective height (SVG leader-line boxes, as in the frame);
+     the 44px tap rule is kept by "Abrir estado", the tabs, the tiles and the toggle.
+   - Fixture screenshots show "Candidato sobre Candidato" (and duplicate names on tiles): the
+     fixture candidates.csv names both candidates "Candidato A/B", so `shortName` collapses both to
+     "Candidato". The real dataset shows "Lula"/"Flavio" as in the frames.
 
 ## Neutrality and a11y notes
 
