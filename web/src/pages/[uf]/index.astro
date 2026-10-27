@@ -53,7 +53,7 @@ const showMap = cityMap.rows.length > 0
       <p class="page__subtitle">{countLabel(rows.length)}</p>
       <div class:list={['state-map', showMap && 'state-map--island']} data-placeholder="state-map" data-ticket="16 17" data-uf={uf} data-map-area>
         {showMap ? (
-          <CityMapMap client:interaction base={base} data={cityMap} geoUrl={href(`/geo/municipios-${uf}.json`)} ufNome={UF_NOME[uf!] ?? label} semContorno={semContornoOf(uf!, cityMap.rows)} />
+          <CityMapMap client:slot base={base} data={cityMap} geoUrl={href(`/geo/municipios-${uf}.json`)} ufNome={UF_NOME[uf!] ?? label} semContorno={semContornoOf(uf!, cityMap.rows)} />
         ) : (
           <span>Espaço do mapa de municípios</span>
         )}

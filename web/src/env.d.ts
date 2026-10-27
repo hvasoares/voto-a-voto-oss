@@ -25,5 +25,7 @@ interface ImportMeta {
 declare namespace astroHTML.JSX {
   interface IntrinsicAttributes {
     'client:interaction'?: boolean
+    /** Lazy map slot (#55): in view from 1024 px up, on first interaction below it. */
+    'client:slot'?: boolean
   }
 }
