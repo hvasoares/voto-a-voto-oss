@@ -12,9 +12,9 @@
  * browser's own print command, and the analytics events (screen shown, poster printed) are ticket #20 (see
  * the data-ticket="20" marker below — nothing is emitted today, matching every page so far).
  */
-import { createNodeStore } from '@site/data/node'
-import { displayName } from '@site/shared/city-search'
-import { withBase, normalizeBase } from '@site/paths'
+import { createNodeStore } from '@/data/node'
+import { displayName } from '@/shared/city-search'
+import { withBase, normalizeBase } from '@/paths'
 import Base from '@/layouts/Base.astro'
 import { dataDir } from '@/lib/data-dir'
 import { glyphSvg, qrGlyph } from '@/lib/qr-code'

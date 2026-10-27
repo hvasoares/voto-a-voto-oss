@@ -15,9 +15,9 @@
  * - Every shown percentage that belongs to a composition (candidate bar, turnout bar, the five region
  *   shares) comes from largest-remainder rounding, so the parts of one bar add up to exactly 100.
  */
-import { formatInt } from '@site/shared/city-model'
-import { displayName } from '@site/shared/city-search'
-import type { Candidate, State, Turno, Turnout, Vote } from '@site/data'
+import { formatInt } from '@/shared/city-model'
+import { displayName } from '@/shared/city-search'
+import type { Candidate, State, Turno, Turnout, Vote } from '@/data'
 
 /** Largest-remainder split of 100 among the parts' shares of their sum, kept with `decimals` decimal
  * places: the unit is 10^-decimals of a percent (a scaled integer), so no float is ever formatted.

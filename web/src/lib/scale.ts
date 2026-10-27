@@ -1,7 +1,7 @@
 /**
  * The diverging colour scale of the state map (frames 10/10b), PURE: the same bins colour the
  * mosaic tiles, the map paths and the legend. Colours come from the Sketch swatches
- * (`div-*` in @site/shared/tokens) mapped to CSS custom properties by @/theme.
+ * (`div-*` in @/shared/tokens) mapped to CSS custom properties by @/theme.
  *
  * - Margin: centred on zero, bins at the frame's legend numbers -30 | -15 | 0 | +15 | +30.
  *   The zero bin is exactly 0 (or under half a tenth of a pp, so a margin stored as -0.0... does

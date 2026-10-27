@@ -2,8 +2,8 @@
 import Base from '@/layouts/Base.astro'
 import { COMPARE_CYCLES, formatSignedInt, type CompareCycle } from '@/lib/compare'
 import { buildCompareRows, stateStats } from '@/lib/compare-data'
-import { formatInt } from '@site/shared/city-model'
-import { normalizeBase, withBase } from '@site/paths'
+import { formatInt } from '@/shared/city-model'
+import { normalizeBase, withBase } from '@/paths'
 
 export async function getStaticPaths() {
   return COMPARE_CYCLES.map((ciclo) => ({ params: { ciclo: String(ciclo) } }))

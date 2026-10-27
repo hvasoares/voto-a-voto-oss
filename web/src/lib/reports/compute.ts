@@ -19,7 +19,7 @@
  * by compute.test.ts. The vs-2022 comparison pairs the same numbers across years: Lula with Lula
  * and Bolsonaro (candidate 22 in 2022) with Flavio Bolsonaro.
  */
-import type { Candidate, City, Vote, Turnout } from '@site/data/types'
+import type { Candidate, City, Vote, Turnout } from '@/data/types'
 
 export interface CandidatePair {
   primeiro: number

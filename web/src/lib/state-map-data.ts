@@ -4,10 +4,10 @@
  * `src/lib/uf-polygons.ts`). The cycle is the newest one the dataset has; no election number is
  * hard-coded here.
  */
-import { createStore } from '@site/data/store'
-import { diskSource } from '@site/data/node'
-import { displayName } from '@site/shared/city-search'
-import type { Candidate, Turnout, Vote } from '@site/data'
+import { createStore } from '@/data/store'
+import { diskSource } from '@/data/node'
+import { displayName } from '@/shared/city-search'
+import type { Candidate, Turnout, Vote } from '@/data'
 import { computeMargins, formatSwing, type NationalMargin, type PairMember, type StateMargin } from './margins'
 import { dataDir } from './data-dir'
 

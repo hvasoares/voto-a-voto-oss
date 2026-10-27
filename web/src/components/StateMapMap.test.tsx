@@ -7,7 +7,7 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { noopAnalytics, setAnalytics, type Analytics } from '@site/analytics'
+import { noopAnalytics, setAnalytics, type Analytics } from '@/analytics'
 import StateMapMap, { type StateMapProps } from './StateMapMap'
 import type { StateMapData } from '@/lib/state-map-data'
 

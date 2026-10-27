@@ -22,7 +22,7 @@
  *   the site-wide convention shown in /sobre-os-dados/). The Sketch frame was drawn with plain
  *   rounding and its first card sums to 99.9; with the convention the card reads 94,9/5,1.
  */
-import { largestRemainder } from '@site/shared/city-model'
+import { largestRemainder } from '@/shared/city-model'
 
 export type Cycle = 2018 | 2022 | 2026
 

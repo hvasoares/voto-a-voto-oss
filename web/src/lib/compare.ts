@@ -14,7 +14,7 @@
  *   2018/2022 and "Flavio" in 2026. Names come from candidates.csv; the short label is presentation
  *   text for the frame candidates and the site's generic shortening for anything else.
  */
-import { formatInt, largestRemainder } from '@site/shared/city-model'
+import { formatInt, largestRemainder } from '@/shared/city-model'
 
 /** The two cycles the compare screens show next to 2026 (routes /comparar/2018/ and /comparar/2022/). */
 export const COMPARE_CYCLES = [2018, 2022] as const

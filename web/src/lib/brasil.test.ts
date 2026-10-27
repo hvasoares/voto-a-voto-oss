@@ -1,15 +1,15 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { createStore } from '@site/data/store'
-import { diskSource } from '@site/data/node'
-import type { Candidate, State, Turnout, Vote } from '@site/data'
+import { createStore } from '@/data/store'
+import { diskSource } from '@/data/node'
+import type { Candidate, State, Turnout, Vote } from '@/data'
 import { buildBrasil, pctText, regionOfUf, shortLabels, splitShares, type BrasilInput } from './brasil'
 
 /*
  * Pure aggregation for screen 8 (ticket #10), tested in vitest against:
  * (a) a tiny hand-made scope below,
- * (b) the committed fixture dataset of site/fixtures/data (default DATA_DIR),
+ * (b) the committed fixture dataset of fixtures/data (default DATA_DIR),
  * (c) the real dataset ../data cross-checked with data/manifest.json "national_reference" —
  *     the TSE published national totals this ticket's acceptance criterion quotes.
  * No expected election number is invented: (a) is written out by hand, (b) and (c) are derived
@@ -116,8 +116,8 @@ describe('buildBrasil: tiny hand-made scope', () => {
   })
 })
 
-describe('buildBrasil: the committed fixture dataset (site/fixtures/data, 2026 round 2)', () => {
-  const fixtures = resolve('..', 'site', 'fixtures', 'data')
+describe('buildBrasil: the committed fixture dataset (fixtures/data, 2026 round 2)', () => {
+  const fixtures = resolve('..', 'fixtures', 'data')
   expect(existsSync(fixtures), 'fixtures dataset missing').toBe(true)
 
   const scope = (dir: string, ano = 2026, turno = 2 as const) => {

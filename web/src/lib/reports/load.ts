@@ -1,7 +1,7 @@
-import { createStore } from '@site/data/store'
-import { diskSource } from '@site/data/node'
+import { createStore } from '@/data/store'
+import { diskSource } from '@/data/node'
 import { dataDir } from '../data-dir'
-import type { City, Vote, Turnout, Candidate } from '@site/data/types'
+import type { City, Vote, Turnout, Candidate } from '@/data/types'
 
 /**
  * Build-time loader of the report computations (web/src/lib/reports/compute.ts). Like src/lib/states.ts,
