@@ -13,6 +13,7 @@ import { FINGERPRINT_FILES } from '../integrations/shards-fingerprint'
 import { dataDir } from '../src/lib/data-dir'
 import { ARC_KINDS, cityArc, type ArcsFile } from '../src/lib/arcs'
 import type { CityShard } from '../src/lib/city-shard'
+import type { CuriositiesFile } from '../src/lib/curiosities'
 
 const dir = dataDir()
 const sources = {} as ShardSources
@@ -27,6 +28,10 @@ if (problems.length > 0) {
 }
 console.log(`check:shards: the shards of ${dir} cover the dataset exactly (${built.files.length} files, fingerprint ${built.fingerprint}).`)
 
+const sizeOfJson = (files: { path: string; json: string }[], name: string): string => {
+  const json = files.find((f) => f.path.endsWith(`/${name}`))!.json
+  return `raw ${(Buffer.byteLength(json) / 1024).toFixed(1)} kB / gzip ${(gzipSync(Buffer.from(json)).length / 1024).toFixed(1)} kB`
+}
 // Arcs (#41): every city has exactly one arc, and the published counts add up to the cities (overseas posts apart).
 const arcsFile = JSON.parse(built.files.find((f) => f.path.endsWith('/arcs.json'))!.json) as ArcsFile
 const cityShards = built.files.filter((f) => /\/city\/[^/]+\/[^/]+\.json$/.test(f.path)).map((f) => JSON.parse(f.json) as CityShard)
@@ -37,6 +42,9 @@ if (perCity.some((k) => !ARC_KINDS.includes(k)) || sum(arcsFile.counts) + sum(ar
   process.exit(1)
 }
 console.log(`arcs.json: ${JSON.stringify(arcsFile.counts)}; overseas posts ${JSON.stringify(arcsFile.overseas)}`)
+
+const curio = JSON.parse(built.files.find((f) => f.path.endsWith('/curiosities.json'))!.json) as CuriositiesFile
+console.log(`curiosities.json: ${Object.keys(curio.facts).length} of ${cityShards.filter((s) => s.city.uf !== 'zz').length} cities have a card (minimum group ${curio.minGroup}), ${sizeOfJson(built.files, 'curiosities.json')}`)
 
 const kb = (n: number): string => `${(n / 1024).toFixed(1)} kB`
 interface FileSize {

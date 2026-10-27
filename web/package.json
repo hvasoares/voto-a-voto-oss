@@ -46,6 +46,7 @@
     "check:perf": "tsx scripts/perf-budgets.ts",
     "check:peers": "tsx scripts/peers-check.ts",
     "check:margin": "tsx scripts/margin-check.ts",
+    "check:curiosities": "tsx scripts/curiosities-check.ts",
     "check:shards:real": "DATA_DIR=../data tsx scripts/shard-check.ts",
     "check:tse-live": "DATA_DIR=../data tsx scripts/verify-tse-live.ts",
     "test:e2e": "playwright test --project=phone --project=desktop",

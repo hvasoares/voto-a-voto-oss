@@ -52,7 +52,9 @@ export const BUDGETS: Record<RouteId, Budget> = {
   home: { html: 12, css: 16, eagerJs: 4.2, islandJs: 120 },
   // City html 4 -> 5.2 KB (#51, #52): the desktop top bar's pre-rendered markup (~0.7 KB gzip) is in every page's HTML, and the two-column card adds
   // its second column's wrappers and the links' one-line descriptions (~0.5 KB); no script, no new request.
-  city: { html: 5.2, css: 16, eagerJs: 3, islandJs: 3 },
+  // City html 5.2 -> 6.2 KB (G2, #26 #41 #31 #33): the margin line, the arc, the twin and the desktop curiosities card are all pre-rendered text
+  // in the page, in both registers (~0.95 KB gzip: curiosities 0.4, margin 0.27, twin 0.15, arc 0.13); no script, no new request.
+  city: { html: 6.2, css: 16, eagerJs: 3, islandJs: 3 },
   mapa: { html: 12, css: 16, eagerJs: 3, islandJs: 85 },
   report: { html: 12, css: 16, eagerJs: 3, islandJs: 3 },
 }

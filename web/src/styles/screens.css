@@ -319,3 +319,36 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
   [data-page="sobre-os-dados"] > section h2 { font-size: 28px; line-height: 34px; }
   [data-page="sobre-os-dados"] > section p, [data-page="sobre-os-dados"] > section li { font-size: 15px; line-height: 22px; }
 }
+
+/* ---- curiosities (#33): the phone's own screen (curiosidades/) and, from 1024 px, the card under the figures of the city card ---- */
+.curio-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
+.curio-page .app-header__context { font-size: 12px; }
+.curio-page .banner { font-size: 11px; font-weight: 600; letter-spacing: 0; line-height: 14px; padding: 6px var(--gutter) 0; height: 28px; white-space: pre; overflow: hidden; }
+.curio-page .page__main { padding: 4px var(--gutter) 0; }
+.curio-page .back { min-width: 84px; margin: 0 0 8px -8px; font-size: 15px; padding: 0 12px; }
+.curio-page .page__title { font-size: 26px; line-height: 36px; margin-bottom: 0; }
+.curio-page .source-footer { padding: 19px var(--gutter) 24px; color: var(--c-muted); font-size: 11px; line-height: 14px; }
+.screen .curio { display: flex; flex-direction: column; }
+.screen .curio__title { order: 0; margin: 0; font: 400 12px/14px var(--font-sans); color: var(--c-muted); }
+.screen .curio__note { order: 1; margin: 14px 0 0; padding: 10px 12px; background: var(--c-paper-2); border: 1px solid var(--c-rule); border-radius: 8px; font: 400 12px/16px var(--font-sans); color: var(--c-ink); }
+.screen .curio__facts { order: 2; list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 14px; }
+.screen .curio__fact { display: grid; grid-template-columns: 76px 1fr; column-gap: 12px; padding: 16px; border: 1px solid var(--c-rule); border-radius: 8px; }
+.screen .curio__rank { grid-row: 1; margin: 0; font: 400 44px/48px var(--font-serif); color: var(--c-accent); }
+.screen .curio__what { grid-row: 1; grid-column: 2; margin: 0; font: 400 17px/22px var(--font-serif); color: var(--c-ink); }
+.screen .curio__group { grid-column: 1 / -1; margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--c-rule); font: 400 11px/14px var(--font-sans); color: var(--c-muted); }
+.screen .curio__footer { margin: 18px 0 0; text-align: center; font: 400 11px/14px var(--font-sans); color: var(--c-muted); }
+.screen .curio__back { display: flex; align-items: center; justify-content: center; min-height: var(--min-tap); margin-top: 18px; font: 600 12px/16px var(--font-sans); color: var(--c-accent); }
+/* The inline copy lives in the city card: on a phone only the link to the page above shows. */
+.screen .city-curio { display: none; }
+.city-links__curio { grid-column: 1 / -1; }
+@media (min-width: 1024px) {
+  .city-links__curio { display: none !important; }
+  .screen .city-curio { display: block; margin-top: 20px; padding: 16px 20px 14px; border: 1px solid var(--c-rule); border-radius: 12px; }
+  .screen .city-curio .curio__title { font: 600 14px/18px var(--font-sans); color: var(--c-ink); }
+  .screen .city-curio .curio__facts { order: 1; margin-top: 12px; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .screen .city-curio .curio__note { order: 2; margin: 12px 0 0; padding: 0; background: none; border: 0; font-size: 11px; line-height: 14px; color: var(--c-muted); }
+  .screen .city-curio .curio__fact { display: block; padding: 0; border: 0; }
+  .screen .city-curio .curio__rank { font-size: 32px; line-height: 36px; }
+  .screen .city-curio .curio__what { font: 400 12px/15px var(--font-sans); margin-top: 4px; }
+  .screen .city-curio .curio__group { margin-top: 8px; padding-top: 0; border: 0; font-size: 10px; line-height: 13px; }
+}

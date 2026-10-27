@@ -34,3 +34,6 @@ export function saveRegister(register: Register, store: Store | undefined = brow
     // Blocked or full storage: the choice then lasts only until the page closes.
   }
 }
+
+/** Inline script for a page's body: sets the remembered register on <html> before first paint, so a sentence does not change under the reader. */
+export const registerBootScript = `try{if(localStorage.getItem(${JSON.stringify(REGISTER_KEY)})==='plain')document.documentElement.dataset.register='plain'}catch(e){}`

@@ -68,6 +68,32 @@ test.describe('city card: fixture route is the frame', () => {
     await expect(page.locator('[data-twin]')).toHaveCount(0)
     expect(errors).toEqual([])
   })
+  test('curiosities (#33): the phone shows a link, the page opens with facts that name their group and cycles, and the card is not inline', async ({ page }) => {
+    await page.goto(`${city}?turno=1`)
+    await waitReady(page)
+    await expect(page.locator('.city-curio')).toBeHidden()
+    const link = page.getByRole('link', { name: /Curiosidades da cidade/ })
+    await link.click()
+    await expect(page).toHaveURL(`${city}curiosidades/`)
+    await expect(page.locator('h1')).toHaveText('Cidade Exemplo')
+    const facts = page.locator('.curio__fact')
+    expect(await facts.count()).toBeGreaterThan(0)
+    expect(await facts.count()).toBeLessThanOrEqual(3)
+    for (const text of await facts.allInnerTexts()) {
+      expect(text).toMatch(/\dª/)
+      expect(text).toMatch(/Grupo: \d+ cidades · /)
+      expect(text).toMatch(/20(18|22|26)/)
+    }
+    await expect(page.locator('.curio__note:visible')).toContainText('É uma comparação com cidades do mesmo perfil, não um indício de irregularidade.')
+    await page.getByRole('link', { name: /Voltar ao cartão da cidade/ }).click()
+    await expect(page).toHaveURL(city)
+  })
+  test('curiosities: a city whose group is too small (or measures all equal) has no link, no card and no page', async ({ page }) => {
+    await page.goto(`${base}rj/cidade-exemplo-a/`)
+    await expect(page.getByRole('link', { name: /Curiosidades da cidade/ })).toHaveCount(0)
+    await expect(page.locator('.city-curio')).toHaveCount(0)
+    expect((await page.goto(`${base}rj/cidade-exemplo-a/curiosidades/`))!.status()).toBe(404)
+  })
   test('a city with no earlier cycle says which cycles are missing', async ({ page }) => {
     await page.goto(`${base}mt/boa-esperanca-do-norte/`)
     await expect(page.locator('.city-arc__pill:visible')).toHaveText('Sem dados do 2º turno de 2018 e 2022')

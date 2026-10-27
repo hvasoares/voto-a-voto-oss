@@ -26,7 +26,7 @@ O que o script soma por rota:
 | Rota | html | css | eagerJs | islandJs | total medido |
 |---|---|---|---|---|---|
 | `/` (home) | 12 KB | 16 KB | 4.2 KB (#35/#40: era 3 KB) | 120 KB | **101.0K** |
-| `/rj/cidade-exemplo/` (cartão) | 5.2 KB (#58: a frase pronta nos dois registros; #51: a barra superior de desktop, pré-renderizada em todas as páginas; #52: a segunda coluna do cartão) | 16 KB | 3 KB | 3 KB | **15.2K** |
+| `/rj/cidade-exemplo/` (cartão) | 6.2 KB (G2: +1 KB, ver abaixo; #58: a frase pronta nos dois registros; #51: a barra superior de desktop, pré-renderizada em todas as páginas; #52: a segunda coluna do cartão) | 16 KB | 3 KB | 3 KB | **15.2K** |
 | `/mapa/` (tile map por estado) | 12 KB | 16 KB | 3 KB | 85 KB | **92.9K** |
 | `/relatorios/cidades-que-viraram/` (relatório) | 12 KB | 16 KB | 3 KB | 3 KB | **14.1K** |
 
@@ -36,6 +36,11 @@ e o arquivo dos centros (70 KB gzip) só carregam no toque, mas o `import()` din
 da página (medido: embutir o código custou mais, 5.4 KB contra 4.9 KB de JS na página). Medido: eagerJs da home 4.1K; o html da home cresce ~0.4 KB gzip (markup do atalho, do botão e das notas; `measure.ts`: 6.4K -> 6.8K).
 
 **Mudança de orçamento (#51, #52):** o `html` do cartão passou de 4 KB para 4.6 KB (#51) e para 5.2 KB (#52, a segunda coluna do cartão e as descrições dos links, ~0.5 KB): a barra superior do desktop (marca, campo de busca, três links) é HTML pré-renderizado em toda página, escondida abaixo de 1024 px (medido no celular: +0.7 KB gzip de HTML em toda página, +0.6 KB no CSS compartilhado, nenhum byte de JS nem requisição nova: o módulo do desktop é carregado por um trecho inline atrás de `matchMedia`, e o campo só vira o `CitySearch` real no primeiro foco).
+
+**Mudança de orçamento (G2: #26, #41, #31, #33):** o `html` do cartão passou de 5.2 KB para 6.2 KB. As quatro linhas do cartão são texto
+pré-renderizado, nos dois registros, sem script e sem requisição nova: o html do cartão (`rj/cidade-exemplo/`, fixture) foi de 5179 para 6138 bytes gzip
+(+959 B): cartão de curiosidades do desktop 383 B (escondido no celular, que tem só o link de 23 B para a página própria), linha da margem 266 B (seis vistas,
+dois registros), cidade gêmea 153 B, arco 132 B. O mínimo que cobre o medido com folga de ~0.2 KB; o resto do cartão (css, js) não mudou de orçamento.
 
 Os orçamentos foram calibrados para o site já passar de folga — a intenção do ticket foi
 **fixar o piso atual como linha de base**, para que regressões de peso (voltar a CDNs, importar

@@ -35,7 +35,7 @@ describe('sentences outside the catalog', () => {
     expect(copies).toEqual([])
   })
 
-  const BUILDERS = ['slots/city/card.ts', 'lib/sentences/headline.ts', 'lib/sentences/margin.ts', 'lib/sentences/arc.ts', 'lib/share-text.ts', 'lib/share-model.ts', 'scripts/city-card.ts', 'lib/sentences/register-store.ts']
+  const BUILDERS = ['slots/city/card.ts', 'lib/sentences/headline.ts', 'lib/sentences/margin.ts', 'lib/sentences/arc.ts', 'slots/city/curiosities.ts', 'lib/share-text.ts', 'lib/share-model.ts', 'scripts/city-card.ts', 'lib/sentences/register-store.ts']
   const WORDS = /\b(de|do|da|dos|das|o|a|os|as|que|em|no|na|não|e|com|para|por|um|uma)\b/i
   const literals = (src: string) => [...src.matchAll(/'((?:[^'\\\n]|\\.)*)'|"((?:[^"\\\n]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g)].map((m) => m[1] ?? m[2] ?? m[3] ?? '')
 

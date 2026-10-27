@@ -12,6 +12,7 @@ import { datasetFingerprintFromDisk } from '../../integrations/shards-fingerprin
 import { dataDir } from './data-dir'
 import { cityShardResult, type CityShard } from './city-shard'
 import type { PeersFile } from './peers'
+import type { CuriositiesFile } from './curiosities'
 import type { CityResult } from '../shared/city-model'
 
 const FINGERPRINT_FILES = ['candidates.csv', 'centroids.csv', 'cities.csv', 'manifest.json', 'turnout.csv', 'votes.csv'] as const
@@ -86,6 +87,15 @@ export function loadPeersFile(): Promise<PeersFile | undefined> {
   const key = process.env.DATA_DIR ?? '(default)'
   const memo = peerMemos.get(key) ?? shardJson<PeersFile>('peers.json')
   peerMemos.set(key, memo)
+  return memo
+}
+
+/** The published `curiosities.json` (#33), parsed once per dataset. */
+const curioMemos = new Map<string, Promise<CuriositiesFile | undefined>>()
+export function loadCuriositiesFile(): Promise<CuriositiesFile | undefined> {
+  const key = process.env.DATA_DIR ?? '(default)'
+  const memo = curioMemos.get(key) ?? shardJson<CuriositiesFile>('curiosities.json')
+  curioMemos.set(key, memo)
   return memo
 }
 

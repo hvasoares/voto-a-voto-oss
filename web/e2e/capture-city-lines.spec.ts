@@ -8,10 +8,10 @@ import { base } from './helpers'
  * with the ... line") and at 1440x900 (desktop frame "2 Cartão da cidade (desktop, com as linhas V3)"), plus the phone
  * curiosities screen ("21 Curiosidades da cidade"). Output: web/.captures/city-lines/ (not committed).
  */
-const shoot = async (page: import('@playwright/test').Page, route: string, name: string, full = false) => {
+const shoot = async (page: import('@playwright/test').Page, route: string, name: string, full = false, scripted = true) => {
   await page.goto(`${base}${route}`)
   await page.evaluate(() => document.fonts.ready)
-  await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
+  if (scripted) await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
   await page.evaluate(() => window.scrollTo(0, 0))
   const dir = resolve('.captures', 'city-lines')
   mkdirSync(dir, { recursive: true })
@@ -28,7 +28,7 @@ test('capture city lines / phone', async ({ page }) => {
 })
 test('capture city lines / curiosities phone', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('voto-a-voto:notice', 'acknowledged'))
-  await shoot(page, 'rj/cidade-exemplo/curiosidades/', 'curiosidades-phone')
+  await shoot(page, 'rj/cidade-exemplo/curiosidades/', 'curiosidades-phone', false, false)
 })
 test('capture city lines / desktop', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('voto-a-voto:notice', 'acknowledged'))

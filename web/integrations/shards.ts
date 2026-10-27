@@ -8,6 +8,7 @@
  *   v<fingerprint>/totals.json            national and per-region sums of turnout and votes, per cycle and round
  *   v<fingerprint>/peers.json             the closest peer cities of every city (ticket #23, src/lib/peers.ts)
  *   v<fingerprint>/arcs.json              how many cities have each arc (the sequence of 2nd-round winners, ticket #41, src/lib/arcs.ts)
+ *   v<fingerprint>/curiosities.json       up to three rank facts per city against the cities of its size band (ticket #33, src/lib/curiosities.ts)
  *   v<fingerprint>/centroids.json         the IBGE centre of every city that has one, by state (ticket #40, src/lib/nearest-city.ts)
  *
  * The fingerprint is a sha256 over the six dataset files, so the paths change whenever the dataset changes and
@@ -30,11 +31,12 @@ import { encodeCentroids } from './centroids'
 import { dataDir } from '../src/lib/data-dir'
 import { countArcs } from '../src/lib/arcs'
 import type { CityShard } from '../src/lib/city-shard'
+import { curiosities, encodeCuriosities, FIXTURE_MIN_GROUP, MIN_GROUP } from '../src/lib/curiosities'
 import { computePeers, encodePeers } from '../src/lib/peers'
 import { datasetFingerprint, FINGERPRINT_FILES, type ShardSources } from './shards-fingerprint'
 
 /** Bumped when the shard layout changes: a cached version directory is rebuilt when this does not match. */
-export const SHARD_GENERATOR = 'voto-shards/5'
+export const SHARD_GENERATOR = 'voto-shards/6'
 
 export const TURNOUT_FIELDS = ['aptos', 'comparecimento', 'abstencoes', 'brancos', 'nulos', 'anuladosApuSep', 'validos'] as const
 type TurnoutFields = Pick<Turnout, (typeof TURNOUT_FIELDS)[number]>
@@ -158,7 +160,9 @@ export function buildShards(sources: ShardSources): BuiltShards {
   }
 
   const fingerprint = datasetFingerprint(sources)
-  const files = composeShards(`v${fingerprint}`, byCity, national, regions, candidatesByRound)
+  // The fixture dataset is a handful of cities: its groups are as small as it gets (see src/lib/curiosities.ts).
+  const minGroup = (JSON.parse(sources['manifest.json']) as { fixture?: boolean }).fixture ? FIXTURE_MIN_GROUP : MIN_GROUP
+  const files = composeShards(`v${fingerprint}`, byCity, national, regions, candidatesByRound, minGroup)
   // Peer cities (#23): one small index-encoded file; overseas posts are left out by the method itself.
   files.push({ path: `v${fingerprint}/peers.json`, json: JSON.stringify(encodePeers(computePeers({ cities, turnout, votes }))) })
   // City centres (#40): fetched only when a visitor taps "Usar minha localização".
@@ -219,6 +223,7 @@ function composeShards(
   national: Target,
   regions: Target,
   candidatesByRound: Map<number, Map<Turno, Map<number, [string, string]>>>,
+  minGroup: number,
 ): { path: string; json: string }[] {
   const files: { path: string; json: string }[] = []
   const dir = (p: string) => `${versionDir}/${p}`
@@ -256,6 +261,8 @@ function composeShards(
   }
   // How many cities have each arc (#41): a small file that must match the cohort table (see arcs.test.ts).
   files.push({ path: dir('arcs.json'), json: JSON.stringify(countArcs(cityShards)) })
+  // Curiosities (#33): the rank facts of every city that has any.
+  files.push({ path: dir('curiosities.json'), json: JSON.stringify(encodeCuriosities(curiosities(cityShards, minGroup), minGroup)) })
 
   // National and regional sums, per cycle and round. National includes overseas posts; the regions are every
   // `regiao` value of the dataset (the pseudo-region "exterior" included).

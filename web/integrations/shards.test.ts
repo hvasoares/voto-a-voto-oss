@@ -317,6 +317,27 @@ describe('arcs.json (#41)', () => {
   })
 })
 
+describe('curiosities.json (#33)', () => {
+  const built = buildFixture()
+  const file = jsonOf(built, 'curiosities.json') as { minGroup: number; facts: Record<string, (string | number)[][]> }
+
+  it('uses the fixture minimum, lists only cities of the dataset and at most three facts each', () => {
+    expect(file.minGroup).toBe(2)
+    const search = jsonOf(built, 'search.json') as [string, string, string][]
+    const keys = search.filter(([, , uf]) => uf !== 'zz').map(([, slug, uf]) => `${uf}/${slug}`)
+    for (const [city, facts] of Object.entries(file.facts)) {
+      expect(keys).toContain(city)
+      expect(facts.length).toBeGreaterThan(0)
+      expect(facts.length).toBeLessThanOrEqual(3)
+      for (const [, rank, n] of facts) expect(rank as number).toBeLessThanOrEqual(n as number)
+    }
+    expect(file.facts['rj/cidade-exemplo']).toBeDefined()
+  })
+  it('regenerating gives the same bytes', () => {
+    expect(fileOf(buildFixture(), 'curiosities.json')).toBe(fileOf(built, 'curiosities.json'))
+  })
+})
+
 describe('centroids.json (#40)', () => {
   const built = buildFixture()
   const shard = jsonOf(built, 'centroids.json') as Record<string, [string, number, number][]>

@@ -22,6 +22,22 @@ for (const [name, url] of Object.entries(SCREENS)) {
   })
 }
 
+test.describe('city card: the lines of the V3 frame (#26, #41, #31, #33)', () => {
+  test('the right column reads headline, arc, margin line, twin, Compartilhar in that order, and the curiosities card sits under the figures', async ({ page }) => {
+    await page.goto(city)
+    const y = async (selector: string) => (await page.locator(selector).first().boundingBox())!.y
+    const order = [await y('[data-headline]:visible'), await y('.city-arc__pill:visible'), await y('[data-margin]:visible'), await y('[data-twin]'), await y('[data-share]')]
+    expect(order).toEqual([...order].sort((a, b) => a - b))
+    const card = (await page.locator('[data-city-card]').boundingBox())!
+    const curio = (await page.locator('.city-curio').boundingBox())!
+    expect(curio.y).toBeGreaterThan(card.y + card.height)
+    expect(curio.x).toBe(card.x)
+    await expect(page.locator('.city-curio .curio__fact')).toHaveCount(3)
+    await expect(page.locator('.city-curio .curio__note:visible')).toContainText('não um indício de irregularidade')
+    await expect(page.locator('.city-links__curio')).toBeHidden()
+  })
+})
+
 test.describe('city card', () => {
   test('at 1440 the card is the left column, the sentence, Compartilhar and the links the right', async ({ page }) => {
     await page.goto(city)
