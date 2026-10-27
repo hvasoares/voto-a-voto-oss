@@ -1,0 +1,26 @@
+{
+  "outputs": {
+    "uf-outlines.json": {
+      "bytes": 34571,
+      "sha256": "7a54eb012f3d9a3fe9c6110bbb5bddc2d695b0a7623e3c4f87abad5511b7c7a1",
+      "ufs": 27
+    }
+  },
+  "processing": {
+    "decimals": 3,
+    "min_ring_area_deg2": 0.06,
+    "rings": "outer rings only, largest first",
+    "tolerance_degrees": 0.06
+  },
+  "schema_version": 1,
+  "sources": [
+    {
+      "digest": "a9e9ef5e9ebb6a694fd691bb8ef53527c3832a0f79dbb00768290391ddb9804f",
+      "files": 27,
+      "id": "ibge_malhas_uf",
+      "kind": "ibge_api",
+      "retrieved_at": "2026-10-27T20:05:18Z",
+      "url": "https://servicodados.ibge.gov.br/api/v3/malhas/estados/{code}?formato=application/vnd.geo%2Bjson&qualidade=intermediaria"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-.PHONY: test tse-scrape data data-2018 data-2022 data-2026 data-check publish-edition rollback-edition nonvoters deploy \
+.PHONY: test tse-scrape data data-outlines data-2018 data-2022 data-2026 data-check publish-edition rollback-edition nonvoters deploy \
         install typecheck web-test browser e2e e2e-pages e2e-real build-deploy ci web-install
 
 test:
@@ -11,6 +11,11 @@ tse-scrape:
 # Baixa (só o que falta ou mudou), reconcilia e escreve data/ (CSVs + manifest.json). CYCLES=2018,2022 e EXTRA=--offline|--allow-partial.
 data:
 	uv run voto-data build $(if $(CYCLES),--cycles $(CYCLES)) $(EXTRA)
+	uv run voto-data outlines $(if $(findstring --offline,$(EXTRA)),--offline)
+
+# Só os contornos das 27 UFs (IBGE, cache em .cache/ibge) -> data/geo/ (ticket #53). OUTLINES=--refresh baixa de novo.
+data-outlines:
+	uv run voto-data outlines $(OUTLINES)
 
 # Atualiza um só ciclo; os outros vêm do cache.
 data-2026 data-2022 data-2018:

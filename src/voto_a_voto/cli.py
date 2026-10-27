@@ -5,6 +5,7 @@
     voto-data publish-edition [--date YYYY-MM-DD]
     voto-data rollback-edition
     voto-data publish-auto [--offline]
+    voto-data outlines [--offline] [--refresh]
 
 ``build`` fetches only what is missing or changed, reconciles everything against the TSE's own totals and writes
 ``data/`` last, so a failed run never leaves a half-written dataset. ``check`` re-validates ``data/`` with no network.
@@ -17,7 +18,7 @@ from collections import Counter
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
-from voto_a_voto import centroids, editions, nonvoters, reconcile
+from voto_a_voto import centroids, editions, nonvoters, outlines, reconcile
 from voto_a_voto.cities import City, parse_cities
 from voto_a_voto.dataset import CycleData, Dataset, assemble, cycle_from_munzona, cycle_from_results, read_dataset, write_dataset, write_manifest
 from voto_a_voto.manifest import build_manifest, check_manifest, summarize_results_files, turnout_identity
@@ -250,12 +251,31 @@ def main(argv=None, services: Services | None = None) -> int:
     rollback_parser = commands.add_parser("rollback-edition", help="restaura data/ para a edição anterior à que ele mostra; nenhuma edição muda")
     rollback_parser.add_argument("--data-dir", default="data")
     rollback_parser.add_argument("--editions-dir", default="editions")
+    outlines_parser = commands.add_parser("outlines", help="baixa (só o que falta) os contornos das 27 UFs do IBGE e escreve data/geo/ (ticket #53)")
+    outlines_parser.add_argument("--offline", action="store_true", help="não usa a rede; falha se algo não estiver no cache")
+    outlines_parser.add_argument("--refresh", action="store_true", help="baixa de novo, mesmo o que está no cache")
+    outlines_parser.add_argument("--data-dir", default="data")
+    outlines_parser.add_argument("--cache-dir", default=".cache")
     nonvoters_parser = commands.add_parser("nonvoters", help="imprime a medida do ticket #24: não-votantes maiores que a margem, por ciclo, turno e estado")
     nonvoters_parser.add_argument("--data-dir", default="data")
     args = parser.parse_args(argv)
 
     if args.command == "nonvoters":
         print(nonvoters.render(nonvoters.measure(read_dataset(args.data_dir))), end="")
+        return 0
+
+    if args.command == "outlines":
+        try:
+            fetched = outlines.fetch(
+                outlines.UF_BY_CODE, args.cache_dir, transport=services.ibge_transport, offline=args.offline, refresh=args.refresh,
+                clock=services.clock, sleep=services.sleep,
+            )
+        except (DownloadError, OfflineCacheMissError, OSError, ValueError) as error:
+            print(f"outlines FAILED: {error}", file=sys.stderr)
+            return 1
+        directory = Path(args.data_dir) / "geo"
+        changed = outlines.write(directory, fetched)
+        print(f"{directory}/{outlines.OUTLINES_FILE}: {len(fetched.rings)} states, {'written' if changed else 'unchanged'}")
         return 0
 
     if args.command == "publish-edition":
@@ -291,6 +311,7 @@ def main(argv=None, services: Services | None = None) -> int:
 
     if args.command == "check":
         findings = check(Path(args.data_dir), services)
+        findings += outlines.check(Path(args.data_dir) / "geo")
         if args.editions_dir is not None:
             findings += editions.check_editions(Path(args.editions_dir), Path(args.data_dir))
         if findings:

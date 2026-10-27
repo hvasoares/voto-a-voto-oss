@@ -14,6 +14,33 @@ def run(args, services, tmp_path):
     return main([*args, "--data-dir", str(tmp_path / "data"), "--cache-dir", str(tmp_path / "cache")] if args[0] == "build" else [*args, "--data-dir", str(tmp_path / "data")], services=services)
 
 
+SQUARE = [[-44.0, -22.0], [-43.0, -22.0], [-43.0, -23.0], [-44.0, -23.0], [-44.0, -22.0]]
+
+
+class FakeOutlineIbge:
+    """IBGE's `/malhas/estados/<code>`: one square per state, and a record of what was asked."""
+
+    def __init__(self):
+        self.requests = []
+
+    def __call__(self, url, headers):
+        self.requests.append(url)
+        geometry = {"type": "MultiPolygon", "coordinates": [[SQUARE]]}
+        return 200, {}, json.dumps({"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": geometry}]})
+
+
+def with_outlines(svc):
+    """The same services, with the outline transport (the check needs data/geo next to the tables)."""
+    from dataclasses import replace
+
+    ibge = FakeOutlineIbge()
+    return replace(svc, ibge_transport=ibge), ibge
+
+
+def run_outlines(svc, tmp_path, *extra):
+    return main(["outlines", "--data-dir", str(tmp_path / "data"), "--cache-dir", str(tmp_path / "cache"), *extra], services=svc)
+
+
 def snapshot(directory: Path) -> dict[str, bytes]:
     return {name: (directory / name).read_bytes() for name in FILES}
 
@@ -127,6 +154,7 @@ def test_cycles_limit_the_network_and_the_others_must_already_be_cached(services
 def test_check_passes_on_a_fresh_build(services, tmp_path, capsys):
     svc, _, _ = services
     run(["build"], svc, tmp_path)
+    run_outlines(with_outlines(svc)[0], tmp_path)
 
     code = run(["check"], svc, tmp_path)
 
@@ -236,6 +264,7 @@ def test_check_fails_when_a_city_loses_its_centroid(services, tmp_path, capsys):
 def test_check_with_editions_requires_data_to_be_a_published_edition(services, tmp_path, capsys):
     svc, _, _ = services
     run(["build"], svc, tmp_path)
+    run_outlines(with_outlines(svc)[0], tmp_path)
     editions_dir = tmp_path / "editions"
 
     assert main(["check", "--data-dir", str(tmp_path / "data"), "--editions-dir", str(editions_dir)], services=svc) == 1
@@ -245,3 +274,33 @@ def test_check_with_editions_requires_data_to_be_a_published_edition(services, t
     assert main(["check", "--data-dir", str(tmp_path / "data"), "--editions-dir", str(editions_dir)], services=svc) == 0
     assert main(["publish-edition", "--data-dir", str(tmp_path / "data"), "--editions-dir", str(editions_dir)], services=svc) == 0
     assert "already published" in capsys.readouterr().out
+
+
+def test_outlines_writes_the_geo_files_asks_the_ibge_once_per_state_and_a_second_run_changes_no_bytes(services, tmp_path, capsys):
+    svc, ibge = with_outlines(services[0])
+
+    assert run_outlines(svc, tmp_path) == 0
+    first = {p.name: p.read_bytes() for p in (tmp_path / "data" / "geo").iterdir()}
+    assert run_outlines(svc, tmp_path) == 0
+    second = {p.name: p.read_bytes() for p in (tmp_path / "data" / "geo").iterdir()}
+
+    assert first == second and set(first) == {"uf-outlines.json", "manifest.json"}
+    assert len(ibge.requests) == 27
+    out = capsys.readouterr().out
+    assert "27 states, written" in out and "27 states, unchanged" in out
+
+
+def test_outlines_offline_fails_without_the_cache_and_names_the_file(services, tmp_path, capsys):
+    svc, ibge = with_outlines(services[0])
+
+    assert run_outlines(svc, tmp_path, "--offline") == 1
+    assert "uf-11.geojson" in capsys.readouterr().err
+    assert ibge.requests == []
+
+
+def test_check_fails_without_the_outlines_and_says_how_to_make_them(services, tmp_path, capsys):
+    svc, _, _ = services
+    run(["build"], svc, tmp_path)
+
+    assert run(["check"], svc, tmp_path) == 1
+    assert "make data" in capsys.readouterr().err
