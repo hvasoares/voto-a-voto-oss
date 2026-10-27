@@ -1,7 +1,7 @@
 /**
  * Fact records (#61), PURE: every number the city card publishes is one record with an id, a sentence (in both registers,
  * from the catalog), the numbers it is made of, the source of those numbers and the calculation that turns them into the
- * figure on the card. The record has its own address (`/fato/<uf>/<slug>/<ciclo>-<turno>/#<medida>`, see `factHref`), the card
+ * figure on the card. The record has its own address (`/fato/<escopo>/<página>/#<medida>`, see `factHref`), the card
  * links to it next to the figure ("ver cálculo"), and the build gate (`gate.ts`) fails on a record without a source and a
  * calculation. The wording is in the catalog (`fact.*`); the figures come from the same `CityResult` the card prints.
  *
@@ -11,6 +11,7 @@
 import type { CityResult, Segment } from '@/shared/city-model'
 import { formatInt, formatPct } from '@/shared/city-model'
 import type { Fact as Curiosity } from '../curiosities'
+import type { CheckKind } from './checks'
 import { headline } from '../sentences/headline'
 import { marginLine, marginVotes } from '../sentences/margin'
 import { DEFAULT_LOCALE, message as say, REGISTERS, type Locale, type MessageKey, type Register } from '../sentences/catalog'
@@ -24,6 +25,7 @@ const REPO = 'https://github.com/hvasoares/voto-a-voto-oss/blob/main/'
 export const METHOD_DOCS = {
   margin: { key: 'fact.method.margin', href: `${REPO}docs/nonvoters-vs-margin.md` },
   curio: { key: 'fact.method.curio', href: `${REPO}web/docs/curiosities.md` },
+  cycles: { key: 'fact.method.cycles', href: `${REPO}web/docs/checkpoints/issue-14.md` },
   peers: { key: 'fact.method.peers', href: `${REPO}web/docs/peer-similarity.md` },
 } as const
 
@@ -48,10 +50,10 @@ export interface FactMethod {
   href: string
 }
 export interface Fact {
-  /** `uf/slug/<page>/<anchor>`: place, cycle and round (or the curiosities), measure. Stable. */
+  /** `<scope>/<page>/<anchor>`: the place (or the page family), cycle and round (or the page), measure. Stable. */
   id: string
-  uf: string
-  slug: string
+  /** What the records belong to: `rj/cidade-exemplo` for a city, `brasil`, `estado/rj`, `comparar/2022`, `relatorios/disputas-mais-apertadas` for the other pages (#62). */
+  scope: string
   /** The page that holds the record: `<ano>-<turno>` or `comparacoes`. */
   page: string
   /** The fragment of the record in its page. */
@@ -66,6 +68,8 @@ export interface Fact {
   calculation?: FactCalculation
   source?: FactSource
   method?: FactMethod
+  /** The build checks that cover the number (`checks.ts`): the "conferido" seal names them. Optional on purpose, like the source: the gate reports a record without any. */
+  checks?: CheckKind[]
 }
 
 /** Where the facts of a place come from: its name for the sentences, and whether the dataset is the fictitious fixture. */
@@ -79,10 +83,10 @@ export interface FactPlace {
 }
 
 export const factPage = (ano: number, turno: number) => `${ano}-${turno}`
-export const factId = (uf: string, slug: string, page: string, anchor: string) => `${uf}/${slug}/${page}/${anchor}`
+export const factId = (scope: string, page: string, anchor: string) => `${scope}/${page}/${anchor}`
 /** Site-relative address of a fact's page (pass it through `withBase`); the fragment names the record. */
-export const factPath = (uf: string, slug: string, page: string) => `fato/${uf}/${slug}/${page}/`
-export const factHref = (f: Pick<Fact, 'uf' | 'slug' | 'page' | 'anchor'>, base = '/') => `${base}${factPath(f.uf, f.slug, f.page)}#${f.anchor}`
+export const factPath = (scope: string, page: string) => `fato/${scope}/${page}/`
+export const factHref = (f: Pick<Fact, 'scope' | 'page' | 'anchor'>, base = '/') => `${base}${factPath(f.scope, f.page)}#${f.anchor}`
 
 const share = (part: number, whole: number) => (whole > 0 ? (part / whole) * 100 : 0)
 const int = (n: number) => formatInt(n)
@@ -101,9 +105,8 @@ export function viewFacts(r: CityResult | undefined, place: FactPlace): Fact[] {
   const where = { city: place.name, turno: r.turno, ano: r.ano }
   const both = (build: (m: ReturnType<typeof say1>) => string): Record<Register, string> => ({ standard: build(say1('standard')), plain: build(say1('plain')) })
   const make = (anchor: string, title: string, shown: string, sentences: Record<Register, string>, inputs: FactInput[], formula: string, worked: string[], extra: Partial<Fact> = {}): Fact => ({
-    id: factId(place.uf, place.slug, page, anchor),
-    uf: place.uf,
-    slug: place.slug,
+    id: factId(`${place.uf}/${place.slug}`, page, anchor),
+    scope: `${place.uf}/${place.slug}`,
     page,
     anchor,
     title,
@@ -112,6 +115,7 @@ export function viewFacts(r: CityResult | undefined, place: FactPlace): Fact[] {
     inputs,
     calculation: { formula, worked },
     source,
+    checks: ['municipios', 'national'],
     ...extra,
   })
   const dividing = (part: number, whole: number): string =>
@@ -226,9 +230,8 @@ export function curiosityFacts(curiosities: readonly Curiosity[], place: FactPla
   const std = (key: MessageKey, params: Record<string, string | number> = {}) => say({ locale, register: 'standard' }, key, params)
   const source: FactSource = { name: std(place.fixture ? 'fact.source.fixture' : 'fact.source.tse'), url: TSE_URL }
   return curiosities.map((c) => ({
-    id: factId(place.uf, place.slug, CURIOSITIES_PAGE, c.code),
-    uf: place.uf,
-    slug: place.slug,
+    id: factId(`${place.uf}/${place.slug}`, CURIOSITIES_PAGE, c.code),
+    scope: `${place.uf}/${place.slug}`,
     page: CURIOSITIES_PAGE,
     anchor: c.code,
     title: std('curio.rank', { n: c.rank }),
@@ -244,6 +247,7 @@ export function curiosityFacts(curiosities: readonly Curiosity[], place: FactPla
     ],
     calculation: { formula: std('fact.f.curio'), worked: [std('fact.w.curio', { rank: c.rank, n: c.n })] },
     source,
+    checks: ['municipios'],
     method: { name: std(METHOD_DOCS.curio.key), href: METHOD_DOCS.curio.href },
   }))
 }

@@ -112,12 +112,12 @@ describe('fact ids and addresses', () => {
     expect(b[1]).toBe(a[1])
   })
   it('differ by round, cycle and place', () => {
-    expect(factId('rj', 'x', factPage(2026, 1), 'votaram')).not.toBe(factId('rj', 'x', factPage(2026, 2), 'votaram'))
-    expect(factId('rj', 'x', factPage(2022, 1), 'votaram')).not.toBe(factId('rj', 'y', factPage(2022, 1), 'votaram'))
+    expect(factId('rj/x', factPage(2026, 1), 'votaram')).not.toBe(factId('rj/x', factPage(2026, 2), 'votaram'))
+    expect(factId('rj/x', factPage(2022, 1), 'votaram')).not.toBe(factId('rj/y', factPage(2022, 1), 'votaram'))
   })
   it('the address is a path under /fato/ and the fragment names the record, relative to the base', () => {
-    expect(factPath('rj', 'cidade-exemplo', '2026-1')).toBe('fato/rj/cidade-exemplo/2026-1/')
-    expect(factHref({ uf: 'rj', slug: 'x', page: '2026-1', anchor: 'a' }, '/voto-a-voto-oss/')).toBe('/voto-a-voto-oss/fato/rj/x/2026-1/#a')
+    expect(factPath('rj/cidade-exemplo', '2026-1')).toBe('fato/rj/cidade-exemplo/2026-1/')
+    expect(factHref({ scope: 'rj/x', page: '2026-1', anchor: 'a' }, '/voto-a-voto-oss/')).toBe('/voto-a-voto-oss/fato/rj/x/2026-1/#a')
   })
   it('are unique inside a page', () => {
     const ids = viewFacts(result, place).map((x) => x.id)

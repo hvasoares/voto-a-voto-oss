@@ -134,3 +134,17 @@ export async function fixtureCityShards(): Promise<CityShard[]> {
     .filter((f) => /^v[0-9a-f]+\/city\/[^/]+\/[^/]+\.json$/.test(f.path)) // paths carry the version directory
     .map((f) => JSON.parse(f.json) as CityShard)
 }
+
+/** Shape of `totals.json`: the sums over every city (overseas posts included) per cycle and round, nationally and by region. */
+export interface TotalsFile {
+  national: Record<string, Record<string, Record<string, number>>>
+  regions: Record<string, Record<string, Record<string, Record<string, number>>>>
+}
+const totalsMemos = new Map<string, Promise<TotalsFile | undefined>>()
+/** The published `totals.json`, parsed once per dataset. */
+export function loadTotalsFile(): Promise<TotalsFile | undefined> {
+  const key = process.env.DATA_DIR ?? '(default)'
+  const memo = totalsMemos.get(key) ?? shardJson<TotalsFile>('totals.json')
+  totalsMemos.set(key, memo)
+  return memo
+}

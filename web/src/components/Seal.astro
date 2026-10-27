@@ -1,0 +1,20 @@
+---
+/**
+ * The "conferido" seal (#62): what the numbers of the page were checked against, one line per check and round, written by `lib/facts/checks.ts` from what
+ * the build measured (never typed). Nothing here but markup and the catalog's title and note: the lines arrive finished.
+ */
+import { message } from '@/lib/sentences/catalog'
+
+interface Props {
+  lines: string[]
+}
+const { lines } = Astro.props
+const voice = { locale: 'pt-BR', register: 'standard' } as const
+---
+{lines.length > 0 && (
+  <aside class="seal" data-seal aria-labelledby="seal-title">
+    <h2 class="seal__title" id="seal-title"><span aria-hidden="true">✓ </span>{message(voice, 'seal.title')}</h2>
+    <ul class="seal__lines">{lines.map((l) => <li>{l}</li>)}</ul>
+    <p class="seal__note">{message(voice, 'seal.note')}</p>
+  </aside>
+)}

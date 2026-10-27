@@ -18,6 +18,7 @@ export function factProblems(f: Fact): string[] {
   if (blank(f.sentences?.standard) || blank(f.sentences?.plain)) out.push('no sentence')
   if (!f.source || blank(f.source.name) || !/^https?:\/\//.test(f.source.url ?? '')) out.push('no source')
   if (!f.calculation || blank(f.calculation.formula) || !f.calculation.worked?.length || f.calculation.worked.some(blank)) out.push('no calculation')
+  if (!f.checks?.length) out.push('no check')
   if (!f.inputs?.length || f.inputs.some((i) => blank(i.label) || blank(i.value))) out.push('no inputs')
   return out
 }
