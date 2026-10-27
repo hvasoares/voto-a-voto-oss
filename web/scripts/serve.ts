@@ -5,6 +5,7 @@
 import { createServer } from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
 import { extname, join, normalize, resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { normalizeBase } from '../src/paths'
 
 const TYPES: Record<string, string> = {
@@ -44,7 +45,10 @@ export function startServer(root = resolve(process.env.OUT_DIR ?? 'dist'), port 
   return new Promise<typeof server>((ok) => server.listen(port, () => ok(server)))
 }
 
-const port = Number(process.env.PORT ?? 4173)
-const base = normalizeBase(process.env.SITE_BASE)
-await startServer(resolve(process.env.OUT_DIR ?? 'dist'), port, base)
-console.log(`serving dist on http://localhost:${port}${base}`)
+// Only when run as a script: scripts/measure.ts imports startServer and must not start a second server (or hang on it).
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const port = Number(process.env.PORT ?? 4173)
+  const base = normalizeBase(process.env.SITE_BASE)
+  await startServer(resolve(process.env.OUT_DIR ?? 'dist'), port, base)
+  console.log(`serving dist on http://localhost:${port}${base}`)
+}

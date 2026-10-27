@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'astro/config'
 import { fileURLToPath } from 'node:url'
 import { cdn } from './integrations/cdn'
+import { desktopShell } from './integrations/desktop-shell'
 import { dataset, shardsModule } from './integrations/dataset'
 import { interaction } from './integrations/interaction'
 import { previewImages } from './integrations/preview-images'
@@ -23,7 +24,7 @@ export default defineConfig({
   experimental: { parallelPrerender: true },
   integrations: [dataset(), previewImages(), interaction(), cdn(), react()],
   vite: {
-    plugins: [shardsModule(), themePlugin(), tailwindcss()],
+    plugins: [desktopShell(), shardsModule(), themePlugin(), tailwindcss()],
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),

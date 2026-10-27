@@ -56,8 +56,23 @@ export async function waitReady(page: Page): Promise<void> {
 }
 
  export async function activateSearch(page: Page) {
-  const box = page.getByRole('combobox', { name: 'Busque sua cidade' })
+  // The page's own search (the desktop top bar has another one, "bar"; it is hidden on a phone).
+  const box = page.locator('[data-city-search="main"]').getByRole('combobox', { name: 'Busque sua cidade' })
   await box.click()
-  await page.waitForFunction(() => document.querySelector('astro-island') && !document.querySelector('astro-island')!.hasAttribute('ssr'))
+  await page.waitForFunction(() => [...document.querySelectorAll('astro-island')].some((i) => !i.hasAttribute('ssr')))
   return box
+}
+
+/** The three widths every desktop spec checks (#51): the phone, the tablet breakpoint and the desktop frame. */
+export const WIDTHS = [390, 768, 1440] as const
+
+/** No horizontal scroll at the page's current width. */
+export async function expectNoHorizontalScroll(page: Page): Promise<void> {
+  const { sw, iw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: window.innerWidth }))
+  if (sw > iw) throw new Error(`horizontal scroll: scrollWidth ${sw} > innerWidth ${iw}`)
+}
+
+/** Resizes the page, keeping the phone's height for 390 and the desktop frame's for the others. */
+export async function resizeTo(page: Page, width: number): Promise<void> {
+  await page.setViewportSize({ width, height: width === 390 ? 844 : 900 })
 }

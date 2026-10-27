@@ -5,6 +5,8 @@ import '../styles/global.css'
 import { normalizeBase, withBase } from '@/paths'
 import type { PreviewHead } from '@/lib/link-preview'
 import ConsentBanner from '@/components/ConsentBanner.astro'
+import { DESKTOP_SHELL_FILE } from '../../integrations/desktop-shell'
+import TopBar from '@/components/TopBar.astro'
 import DonationLink from '@/components/DonationLink.astro'
 import { editionLabel, editionPath } from '@/lib/editions'
 import { currentEdition } from '@/lib/editions-load'
@@ -23,6 +25,8 @@ const base = normalizeBase(import.meta.env.BASE_URL)
 const privacyHref = withBase(base, 'sobre-os-dados/#privacidade')
 // Ticket #59: every page names the edition of the data it shows and links to its immutable address.
 const edition = await currentEdition()
+// Dev serves the source module; a build serves the entry integrations/desktop-shell.ts emits under the site base.
+const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : withBase(base, DESKTOP_SHELL_FILE)
 ---
 <!doctype html>
 <html lang="pt-BR">
@@ -58,6 +62,7 @@ const edition = await currentEdition()
     {/* Skip link (issue #19): keyboard/screen-reader users reach the content without the tabs/grid. */}
     <a class="sr-only focus:not-sr-only focus:z-50 focus:fixed focus:top-2 focus:left-2 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-body font-bold focus:text-foreground focus:outline-2 focus:outline-primary" href="#main">Pular para o conteúdo</a>
     <div class="flex min-h-screen min-w-0 flex-col">
+      <TopBar />
       <slot />
       {/* NOT a <footer> element: every page carries its own (<footer data-component="source-footer">) and
           the e2e specs resolve single-footer locators; this one line adds the edition link (#59), the privacy/consent link (#20) and, when a donation address is configured, the donation link (#36). */}
@@ -72,6 +77,10 @@ const edition = await currentEdition()
     {/* Metrics boot (the notice model): with an id configured the GA4 provider installs on every page; the informational banner is handled by the same script. */}
     <script>
       import '@/scripts/analytics-boot'
+    </script>
+    {/* Desktop shell (#51: the "/" shortcut and the top bar's search): a 1024 px viewport loads its module, a phone downloads nothing for it. */}
+    <script is:inline define:vars={{ shell }}>
+      if (matchMedia('(min-width: 1024px)').matches) import(shell)
     </script>
   </body>
 </html>

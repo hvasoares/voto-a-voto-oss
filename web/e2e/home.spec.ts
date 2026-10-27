@@ -8,7 +8,7 @@ test.describe('home: content', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Voto a Voto')
     await expect(page.getByText('Eleição presidencial 2026, cidade por cidade.')).toBeVisible()
     await expect(page.getByText('Compare com 2018 e 2022.')).toBeVisible()
-    await expect(page.getByPlaceholder('Busque sua cidade')).toBeVisible()
+    await expect(page.locator('[data-city-search="main"]').getByPlaceholder('Busque sua cidade')).toBeVisible()
     await expect(page.getByText('Ou escolha um estado. Toque para ver os municípios.')).toBeVisible()
     await expect(page.getByRole('heading', { level: 2 })).toHaveText('Para explorar')
     await expect(page.locator('footer')).toContainText('Dados oficiais do TSE · Sobre os dados ›')

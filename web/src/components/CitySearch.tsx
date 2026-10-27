@@ -18,13 +18,17 @@ const FIELD = [
 ].join(' ')
 const SHORT = { state: 'short', total: 0, hits: [] } as const
 
+/** The slim top-bar variant (desktop shell, #51): 40 px field, the results float over the page instead of pushing it. */
+const BAR_FIELD = '[&_[data-slot=input-group]]:h-10!'
+const BAR_LIST = 'absolute inset-x-0 top-full z-30'
+
 /**
  * The city search: shadcn Command (cmdk) with filtering turned off, because the ranking is ours
  * (site/src/shared/city-search.ts, reused unchanged). Hydrated on first interaction (client:interaction).
  * Analytics payloads come from the shared controller: result count and query length, never the typed text.
  */
-export default function CitySearch({ base }: { base: string }) {
-  const [text, setText] = useState('')
+export default function CitySearch({ base, bar = false, initialText = '', autoFocus = false }: { base: string; bar?: boolean; initialText?: string; autoFocus?: boolean }) {
+  const [text, setText] = useState(initialText)
   const [cities, setCities] = useState<Awaited<ReturnType<typeof loadSearchCities>>>()
   const root = useRef<HTMLDivElement>(null)
 
@@ -33,7 +37,8 @@ export default function CitySearch({ base }: { base: string }) {
     void loadSearchCities(base).then(setCities)
     const typed = root.current?.querySelector('input')?.value || root.current?.closest('astro-island')?.getAttribute('data-pending')
     if (typed) setText(typed)
-  }, [base])
+    if (autoFocus) root.current?.querySelector('input')?.focus()
+  }, [base, autoFocus])
 
   const controller = useMemo(() => (cities ? createSearchController(cities, getAnalytics()) : undefined), [cities])
   const view = useMemo(() => controller?.search(text, false) ?? SHORT, [controller, text])
@@ -47,12 +52,12 @@ export default function CitySearch({ base }: { base: string }) {
   const href = (uf: string, slug: string) => withBase(base, `/${uf}/${slug}/`)
 
   return (
-    <div ref={root} className="relative mt-2">
-      <svg className="pointer-events-none absolute left-[14px] top-[12px] z-10 text-muted-foreground" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="6.5" cy="6.5" r="6" fill="none" stroke="currentColor" strokeWidth="1.9" /><path d="M16.2 12.2 12.4 16.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
+    <div ref={root} className={bar ? 'relative' : 'relative mt-2'} data-city-search={bar ? 'bar' : 'main'}>
+      <svg className={`pointer-events-none absolute left-[14px] z-10 text-muted-foreground ${bar ? 'top-[10px]' : 'top-[12px] lg:hidden'}`} viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="6.5" cy="6.5" r="6" fill="none" stroke="currentColor" strokeWidth="1.9" /><path d="M16.2 12.2 12.4 16.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
       <Command
         shouldFilter={false}
         label="Busque sua cidade"
-        className={`h-auto overflow-visible rounded-none bg-transparent p-0 ${FIELD}`}
+        className={`h-auto overflow-visible rounded-none bg-transparent p-0 ${FIELD} ${bar ? BAR_FIELD : ''}`}
         onKeyDown={(e) => {
           if (e.key !== 'Enter') return
           e.preventDefault()
@@ -62,7 +67,7 @@ export default function CitySearch({ base }: { base: string }) {
         <CommandInput
           value={text}
           onValueChange={setText}
-          className="h-full pb-1 pl-[39px]! text-body! leading-[17px] placeholder:text-muted-foreground"
+          className={`h-full pl-[39px]! text-body! leading-[17px] placeholder:text-muted-foreground ${bar ? 'pr-10!' : 'pb-1 lg:pl-[22px]!'}`}
           placeholder="Busque sua cidade"
           aria-label="Busque sua cidade"
           autoComplete="off"
@@ -70,7 +75,7 @@ export default function CitySearch({ base }: { base: string }) {
           spellCheck={false}
           enterKeyHint="search"
         />
-        <CommandList className="max-h-none" hidden={view.state !== 'results'}>
+        <CommandList className={bar ? `max-h-none ${BAR_LIST}` : 'max-h-none'} hidden={view.state !== 'results'}>
           {view.state === 'results' && (
             <Card className="mt-1 gap-0 rounded-md border border-border bg-background p-0 py-0 shadow-none ring-0">
               {view.hits.map((h, i) => (
@@ -98,7 +103,7 @@ export default function CitySearch({ base }: { base: string }) {
           )}
         </CommandList>
       </Command>
-      <div aria-live="polite">
+      <div aria-live="polite" className={bar ? BAR_LIST : undefined}>
         {view.state === 'empty' && <p className="mt-2 text-small leading-4 text-muted-foreground">Nenhuma cidade encontrada. Confira a grafia ou escolha um estado abaixo.</p>}
         {view.state === 'results' && view.total > view.hits.length && (
           <p className="mt-2 text-small leading-4 text-muted-foreground">Mostrando {view.hits.length} de {view.total}. Digite mais letras para refinar.</p>

@@ -30,7 +30,9 @@ export default defineConfig({
     env: { PORT: String(PORT) },
   },
   projects: [
-    { name: 'phone', testIgnore: /real-data|capture|cdn/, use: { browserName: 'chromium' } },
+    { name: 'phone', testIgnore: /real-data|capture|cdn|desktop-/, use: { browserName: 'chromium' } },
+    // The desktop suites (G10): a 1440x900 pointer-and-keyboard browser; each spec resizes for its own 390/768 checks.
+    { name: 'desktop', testMatch: /desktop-/, use: { browserName: 'chromium', viewport: { width: 1440, height: 900 }, isMobile: false, hasTouch: false } },
     { name: 'capture', testMatch: /capture/, use: { browserName: 'chromium' } },
     { name: 'real', testMatch: /real-data/, use: { browserName: 'chromium' } },
   ],

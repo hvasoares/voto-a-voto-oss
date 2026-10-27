@@ -15,14 +15,17 @@ const available = new Set(await loadStateCodes())
 const href = (path: string) => withBase(base, path)
 // "Três ciclos por estado" needs a state: the first one the dataset has (as in the vanilla home).
 const firstUf = [...available].sort()[0] ?? 'rj'
-const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md border-border text-body font-bold leading-[17px] text-foreground pb-0.5')
+const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md border-border text-body font-bold leading-[17px] text-foreground pb-0.5 lg:h-14 lg:w-14 lg:text-[15px]')
 ---
 <Base title="Voto a Voto">
-  <main class="min-w-0 flex-1 px-5 pt-16" id="main">
-    <h1 class="font-serif text-title font-normal leading-[30px] wrap-anywhere">Voto a Voto</h1>
-    <p class="font-serif text-lead leading-[22px]">Eleição presidencial 2026, cidade por cidade.</p>
-    <p class="mt-0.5 text-small leading-[14px] text-muted-foreground">Compare com 2018 e 2022.</p>
-    <CitySearch client:interaction base={base} />
+  {/* Phone: one column. 768 px: the same column, centered. 1024 px and up (#51): the title, search and "Para explorar" on the
+      left, the state picker on the right; the shell's top bar carries the wordmark, so the h1 stays for screen readers only. */}
+  <main class="mx-auto w-full min-w-0 max-w-[720px] flex-1 px-5 pt-16 lg:grid lg:max-w-[1240px] lg:grid-cols-[560px_1fr] lg:gap-x-20 lg:gap-y-0 lg:pt-16" id="main">
+    <div class="lg:col-start-1 lg:row-start-1">
+    <h1 class="font-serif text-title font-normal leading-[30px] wrap-anywhere lg:sr-only">Voto a Voto</h1>
+    <p class="font-serif text-lead leading-[22px] lg:text-[44px] lg:leading-[60px]">Eleição presidencial 2026, cidade por cidade.</p>
+    <p class="mt-0.5 text-small leading-[14px] text-muted-foreground lg:mt-2 lg:text-lead lg:leading-[20px]">Compare com 2018 e 2022.</p>
+    <div class="lg:mt-4 lg:[&_[data-slot=input-group]]:h-14!"><CitySearch client:interaction base={base} /></div>
     <p class="mt-1.5 text-small leading-[14px]" data-island-failed hidden>A busca não está disponível agora. Escolha um estado abaixo.</p>
     <noscript><p class="mt-1.5 text-small leading-[14px]">A busca precisa de JavaScript. Escolha um estado abaixo.</p></noscript>
     <div class="relative mb-[-2px] mt-[10px] flex h-12 items-start rounded-lg border border-border bg-secondary pl-[11px]" data-place-shortcut data-base={base} hidden>
@@ -40,8 +43,10 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
       <p class="mt-1.5 text-[11px] leading-3 text-muted-foreground">{LOCATE_HINT}</p>
       <p class="mt-1.5 text-small leading-4" role="status" aria-live="polite" data-locate-status hidden></p>
     </div>
-    <p class="mt-1.5 text-small leading-[14px]">Ou escolha um estado. Toque para ver os municípios.</p>
-    <nav class="mt-1 grid justify-center gap-px [grid-auto-rows:44px] [grid-template-columns:repeat(7,44px)]" aria-label="Estados" data-uf-grid>
+    </div>
+    <div class="lg:col-start-2 lg:row-span-2 lg:row-start-1">
+    <p class="mt-1.5 text-small leading-[14px] lg:mt-[2px] lg:text-body"><span class="lg:hidden">Ou escolha um estado. Toque para ver os municípios.</span><span class="hidden lg:inline">Ou escolha um estado. Clique para ver os municípios.</span></p>
+    <nav class="mt-1 grid justify-center gap-px lg:mt-6 [grid-auto-rows:44px] [grid-template-columns:repeat(7,44px)] lg:justify-start lg:gap-1 lg:[grid-auto-rows:56px] lg:[grid-template-columns:repeat(7,56px)]" aria-label="Estados" data-uf-grid>
       {UF_TILES.map((t) =>
         available.has(t.uf) ? (
           <a class={tile} style={`grid-column:${t.col};grid-row:${t.row}`} href={href(`/${t.uf}/`)} data-uf={t.uf} data-nome={UF_NOME[t.uf]} aria-label={ufFullLabel(t.uf)}>{t.uf.toUpperCase()}</a>
@@ -50,22 +55,25 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
         ),
       )}
     </nav>
-    <h2 class="mt-2 font-serif text-section font-normal leading-[25px]">Para explorar</h2>
-    <ul class="mt-[5px] list-none p-0">
+    </div>
+    <div class="lg:col-start-1 lg:row-start-2">
+    <h2 class="mt-2 font-serif text-section font-normal leading-[25px] lg:mt-12 lg:text-[22px] lg:leading-[30px]">Para explorar</h2>
+    <ul class="mt-[5px] list-none p-0 lg:mt-3">
       {EXPLORE.map((e) => (
         <li>
-          <a class="flex min-h-14 items-center border-t border-border pb-[11px] pt-2 text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary" href={href(e.to.replace(':uf', firstUf))}>
+          <a class="flex min-h-14 items-center border-t border-border pb-[11px] pt-2 text-foreground lg:min-h-[72px] lg:py-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary" href={href(e.to.replace(':uf', firstUf))}>
             <span class="flex min-w-0 flex-1 flex-col gap-1">
-              <strong class="text-body font-bold leading-[18px]">{e.title}</strong>
-              <span class="text-small leading-[14px] text-muted-foreground">{e.sub}</span>
+              <strong class="text-body font-bold leading-[18px] lg:text-[19px] lg:leading-[22px]">{e.title}</strong>
+              <span class="text-small leading-[14px] text-muted-foreground lg:text-[14px] lg:leading-[16px]">{e.sub}</span>
             </span>
             <svg class="mr-px mt-[7px] flex-none text-primary" viewBox="0 0 6 10" width="5" height="8.5" aria-hidden="true" focusable="false"><path d="M0.7 0.5 4 4.6 0.7 8.7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg>
           </a>
         </li>
       ))}
     </ul>
+    </div>
   </main>
-  <footer class="mx-5 mt-2 border-t border-border pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+  <footer class="mx-5 mt-2 border-t border-border pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary md:mx-auto md:w-full md:max-w-[680px] lg:mt-16 lg:max-w-[1200px] lg:border-t-0 lg:text-left" data-component="source-footer">
     Dados oficiais do TSE · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>
   <script>
