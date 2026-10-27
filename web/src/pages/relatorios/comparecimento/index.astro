@@ -47,7 +47,7 @@ const volume = (r: TurnoutExtreme): string => `${formatFixedPct(r.rate)} · ${fo
                 <span class={badge}>{i + 1}</span>
               </td>
               <td class="py-3.5 align-middle">
-                <a class="block min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
+                <a class="block min-h-11 min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
                   <span class="block text-body font-bold leading-[18px] text-foreground">{displayName(r.nome)}/{ufLabel(r.uf)}</span>
                   <span class="mt-[6px] block text-small leading-[15px] text-muted-foreground">{volume(r)}</span>
                 </a>
@@ -69,7 +69,7 @@ const volume = (r: TurnoutExtreme): string => `${formatFixedPct(r.rate)} · ${fo
                 <span class={badge}>{i + 1}</span>
               </td>
               <td class="py-3.5 align-middle">
-                <a class="block min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
+                <a class="block min-h-11 min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
                   <span class="block text-body font-bold leading-[18px] text-foreground">{displayName(r.nome)}/{ufLabel(r.uf)}</span>
                   <span class="mt-[6px] block text-small leading-[15px] text-muted-foreground">{volume(r)}</span>
                 </a>

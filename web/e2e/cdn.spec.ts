@@ -69,7 +69,7 @@ test.describe('CDN unreachable: pre-rendered HTML stays readable and the island 
     await page.getByPlaceholder('Busque sua cidade').click()
     await expect(page.getByText('A busca não está disponível agora')).toBeVisible()
     // still not a blank screen, and the plain links still work
-    await expect(page.getByRole('link', { name: 'SP', exact: true })).toBeVisible()
+    await expect(page.getByRole('link', { name: /SP · São Paulo/ })).toBeVisible()
     expect((await page.locator('body').innerText()).length).toBeGreaterThan(300)
     await page.getByRole('link', { name: /Brasil e regiões/ }).click()
     await expect(page).toHaveURL(new RegExp(`${base}brasil/$`))

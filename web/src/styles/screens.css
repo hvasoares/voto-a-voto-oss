@@ -106,7 +106,8 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 }
 .state-row:focus-visible, .state-links a:focus-visible { outline: 2px solid var(--c-accent); outline-offset: -2px; }
 .state-links { display: flex; justify-content: space-between; align-items: flex-start; border-top: 1px solid var(--c-rule); margin-top: 5px; padding-top: 10px; }
-.state-links a { font: 700 13px/16px var(--font-sans); color: var(--c-accent); }
+/* Tap target >= the 44px minimum (#19): both links get one row of it. */
+.state-links a { display: flex; align-items: center; min-height: var(--min-tap); font: 700 13px/16px var(--font-sans); color: var(--c-accent); }
 .state-links a:first-child { flex: 0 0 160px; }
 .state-links a:last-child { flex: 0 0 150px; text-align: right; }
 
@@ -120,7 +121,9 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 }
 .bar__seg--a, .bar__seg--b, .bar__seg--outros { font-size: 11px; }
 .bar__seg--a { background: var(--c-cand-a); color: var(--c-accent-fg); }
-.bar__seg--b { background: var(--c-cand-b); color: var(--c-accent-fg); }
+/* The taupe of candidate B is too light for the paper ink (2.9:1 < 4.5): the dark ink wins on it,
+ * exactly the contrast-max choice the map labels make since #16 (issue #19). */
+.bar__seg--b { background: var(--c-cand-b); color: var(--c-ink); }
 .bar__seg--outros { background: var(--c-cand-outros); color: var(--c-ink); }
 .bar__seg--abstencao { background: var(--c-abstencao); }
 .bar__seg--brancos { background: var(--c-brancos); }
@@ -164,7 +167,8 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
   background: var(--c-accent); color: var(--c-accent-fg); border-radius: var(--radius); font-size: 15px; padding-bottom: 1px;
 }
 .city-links { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 7px; padding-top: 15px; border-top: 1px solid var(--c-rule); }
-.city-links a { text-align: center; font: 600 11px/16px var(--font-sans); color: var(--c-accent); }
+/* Tap target >= the 44px minimum in every direction (#19): the links are centred cells of the grid. */
+.city-links a { display: flex; align-items: center; justify-content: center; min-height: var(--min-tap); text-align: center; font: 600 11px/16px var(--font-sans); color: var(--c-accent); }
 .city-page .page__main { padding-bottom: 0; }
 .city-page .source-footer { padding: 19px var(--gutter) 24px; color: var(--c-muted); font-size: 11px; line-height: 14px; }
 

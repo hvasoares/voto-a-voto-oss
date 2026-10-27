@@ -50,7 +50,7 @@ test.describe('home without JavaScript', () => {
   test.use({ javaScriptEnabled: false })
   test('the pre-rendered page still offers the state tiles and the explore links as plain anchors', async ({ page }) => {
     await page.goto(base)
-    await expect(page.getByRole('link', { name: 'RJ', exact: true })).toHaveAttribute('href', `${base}rj/`)
+    await expect(page.getByRole('link', { name: /RJ · Rio de Janeiro/ })).toHaveAttribute('href', `${base}rj/`)
     await expect(page.getByRole('link', { name: /Brasil e regiões/ })).toHaveAttribute('href', `${base}brasil/`)
     expect(await page.locator('noscript').first().textContent()).toContain('A busca precisa de JavaScript')
   })
@@ -164,6 +164,6 @@ test.describe('home: city search', () => {
 
 test('a state tile opens its state path', async ({ page }) => {
   await page.goto(base)
-  await page.getByRole('link', { name: 'SP', exact: true }).click()
+  await page.getByRole('link', { name: 'SP · São Paulo' }).click()
   await expect(page).toHaveURL(new RegExp(`${base}sp/$`))
 })
