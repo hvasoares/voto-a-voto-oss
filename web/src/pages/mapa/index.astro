@@ -1,0 +1,31 @@
+---
+/**
+ * Screen 10 (Sketch frame "10 Mapa por estado"): the margin of the runoff round per state,
+ * in the mosaic presentation by default. The island renders the frame's whole body.
+ */
+import Base from '@/layouts/Base.astro'
+import StateMapMap from '@/components/StateMapMap'
+import { normalizeBase, withBase } from '@site/paths'
+import { loadStateMapData } from '@/lib/state-map-data'
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const data = await loadStateMapData()
+---
+
+<Base title="Mapa por estado · Voto a Voto">
+  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16" id="main" data-page="mapa">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px]" href={href('/')}>‹ Início</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">Mapa por estado</h1>
+    <p class="mt-1 font-serif text-lead leading-[22px] wrap-anywhere">Margem de {data.ladoANome} sobre {data.ladoBNome} no 2º turno de {data.ano}, em pontos percentuais (pp), por estado.</p>
+    <StateMapMap client:interaction kind="margin" base={base} data={data} />
+    <noscript><p class="mt-1.5 text-small leading-[14px] text-muted-foreground">A vista de mapa precisa de JavaScript. O mosaico acima funciona sem.</p></noscript>
+    <p class="mt-1.5 text-small leading-[14px]" data-island-failed hidden>O mapa por estado não está disponível agora. Escolha um estado na página inicial.</p>
+  </main>
+  <footer class="mx-5 mt-2 border-t border-border pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+    Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+  </footer>
+  <script>
+    import '@/scripts/map-pending'
+  </script>
+</Base>
