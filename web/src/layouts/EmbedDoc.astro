@@ -1,0 +1,28 @@
+---
+/**
+ * The shell of an embeddable document (ticket #29): a small page that a newsroom or an association places in its own site with
+ * one `<iframe>`. NO script of any kind (so no analytics: nothing is measured from a page that is not ours), no top bar, no banner,
+ * no skip link; it does not read or write anything on the visitor's device. Its links open in a new tab, never in the host's page.
+ * noindex: the embeds are not pages to be found, they are parts of other pages.
+ */
+import 'virtual:theme.css'
+import '../styles/global.css'
+
+interface Props {
+  title: string
+}
+const { title } = Astro.props
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <base target="_blank" />
+    <title>{title}</title>
+  </head>
+  <body class="m-0 min-w-0 bg-transparent">
+    <slot />
+  </body>
+</html>

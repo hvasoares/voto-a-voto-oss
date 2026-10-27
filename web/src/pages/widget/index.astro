@@ -1,0 +1,30 @@
+---
+/**
+ * The widget page (the Sketch frame "18 Widget da cidade", ticket #29): choose a city, see its embeddable widget at 390 and 320 px wide and
+ * copy the one-line snippet. Reached from "Para jornalistas e associações" on "Sobre os dados".
+ */
+import Base from '@/layouts/Base.astro'
+import PhoneHeader from '@/components/PhoneHeader.astro'
+import WidgetBuilder from '@/components/WidgetBuilder'
+import { normalizeBase, withBase } from '@/paths'
+import { datasetFixture } from '@/lib/shard-files'
+import { siteOrigin } from '@/lib/share-url'
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const fixture = await datasetFixture()
+---
+<Base title="Widget da cidade · Voto a Voto" description="Cole no seu site o resultado de uma cidade e um link de volta.">
+  <PhoneHeader />
+  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:pt-8" id="main" data-page="widget">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal lg:text-primary" href={href('/')}>‹ Início</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">Widget da cidade</h1>
+    <p class="mt-1 text-small leading-[14px] text-muted-foreground">Cole no seu site: o resultado de uma cidade e um link de volta.</p>
+    <WidgetBuilder client:load base={base} origin={siteOrigin()} />
+    <noscript><p class="mt-2 text-small leading-[17px]" data-nojs>Montar o snippet precisa de JavaScript. O widget de uma cidade fica em /embed/uf/cidade/ (por exemplo, /embed/rj/cidade-exemplo/).</p></noscript>
+    <p class="mt-3 text-center text-[11px] leading-[14px] text-muted-foreground" data-note>O widget não tem script nem análise de uso: nada é medido a partir do seu site. Mostra sempre a fonte e a edição, e não tem barras de rolagem em 320 e 390 px.</p>
+    <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+      {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+    </footer>
+  </main>
+</Base>

@@ -1,0 +1,44 @@
+---
+/**
+ * The embeddable city widget (the Sketch frame "18 Widget da cidade", ticket #29): ONE small card for a newsroom or an association to
+ * place in its own site with an <iframe>. It shows the city, its generated headline (the same sentence as the city card), the source
+ * and the edition of the numbers, and a link back to the city card. Pre-rendered, no script at all (so no analytics, no storage), fits a
+ * 320 px column.
+ */
+import EmbedDoc from '@/layouts/EmbedDoc.astro'
+import { normalizeBase, withBase } from '@/paths'
+import { loadCityRoutes } from '@/lib/city-routes'
+import { datasetFixture, loadCityShard } from '@/lib/shard-files'
+import { cityShardResult } from '@/lib/city-shard'
+import { currentEdition } from '@/lib/editions-load'
+import { displayName, ufLabel } from '@/shared/city-search'
+import { defaultView } from '@/slots/city/city-view'
+import { headline } from '@/lib/sentences/headline'
+import { widgetSource } from '@/lib/widget'
+
+export async function getStaticPaths() {
+  return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug } }))
+}
+
+const { uf, slug } = Astro.params
+const base = normalizeBase(import.meta.env.BASE_URL)
+const shard = (await loadCityShard(uf!, slug!))!
+const name = displayName(shard.city.nome)
+const fixture = await datasetFixture()
+const edition = await currentEdition()
+const view = defaultView((ano, turno) => !!cityShardResult(shard, ano, turno))
+const result = cityShardResult(shard, view.ano, view.turno)
+const sentence = headline(result, { cityName: name, overseas: shard.city.uf === 'zz' })
+const cardHref = withBase(base, `/${uf}/${slug}/?ciclo=${view.ano}&turno=${view.turno}`)
+---
+<EmbedDoc title={`Resultado de ${name} · Voto a Voto`}>
+  <article class="box-border min-w-0 border border-foreground bg-background p-3 font-sans text-foreground" data-widget data-uf={uf} data-slug={slug} lang="pt-BR">
+    <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-tiny leading-[14px] text-muted-foreground">
+      {fixture && <span class="rounded-sm px-1.5 py-px font-bold" style="background: var(--sketch-color-flag); color: var(--sketch-color-ink)">EXEMPLO</span>}
+      <span data-source>{widgetSource(edition)}</span>
+    </div>
+    <h1 class="mt-1.5 font-serif text-[20px] font-normal leading-[24px] wrap-anywhere">{name} · {ufLabel(shard.city.uf)}</h1>
+    <p class="mt-1 text-[14px] leading-[18px] wrap-anywhere" data-headline>{sentence}</p>
+    <p class="mt-1.5 text-small font-bold leading-4"><a class="text-primary" href={cardHref} data-back>Ver no Voto a Voto ›</a></p>
+  </article>
+</EmbedDoc>
