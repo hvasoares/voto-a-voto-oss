@@ -23,7 +23,9 @@ const base = normalizeBase(import.meta.env.BASE_URL)
 const href = (path: string) => withBase(base, path)
 
 // --- fixture state (ticket #50 replaces from here down with the real route) ---------------------------------------
-const data = createNodeStore(dataDir())
+// This demo ALWAYS draws the fixture city, regardless of DATA_DIR: the store has no cidade-exemplo under real
+// data, and the real build crashed here before this fallback ('Cannot read properties of undefined (uf)').
+const data = createNodeStore(dataDir({}))
 const city = (await data.city('rj', 'cidade-exemplo'))!
 const view = { ano: 2026, turno: 1 as const } // the frame's round
 const result = (await loadCityResult(data, city, view.ano, view.turno))!
