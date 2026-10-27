@@ -24,7 +24,9 @@ export default defineConfig({
     command: `OUT_DIR=${outDir} BUILD_TARGET=${mode} npx astro build && OUT_DIR=${outDir} npx tsx scripts/serve.ts`,
     url: `http://localhost:${PORT}${base}`,
     reuseExistingServer: false,
-    timeout: 120_000,
+    // The fixture build is ~0.5 s; the real-data build (5.760 cities × the card, three-cycle and share
+    // pages) takes ~2 min, so the boot budget has to cover its slowest variant.
+    timeout: 300_000,
     env: { PORT: String(PORT) },
   },
   projects: [

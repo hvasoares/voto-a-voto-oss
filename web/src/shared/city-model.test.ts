@@ -165,6 +165,7 @@ describe('cityShardResult over the built city shards (the Sketch frame figures)'
   })
   it('every fixture city, cycle and round adds up: voted + not voted = 100, each bar = 100', async () => {
     const shards = await fixtureCityShards()
+    expect(shards.map((s) => s.city.slug)).toContain('cidade-exemplo') // the loop below is never vacuous
     for (const shard of shards)
       for (const anoText of Object.keys(shard.cycles))
         for (const turnoText of Object.keys(shard.cycles[anoText]!)) {

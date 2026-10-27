@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 import { createStore } from './store'
 import type { DataStore, TextSource } from './types'
 
-/** Where the data comes from. Default: committed fixtures. Real data: DATA_DIR=../data (relative to site/). */
+/** Where the data comes from. Default: committed fixtures. Real data: DATA_DIR=../data (relative to web/, the package root). */
 export function dataDir(env: NodeJS.ProcessEnv = process.env, cwd = process.cwd()): string {
   return resolve(cwd, env.DATA_DIR ?? 'fixtures/data')
 }

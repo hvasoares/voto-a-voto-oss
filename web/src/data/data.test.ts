@@ -90,7 +90,7 @@ describe('createStore', () => {
 
 describe('dataDir', () => {
   it('defaults to the fixtures and switches with DATA_DIR', () => {
-    expect(dataDir({}, '/x/site')).toBe('/x/site/fixtures/data')
+    expect(dataDir({}, '/x/web')).toBe('/x/web/fixtures/data')
     expect(dataDir({ DATA_DIR: '../data' }, '/x/site')).toBe('/x/data')
   })
 })

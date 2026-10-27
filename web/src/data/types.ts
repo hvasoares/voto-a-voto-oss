@@ -77,7 +77,7 @@ export interface TurnoutQuery extends Partial<CityKey> {
 
 /**
  * Stable, documented interface over the dataset. Backed by fixtures until real
- * data lands; see site/README.md for the data-directory switch.
+ * data lands; see web/README.md for the data-directory switch.
  * All methods are async so a future lazily-fetched/sharded backend needs no screen changes.
  */
 export interface DataStore {

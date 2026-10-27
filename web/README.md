@@ -1,13 +1,12 @@
 # Voto a Voto: web (Astro + React islands + shadcn/ui)
 
-Rebuild of the site on Astro, starting with the home page as the tracer (ticket #48). `../site/` is the old
-plain-TypeScript site: it keeps building and passing its tests untouched until ticket #50 removes it.
-Tickets: #49 (JSON data shards) and #50 (port state, city and three-cycle pages) build on this skeleton.
+The web app of the site, on Astro (static output) + React islands + shadcn/ui on Tailwind CSS 4 (decided by the user
+for ticket #48; it supersedes the old plain-TypeScript build removed by ticket #50). Tickets: #48 home (tracer),
+#49 JSON data shards, #50 port state / city / three-cycle pages + real share route and removal of the old build.
 
 ## Toolchain decision
 
-**Astro (static output) + React islands + shadcn/ui on Tailwind CSS 4. Decided by the user** (the earlier "no framework"
-decision in `../site/README.md` is superseded for new work).
+**Astro (static output) + React islands + shadcn/ui on Tailwind CSS 4. Decided by the user**.
 
 Versions installed (exact, from `package-lock.json`): astro 7.4.2, @astrojs/react 7.1.1, react / react-dom 19.3.1,
 tailwindcss and @tailwindcss/vite 4.3.3, shadcn CLI 4.22.1 (style `radix-nova`, `radix-ui` 1.8.1, `cmdk` 1.1.1,
@@ -41,22 +40,25 @@ web/
   cdn.config.json         approved CDN origins + pinned libraries (EMPTY by default)
   integrations/           dataset (writes the shards to public/data), theme (virtual:theme.css), interaction (client:interaction), cdn
   integrations/shards.ts  the shard builder (issue #49; layout and budgets: docs/shards.md)
-  src/pages/              index.astro (home), [uf]/[slug]/index.astro (pre-rendered city page), 404.astro (client fallback)
+  src/components/CityCard.astro  the city card page body (and the dimmed backdrop of the share route)
+  src/pages/              one file per route (see "Routes" below), 404.astro (client fallback)
   src/layouts/Base.astro  html shell + #consent-slot
-  src/components/         CitySearch.tsx (the only island) + ui/ (shadcn, copied code)
-  src/lib/                data-dir, search-data (fetches the search shard), city-routes (pre-rendered city pages), fallback, explore, states
+  src/components/         CitySearch.tsx, ShareSheet.tsx (islands) + ui/ (shadcn, copied code)
+  src/lib/                data-dir, search-data (fetches the search shard), shard-files (Node shard readers), city-shard
+                          (shard -> pure CityResult), share-model/share-text/share-card/share-url, city-routes, fallback, about
+  src/scripts/            screen scripts (state-search, city-card, city-cycles), tile-analytics, fallback
+  src/slots/              the pure models and view builders ported from the old slot code (city, city-cycles, state, home)
   src/theme.ts            Sketch tokens -> shadcn/Tailwind variables (single place)
-  src/scripts/            tile-analytics (plain script), fallback (404 page)
-  e2e/                    Playwright specs;  scripts/  serve.ts, measure.ts
+  fixtures/               the committed fixture dataset (generator: npx tsx fixtures/generate.ts)
+  reference/              the approved Sketch frame PNGs (plus the OCR'd texts) of the reviewed screens
+  e2e/                    Playwright specs;  scripts/  serve.ts, measure.ts, shard-check.ts
 ```
 
-### Sharing pure modules with `site/`
+### Pure modules moved from the old `site/src/` (ticket #50)
 
-Imported, not copied: the alias `@site/*` points to `../site/src/*` (Vite alias in `astro.config.ts` and `vitest.config.ts`,
-`paths` in `tsconfig.json`). Used today: `shared/city-search` (unchanged), `shared/tokens`, `slots/home/uf-grid`,
-`slots/home/search-ui` (the controller that produces the analytics payloads), `data/*` (CSV parser and store), `analytics`,
-`paths`, `routes`. `site/` was not modified (only a pointer note in its README). When #50 deletes `site/`, move the modules still used
-(city-search, tokens, data, analytics, paths, routes, uf-grid, the controller) into `web/src/` and drop the alias.
+`shared/city-search`, `shared/city-model`, `shared/components`, `shared/html`, `shared/tokens`, `data/*` (CSV parser and
+store), `analytics`, `paths`, `routes`, `slots/home/uf-grid` + `search-ui`, `slots/{state,city,city-cycles}/*` live under
+`src/` now (imported through `@/`). The old `site/` build was deleted once everything was ported.
 
 ## Commands (inside `web/`)
 
@@ -77,12 +79,12 @@ Imported, not copied: the alias `@site/*` points to `../site/src/*` (Vite alias 
 | `npm run capture` | writes `.captures/home/default.png` (fixture state, 390x844) for the screenshot review |
 
 Environment: `SITE_BASE=/voto-a-voto/` for a project Pages site; `DATA_DIR` (relative to `web/`) picks the dataset:
-default `../site/fixtures/data` (committed fixtures), real data `DATA_DIR=../data`. `OUT_DIR` changes the output directory.
+default `fixtures/data` (committed fixtures), real data `DATA_DIR=../data`. `OUT_DIR` changes the output directory.
 
 ## How things work (read before #49, #50 and new pages)
 
 - **Add a page**: a file in `src/pages/` (`rj/index.astro` or a dynamic `[uf]/index.astro` with `getStaticPaths`). Wrap it in
-  `layouts/Base.astro`. Links go through `withBase(base, '/path/')` from `@site/paths` (`base = normalizeBase(import.meta.env.BASE_URL)`).
+  `layouts/Base.astro`. Links go through `withBase(base, '/path/')` from `@/paths` (`base = normalizeBase(import.meta.env.BASE_URL)`).
   `trailingSlash: 'always'` and `format: 'directory'` give real paths `/rj/cidade-exemplo/index.html`.
 - **Add a shadcn component**: `npx shadcn@latest add <name>` (needs `npm_config_ignore_scripts=true` for safety; it installs dependencies).
   Installed now: button, card, command, input, input-group, textarea, dialog (the last three are dependencies of command). Components
@@ -93,19 +95,20 @@ default `../site/fixtures/data` (committed fixtures), real data `DATA_DIR=../dat
 - **Islands** are hydrated by `client:interaction` (`integrations/interaction-directive.js`): on first focus, pointer, touch or key
   inside the island. Nothing of the island is downloaded before that; text typed meanwhile is kept (`data-pending`) and picked up by the component.
   Use Astro's `client:visible` / `client:idle` only where eager enough is wanted. Tests wait for `astro-island` to lose its `ssr` attribute (`activateSearch` in `e2e/helpers.ts`).
-- **Theme**: Sketch tokens live in `../site/src/shared/tokens.ts`; `src/theme.ts` maps them to the shadcn variables
+- **Theme**: Sketch tokens live in `src/shared/tokens.ts`; `src/theme.ts` maps them to the shadcn variables
   (`--background`, `--primary`, ...) and `--sketch-*`; `src/styles/global.css` only wires variables to Tailwind utilities (`text-title`, `font-serif`, `bg-muted`...). No custom CSS beyond that. No dark mode.
 - **Data (shards since #49)**: the build turns `DATA_DIR` into versioned JSON shards under `public/data/v<fingerprint>/`
   (`integrations/dataset.ts` calls `integrations/shards.ts`; the directory holds no CSV). The fingerprint is a sha256 over the
   five dataset files, so paths change with the data and a stale copy is never served. Client code learns the version through
   `virtual:data-shards` (`SHARD_VERSION`); `src/lib/search-data.ts#loadSearchCities` fetches `search.json` when the search is used.
-  Every city is pre-rendered at `src/pages/[uf]/[slug]/` (the city itself is already in the HTML, so the page requests no shard).
+  Every city is pre-rendered at `src/pages/[uf]/[slug]/` etc. (the city itself is already in the HTML, so the pages request
+  no shard; the share route's island fetches only its city's own shard when ?ciclo/?turno needs another view).
   Layout, fields, sizes and budgets: `docs/shards.md`. Verify any dataset with `npm run check:shards[:real]`.
 - **404 fallback**: `src/pages/404.astro` + `src/scripts/fallback.ts` + `src/lib/fallback.ts` (route table of the whole site). A valid route (state or city exists in
-  the data) that is not pre-rendered shows "Página em construção"; anything else "Página não encontrada". When a page is ported, add its client renderer there.
-- **Analytics**: through `@site/analytics` (no-op). Events: `search {results, query_length}` after typing pauses 600 ms, `search_result_tap {position, uf}`, `state_tile_tap {uf}`. `#consent-slot` is kept in `Base.astro`.
+  the data) that is not pre-rendered shows "Página em construção"; anything else "Página não encontrada".
+- **Analytics**: through `@/analytics` (no-op). Events: `search {results, query_length}` after typing pauses 600 ms, `search_result_tap {position, uf}`, `state_tile_tap {uf}`. `#consent-slot` is kept in `Base.astro`.
 - **Tests**: vitest for logic and the island (jsdom); Playwright projects `phone` (fixture, includes `network.spec.ts` allow-list, `fallback.spec.ts`, no-JS case), `real`
-  (real data, paths only for tiles since state pages are not ported), `capture` (screenshot for review). Baselines are not stored. Screenshot review: `../site/docs/screenshot-review-protocol.md`, reviewer in a fresh context.
+  (real data, shard paths), `capture` (screenshot for review). Baselines are not stored. Screenshot review: `docs/screenshot-review-protocol.md`, reviewer in a fresh context.
 - **Network rule**: every request must be a GET to the site origin; allowed extra origins are in `e2e/helpers.ts` (`ANALYTICS_ORIGINS`, and the approved CDN origins in production mode only).
 
 ## CDN (production build only)

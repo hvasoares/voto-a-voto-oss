@@ -6,9 +6,10 @@ frame and the real render, with someone who has not seen the code.
 ## Who and what
 
 - **Reviewer:** a fresh context (new agent or person). It receives ONLY: (1) the reference image
-  `site/reference/<frame>.png`, (2) the render `site/.captures/<slot>/<state>.png` made by
-  `npm run check-slot -- <slot>`, (3) this protocol. No code, no ticket text, no author explanation.
-- **Author:** runs `npm run check-slot -- <slot>`, hands over the two images, fixes what comes back.
+  `web/reference/<frame>.png`, (2) the render `web/.captures/<slot>/<state>.png` made by
+  `npm run capture`, (3) this protocol. No code, no ticket text, no author explanation.
+- **Author:** runs `npm run capture` (the capture suite writes one `.png` + one `.json` per screen), hands over
+  the two images, fixes what comes back.
 
 ## Validity (check first; if any fails, the comparison is INVALID and nothing is reviewed)
 
@@ -49,13 +50,7 @@ When unsure whether code can fix it, it is a **blocker**.
 
 ## After approval: regression baseline
 
-When a checkpoint is approved (verdict PASS, accepted by the owner), store its render as the regression baseline:
-
-```
-npm run approve-baseline -- <slot> --yes
-```
-
-This writes `site/e2e/baselines/<platform>/<slot>-<state>.png` (Playwright `toHaveScreenshot`, zero-diff tolerance) and
-the file is committed with the checkpoint. `npm run test:baseline` compares later renders against it. Baselines are
-valid on the platform that made them (fonts differ between macOS and Linux), so they are NOT part of CI.
-Never run `approve-baseline` on your own work without the approval: the flag `--yes` is the confirmation.
+This web toolchain stores no regression baselines (the capture suite writes fresh renders per checkpoint and keeps
+none; `.captures/` is never committed — screenshots are per-checkpoint review material only). The old Playwright
+`toHaveScreenshot` baselines are gone with the site build: they were only valid on the platform that made them
+(fonts differ between macOS and Linux), so they were never part of CI.

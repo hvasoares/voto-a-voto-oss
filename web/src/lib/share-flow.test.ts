@@ -4,7 +4,7 @@ import { pickMethod, performShare, type ShareNavigator } from './share-flow'
 /** A PNG File stub for pickMethod. */
 const png = new File(['x'], 'voto-a-voto.png', { type: 'image/png' })
 
-const shareNav = (share?: () => Promise<void>, canShare?: (d: ShareData) => boolean): ShareNavigator => ({ ...(share ? { share } : {}), ...(canShare ? { canShare } : {}) })
+const shareNav = (share?: (d: ShareData) => Promise<void>, canShare?: (d: ShareData) => boolean): ShareNavigator => ({ ...(share ? { share } : {}), ...(canShare ? { canShare } : {}) })
 
 describe('pickMethod', () => {
   it('files when the navigator can share files', () => {
