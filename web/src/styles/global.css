@@ -1,5 +1,8 @@
 @import "tailwindcss";
-@import "tw-animate-css";
+
+/* tw-animate-css was dropped for weight (issue #19): no rendered component animates (ui/dialog keeps
+ * its animate-in classes but is never mounted; reduced motion is handled below). Bring the import
+ * back together with the first component that actually animates. */
 @import "shadcn/tailwind.css";
 @import "./screens.css";
 
@@ -44,4 +47,12 @@
   html { -webkit-text-size-adjust: 100%; }
   body { @apply bg-background text-foreground font-sans; font-size: var(--sketch-text-body); line-height: 1.35; margin: 0; }
   a { color: var(--primary); text-decoration: none; }
+  /* Reduced motion (issue #19): the islands' transitions and any animation stop on
+   * prefers-reduced-motion; the components themselves carry motion-safe: on their own transitions. */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0ms !important;
+      transition-duration: 0ms !important;
+    }
+  }
 }
