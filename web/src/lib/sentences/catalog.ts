@@ -80,6 +80,12 @@ export const KEYS = [
   'curio.bh',
   'curio.group',
   'curio.cycles.change',
+  /** The one-stat card (#25): the line printed under ONE number, per measure. The number is printed apart; the line never says why. */
+  'stat.nonVoters',
+  'stat.margin.one',
+  'stat.margin.other',
+  'stat.turnout',
+  'stat.unavailable',
   /** Pipe-separated words for the counts 0 to 10; a larger count is written in digits. */
   'numberWords',
   /** Put before a label that already says "Candidato X" (fixture, unnamed candidates). */
@@ -168,6 +174,11 @@ const ptBR: Record<Key, string> = {
   'curio.bh': 'maior parcela de votos brancos e nulos',
   'curio.group': 'Grupo: {n} cidades · {cycles}',
   'curio.cycles.change': '{from} → {to}',
+  'stat.nonVoters': 'do eleitorado de {city} não votou no {turno}º turno de {ano}.',
+  'stat.margin.one': 'voto separou os dois candidatos mais votados em {city}, no {turno}º turno de {ano}.',
+  'stat.margin.other': 'votos separaram os dois candidatos mais votados em {city}, no {turno}º turno de {ano}.',
+  'stat.turnout': 'do eleitorado de {city} compareceu no {turno}º turno de {ano}.',
+  'stat.unavailable': 'Esta medida não se aplica a {city} no {turno}º turno de {ano}.',
   numberWords: 'zero|um|dois|três|quatro|cinco|seis|sete|oito|nove|dez',
   'label.article': 'o {name}',
   'pct.lessThan': 'menos de {pct}',
@@ -247,6 +258,11 @@ const ptBRPlain: Record<Exclude<Key, StandardOnly>, string> = {
   'curio.bh': 'maior parte de votos em branco e nulos entre cidades do mesmo tamanho',
   'curio.group': 'Grupo: {n} cidades · {cycles}',
   'curio.cycles.change': '{from} → {to}',
+  'stat.nonVoters': 'das pessoas que podiam votar em {city} não votaram no {turno}º turno de {ano}.',
+  'stat.margin.one': 'voto de diferença entre os dois candidatos mais votados em {city}, no {turno}º turno de {ano}.',
+  'stat.margin.other': 'votos de diferença entre os dois candidatos mais votados em {city}, no {turno}º turno de {ano}.',
+  'stat.turnout': 'das pessoas que podiam votar em {city} foram votar no {turno}º turno de {ano}.',
+  'stat.unavailable': 'Não há esse número para {city} no {turno}º turno de {ano}.',
   numberWords: 'zero|um|dois|três|quatro|cinco|seis|sete|oito|nove|dez',
   'label.article': 'o {name}',
   'pct.lessThan': 'menos de {pct}',
@@ -296,7 +312,7 @@ export function fill(tpl: string, params: Record<string, string | number>): stri
 }
 
 /** The keys that come as a `.one` / `.other` pair. */
-export type PluralKey = 'nobodyTurnedOut' | 'nonVoters.count' | 'votes.count' | 'margin.gap' | 'margin.fits'
+export type PluralKey = 'nobodyTurnedOut' | 'nonVoters.count' | 'votes.count' | 'margin.gap' | 'margin.fits' | 'stat.margin'
 
 /** Zero reads as "other" ("0 votos"), although CLDR files 0 under "one" for Portuguese. */
 export function pluralCategory(locale: Locale, count: number): 'one' | 'other' {

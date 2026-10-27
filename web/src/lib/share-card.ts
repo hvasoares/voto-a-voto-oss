@@ -55,11 +55,11 @@ const INNER = 884 // 98 .. 982, the frame's 180 px column
 const GAP = 10
 
 /** XML 1.0 forbids most control characters. */
-const stripControl = (s: string) => s.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f￾￿]/g, '')
-const esc = (s: string) => stripControl(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
+export const stripControl = (s: string) => s.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f￾￿]/g, '')
+export const esc = (s: string) => stripControl(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
 const family = (stack: string) => stack.replace(/"/g, "'")
-const SERIF = family(fonts.serif)
-const SANS = family(fonts.sans)
+export const SERIF = family(fonts.serif)
+export const SANS = family(fonts.sans)
 
 const NARROW = new Set("iIjltf.,:;|'!()[]/ ’".split(''))
 const WIDE = new Set('mwMW@%'.split(''))
@@ -71,7 +71,7 @@ export function textWidth(s: string, size: number, bold = false): number {
 }
 
 /** `s`, or the longest start of it plus "…" that fits `max` px. */
-function fit(s: string, size: number, max: number, bold = false): string {
+export function fit(s: string, size: number, max: number, bold = false): string {
   const clean = stripControl(s).trim()
   if (textWidth(clean, size, bold) <= max) return clean
   const chars = [...clean]
@@ -80,7 +80,7 @@ function fit(s: string, size: number, max: number, bold = false): string {
 }
 
 /** Greedy word wrap; undefined when more than `maxLines` lines are needed or a word is wider than the line. */
-function wrap(s: string, size: number, max: number, maxLines: number): string[] | undefined {
+export function wrap(s: string, size: number, max: number, maxLines: number): string[] | undefined {
   const lines: string[] = []
   let line = ''
   for (const word of stripControl(s).trim().split(/\s+/)) {
@@ -118,10 +118,10 @@ const FILL: Record<SegmentKey, string> = { a: colors['cand-a'], b: colors['cand-
 const TEXT_ON: Record<SegmentKey, string> = { a: colors['accent-fg'], b: colors['accent-fg'], outros: colors.ink, abstencao: colors.ink, brancos: colors.ink, nulos: colors.ink }
 const ABBR: Partial<Record<SegmentKey, string>> = { abstencao: 'Ab', brancos: 'Br', nulos: 'Nu' }
 
-type Anchor = 'start' | 'middle' | 'end'
-const text = (x: number, y: number, size: number, content: string, o: { weight?: 400 | 600 | 700; fill?: string; serif?: boolean; anchor?: Anchor } = {}) =>
+export type Anchor = 'start' | 'middle' | 'end'
+export const text = (x: number, y: number, size: number, content: string, o: { weight?: 400 | 600 | 700; fill?: string; serif?: boolean; anchor?: Anchor } = {}) =>
   `<text x="${x}" y="${y}" font-family="${o.serif ? SERIF : SANS}" font-size="${size}"${o.weight && o.weight !== 400 ? ` font-weight="${o.weight}"` : ''} fill="${o.fill ?? colors.ink}"${o.anchor && o.anchor !== 'start' ? ` text-anchor="${o.anchor}"` : ''}>${esc(content)}</text>`
-const rect = (x: number, y: number, w: number, h: number, fill: string, extra = '') => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"${extra}/>`
+export const rect = (x: number, y: number, w: number, h: number, fill: string, extra = '') => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"${extra}/>`
 
 const LABEL = 44
 /** Candidate segments: "Name 52%", else a shortened name, else "52%". Other segments: "Abstenção 78%", else "Br". */
