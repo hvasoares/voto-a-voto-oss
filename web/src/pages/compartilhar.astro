@@ -17,6 +17,7 @@ import ShareActions from '@/components/ShareActions'
 import { datasetFixture, fixtureCityShards } from '@/lib/shard-files'
 import { cityShardResult } from '@/lib/city-shard'
 import { shareContent } from '@/lib/share-model'
+import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
 import { siteOrigin } from '@/lib/share-url'
 
 const base = normalizeBase(import.meta.env.BASE_URL)
@@ -71,7 +72,7 @@ const NOTE = 'O link vai no texto da mensagem; a imagem leva só o endereço cur
       {content ? (
         <div class="mx-auto mt-2 flex-none [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" data-share-picture set:html={content.svg} />
       ) : (
-        <p class="mt-4 text-body" data-nodata>Sem dados nesse ciclo.</p>
+        <p class="mt-4 text-body" data-nodata>{message(DEFAULT_VOICE, 'noData')}</p>
       )}
       {content && <p class="mt-3 text-small leading-[17px] text-muted-foreground" data-note>{NOTE}</p>}
       {content && <noscript><p class="mt-1 text-small leading-[17px]" data-nojs>Compartilhar e baixar a imagem precisam de JavaScript; o texto abaixo pode ser copiado e enviado com o endereço.</p></noscript>}

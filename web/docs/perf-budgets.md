@@ -26,7 +26,7 @@ O que o script soma por rota:
 | Rota | html | css | eagerJs | islandJs | total medido |
 |---|---|---|---|---|---|
 | `/` (home) | 12 KB | 16 KB | 3 KB | 120 KB | **101.0K** |
-| `/rj/cidade-exemplo/` (cartão) | 3 KB | 16 KB | 3 KB | 3 KB | **15.2K** |
+| `/rj/cidade-exemplo/` (cartão) | 4 KB (#58: a frase pronta nos dois registros) | 16 KB | 3 KB | 3 KB | **15.2K** |
 | `/mapa/` (tile map por estado) | 12 KB | 16 KB | 3 KB | 85 KB | **92.9K** |
 | `/relatorios/cidades-que-viraram/` (relatório) | 12 KB | 16 KB | 3 KB | 3 KB | **14.1K** |
 

@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { parseView, type View } from '@/slots/city/city-view'
 import { cityShardResult, type CityShard } from '@/lib/city-shard'
-import { shareContent, type ShareContent } from '@/lib/share-model'
+import { pictureSvg, shareContent, type ShareContent } from '@/lib/share-model'
+import { readRegister } from '@/lib/sentences/register-store'
+import { DEFAULT_LOCALE, message, type Register } from '@/lib/sentences/catalog'
 import { SHARD_VERSION } from 'virtual:data-shards'
 import ShareActions from './ShareActions'
 
 const NOTE = 'O link vai no texto da mensagem; a imagem leva só o endereço curto, sem QR.'
-const NODATA = 'Sem dados nesse ciclo.'
 
 /**
  * The share sheet's content (ticket #50): owns the picture and the message text around the ShareActions island
@@ -20,7 +21,7 @@ export interface ShareSheetProps {
   slug: string
   /** The view the page pre-rendered (the card's default). */
   view: View
-  /** The content for that default view, null when the city has no data in it ("Sem dados nesse ciclo."). */
+  /** The content for that default view, null when the city has no data in it (the catalog's `noData`). */
   initial: ShareContent | null
   origin: string
   base: string
@@ -31,6 +32,9 @@ export interface ShareSheetProps {
 export default function ShareSheet({ uf, slug, view, initial, origin, base, fixture }: ShareSheetProps) {
   const [content, setContent] = useState<ShareContent | null>(initial)
   const [viewId, setViewId] = useState(`${view.ano}-${view.turno}`)
+  // The register the reader chose on the city card (remembered in this browser only); the server renders the standard one.
+  const [register, setRegister] = useState<Register>('standard')
+  useEffect(() => setRegister(readRegister()), [])
 
   useEffect(() => {
     // Only the build-time view is known up front; a query view is validated against CYCLES by parseView (whose
@@ -70,15 +74,15 @@ export default function ShareSheet({ uf, slug, view, initial, origin, base, fixt
         <div
           className="mx-auto mt-2 flex-none [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
           data-share-picture
-          dangerouslySetInnerHTML={{ __html: content.svg }}
+          dangerouslySetInnerHTML={{ __html: pictureSvg(content, register) }}
         />
       ) : (
         <p className="mt-4 text-body" data-nodata>
-          {NODATA}
+          {message({ locale: DEFAULT_LOCALE, register }, 'noData')}
         </p>
       )}
       {content && <p className="mt-3 text-small leading-[17px] text-muted-foreground" data-note>{NOTE}</p>}
-      {content && <ShareActions text={content.text} svg={content.svg} filename={content.filename} />}
+      {content && <ShareActions text={content.variants[register].text} svg={pictureSvg(content, register)} filename={content.filename} />}
     </>
   )
 }

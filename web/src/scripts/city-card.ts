@@ -1,6 +1,8 @@
 /** Progressive enhancement of the city card: switching cycle and round without a request or a reload.
  * All six panels are pre-rendered in the page; this only shows them and updates the address. Browser only. */
 import { getAnalytics, onAnalyticsReady } from '@/analytics'
+import { REGISTERS, type Register } from '@/lib/sentences/register'
+import { readRegister, saveRegister } from '@/lib/sentences/register-store'
 import { createCityTracker, parseView, viewHref, viewId, type View } from '@/slots/city/city-view'
 
 const card = document.querySelector<HTMLElement>('[data-city-card]')
@@ -36,6 +38,21 @@ if (card) {
   // A view event when the page opens — emitted when the boot settles (see report-analytics.ts);
   // the tracker holds the late-bound analytics, so the boot's install reaches it.
   onAnalyticsReady(() => tracker.viewed(current))
+  // The register switch (standard / linguagem simples): shown now that scripts run; the choice stays in this browser.
+  const setRegister = (r: Register) => {
+    if (r === 'plain') document.documentElement.dataset.register = 'plain'
+    else delete document.documentElement.dataset.register
+    for (const b of document.querySelectorAll<HTMLElement>('[data-register-choice]')) b.setAttribute('aria-pressed', String(b.dataset.registerChoice === r))
+  }
+  for (const s of document.querySelectorAll<HTMLElement>('[data-register-switch]')) s.hidden = false
+  setRegister(readRegister())
+  document.addEventListener('click', (e) => {
+    const b = (e.target as Element).closest<HTMLElement>('[data-register-choice]')
+    const r = REGISTERS.find((x) => x === b?.dataset.registerChoice)
+    if (!r) return
+    setRegister(r)
+    saveRegister(r)
+  })
   // Mark for the e2e specs: the deferred module script took over the page.
   document.documentElement.dataset.ready = 'city-card'
 

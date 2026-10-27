@@ -49,7 +49,7 @@ export interface Budget {
 /** Budgets in KB, gzip. Set from #19's intent (see docs/perf-budgets.md); the script fails loudly on a miss. */
 export const BUDGETS: Record<RouteId, Budget> = {
   home: { html: 12, css: 16, eagerJs: 3, islandJs: 120 },
-  city: { html: 3, css: 16, eagerJs: 3, islandJs: 3 },
+  city: { html: 4, css: 16, eagerJs: 3, islandJs: 3 },
   mapa: { html: 12, css: 16, eagerJs: 3, islandJs: 85 },
   report: { html: 12, css: 16, eagerJs: 3, islandJs: 3 },
 }
