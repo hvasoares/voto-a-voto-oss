@@ -1,17 +1,18 @@
-import { getAnalytics, setAnalytics } from '@/analytics'
+import { getAnalytics, setAnalytics, settleAnalyticsWithoutInstall } from '@/analytics'
 import { analyticsFor } from '@/analytics/ga4'
 import { measurementId } from '@/analytics/id'
 import { consent } from '@/lib/consent'
 
 /**
- * Ticket #20 boot: consent, analytics and the banner. A deferred module script on every page (Base.astro),
- * so it runs before the other page scripts and islands — with a REMEMBERED consent the GA4 provider is
- * already installed when they emit; without one everything they emit hits the no-op analytics and is
- * dropped: nothing is ever queued to replay after a late grant.
+ * Ticket #20 boot: consent, analytics and the banner. A deferred module script on every page
+ * (Base.astro). Before consent: nothing — this module never touches Google's URL unless the visitor
+ * had granted (a stored choice, or the Aceitar button) AND a measurement ID is configured; with no
+ * id it settles as a no-op everywhere and the build/tests stay green.
  *
- * Before consent: nothing. This module never touches Google's URL unless the visitor had granted
- * (stored choice or the Aceitar button) AND a measurement ID is configured — with no id it is a no-op
- * everywhere and the build/test suites stay green.
+ * The page scripts of one document run BEFORE this module (Astro emits the page's scripts first), so
+ * load-time emissions go through onAnalyticsReady and are resolved by either outcome here: an install
+ * flushes them to the provider; a settle resolves them to the no-op WITHOUT ever replaying them after
+ * a late grant. Interactions (taps, searches, the banner itself) go through the late-bound proxy.
  */
 
 const store = consent()
@@ -26,6 +27,11 @@ function enableAnalytics(): void {
   // leaves now, exactly once, through the provider. Events emitted before the grant are not replayed.
   getAnalytics().pageView(location.pathname, document.title)
 }
+
+// The one boot verdict, for both the load-time emitters (report_opened, city_view, qr_screen_shown…)
+// and the interface: a remembered grant installs the provider; everything else settles as a no-op.
+if (store.state() === 'granted') enableAnalytics()
+else settleAnalyticsWithoutInstall()
 
 /* ── The banner ────────────────────────────────────────────────────────────────────────────────── */
 
@@ -83,8 +89,7 @@ document.querySelectorAll('[data-consent-change]').forEach((el) =>
   }),
 )
 
-// First paint of a remembered state; a fresh visitor (unknown) sees the banner.
+// First paint of a fresh visitor (unknown): they see the banner. A remembered refusal keeps it hidden.
 if (store.state() === 'unknown') openBanner()
-if (store.state() === 'granted') enableAnalytics()
 window.addEventListener('resize', fit)
 window.addEventListener('orientationchange', fit)
