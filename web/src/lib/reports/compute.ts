@@ -76,11 +76,26 @@ export interface VoteGain {
   cities: { gained: number; lost: number }
 }
 
+/** One city's vs-2022 delta of one candidate's runoff votes (tickets #13 and #12's headline share the same base). */
+export interface VoteDeltaRow {
+  nome: string
+  uf: string
+  slug: string
+  /** 2026 runoff votes minus the 2022 runoff votes of this candidate in this city (same sign as formatSignedInt). */
+  delta: number
+  /** The candidate's own 2026 runoff votes here — the volume paired with the delta. */
+  votos2026: number
+  /** The city's valid votes in the 2026 runoff, for the minimum-size filter. */
+  validos2: number
+}
+
 export interface ComputedReports {
   /** The margins of every city that has both 2026 rounds, in cities.csv order (no ranking here). */
   margins: CityMargin[]
   /** Net votes (2026 runoff - 2022 runoff) per candidate. */
   netVotes: { primeiro: VoteGain; segundo: VoteGain }
+  /** Per-city votes gained and lost (same rows netVotes sums, one list per candidate). */
+  voteDeltas: { primeiro: VoteDeltaRow[]; segundo: VoteDeltaRow[] }
   pair: CandidatePair
 }
 
@@ -101,6 +116,7 @@ export function computeReports(input: MarginInput): ComputedReports {
   }
   const validosOf = new Map<string, number>()
   for (const t of input.turnout) validosOf.set(turnoutKey(t), t.validos)
+  const cityOf = new Map(input.cities.map((c) => [`${c.uf}|${c.cdMunicipio}`, c] as const))
 
   const margins: CityMargin[] = []
   for (const c of input.cities) {
@@ -129,27 +145,38 @@ export function computeReports(input: MarginInput): ComputedReports {
     })
   }
 
-  const gain = (candidate: number): VoteGain => {
-    let total = 0
-    let gained = 0
-    let lost = 0
+  /** One row per city with the candidate's 2022 and 2026 runoff votes (same rows netVotes sums). */
+  const deltasOf = (candidate: number): VoteDeltaRow[] => {
+    const rows: VoteDeltaRow[] = []
     for (const v of input.votes) {
       if (v.turno !== 2 || !isBrazil(v) || v.candidatoNumero !== candidate) continue
       if (v.ano !== 2026) continue
       // Cities without the earlier round take no part (Boa Esperança do Norte/MT exists only from 2026).
       const before = votesOf.get(voteKey({ ...v, ano: 2022, candidatoNumero: candidate }))
       if (before === undefined) continue
-      const delta = v.votos - before
-      total += delta
-      if (delta > 0) gained++
-      else if (delta < 0) lost++
+      const c = cityOf.get(`${v.uf}|${v.cdMunicipio}`)
+      rows.push({ nome: c?.nome ?? '', uf: v.uf, slug: c?.slug ?? '', delta: v.votos - before, votos2026: v.votos, validos2: validosOf.get(`${2026}|2|${v.uf}|${v.cdMunicipio}`) ?? 0 })
+    }
+    return rows
+  }
+  const primeiro = deltasOf(pair2026.primeiro)
+  const segundo = deltasOf(pair2026.segundo)
+  const gainOf = (rows: VoteDeltaRow[]): VoteGain => {
+    let total = 0
+    let gained = 0
+    let lost = 0
+    for (const r of rows) {
+      total += r.delta
+      if (r.delta > 0) gained++
+    else if (r.delta < 0) lost++
     }
     return { total, cities: { gained, lost } }
   }
 
   return {
     margins,
-    netVotes: { primeiro: gain(pair2026.primeiro), segundo: gain(pair2026.segundo) },
+    netVotes: { primeiro: gainOf(primeiro), segundo: gainOf(segundo) },
+    voteDeltas: { primeiro, segundo },
     pair: pair2026,
   }
 }
@@ -222,19 +249,65 @@ export interface TurnoutExtreme {
   /** Turnout of the runoff: comparecimento / eleitorado apto, in %. */
   rate: number
   aptos: number
+  /** Absolute voters who showed up — the volume paired with the rate (Lean Analytics). */
+  comparecimento: number
 }
 
-/** The highest and lowest turnout of the runoff among cities with MIN_TURNOUT_APTOS+ eleitores aptos. */
-export function turnoutExtremes(input: MarginInput, minAptos = MIN_TURNOUT_APTOS): { high: TurnoutExtreme | undefined; low: TurnoutExtreme | undefined } {
+/** The ranked turnout of the runoff among cities with minAptos+ eleitores aptos: `highest` biggest
+ * rate first and `lowest` smallest rate first, plus the count compared, so a report can state its
+ * minimum-size filter. Every rate carries its volume (comparecimento, and aptos). */
+export function rankedTurnout(
+  input: MarginInput,
+  minAptos = MIN_TURNOUT_APTOS,
+): { highest: TurnoutExtreme[]; lowest: TurnoutExtreme[]; compared: number } {
   const byKey = new Map(input.cities.map((c) => [`${c.uf}|${c.cdMunicipio}`, c] as const))
   const rates: TurnoutExtreme[] = []
   for (const t of input.turnout) {
     if (t.ano !== 2026 || t.turno !== 2 || !isBrazil(t) || t.aptos < minAptos) continue
     const c = byKey.get(`${t.uf}|${t.cdMunicipio}`)
-    rates.push({ nome: c?.nome ?? '', uf: t.uf, slug: c?.slug ?? '', rate: (t.comparecimento / t.aptos) * 100, aptos: t.aptos })
+    rates.push({ nome: c?.nome ?? '', uf: t.uf, slug: c?.slug ?? '', rate: (t.comparecimento / t.aptos) * 100, aptos: t.aptos, comparecimento: t.comparecimento })
   }
-  const sorted = [...rates].sort((a, b) => b.rate - a.rate || b.aptos - a.aptos || a.nome.localeCompare(b.nome, 'pt'))
-  return { high: sorted[0], low: sorted[sorted.length - 1] }
+  const highest = [...rates].sort((a, b) => b.rate - a.rate || b.aptos - a.aptos || a.nome.localeCompare(b.nome, 'pt'))
+  const lowest = [...rates].sort((a, b) => a.rate - b.rate || a.aptos - b.aptos || a.nome.localeCompare(b.nome, 'pt'))
+  return { highest, lowest, compared: rates.length }
+}
+
+/** The highest and lowest turnout of the runoff among cities with MIN_TURNOUT_APTOS+ eleitores aptos. */
+export function turnoutExtremes(input: MarginInput, minAptos = MIN_TURNOUT_APTOS): { high: TurnoutExtreme | undefined; low: TurnoutExtreme | undefined } {
+  const ranked = rankedTurnout(input, minAptos)
+  return { high: ranked.highest[0], low: ranked.lowest[0] }
+}
+
+/**
+ * The ranked list of the report "Maiores viradas, cidades de 100 mil+ votos": the cities of the
+ * minimum size whose margin moved toward the first candidate (Lula), biggest swing first. The cities
+ * that moved the other way do not enter the list — as the highlights note says, a ranking of "biggest
+ * swing toward Flavio" only lists the cities that moved least — so they are returned as a count, to
+ * be labelled in the report text.
+ */
+export function rankedBigSwings(
+  rows: CityMargin[],
+  minValidos = MIN_BIG_SWING_VALIDOS,
+): { toward: CityMargin[]; awayCount: number } {
+  const eligible = rows.filter((r) => isBrazil(r) && r.validos2 >= minValidos)
+  return { toward: ranked(eligible.filter((r) => r.swing > 0)), awayCount: eligible.filter((r) => r.swing < 0).length }
+}
+
+/** One candidate's ranked vs-2022 lists: the minValidos+ cities that GAINED votes (biggest delta
+ * first) and the ones that LOST votes (biggest loss first), with the unchanged cities counted so the
+ * report can label them. */
+export function rankedVoteDeltas(
+  rows: VoteDeltaRow[],
+  minValidos = MIN_FLIP_VALIDOS,
+): { gains: VoteDeltaRow[]; losses: VoteDeltaRow[]; unchanged: number } {
+  const eligible = rows.filter((r) => r.validos2 >= minValidos)
+  const gains = [...eligible.filter((r) => r.delta > 0)].sort(
+    (a, b) => b.delta - a.delta || b.validos2 - a.validos2 || a.nome.localeCompare(b.nome, 'pt') || a.uf.localeCompare(b.uf),
+  )
+  const losses = [...eligible.filter((r) => r.delta < 0)].sort(
+    (a, b) => a.delta - b.delta || b.validos2 - a.validos2 || a.nome.localeCompare(b.nome, 'pt') || a.uf.localeCompare(b.uf),
+  )
+  return { gains, losses, unchanged: eligible.filter((r) => r.delta === 0).length }
 }
 
 /** The biggest swing of cities with MIN_BIG_SWING_VALIDOS+ valid votes in the runoff (hub headline). */
