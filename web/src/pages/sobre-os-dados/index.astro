@@ -129,14 +129,15 @@ const githubManifest = GITHUB_URL + GITHUB_MANIFEST_PATH
 
     <section class="mt-2 border-t border-border pt-[7px] pb-2" aria-labelledby="privacidade">
       <h2 class="font-serif text-section font-normal leading-[25px]" id="privacidade">Privacidade</h2>
-      <p class="mt-[5px]">O que este site coleta de você: nada.</p>
+      <p class="mt-[5px]">O que este site coleta de você: nada sem o seu consentimento.</p>
       <ul class="mt-1 list-disc space-y-1 pl-5 text-small leading-[16px]">
-        <li>A navegação é estática; não há conta, formulário ou cookie nesta versão.</li>
+        <li>A navegação é estática; não há conta, formulário ou cookie antes do consentimento.</li>
         <li>O texto digitado na busca não é enviado: a busca roda no próprio navegador.</li>
-        <li>Esta versão não envia métricas de uso para nenhum servidor de análise.</li>
-        <li>Um aviso de métricas de uso, quando existir, precisa do seu consentimento antes de coletar; dá para recusar e retirar depois, e recusar não limita nenhuma função do site.</li>
-        <li>Métricas de uso, se existirem, guardam só contagens simples (por exemplo, quantos resultados uma busca mostrou), nunca o texto digitado e nunca dados pessoais.</li>
+        <li>Na primeira visita aparece o aviso de métricas: "Aceitar" libera o Google Analytics, "Recusar" mantém o site sem nenhuma medição — e recusar não limita nenhuma função do site.</li>
+        <li>Antes do consentimento o site não carrega código do Google e não envia nada a ele. Depois do "Aceitar", o que fica registrado é o uso em contagens simples: páginas vistas, cidades e relatórios abertos, quantos resultados uma busca mostrou (nunca o texto digitado), imagens baixadas, a tela do QR e a impressão do pôster. Nada pessoal.</li>
+        <li>A escolha fica guardada no seu navegador; para trocar, use o link "Privacidade" no rodapé de qualquer página, ou o botão abaixo.</li>
       </ul>
+      <button type="button" data-consent-change class="mt-3 inline-flex min-h-11 items-center rounded-md border border-border bg-background px-4 text-body text-foreground">Alterar consentimento de métricas</button>
     </section>
   </main>
   <footer class="mx-auto w-full max-w-[430px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">

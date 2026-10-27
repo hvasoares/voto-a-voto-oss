@@ -1,0 +1,44 @@
+---
+/**
+ * The LGPD consent banner of ticket #20 (Base.astro, every page): a fixed, quiet bottom bar, following
+ * the screen tokens (text-small, border-border, min-h-11 tap targets). Server-rendered `hidden`; the
+ * boot script (src/scripts/analytics-boot.ts) reveals it only while the visitor has NOT decided, wires
+ * Aceitar/Recusar and, on both answers, remembers the choice — until then NOTHING is loaded and no
+ * request goes to Google. A previous choice shows the small status line when the visitor re-opens the
+ * banner through the consent-change affordance.
+ */
+interface Props {
+  /** Absolute base path of the site (the "Privacidade" detail link points at /sobre-os-dados/#privacidade). */
+  privacyHref: string
+}
+const { privacyHref } = Astro.props
+---
+<div
+  id="consent-banner"
+  data-consent-banner
+  role="region"
+  aria-label="Consentimento para métricas de uso"
+  class="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background"
+  hidden
+>
+  <div class="mx-auto flex w-full max-w-[430px] flex-col gap-2 px-5 py-3">
+    <p data-consent-status class="text-small leading-[16px] text-muted-foreground" hidden></p>
+    <p class="text-small leading-[16px]">
+      Para saber como o site é usado, este site pode usar o Google Analytics — páginas vistas, buscas e
+      compartilhamentos, com dados gerais apenas, nada pessoal, sempre depois do seu consentimento.
+      <a href={privacyHref}>Detalhes em Sobre os dados</a>.
+    </p>
+    <div class="flex gap-2">
+      <button
+        type="button"
+        data-consent-refuse
+        class="flex-1 rounded-md border border-border bg-background px-4 text-body text-foreground min-h-11"
+      >Recusar</button>
+      <button
+        type="button"
+        data-consent-accept
+        class="flex-1 rounded-md bg-primary px-4 text-body text-primary-foreground min-h-11"
+      >Aceitar</button>
+    </div>
+  </div>
+</div>
