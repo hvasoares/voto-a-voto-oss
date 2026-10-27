@@ -52,7 +52,7 @@ e2e:
 
 # ci.yml: npm run test:e2e com SITE_BASE=/voto-a-voto-oss/ — a segunda passada de base (rode depois de `make e2e`).
 e2e-pages:
-	SITE_BASE=/voto-a-voto-oss/ E2E_PORT=4177 npm --prefix web run test:e2e
+	SITE_BASE=/voto-a-voto-oss/ E2E_PORT=4177 PUBLIC_DONATION_URL=https://doacao.example.test/apoie npm --prefix web run test:e2e
 
 # Não está no CI (caro): os 87 testes sobre o dataset REAL (≡ test:real). Rodar antes de qualquer deploy de dados.
 e2e-real:
