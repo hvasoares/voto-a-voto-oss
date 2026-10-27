@@ -13,6 +13,8 @@
  *    pair must share at least MIN_SHARED features, so a city missing a cycle is compared on what it has.
  *  - Peers: the K nearest, closest first, ties broken by "uf/slug" in code-point order. Never itself.
  *  - Overseas posts (uf "zz") are neither subjects nor peers, and do not take part in the scaling.
+ *  - The twin of a city (#31, "cidade gêmea"): its closest comparable city of ANOTHER state, whatever its rank among the
+ *    peers (the K nearest are often all of the same state), same distance and same tie-break; none when no other state has one.
  * Deterministic: the result does not depend on the order of the input rows.
  */
 import type { City, Turnout, Vote } from '@/data'
@@ -46,11 +48,14 @@ export interface PeersResult {
   keys: string[]
   /** For each key (same index), the indices of its peers into `keys`, closest first. */
   peers: number[][]
+  /** For each key, the index of its twin (the closest comparable city of another state), or -1 when it has none. */
+  twins: number[]
 }
 
 type Vector = (number | undefined)[]
 
 const key = (c: Pick<City, 'uf' | 'slug'>) => `${c.uf}/${c.slug}`
+const ufOf = (key: string) => key.slice(0, key.indexOf('/'))
 const byText = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 
 /** Raw (unscaled) features of every non-overseas city that has round-1 data in some cycle. */
@@ -119,6 +124,7 @@ export function computePeers(input: PeerInput, k = PEERS_K): PeersResult {
   const scaled = scale(rawVectors(input))
   const keys = [...scaled.keys()].sort(byText)
   const vectors = keys.map((id) => scaled.get(id)!)
+  const twins: number[] = []
   const peers = vectors.map((v, i) => {
     const near: { j: number; d: number }[] = []
     for (let j = 0; j < keys.length; j++) {
@@ -128,9 +134,10 @@ export function computePeers(input: PeerInput, k = PEERS_K): PeersResult {
     }
     // `keys` is sorted, so the index order is the code-point order of "uf/slug": the tie-break.
     near.sort((x, y) => x.d - y.d || x.j - y.j)
+    twins.push(near.find((n) => ufOf(keys[n.j]!) !== ufOf(keys[i]!))?.j ?? -1)
     return near.slice(0, k).map((n) => n.j)
   })
-  return { keys, peers }
+  return { keys, peers, twins }
 }
 
 /** The published file: `{ k, cities: ["ac/acrelandia", ...], peers: [[idx, ...], ...] }`, index-encoded to stay small. */
@@ -138,12 +145,21 @@ export interface PeersFile {
   k: number
   cities: string[]
   peers: number[][]
+  /** Index of the twin of each city (another state), -1 for none. */
+  twins: number[]
 }
 
-export const encodePeers = (r: PeersResult, k = PEERS_K): PeersFile => ({ k, cities: r.keys, peers: r.peers })
+export const encodePeers = (r: PeersResult, k = PEERS_K): PeersFile => ({ k, cities: r.keys, peers: r.peers, twins: r.twins })
 
 /** "uf/slug" of the peers of a city in a published file (empty for a city the file does not have). */
 export function peersOf(file: PeersFile, uf: string, slug: string): string[] {
   const i = file.cities.indexOf(`${uf}/${slug}`)
   return i < 0 ? [] : file.peers[i]!.map((j) => file.cities[j]!)
+}
+
+/** "uf/slug" of the twin of a city (the closest comparable city of another state), or undefined when it has none or is not in the file. */
+export function twinOf(file: PeersFile, uf: string, slug: string): string | undefined {
+  const i = file.cities.indexOf(`${uf}/${slug}`)
+  const j = i < 0 ? -1 : (file.twins?.[i] ?? -1)
+  return j < 0 ? undefined : file.cities[j]
 }

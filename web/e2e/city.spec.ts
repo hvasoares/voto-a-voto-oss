@@ -48,6 +48,26 @@ test.describe('city card: fixture route is the frame', () => {
     expect(seen.filter((r) => /\/data\//.test(r.url))).toEqual([])
     expect(violations(seen, [new URL(baseURL!).origin])).toEqual([])
   })
+  test('the twin line (#31): a link to the closest peer of another state with the reason, and the link opens that card', async ({ page }) => {
+    await page.goto(`${city}?turno=1`)
+    await waitReady(page)
+    const twin = page.locator('[data-twin]')
+    await expect(twin).toContainText('Cidade gêmea:')
+    await expect(twin).toContainText('Perfil parecido de porte, participação, margem e histórico.')
+    const href = await twin.getAttribute('href')
+    expect(href).toMatch(new RegExp(`^${base}(sp|mt)/`))
+    await twin.click()
+    await expect(page).toHaveURL(new RegExp(`${href}$`))
+    await expect(page.locator('h1')).not.toHaveText('Cidade Exemplo')
+  })
+  test('an overseas post has no twin line and no error', async ({ page }) => {
+    const errors: string[] = []
+    page.on('pageerror', (e) => errors.push(String(e)))
+    await page.goto(`${base}zz/exterior-exemplo/`)
+    await waitReady(page)
+    await expect(page.locator('[data-twin]')).toHaveCount(0)
+    expect(errors).toEqual([])
+  })
   test('a city with no earlier cycle says which cycles are missing', async ({ page }) => {
     await page.goto(`${base}mt/boa-esperanca-do-norte/`)
     await expect(page.locator('.city-arc__pill:visible')).toHaveText('Sem dados do 2º turno de 2018 e 2022')

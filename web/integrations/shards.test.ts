@@ -263,7 +263,7 @@ describe('verify catches broken shards', () => {
 
 describe('peers.json (#23)', () => {
   const built = buildFixture()
-  const peers = jsonOf(built, 'peers.json') as { k: number; cities: string[]; peers: number[][] }
+  const peers = jsonOf(built, 'peers.json') as { k: number; cities: string[]; peers: number[][]; twins: number[] }
 
   it('is part of the shards, well formed, one peer list per city and every index valid', () => {
     expect(peers.k).toBe(5)
@@ -281,6 +281,16 @@ describe('peers.json (#23)', () => {
     const search = jsonOf(built, 'search.json') as [string, string, string][]
     expect(peers.cities).toEqual(search.filter(([, , uf]) => uf !== 'zz').map(([, slug, uf]) => `${uf}/${slug}`).sort(byText))
     expect(peers.cities.some((c) => c.startsWith('zz/'))).toBe(false)
+  })
+  it('has a twin per city: an index of ANOTHER state, or -1; the fixture rj cities have the sp city or the mt city', () => {
+    expect(peers.twins).toHaveLength(peers.cities.length)
+    for (const [i, j] of peers.twins.entries()) {
+      if (j < 0) continue
+      expect(peers.cities[j]!.split('/')[0]).not.toBe(peers.cities[i]!.split('/')[0])
+    }
+    const twin = (key: string) => peers.cities[peers.twins[peers.cities.indexOf(key)]!]
+    expect(['sp/cidade-exemplo-paulista', 'mt/boa-esperanca-do-norte']).toContain(twin('rj/cidade-exemplo'))
+    expect(twin('sp/cidade-exemplo-paulista')!.startsWith('rj/') || twin('sp/cidade-exemplo-paulista')!.startsWith('mt/')).toBe(true)
   })
   it('regenerating gives the same bytes', () => {
     expect(fileOf(buildFixture(), 'peers.json')).toBe(fileOf(built, 'peers.json'))

@@ -11,6 +11,7 @@ import { buildShards, type BuiltShards } from '../../integrations/shards'
 import { datasetFingerprintFromDisk } from '../../integrations/shards-fingerprint'
 import { dataDir } from './data-dir'
 import { cityShardResult, type CityShard } from './city-shard'
+import type { PeersFile } from './peers'
 import type { CityResult } from '../shared/city-model'
 
 const FINGERPRINT_FILES = ['candidates.csv', 'centroids.csv', 'cities.csv', 'manifest.json', 'turnout.csv', 'votes.csv'] as const
@@ -77,6 +78,24 @@ export type SearchShard = [nome: string, slug: string, uf: string][]
 
 export async function loadSearchShard(): Promise<SearchShard | undefined> {
   return shardJson<SearchShard>('search.json')
+}
+
+/** The published `peers.json` (#23, twins #31), parsed once per dataset: every city page reads it at build time. */
+const peerMemos = new Map<string, Promise<PeersFile | undefined>>()
+export function loadPeersFile(): Promise<PeersFile | undefined> {
+  const key = process.env.DATA_DIR ?? '(default)'
+  const memo = peerMemos.get(key) ?? shardJson<PeersFile>('peers.json')
+  peerMemos.set(key, memo)
+  return memo
+}
+
+/** "uf/slug" -> the city's name of the search shard, parsed once per dataset (build time: the names of linked cities). */
+const nameMemos = new Map<string, Promise<Map<string, string>>>()
+export function loadCityNames(): Promise<Map<string, string>> {
+  const key = process.env.DATA_DIR ?? '(default)'
+  const memo = nameMemos.get(key) ?? loadSearchShard().then((rows) => new Map((rows ?? []).map(([nome, slug, uf]) => [`${uf}/${slug}`, nome])))
+  nameMemos.set(key, memo)
+  return memo
 }
 
 /** Every UF the dataset has a state page for (the search shard's ufs; no overseas post is a state). */

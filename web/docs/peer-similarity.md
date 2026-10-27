@@ -1,7 +1,7 @@
 # Peer cities: the method (ticket #23)
 
-The build publishes `v<fingerprint>/peers.json`: for every city, the cities most like it. No screen uses it yet; a later
-screen can show "a cidade parecida" or compare a city with its peers. The code is `src/lib/peers.ts` (pure), called by the
+The build publishes `v<fingerprint>/peers.json`: for every city, the cities most like it. The city card links the twin (#31); a later
+screen can compare a city with its peers. The code is `src/lib/peers.ts` (pure), called by the
 shard builder (`integrations/shards.ts`); `npm run check:peers` prints the size and a spot check over the real data.
 
 ## What "peer" means
@@ -44,14 +44,21 @@ The K = 5 nearest cities, closest first, never the city itself. Equal distances 
 `uf/slug` in code-point order, so the result does not depend on the order of the input rows or on the runtime's locale.
 The same dataset gives the same bytes.
 
+## The twin (ticket #31)
+
+The card's "cidade gêmea" is the closest comparable city of **another state**: the same distance and the same tie-break, taken
+over every city of the file whose state differs (not only over the five peers, which are often all of one state). A city that
+no other state has a comparable city for (and every overseas post) has no twin and the card shows nothing. The reason line
+names the features the match uses: "porte, participação, margem e histórico".
+
 ## The file
 
 ```
-{ "k": 5, "cities": ["ac/acrelandia", ...], "peers": [[12, 40, 7, 3, 99], ...] }
+{ "k": 5, "cities": ["ac/acrelandia", ...], "peers": [[12, 40, 7, 3, 99], ...], "twins": [57, -1, ...] }
 ```
 
 `cities` is every city that has features in code-point order of `uf/slug`; `peers[i]` are the indices into `cities` of the
-peers of `cities[i]`, closest first. Index encoding keeps each city name once (`peersOf(file, uf, slug)` reads it back).
+peers of `cities[i]`, closest first. `twins[i]` is the index of the twin of `cities[i]`, or -1. Index encoding keeps each city name once (`peersOf` and `twinOf(file, uf, slug)` read it back).
 
 ## Limits
 

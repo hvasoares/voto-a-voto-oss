@@ -61,6 +61,9 @@ export const KEYS = [
   'arc.tie',
   'arc.missing',
   'arc.note',
+  /** The twin line (#31): the closest peer city of another state, and the one-line reason, which names the features the match really uses. */
+  'twin.label',
+  'twin.reason',
   /** Pipe-separated words for the counts 0 to 10; a larger count is written in digits. */
   'numberWords',
   /** Put before a label that already says "Candidato X" (fixture, unnamed candidates). */
@@ -132,6 +135,8 @@ const ptBR: Record<Key, string> = {
   'arc.tie': 'Empate no 2º turno de {years}',
   'arc.missing': 'Sem dados do 2º turno de {years}',
   'arc.note': 'Descreve a sequência, não a causa.',
+  'twin.label': 'Cidade gêmea: {name} · {uf}',
+  'twin.reason': 'Perfil parecido de porte, participação, margem e histórico.',
   numberWords: 'zero|um|dois|três|quatro|cinco|seis|sete|oito|nove|dez',
   'label.article': 'o {name}',
   'pct.lessThan': 'menos de {pct}',
@@ -194,6 +199,8 @@ const ptBRPlain: Record<Exclude<Key, StandardOnly>, string> = {
   'arc.tie': 'O 2º turno terminou empatado em {years}',
   'arc.missing': 'Não temos o resultado do 2º turno de {years}',
   'arc.note': 'Só conta a ordem dos fatos. Não diz o motivo.',
+  'twin.label': 'Cidade parecida: {name} · {uf}',
+  'twin.reason': 'Tem número de eleitores, comparecimento e resultados parecidos nas três eleições.',
   numberWords: 'zero|um|dois|três|quatro|cinco|seis|sete|oito|nove|dez',
   'label.article': 'o {name}',
   'pct.lessThan': 'menos de {pct}',

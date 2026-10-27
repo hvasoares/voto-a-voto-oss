@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { City, Turnout, Vote } from '@/data'
-import { computePeers, encodePeers, MIN_SHARED, peersOf, sizeBand, type PeerInput } from './peers'
+import { computePeers, encodePeers, MIN_SHARED, peersOf, sizeBand, twinOf, type PeerInput } from './peers'
 
 interface Spec {
   uf?: string
@@ -143,10 +143,44 @@ describe('the published file', () => {
   ])
   const file = encodePeers(computePeers(w, 2), 2)
   it('is index-encoded and small: city keys once, peers as indices', () => {
-    expect(file).toEqual({ k: 2, cities: ['xx/a', 'xx/b', 'xx/c'], peers: [[1, 2], [0, 2], [0, 1]] })
+    expect(file).toEqual({ k: 2, cities: ['xx/a', 'xx/b', 'xx/c'], peers: [[1, 2], [0, 2], [0, 1]], twins: [-1, -1, -1] })
   })
   it('peersOf reads it back by uf and slug; an unknown city has none', () => {
     expect(peersOf(file, 'xx', 'a')).toEqual(['xx/b', 'xx/c'])
     expect(peersOf(file, 'xx', 'nope')).toEqual([])
+  })
+})
+
+describe('the twin: the closest comparable city of another state (#31)', () => {
+  // the margin follows the turnout, so the cities differ in both features
+  const s = (slug: string, uf: string, turn: number) => ({ slug, uf, c18: cyc(8000, turn, turn * 0.6, turn * 0.3), c22: cyc(8000, turn, turn * 0.6, turn * 0.3), c26: cyc(8000, turn, turn * 0.6, turn * 0.3) })
+  const w = dataset([s('a', 'rj', 0.8), s('b', 'rj', 0.81), s('c', 'rj', 0.82), s('far', 'sp', 0.55), s('farther', 'mg', 0.2)])
+  const r = computePeers(w, 2)
+  const twin = (key: string) => twinOf(encodePeers(r, 2), key.split('/')[0]!, key.split('/')[1]!)
+
+  it('always comes from a different state, even when all the nearest peers are of the same state', () => {
+    expect(peersOf(encodePeers(r, 2), 'rj', 'a')).toEqual(['rj/b', 'rj/c'])
+    expect(twin('rj/a')).toBe('sp/far')
+    for (const [i, key] of r.keys.entries()) if (r.twins[i]! >= 0) expect(r.keys[r.twins[i]!]!.split('/')[0]).not.toBe(key.split('/')[0])
+  })
+  it('is the nearest of the other states, not the first listed', () => {
+    expect(twin('sp/far')).toBe('rj/a')
+    expect(twin('mg/farther')).toBe('sp/far')
+  })
+  it('a city whose state has every comparable city has no twin, and no error', () => {
+    const lone = dataset([s('a', 'rj', 0.8), s('b', 'rj', 0.7)])
+    expect(computePeers(lone).twins).toEqual([-1, -1])
+    expect(twinOf(encodePeers(computePeers(lone)), 'rj', 'a')).toBeUndefined()
+  })
+  it('an overseas post and a city that is not in the file have no twin', () => {
+    const withPost = dataset([s('a', 'rj', 0.8), s('b', 'sp', 0.8), s('post', 'zz', 0.8)])
+    const file = encodePeers(computePeers(withPost))
+    expect(twinOf(file, 'zz', 'post')).toBeUndefined()
+    expect(twinOf(file, 'rj', 'a')).toBe('sp/b')
+    expect(twinOf(file, 'rj', 'nope')).toBeUndefined()
+  })
+  it('does not depend on the order of the rows', () => {
+    const reversed: PeerInput = { cities: [...w.cities].reverse(), turnout: [...w.turnout].reverse(), votes: [...w.votes].reverse() }
+    expect(computePeers(reversed, 2).twins).toEqual(r.twins)
   })
 })

@@ -53,6 +53,26 @@ export function viewArc(arc: Arc, place: Place): Raw {
   return html`<div class="city-arc" data-arc="${arc.kind}">${lines.map((l) => html`<p class="city-arc__pill" data-register="${l.register}">${l.label}</p>`)}${lines.map((l) => html`<p class="city-arc__note" data-register="${l.register}">${l.note}</p>`)}</div>`
 }
 
+/** The twin city (#31) as the card links it: its display name, the label of its state and the address of its card. */
+export interface Twin {
+  name: string
+  uf: string
+  href: string
+}
+
+/**
+ * The twin line (#31): a link to the closest peer city of another state and, under it, the one-line reason, in both
+ * registers. Empty when the city has no twin (overseas posts, a state that holds every comparable city).
+ */
+export function viewTwin(twin: Twin | undefined, place: Place): Raw {
+  if (!twin) return html``
+  const locale = place.locale ?? DEFAULT_LOCALE
+  const each = (render: (voice: { locale: typeof locale; register: Register }, register: Register) => Raw) => voices(place).map((v) => render({ locale, register: v.register }, v.register))
+  const label = each((voice, register) => html`<span data-register="${register}">${message(voice, 'twin.label', { name: twin.name, uf: twin.uf })}</span>`)
+  const reason = each((voice, register) => html`<span class="city-twin__reason" data-register="${register}">${message(voice, 'twin.reason')}</span>`)
+  return html`<a class="city-twin" href="${twin.href}" data-twin>${label} ›${reason}</a>`
+}
+
 /**
  * The margin line (#26) of one view, in both registers: the votes that would have changed the result and how many times
  * that fits in the people who did not vote. Empty when the round has nothing to turn (no data, one candidate).

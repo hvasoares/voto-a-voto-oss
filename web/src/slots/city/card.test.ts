@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { buildCityResult } from '../../shared/city-model'
 import { headline } from '../../lib/sentences/headline'
-import { headlineId, viewArc, viewMargin, viewPanel } from './card'
+import { headlineId, viewArc, viewMargin, viewPanel, viewTwin } from './card'
 
 const result = buildCityResult({
   turnout: { ano: 2026, turno: 1, uf: 'rj', cdMunicipio: '1', aptos: 100000, comparecimento: 76600, abstencoes: 23400, brancos: 3000, nulos: 3600, anuladosApuSep: 0, validos: 70000 },
@@ -54,5 +54,21 @@ describe('arc of the city', () => {
     expect(html).toContain('Descreve a sequência, não a causa.')
     expect(html).toContain('Em 2022, o lado com mais votos no 2º turno mudou')
     expect(html.indexOf('data-register="standard"')).toBeLessThan(html.indexOf('data-register="plain"'))
+  })
+})
+
+describe('twin line', () => {
+  const twin = { name: 'Vila Modelo', uf: 'SP', href: '/sp/vila-modelo/' }
+  const html = viewTwin(twin, place).toString()
+  it('links the twin card, with the name and the state, in both registers', () => {
+    expect(html).toContain('href="/sp/vila-modelo/"')
+    expect(html).toContain('Cidade gêmea: Vila Modelo · SP')
+    expect(html).toContain('Cidade parecida: Vila Modelo · SP')
+  })
+  it('says what the match uses: size, turnout, margin and the history of the cycles', () => {
+    expect(html).toContain('Perfil parecido de porte, participação, margem e histórico.')
+  })
+  it('shows nothing, and no empty link, when the city has no twin', () => {
+    expect(viewTwin(undefined, place).toString()).toBe('')
   })
 })

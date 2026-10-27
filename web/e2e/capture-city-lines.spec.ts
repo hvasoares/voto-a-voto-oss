@@ -23,6 +23,8 @@ const shoot = async (page: import('@playwright/test').Page, route: string, name:
 test('capture city lines / phone', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('voto-a-voto:notice', 'acknowledged'))
   await shoot(page, 'rj/cidade-exemplo/?turno=1', 'phone')
+  // The frames are one 844 px screen; the lines sit lower on this longer page, so the rest of it is captured too.
+  await shoot(page, 'rj/cidade-exemplo/?turno=1', 'phone-full', true)
 })
 test('capture city lines / curiosities phone', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('voto-a-voto:notice', 'acknowledged'))
