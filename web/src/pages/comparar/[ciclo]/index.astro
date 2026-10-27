@@ -26,11 +26,11 @@ const intro = `Eleição presidencial 2026 (2º turno) comparada com a de ${cicl
 ---
 
 <Base title={`Comparar com ${ciclo} · Voto a Voto`}>
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16" id="main" data-page={`comparar-${ciclo}`}>
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px]" href={href('/')}>‹ Início</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">Comparar com {ciclo}</h1>
+  <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page={`comparar-${ciclo}`}>
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('/')}>‹ Início</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">Comparar com {ciclo}</h1>
 
-    <nav class="mt-1 grid grid-cols-2 rounded-md border border-border p-px" aria-label="Ciclo de comparação" data-component="cycle-tabs">
+    <nav class="mt-1 grid grid-cols-2 rounded-md border border-border p-px lg:mt-5" aria-label="Ciclo de comparação" data-component="cycle-tabs">
       {COMPARE_CYCLES.map((c) =>
         c === ciclo ? (
           <span class="flex min-h-11 items-center justify-center rounded-md bg-primary px-3 text-body font-bold leading-[17px] text-primary-foreground" aria-current="page" data-tab={String(c)}>{c}</span>
@@ -40,18 +40,25 @@ const intro = `Eleição presidencial 2026 (2º turno) comparada com a de ${cicl
       )}
     </nav>
 
-    <p class="mt-2 text-tiny leading-[12px] text-muted-foreground" data-component="intro">{intro}</p>
+    <p class="mt-2 text-tiny leading-[12px] text-muted-foreground lg:mt-4 lg:text-[13px] lg:leading-[18px]" data-component="intro">{intro}</p>
 
-    <ul class="mt-2 list-none p-0" data-component="compare-rows">
+    {/* Desktop (1024 px up): a three-column table. ARIA table roles over the markup, so the header row and the cells are announced as such. */}
+    <div role="table" aria-label={`Comparação de 2026 com ${ciclo}, seis estados`}>
+    <div class="hidden border-b border-border pb-2 pt-5 text-[11px] font-bold uppercase leading-[14px] tracking-[0.02em] text-muted-foreground lg:grid lg:grid-cols-[190px_1fr_1fr] lg:gap-x-5" role="row" data-component="compare-header">
+      <span role="columnheader">Estado · votos válidos</span>
+      <span role="columnheader">{rows[0] ? sidesOf(rows[0])[0]!.side.label : ''} · 2026 · {ciclo} · votos</span>
+      <span role="columnheader">{rows[0] ? sidesOf(rows[0])[1]!.side.label : ''} · 2026 · {ciclo} · votos</span>
+    </div>
+    <ul class="mt-2 list-none p-0 lg:mt-0" role="rowgroup" data-component="compare-rows">
       {rows.map((row) => (
-        <li class="border-t border-border py-2.5 pl-[14px] pr-[14px]" data-uf={row.uf}>
-          <div class="flex items-baseline justify-between gap-2">
-            <a class="text-body font-bold leading-[17px] text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary" href={href(`/${row.uf}/`)}>{row.uf.toUpperCase()}</a>
-            <span class="text-tiny leading-[12px] text-muted-foreground">{formatInt(row.validos)} votos válidos</span>
+        <li class="border-t border-border py-2.5 pl-[14px] pr-[14px] lg:grid lg:grid-cols-[190px_1fr_1fr] lg:gap-x-5 lg:px-0 lg:py-4" role="row" data-uf={row.uf}>
+          <div class="flex items-baseline justify-between gap-2 lg:block" role="cell">
+            <a class="text-body font-bold leading-[17px] text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary lg:block lg:font-serif lg:text-[26px] lg:font-normal lg:leading-[30px]" href={href(`/${row.uf}/`)}>{row.uf.toUpperCase()}</a>
+            <span class="text-tiny leading-[12px] text-muted-foreground lg:block lg:text-[13px] lg:leading-[16px]">{formatInt(row.validos)}<span class="lg:hidden"> votos válidos</span></span>
           </div>
-          <div class="mt-[5px]">
+          <div class="mt-[5px] lg:contents">
             {sidesOf(row).map(({ side, token }) => (
-              <div class="flex items-start py-[4px] text-tiny leading-[13px]" data-side={side.label}>
+              <div class="flex items-start py-[4px] text-tiny leading-[13px] tabular-nums lg:text-[15px] lg:leading-[22px]" role="cell" data-side={side.label}>
                 <span class={`mt-[2px] mr-[5px] h-[10px] w-[10px] flex-none rounded-[2px] ${token === 'lula' ? 'bg-lula' : 'bg-bolsonaro'}`} aria-hidden="true"></span>
                 <span class="min-w-0 flex-1 wrap-anywhere">
                   {side.label}
@@ -64,8 +71,9 @@ const intro = `Eleição presidencial 2026 (2º turno) comparada com a de ${cicl
         </li>
       ))}
     </ul>
+    </div>
   </main>
-  <footer class="mx-auto w-full max-w-[430px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+  <footer class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
     Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>
 </Base>

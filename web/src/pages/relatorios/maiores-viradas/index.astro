@@ -30,9 +30,9 @@ const outcome = (margin2: number): string => (margin2 > 0 ? `venceu no 2º turno
 ---
 
 <Base title="Maiores viradas, cidades de 100 mil+ votos · Voto a Voto">
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pb-2 pt-16" id="main" data-page="relatorios" data-report="maiores-viradas">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px]" href={href('/relatorios/')}>‹ Relatórios</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">Maiores viradas, cidades de 100 mil+ votos</h1>
+  <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pb-2 pt-16 lg:pt-8" id="main" data-page="relatorios" data-report="maiores-viradas">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('/relatorios/')}>‹ Relatórios</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">Maiores viradas, cidades de 100 mil+ votos</h1>
     <p class="mt-2 text-body leading-[21px]">
       As viradas mais fortes para {lula}, entre as cidades com {minMilhares}+ votos válidos — cidades grandes, cuja
       variação pesa mais. Virada = a variação da margem entre o 1º e o 2º turno de 2026, em pontos percentuais (pp).
@@ -78,7 +78,7 @@ const outcome = (margin2: number): string => (margin2 > 0 ? `venceu no 2º turno
       <span class="text-center text-small text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
     </div>
   </main>
-  <footer class="mx-auto mt-2 w-full max-w-[430px] border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+  <footer class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
     Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>
   <script>

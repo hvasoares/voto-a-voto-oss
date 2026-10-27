@@ -41,9 +41,9 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
 ---
 
 <Base title="Sobre os dados · Voto a Voto">
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16" id="main" data-page="sobre-os-dados">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px]" href={href('/')}>‹ Início</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">Sobre os dados</h1>
+  <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="sobre-os-dados">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('/')}>‹ Início</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">Sobre os dados</h1>
 
     <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="de-onde-vem">
       <h2 class="font-serif text-section font-normal leading-[25px]" id="de-onde-vem">De onde vêm os números</h2>
@@ -181,7 +181,7 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
       <DonationLink variant="button" />
     </section>
   </main>
-  <footer class="mx-auto w-full max-w-[430px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+  <footer class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
     Fonte: TSE, dados finais
   </footer>
 </Base>

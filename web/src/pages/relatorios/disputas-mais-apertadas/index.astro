@@ -32,9 +32,9 @@ const raceLine = (r: (typeof races)[number]): string =>
 ---
 
 <Base title="Disputas mais apertadas · Voto a Voto">
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pb-2 pt-16" id="main" data-page="relatorios" data-report="disputas-mais-apertadas">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px]" href={href('/relatorios/')}>‹ Relatórios</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">Disputas mais apertadas</h1>
+  <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pb-2 pt-16 lg:pt-8" id="main" data-page="relatorios" data-report="disputas-mais-apertadas">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('/relatorios/')}>‹ Relatórios</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">Disputas mais apertadas</h1>
     <p class="mt-2 text-body leading-[21px]">
       As menores diferenças de votos entre {lula} e {flavio} no 2º turno de 2026. Sem filtro de tamanho: em cidades
       pequenas um punhado de votos decide, e aqui estar perto do empate é o que vale.
@@ -79,7 +79,7 @@ const raceLine = (r: (typeof races)[number]): string =>
       <span class="text-center text-small text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
     </div>
   </main>
-  <footer class="mx-auto mt-2 w-full max-w-[430px] border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+  <footer class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
     Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>
   <script>

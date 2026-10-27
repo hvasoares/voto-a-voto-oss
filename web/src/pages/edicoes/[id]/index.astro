@@ -23,9 +23,9 @@ const counts = edition.counts
 ---
 
 <Base title={`Edição de ${editionLabel(edition)} · Voto a Voto`}>
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16" id="main" data-page="edicao" data-edition={edition.id}>
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px]" href={href('edicoes/')}>‹ Edições</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">Edição de {editionLabel(edition)}</h1>
+  <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="edicao" data-edition={edition.id}>
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('edicoes/')}>‹ Edições</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">Edição de {editionLabel(edition)}</h1>
     <p class="mt-[5px]">Identificador <strong data-edition-id>{edition.id}</strong>. Esta edição não muda: os arquivos abaixo têm tamanho e SHA-256 registrados em <a href={href(editionPath(edition.id) + 'edition.json')}>edition.json</a>.{edition.id === current.id ? ' É a edição que as páginas do site mostram hoje.' : ' As páginas do site mostram hoje outra edição.'}</p>
 
     <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="conteudo">
@@ -83,7 +83,7 @@ const counts = edition.counts
       <p class="mt-1 text-small leading-[14px] text-muted-foreground">Dados de {formatUtc(edition.date)}. Impressão digital dos dados: {edition.fingerprint}.</p>
     </section>
   </main>
-  <footer class="mx-auto w-full max-w-[430px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+  <footer class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
     Fonte: TSE, dados finais
   </footer>
 </Base>

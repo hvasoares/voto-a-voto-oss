@@ -32,18 +32,18 @@ const notTurnoutSeg = 'bg-[var(--c-abstencao)] text-[var(--c-ink)] text-[10px] f
 const segBase = 'flex min-w-0 items-center justify-center overflow-hidden whitespace-nowrap'
 ---
 <Base title="Brasil e regiões · Voto a Voto">
-  <main class="min-w-0 flex-1 px-5 pt-16 pb-2" id="main" data-brasil-view>
+  <main class="mx-auto w-full min-w-0 max-w-[430px] flex-1 px-5 pt-16 pb-2 md:max-w-[760px] lg:pt-8" id="main" data-brasil-view>
     {
       fixture && (
-        <p role="note" class="-mx-5 -mt-16 mb-10 bg-[var(--c-flag)] px-[var(--gutter)] py-2 text-center font-bold text-small text-[var(--c-ink)]">
+        <p role="note" class="-mx-5 -mt-16 mb-10 lg:-mt-8 lg:mb-6 bg-[var(--c-flag)] px-[var(--gutter)] py-2 text-center font-bold text-small text-[var(--c-ink)]">
           EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS
         </p>
       )
     }
     <p class="mb-3 print:hidden">
-      <a class="-ml-2 inline-flex min-h-12 min-w-[116px] items-center rounded-[var(--radius)] border border-border bg-background px-4 text-[15px] text-[var(--c-ink)]" href={href('/')}>‹ Início</a>
+      <a class="-ml-2 inline-flex min-h-12 min-w-[116px] items-center rounded-[var(--radius)] border border-border bg-background px-4 text-[15px] text-[var(--c-ink)] lg:ml-0 lg:min-h-8 lg:min-w-0 lg:border-0 lg:px-0 lg:text-[14px] lg:text-primary" href={href('/')}>‹ Início</a>
     </p>
-    <h1 class="font-serif text-[26px] font-normal leading-[36px] wrap-anywhere">Brasil e regiões</h1>
+    <h1 class="font-serif text-[26px] font-normal leading-[36px] wrap-anywhere lg:text-[44px] lg:leading-[52px]">Brasil e regiões</h1>
     {/* State-page ramp of the old site, measured from the same design family (site/src/shared/base.css
     .state-page): title 26/36, subtitle 14/16 pulled 4px up against the title, back button 15px. */}
     <p class="mt-[-4px] text-[13px] leading-[15px] text-muted-foreground">2º turno de {view.ano}</p>
@@ -111,7 +111,7 @@ const segBase = 'flex min-w-0 items-center justify-center overflow-hidden whites
       <PageDataDownload href={href('/brasil/dados.json')} filename="brasil.json" placement="row" />
     </nav>
   </main>
-  <footer class="mx-5 mt-2 pb-6 pt-2 text-center text-small text-muted-foreground" data-component="source-footer">
+  <footer class="mx-5 mt-2 pb-6 pt-2 text-center text-small md:mx-auto md:max-w-[720px] lg:text-left text-muted-foreground" data-component="source-footer">
     Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>
 </Base>
