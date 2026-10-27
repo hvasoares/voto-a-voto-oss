@@ -80,7 +80,8 @@ Imported, not copied: the alias `@site/*` points to `../site/src/*` (Vite alias 
 | `npm run test:real` | same against the real dataset (`DATA_DIR=../data`); skipped when missing |
 | `npm run capture` | writes `.captures/home/default.png` (fixture state, 390x844) for the screenshot review |
 
-Environment: `SITE_BASE=/voto-a-voto/` for a project Pages site; `DATA_DIR` (relative to `web/`) picks the dataset:
+Environment: `SITE_BASE=/voto-a-voto/` for a project Pages site; `SITE_ORIGIN=https://hvasoares.github.io` — decided (2026-10-26): GitHub Pages now, a custom domain can replace it later by changing this one value. Share links and QR codes are built from `SITE_ORIGIN` + `SITE_BASE`
+(default `https://votoavoto.exemplo.br`, the Sketch example, for fixtures). `DATA_DIR` (relative to `web/`) picks the dataset:
 default `../site/fixtures/data` (committed fixtures), real data `DATA_DIR=../data`. `OUT_DIR` changes the output directory.
 
 ## How things work (read before #49, #50 and new pages)
