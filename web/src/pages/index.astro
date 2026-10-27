@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { EXPLORE } from '@/lib/explore'
 import { loadStateCodes } from '@/lib/states'
 import { UF_NOME, ufFullLabel } from '@/lib/uf-names'
+import { LOCATE_HINT } from '@/lib/locate-messages'
 import Base from '@/layouts/Base.astro'
 
 const base = normalizeBase(import.meta.env.BASE_URL)
@@ -30,6 +31,14 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
         <a class="text-body font-bold leading-[18px] wrap-anywhere text-primary" data-place-link href={href('/')}></a>
       </span>
       <button type="button" class="absolute bottom-[-1px] right-[11px] h-11 cursor-pointer border-0 bg-transparent p-0 pt-[10px] text-[11px] leading-3 text-muted-foreground underline" data-place-forget>esquecer meus dados</button>
+    </div>
+    <div class="mt-[10px] [[data-place-shortcut]:not([hidden])+&]:mt-3" data-locate data-base={base} hidden>
+      <button type="button" class="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-[1.5px] border-primary bg-background px-3 text-[15px] font-medium leading-[18px] text-primary disabled:opacity-60" data-locate-button>
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.4"></circle><circle cx="8" cy="8" r="2.4" fill="currentColor"></circle></svg>
+        Usar minha localização
+      </button>
+      <p class="mt-1.5 text-[11px] leading-3 text-muted-foreground">{LOCATE_HINT}</p>
+      <p class="mt-1.5 text-small leading-4" role="status" aria-live="polite" data-locate-status hidden></p>
     </div>
     <p class="mt-1.5 text-small leading-[14px]">Ou escolha um estado. Toque para ver os municípios.</p>
     <nav class="mt-1 grid justify-center gap-px [grid-auto-rows:44px] [grid-template-columns:repeat(7,44px)]" aria-label="Estados" data-uf-grid>
@@ -62,5 +71,6 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
   <script>
     import '@/scripts/tile-analytics'
     import '@/scripts/home-place'
+    import '@/scripts/home-locate'
   </script>
 </Base>
