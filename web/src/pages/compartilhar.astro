@@ -1,0 +1,81 @@
+---
+/**
+ * Share sheet, ticket #7. DEMO SHELL on a placeholder route: it draws the sheet exactly as the city page will
+ * (same props, same island), with the fixture city and the round of the Sketch frame "3 Folha de compartilhamento".
+ * Ticket #50 replaces this file's frontmatter with the real `/:uf/:slug/compartilhar/` route (getStaticPaths over the
+ * dataset, the ?ciclo/?turno view of the city card and the real city card as the backdrop); markup and island stay.
+ *
+ * Data: build-time Node reading the dataset through the existing store (never the browser's CSV). The picture and the
+ * text come pre-rendered; the island (client:idle) adds the Compartilhar / Baixar imagem / Copiar actions.
+ */
+import { createNodeStore } from '@site/data/node'
+import { displayName } from '@site/shared/city-search'
+import { loadCityResult } from '@site/shared/city-figures'
+import { CYCLES } from '@site/shared/city-model'
+import { normalizeBase, withBase } from '@site/paths'
+import Base from '@/layouts/Base.astro'
+import ShareActions from '@/components/ShareActions'
+import { dataDir } from '@/lib/data-dir'
+import { shareContent } from '@/lib/share-model'
+import { siteOrigin } from '@/lib/share-url'
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+
+// --- fixture state (ticket #50 replaces from here down with the real route) ---------------------------------------
+const data = createNodeStore(dataDir())
+const city = (await data.city('rj', 'cidade-exemplo'))!
+const view = { ano: 2026, turno: 1 as const } // the frame's round
+const result = (await loadCityResult(data, city, view.ano, view.turno))!
+const fixture = !!(await data.manifest()).fixture
+const content = result ? shareContent(result, city, { origin: siteOrigin(), base, fixture }) : undefined
+const cityName = displayName(city.nome)
+// "Fechar" goes back to the city card; until #50 ports it, the demo points at the home page.
+const closeHref = href('/')
+const sub = city.uf === 'zz' ? 'Voto no exterior' : `${fixture ? 'Município fictício' : 'Município'} · rj`
+const NOTE = 'O link vai no texto da mensagem; a imagem leva só o endereço curto, sem QR.'
+---
+<Base title={`Compartilhar · ${cityName}`}>
+  <main class="min-w-0 flex-1">
+    <div data-share-backdrop aria-hidden="true" inert class="pointer-events-none select-none px-5 pt-4 opacity-35" data-ticket="50 to replace">
+      <p class="font-serif text-[20px] font-bold leading-[25px]">Voto a Voto <span class="text-small font-normal text-muted-foreground">Presidente {view.ano}</span></p>
+      {fixture && <p class="mt-2 py-1 text-center text-small font-bold tracking-wide" style="background: var(--sketch-color-flag); color: var(--sketch-color-ink)">EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS</p>}
+      <p class="mt-3 text-small text-muted-foreground">‹ Início</p>
+      <p class="mt-2 font-serif text-title leading-[30px]">{cityName}</p>
+      <p class="mt-0.5 text-small text-muted-foreground" data-subtitle>{sub} · UF</p>
+      <div class="mt-3 flex overflow-hidden rounded-md border border-border text-center text-body" data-cycles>
+        {CYCLES.map((c, i) => <span class:list={['min-h-11 flex-1 pt-3', i < 2 && 'border-r border-border']}>{c}</span>)}
+      </div>
+      <div class="mt-2 flex overflow-hidden rounded-md border border-border text-center text-body">
+        <span class="min-h-11 flex-1 bg-secondary pt-3 font-bold">1º turno</span>
+        <span class="min-h-11 flex-1 pt-3">2º turno</span>
+      </div>
+    </div>
+
+    <section
+      data-share-sheet
+      data-uf={city.uf}
+      data-slug={city.slug}
+      data-view={`${view.ano}-${view.turno}`}
+      data-filename={content?.filename}
+      class="-mt-4 relative rounded-t-2xl border border-border bg-background px-5 pt-2 pb-6 shadow-[0_-4px_16px_rgba(28,27,24,0.25)]"
+    >
+      <span class="mx-auto block h-1.5 w-16 rounded-full bg-muted" aria-hidden="true"></span>
+      <div class="flex items-baseline justify-between">
+        <h1 class="font-serif text-title font-normal leading-[30px]">Compartilhar resultado</h1>
+        <a class="min-h-11 px-1 pt-1 text-body font-bold" href={closeHref} data-close>Fechar</a>
+      </div>
+      {content ? (
+        <div class="mx-auto mt-2 flex-none [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" data-share-picture set:html={content.svg} />
+      ) : (
+        <p class="mt-4 text-body" data-nodata>Sem dados nesse ciclo.</p>
+      )}
+      {content && <p class="mt-3 text-small leading-[17px] text-muted-foreground" data-note>{NOTE}</p>}
+      {content && <noscript><p class="mt-1 text-small leading-[17px]" data-nojs>Compartilhar e baixar a imagem precisam de JavaScript; o texto abaixo pode ser copiado e enviado com o endereço.</p></noscript>}
+      {content && <ShareActions client:idle text={content.text} svg={content.svg} filename={content.filename} />}
+      <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+        {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+      </footer>
+    </section>
+  </main>
+</Base>
