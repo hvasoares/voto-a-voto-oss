@@ -41,12 +41,16 @@ web/
   cdn.config.json         approved CDN origins + pinned libraries (EMPTY by default)
   integrations/           dataset (writes the shards to public/data), theme (virtual:theme.css), interaction (client:interaction), cdn
   integrations/shards.ts  the shard builder (issue #49; layout and budgets: docs/shards.md)
-  src/pages/              index.astro (home), [uf]/[slug]/index.astro (pre-rendered city page), 404.astro (client fallback)
+  src/pages/              index.astro (home), [uf]/[slug]/index.astro (pre-rendered city page),
+                          relatorios/ (hub + cidades-que-viraram, #12; como-cada-grupo-votou, #15),
+                          sobre-os-dados/ (static method page, #18), 404.astro (client fallback)
   src/layouts/Base.astro  html shell + #consent-slot
-  src/components/         CitySearch.tsx (the only island) + ui/ (shadcn, copied code)
-  src/lib/                data-dir, search-data (fetches the search shard), city-routes (pre-rendered city pages), fallback, explore, states
+  src/components/         ShareActions (#7 demo island), CitySearch.tsx + ui/ (shadcn, copied code)
+  src/lib/                data-dir, search-data (fetches the search shard), city-routes (pre-rendered city pages),
+                          share-* (#7), about/about-data (#18), reports/ (#12: compute, hub, format, load — build-time, pure),
+                          cohorts (#15), fallback, explore, states
   src/theme.ts            Sketch tokens -> shadcn/Tailwind variables (single place)
-  src/scripts/            tile-analytics (plain script), fallback (404 page)
+  src/scripts/            tile-analytics (plain script), report-analytics (#12 share + events), fallback (404 page)
   e2e/                    Playwright specs;  scripts/  serve.ts, measure.ts
 ```
 
