@@ -1,83 +1,27 @@
 ---
 /**
- * City card (the approved Sketch frame "2 Cartão da cidade", ported from site/src/slots/city/slot.ts by #50;
- * this route was the shard-contract page of #49). Pre-rendered with all six cycle/round panels in the HTML
- * (no scripts needed to have every cycle) straight from the city's own shard; the card script switches
- * panels client-side and the page then loads nothing — no /data/ request at all.
+ * City card route (the approved Sketch frame "2 Cartão da cidade"; this route was the shard-contract page of #49,
+ * the card replaced it in #50). The body is the shared CityCard component; the script switches panels client-side.
+ * Pre-rendered with all six cycle/round panels in the HTML (no scripts needed to have every cycle) straight from the
+ * city's own shard; the page as a whole loads nothing — no /data/ request at all.
  */
 import Base from '@/layouts/Base.astro'
-import { normalizeBase, withBase } from '@/paths'
+import CityCard from '@/components/CityCard.astro'
 import { loadCityRoutes } from '@/lib/city-routes'
-import { datasetFixture, loadCityShard } from '@/lib/shard-files'
-import { cityShardResult } from '@/lib/city-shard'
 import { displayName, ufLabel } from '@/shared/city-search'
-import { CYCLES, type CityResult } from '@/shared/city-model'
-import { cycleTabs, roundTabs } from '@/shared/components'
-import { viewPanel } from '@/slots/city/card'
-import { defaultView, viewHref, viewId, type View } from '@/slots/city/city-view'
 
 export async function getStaticPaths() {
-  return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug } }))
+  return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug }, props: { nome: city.nome } }))
 }
 
 const { uf, slug } = Astro.params
-const base = normalizeBase(import.meta.env.BASE_URL)
-const href = (path: string) => withBase(base, path)
-const here = href(`/${uf}/${slug}/`)
-const shard = (await loadCityShard(uf!, slug!))!
-const city = shard.city
-const name = displayName(city.nome)
-const fixture = await datasetFixture()
-const overseas = city.uf === 'zz'
-
-// Every cycle and round the city has data in, pre-rendered; nothing here can be zeros.
-const results = new Map<string, CityResult | undefined>()
-for (const ano of CYCLES) for (const turno of [1, 2] as const) results.set(viewId({ ano, turno }), cityShardResult(shard, ano, turno))
-const has = (ano: number, turno: 1 | 2) => !!results.get(viewId({ ano, turno }))
-const view = defaultView(has)
-
-const banner = fixture ? 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS'.replace(' · ', '  ·  ') : undefined
-const title = `${name} · ${ufLabel(city.uf)}`
-const sub = overseas ? 'Voto no exterior' : `${fixture ? 'Município fictício' : 'Município'} · ${ufLabel(city.uf)}`
-const shareBase = href(`/${uf}/${slug}/compartilhar/`)
-const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'
+const { nome } = Astro.props as { nome: string }
+const name = displayName(nome)
 ---
-<Base title={`${title} · Voto a Voto`}>
-  <div class="screen city-page">
-    <header class="app-header">
-      <a class="brand" href={href('/')}>Voto a Voto</a>
-      <span class="app-header__sep" aria-hidden="true"></span>
-      <span class="app-header__context">Presidente 2026</span>
-    </header>
-    {banner && <div class="banner" role="note">{banner}</div>}
-    <main class="page__main" id="main">
-      <a class="back" href={href('/')}>‹ Início</a>
-      <h1 class="page__title">{name}</h1>
-      <p class="page__subtitle">{sub}</p>
-      <Fragment set:html={cycleTabs({ cycles: [...CYCLES], active: view.ano, hrefFor: (c) => viewHref(here, { ano: c, turno: view.turno }) })} />
-      <Fragment set:html={roundTabs({ active: view.turno, hrefFor: (t) => viewHref(here, { ano: view.ano, turno: t }) })} />
-      <div
-        class="city-card"
-        data-city-card
-        data-view={viewId(view)}
-        data-path={here}
-        data-uf={city.uf}
-        data-slug={city.slug}
-      >
-        {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} set:html={viewPanel(r, name)} />)}
-      </div>
-      <a class="city-share" href={`${shareBase}?ciclo=${view.ano}&turno=${view.turno}`} data-share data-base={shareBase}>Compartilhar</a>
-      <nav class="city-links" aria-label="Mais sobre a cidade">
-        <a href={href('/comparar/2022/')}>Comparar com 2022 ›</a>
-        <a href={here + 'tres-ciclos/'}>Ver os três ciclos ›</a>
-        {overseas ? '' : <a href={href(`/${uf}/`)}>Ver o estado ›</a>}
-      </nav>
-    </main>
-    <footer class="source-footer" data-component="source-footer">
-      {footer}<a class="source-footer__about" href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
-    </footer>
-  </div>
-  <script>
-    import '@/scripts/city-card'
-  </script>
+<Base title={`${name} · ${ufLabel(uf!)} · Voto a Voto`}>
+  <CityCard uf={uf!} slug={slug!}>
+    <script>
+      import '@/scripts/city-card'
+    </script>
+  </CityCard>
 </Base>

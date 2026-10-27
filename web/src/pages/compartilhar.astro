@@ -1,9 +1,10 @@
 ---
 /**
- * Share sheet, ticket #7. DEMO SHELL on a placeholder route: it draws the sheet exactly as the city page will
- * (same props, same island), with the fixture city and the round of the Sketch frame "3 Folha de compartilhamento".
- * Ticket #50 replaces this file's frontmatter with the real `/:uf/:slug/compartilhar/` route (getStaticPaths over the
- * dataset, the ?ciclo/?turno view of the city card and the real city card as the backdrop); markup and island stay.
+ * Share sheet, ticket #7. DEMO SHELL on a placeholder route: it draws the sheet with the fixture city and the round
+ * of the Sketch frame "3 Folha de compartilhamento" so the sheet stays demoable without a shared address context.
+ * Ticket #50 kept this route and wired the real `/:uf/:slug/compartilhar/` next to it (getStaticPaths over the
+ * dataset, the ?ciclo/?turno view of the city card, the real city card as backdrop; components/ShareSheet owns
+ * picture+text and fetches only the own city shard when a query view needs it).
  *
  * Data: build-time Node reading the dataset through the existing store (never the browser's CSV). The picture and the
  * text come pre-rendered; the island (client:idle) adds the Compartilhar / Baixar imagem / Copiar actions.
@@ -27,7 +28,7 @@ const result = await loadCityResult(city.uf, city.slug, view.ano, view.turno)
 const fixture = await datasetFixture()
 const content = result ? shareContent(result, city, { origin: siteOrigin(), base, fixture }) : undefined
 const cityName = displayName(city.nome)
-// "Fechar" goes back to the city card; until #50 ports it, the demo points at the home page.
+// "Fechar" of the demo has no city card to return to: the demo stays on the shell and points at home.
 const closeHref = href('/')
 const sub = city.uf === 'zz' ? 'Voto no exterior' : `${fixture ? 'Município fictício' : 'Município'} · rj`
 const NOTE = 'O link vai no texto da mensagem; a imagem leva só o endereço curto, sem QR.'
