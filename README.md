@@ -4,6 +4,10 @@ Brazilian election results, vote by vote: a TSE data pipeline and a static, veri
 
 Covers the 2018, 2022 and 2026 presidential elections at municipality level, with every number traceable to its source.
 
+## Licence
+
+The code is released under the MIT licence (see `LICENSE`). The open dataset published with each edition (`editions/<id>/release/`) carries its own terms in its `LEIAME.md` and `CITATION.cff`; the licence of the code does not apply to it.
+
 ## Layout
 
 - `src/voto_a_voto/tse_scrape.py` downloads the signed municipality results of 2026 from the TSE results site, with a disk cache (`make tse-scrape`, the raw per-city CSV).
