@@ -38,7 +38,7 @@ test.describe('city page head: the preview tags', () => {
     expect(await meta(page, 'meta[property="og:image:width"]')).toBe('480')
     expect(await meta(page, 'meta[property="og:image:height"]')).toBe('476')
     const alt = await meta(page, 'meta[property="og:image:alt"]')
-    expect(alt).toMatch(/^Cidade Exemplo, RJ: resultado de 2026, 2º turno\. Votaram \d+% do eleitorado, não votaram \d+%\.$/)
+    expect(alt).toMatch(/^Em Cidade Exemplo, no 2º turno de 2026, \d+(,\d)?% do eleitorado não votou, .+\.$/)
   })
 
   test('twitter card mirrors the og tags', async ({ page }) => {

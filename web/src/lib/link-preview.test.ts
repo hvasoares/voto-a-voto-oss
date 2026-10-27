@@ -6,6 +6,7 @@
 import { describe, expect, it } from 'vitest'
 import { buildCityResult, type CityResult } from '../shared/city-model'
 import { SHARE_CARD_SIZE } from './share-card'
+import { headline } from './sentences/headline'
 import {
   PREVIEW_HEIGHT,
   PREVIEW_WIDTH,
@@ -67,7 +68,8 @@ describe('the head of a city with data', () => {
     expect(head.image?.type).toBe('image/png')
     expect(head.image?.width).toBe(PREVIEW_WIDTH)
     expect(head.image?.height).toBe(PREVIEW_HEIGHT)
-    expect(head.image?.alt).toBe('Cidade Exemplo, RJ: resultado de 2026, 2º turno. Votaram 63% do eleitorado, não votaram 37%.')
+    expect(head.image?.alt).toBe(headline(result, { cityName: 'Cidade Exemplo' }))
+    expect(head.image?.alt).toMatch(/^Em Cidade Exemplo, no 2º turno de 2026, 37,4% do eleitorado não votou/)
   })
 
   it('the svg the build rasterises is the SAME drawing the share sheet inlines, at the preview display size', () => {

@@ -11,7 +11,7 @@ const result = (t: Partial<Turnout>, votes: [number, number][], names: string[] 
   const turno = (t.turno ?? 2) as 1 | 2
   return buildCityResult({ turnout: turnout(t), votes: votes.map(([n, v]) => vote(n, v, turno)), candidates: votes.map(([n], i) => cand(n, names[i]!, turno)) })
 }
-const opts = { cityName: 'Cidade Teste', ufLabel: 'RJ', address: 'votoavoto.exemplo.br/rj/cidade-teste' }
+const opts = { cityName: 'Cidade Teste', ufLabel: 'RJ', alt: 'Em Cidade Teste, no 2º turno de 2026, a frase do cartão.', address: 'votoavoto.exemplo.br/rj/cidade-teste' }
 
 /** Text of every <text> element, unescaped. */
 const texts = (svg: string) => [...svg.matchAll(/<text\b[^>]*>([\s\S]*?)<\/text>/g)].map((m) => m[1]!.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&'))
@@ -37,7 +37,7 @@ describe('shareCardSvg: what the picture says', () => {
     expect(svg).toContain(`viewBox="0 0 ${SHARE_CARD_SIZE.width} ${SHARE_CARD_SIZE.height}"`)
     expect(svg).toContain(`width="${SHARE_CARD_SIZE.width}"`)
     expect(svg).toContain(`height="${SHARE_CARD_SIZE.height}"`)
-    expect(svg).toMatch(/<title>[^<]+<\/title>/)
+    expect(svg).toMatch(/<title>Em Cidade Teste, no 2º turno de 2026, a frase do cartão\.<\/title>/)
   })
 
   it('carries city, UF, cycle, round, shares of voted and not voted, candidates, source and the short address', () => {
@@ -199,7 +199,7 @@ describe('shareCardSvg: robustness', () => {
 describe('shareCardSvg over the fixture city (the Sketch frame figures)', () => {
   it('draws the numbers of the frame for Cidade Exemplo, round 1 of 2026', async () => {
     const r = (await loadCityResult('rj', 'cidade-exemplo', 2026, 1))!
-    const t = all(shareCardSvg(r, { cityName: 'Cidade Exemplo', ufLabel: 'RJ', address: 'votoavoto.exemplo.br/rj/cidade-exemplo', fixture: true }))
+    const t = all(shareCardSvg(r, { cityName: 'Cidade Exemplo', ufLabel: 'RJ', alt: 'x', address: 'votoavoto.exemplo.br/rj/cidade-exemplo', fixture: true }))
     for (const s of ['Votaram: 70% do eleitorado', 'Não votaram: 30% do eleitorado', 'Candidato A 52%', 'Candidato B 48%', 'Abstenção 78%', '2026 · 1º turno · RJ', 'votoavoto.exemplo.br/rj/cidade-exemplo']) expect(t, s).toContain(s)
   })
 })

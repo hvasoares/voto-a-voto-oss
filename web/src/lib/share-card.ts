@@ -37,6 +37,8 @@ export interface ShareCardOptions {
   cityName: string
   /** "RJ", "Exterior". */
   ufLabel: string
+  /** The picture's text alternative (`<title>`): the card's headline sentence, from `headline()`. */
+  alt: string
   /** Short address shown near the bottom, without scheme: `votoavoto.exemplo.br/rj/cidade-exemplo`. */
   address: string
   /** Fictitious data: draws the "EXEMPLO" tag and the fictitious-data brand line. */
@@ -208,11 +210,5 @@ export function shareCardSvg(r: PictureResult, o: ShareCardOptions): string {
   const brandSize = [38, 34, 30].find((sz) => textWidth(brand, sz) <= INNER) ?? 30
   out.push(text(W / 2, Math.max(1040, lastAddr + 48), brandSize, brand, { fill: colors.muted, anchor: 'middle' }))
 
-  const title = shareCardAlt(r, o)
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${o.width ?? W}" height="${o.height ?? H}" viewBox="0 0 ${W} ${H}" role="img"><title>${esc(title)}</title>${out.join('')}</svg>`
-}
-
-/** The picture's `<title>` (an og:image alt in ticket #8): ONE sentence with the headline numbers. */
-export function shareCardAlt(r: PictureResult, o: Pick<ShareCardOptions, 'cityName' | 'ufLabel'>): string {
-  return `${o.cityName}, ${o.ufLabel}: resultado de ${r.ano}, ${r.turno}º turno. Votaram ${r.votedPct}% do eleitorado, não votaram ${r.notVotedPct}%.`
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${o.width ?? W}" height="${o.height ?? H}" viewBox="0 0 ${W} ${H}" role="img"><title>${esc(o.alt)}</title>${out.join('')}</svg>`
 }

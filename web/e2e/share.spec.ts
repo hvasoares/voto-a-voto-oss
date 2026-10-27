@@ -73,7 +73,7 @@ test.describe('share: the system share sheet', () => {
     expect(s!.files[0]!.size).toBeGreaterThan(5000)
     expect(s!.png).toEqual({ width: 1080, height: 1070, signature: SIG })
     expect(s!.text).toContain(`${URL_TEXT}rj/cidade-exemplo/`)
-    expect(s!.text).toContain('Cidade Exemplo/RJ, 2026, 1º turno: Candidato A 52% · Candidato B 48% dos votos válidos; 30% do eleitorado não votou.')
+    expect(s!.text).toContain('Em Cidade Exemplo, no 1º turno de 2026, 30% do eleitorado não votou, quase tanto quanto o Candidato B recebeu (33,6%).')
     expect(s!.active).toBe(true)
     expect(errors).toEqual([])
   })

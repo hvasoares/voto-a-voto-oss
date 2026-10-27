@@ -160,7 +160,7 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .city-card .turnout__title:first-child { margin-top: 15px; }
 .city-card .bar + .turnout__title { margin-top: 17px; }
 .city-card .legend { margin-top: 12px; }
-.city-takeaway { font: 400 15px/21px var(--font-serif); margin: 35px -16px 0; }
+.city-headline { font: 400 15px/21px var(--font-serif); margin: 35px -16px 0; }
 .city-nodata { margin: 24px 0; font-size: var(--fs-lead); color: var(--c-muted); }
 .city-share {
   display: flex; align-items: center; justify-content: center; height: 48px; margin-top: 13px;

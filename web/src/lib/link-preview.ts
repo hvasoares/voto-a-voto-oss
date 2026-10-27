@@ -11,7 +11,8 @@ import { displayName, ufLabel } from '@/shared/city-search'
 import type { CityResult } from '@/shared/city-model'
 import { withBase } from '@/paths'
 import { cityUrl, siteOrigin } from './share-url'
-import { SHARE_CARD_SIZE, shareCardAlt } from './share-card'
+import { SHARE_CARD_SIZE } from './share-card'
+import { headline } from './sentences/headline'
 import { shareContent } from './share-model'
 
 /** Path segment (root-relative, base included by callers) of the generated preview rasters. */
@@ -97,7 +98,7 @@ export function previewHead(city: PreviewCity, result: CityResult | undefined, o
           type: PREVIEW_TYPE,
           width: PREVIEW_WIDTH,
           height: PREVIEW_HEIGHT,
-          alt: shareCardAlt(result, { cityName: name, ufLabel: label }),
+          alt: headline(result, { cityName: name, overseas: city.uf === 'zz' }),
         }
       : undefined,
   }

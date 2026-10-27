@@ -6,6 +6,7 @@ import type { City } from '@/data'
 import { displayName, ufLabel } from '@/shared/city-search'
 import type { CityResult } from '@/shared/city-model'
 import { shareCardSvg } from './share-card'
+import { headline } from './sentences/headline'
 import { shareText, shortAddress } from './share-text'
 import { cityUrl } from './share-url'
 
@@ -33,9 +34,11 @@ export function shareContent(result: CityResult, city: Pick<City, 'uf' | 'slug' 
   const url = cityUrl(o.origin, o.base, city.uf, city.slug)
   const address = shortAddress(url)
   const names = { cityName: displayName(city.nome), ufLabel: ufLabel(city.uf) }
+  const overseas = city.uf === 'zz'
+  const alt = headline(result, { cityName: names.cityName, overseas })
   return {
-    svg: shareCardSvg(result, { ...names, address, fixture: o.fixture, width: o.width, height: o.height }),
-    text: shareText(result, { ...names, url }),
+    svg: shareCardSvg(result, { ...names, alt, address, fixture: o.fixture, width: o.width, height: o.height }),
+    text: shareText(result, { cityName: names.cityName, overseas, url }),
     url,
     address,
     filename: `voto-a-voto-${city.uf}-${city.slug}-${result.ano}-turno-${result.turno}.png`,

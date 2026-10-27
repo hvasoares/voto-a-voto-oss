@@ -150,8 +150,40 @@ test.describe('city card without JavaScript', () => {
     await page.goto(city)
     await expect(page.locator('h1')).toHaveText('Cidade Exemplo')
     await expect(card(page).locator('.legend__row')).toHaveCount(5)
-    await expect(card(page).locator('.city-takeaway')).toContainText('no 2º turno de 2026')
+    await expect(card(page).locator('.city-headline')).toContainText('no 2º turno de 2026')
     await expect(page.getByRole('link', { name: 'Compartilhar' })).toBeVisible()
     await expect(page.locator('[data-view][hidden]')).toHaveCount(5)
+  })
+})
+
+test.describe('city card: the headline sentence', () => {
+  const headline = (page: Page) => card(page).locator('[data-headline]')
+  test('is one sentence under the legend and describes the card (its text alternative)', async ({ page }) => {
+    await page.goto(`${city}?turno=1`)
+    await waitReady(page)
+    const sentence = 'Em Cidade Exemplo, no 1º turno de 2026, 30% do eleitorado não votou, quase tanto quanto o Candidato B recebeu (33,6%).'
+    await expect(headline(page)).toHaveText(sentence)
+    const panel = card(page)
+    await expect(panel).toHaveAttribute('role', 'group')
+    const id = await headline(page).getAttribute('id')
+    await expect(panel).toHaveAttribute('aria-describedby', id!)
+    // the legend comes before the sentence
+    const [legendY, headlineY] = await Promise.all([card(page).locator('.legend').boundingBox(), headline(page).boundingBox()])
+    expect(headlineY!.y).toBeGreaterThanOrEqual(legendY!.y + legendY!.height)
+  })
+  test('the share sheet carries the same sentence as its text and as the picture alternative', async ({ page }) => {
+    await page.goto(`${city}?turno=1`)
+    await waitReady(page)
+    const sentence = (await card(page).locator('[data-headline]').innerText()).trim()
+    await page.goto(`${base}rj/cidade-exemplo/compartilhar/?ciclo=2026&turno=1`)
+    await expect(page.locator('[data-share-picture] svg title')).toHaveText(sentence)
+    await expect(page.locator('[data-text-body]')).toContainText(sentence)
+  })
+  test('an overseas post and a cycle without data read correctly (ties: unit tests)', async ({ page }) => {
+    await page.goto(`${base}zz/exterior-exemplo/?turno=1`)
+    await waitReady(page)
+    await expect(card(page).locator('[data-headline]')).toContainText('No exterior, em Exterior (posto exemplo), no 1º turno de 2026, ')
+    await page.goto(`${base}mt/boa-esperanca-do-norte/?ciclo=2022&turno=1`)
+    await expect(page.locator('[data-nodata]:visible')).toHaveText('Sem dados nesse ciclo.')
   })
 })

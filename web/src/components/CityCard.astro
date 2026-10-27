@@ -11,7 +11,7 @@ import { cityShardResult } from '@/lib/city-shard'
 import { displayName, ufLabel } from '@/shared/city-search'
 import { CYCLES, type CityResult } from '@/shared/city-model'
 import { cycleTabs, roundTabs } from '@/shared/components'
-import { viewPanel } from '@/slots/city/card'
+import { viewPanel, headlineId } from '@/slots/city/card'
 import { defaultView, viewHref, viewId, type View } from '@/slots/city/city-view'
 
 interface Props {
@@ -66,7 +66,7 @@ const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: T
       data-uf={city.uf}
       data-slug={city.slug}
     >
-      {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} set:html={viewPanel(r, name)} />)}
+      {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} role={r ? 'group' : undefined} aria-describedby={r ? headlineId(id) : undefined} set:html={viewPanel(r, { cityName: name, overseas }, id)} />)}
     </div>
     <a class="city-share" href={`${shareBase}?ciclo=${view.ano}&turno=${view.turno}`} data-share data-base={shareBase}>Compartilhar</a>
     <nav class="city-links" aria-label="Mais sobre a cidade">
