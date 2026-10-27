@@ -230,6 +230,14 @@ export const KEYS = [
   'fact.compare',
   'fact.change',
   'fact.start',
+  /** The page that explains the city card's figures of the earlier cycles (they have no page of their own, to keep the site small). */
+  'fact.old',
+  'fact.in.old',
+  'fact.w.old',
+  'fact.sub.old',
+  'fact.back.old',
+  'fact.measure.candidato',
+  'fact.measure.parte',
   /** The "conferido" seal (#62): its words are filled with what the build's own checks measured; never typed by hand. */
   'seal.title',
   'seal.national',
@@ -257,7 +265,7 @@ export const DEFAULT_LOCALE: Locale = 'pt-BR'
 export { DEFAULT_REGISTER, REGISTERS, type Register }
 
 /** Keys that read the same in both registers, so they have no plain version: the register switch's own labels and the page-head description for crawlers. */
-export const STANDARD_ONLY_KEYS = ['card.example', 'card.president', 'card.round', 'card.noElectorate', 'card.voted', 'card.notVoted', 'card.noValid', 'card.others', 'card.brand', 'card.brand.fixture', 'card.desc', 'register.label', 'register.standard', 'register.plain', 'fact.f.race', 'fact.sub.report', 'fact.back.report', 'fact.where.brasil', 'fact.where.regiao', 'fact.where.estado', 'fact.in.comparecimento', 'fact.in.regionValidos', 'fact.in.nationalValidos', 'fact.in.votosAt', 'fact.in.shareAt', 'fact.in.brancos', 'fact.in.nulos', 'fact.f.regionShare', 'fact.f.turnout', 'fact.f.partTurnout', 'fact.f.diffVotes', 'fact.f.changePp', 'fact.w.pp', 'fact.sub.brasil', 'fact.sub.compare', 'fact.sub.state', 'fact.back.brasil', 'fact.back.compare', 'fact.back.state', 'fact.method.cycles', 'seal.title', 'seal.national', 'seal.municipios', 'seal.field.aptos', 'seal.field.comparecimento', 'seal.field.validos', 'seal.note', 'fact.in.aptos', 'fact.in.validos', 'fact.in.naoVotaram', 'fact.in.votos', 'fact.in.first', 'fact.in.second', 'fact.in.part', 'fact.in.rank', 'fact.in.group', 'fact.in.cycles', 'fact.f.votaram', 'fact.f.naoVotaram', 'fact.f.candidate', 'fact.f.notVotedPart', 'fact.f.frase', 'fact.f.margin', 'fact.f.fits', 'fact.f.curio', 'fact.w.share', 'fact.w.none', 'fact.w.diff', 'fact.w.times', 'fact.w.tie', 'fact.w.curio', 'fact.title', 'fact.sub', 'fact.sub.curio', 'fact.back', 'fact.inputs', 'fact.formula', 'fact.shown', 'fact.rounding', 'fact.source', 'fact.source.tse', 'fact.source.fixture', 'fact.edition', 'fact.method', 'fact.method.margin', 'fact.method.curio', 'fact.method.peers', 'fact.others', 'fact.id', 'fact.link', 'fact.measure.frase', 'fact.measure.votaram', 'fact.measure.naoVotaram', 'fact.measure.margem', 'fact.neutral', 'preview.fixture', 'preview.intro', 'preview.noResult', 'preview.noElectorate', 'preview.noValidVotes', 'preview.default'] as const satisfies readonly Key[]
+export const STANDARD_ONLY_KEYS = ['card.example', 'card.president', 'card.round', 'card.noElectorate', 'card.voted', 'card.notVoted', 'card.noValid', 'card.others', 'card.brand', 'card.brand.fixture', 'card.desc', 'register.label', 'register.standard', 'register.plain', 'fact.f.race', 'fact.sub.report', 'fact.back.report', 'fact.where.brasil', 'fact.where.regiao', 'fact.where.estado', 'fact.in.comparecimento', 'fact.in.regionValidos', 'fact.in.nationalValidos', 'fact.in.votosAt', 'fact.in.shareAt', 'fact.in.brancos', 'fact.in.nulos', 'fact.f.regionShare', 'fact.f.turnout', 'fact.f.partTurnout', 'fact.f.diffVotes', 'fact.f.changePp', 'fact.w.pp', 'fact.sub.brasil', 'fact.sub.compare', 'fact.sub.state', 'fact.back.brasil', 'fact.back.compare', 'fact.back.state', 'fact.method.cycles', 'seal.title', 'seal.national', 'seal.municipios', 'seal.field.aptos', 'seal.field.comparecimento', 'seal.field.validos', 'seal.note', 'fact.in.aptos', 'fact.in.validos', 'fact.in.naoVotaram', 'fact.in.votos', 'fact.in.first', 'fact.in.second', 'fact.in.part', 'fact.in.rank', 'fact.in.group', 'fact.in.cycles', 'fact.f.votaram', 'fact.f.naoVotaram', 'fact.f.candidate', 'fact.f.notVotedPart', 'fact.f.frase', 'fact.f.margin', 'fact.f.fits', 'fact.f.curio', 'fact.w.share', 'fact.w.none', 'fact.w.diff', 'fact.w.times', 'fact.w.tie', 'fact.w.curio', 'fact.title', 'fact.sub', 'fact.sub.curio', 'fact.back', 'fact.inputs', 'fact.formula', 'fact.shown', 'fact.rounding', 'fact.source', 'fact.source.tse', 'fact.source.fixture', 'fact.edition', 'fact.method', 'fact.method.margin', 'fact.method.curio', 'fact.method.peers', 'fact.others', 'fact.id', 'fact.link', 'fact.measure.frase', 'fact.measure.votaram', 'fact.measure.naoVotaram', 'fact.measure.margem', 'fact.neutral', 'fact.in.old', 'fact.w.old', 'fact.sub.old', 'fact.back.old', 'fact.measure.candidato', 'fact.measure.parte', 'preview.fixture', 'preview.intro', 'preview.noResult', 'preview.noElectorate', 'preview.noValidVotes', 'preview.default'] as const satisfies readonly Key[]
 type StandardOnly = (typeof STANDARD_ONLY_KEYS)[number]
 
 const ptBR: Record<Key, string> = {
@@ -457,6 +465,13 @@ const ptBR: Record<Key, string> = {
   'fact.compare': 'Em {name}, no 2º turno, {label} teve {votos26} votos em 2026 ({pct26} dos votos válidos) e {votosOld} em {ano} ({pctOld}): variação de {diff} votos entre os dois ciclos.',
   'fact.change': '{where}, a parcela de {label} nos votos válidos foi {pct}, {pp} pontos percentuais em relação a {prev}.',
   'fact.start': '{where}, {label} teve {pct} dos votos válidos: ponto de partida da série.',
+  'fact.old': '{measure}: no cartão de uma cidade em 2018 ou 2022, este número vem dos mesmos arquivos do TSE e da mesma conta do ciclo atual. As contas dessas cidades, ciclo a ciclo, não têm página própria; esta é a regra.',
+  'fact.in.old': 'o valor da cidade, do ciclo e do turno do cartão',
+  'fact.w.old': 'Troque cada quantidade da fórmula pela da cidade, do ciclo e do turno do cartão.',
+  'fact.sub.old': 'Cartão de uma cidade em 2018 e 2022',
+  'fact.back.old': '‹ Sobre os dados',
+  'fact.measure.candidato': 'Candidato A, candidato B e outros',
+  'fact.measure.parte': 'Abstenção, brancos e nulos',
   'fact.f.race': 'votos de um dos dois candidatos − votos do outro, em valor absoluto',
   'fact.sub.report': '{name} · 2º turno de 2026',
   'fact.back.report': '‹ {name}',
@@ -597,6 +612,7 @@ const ptBRPlain: Record<Exclude<Key, StandardOnly>, string> = {
   'fact.compare': 'Em {name}, no 2º turno, {label} teve {votos26} votos em 2026 ({pct26} dos votos para candidatos) e {votosOld} em {ano} ({pctOld}). A mudança entre as duas eleições é de {diff} votos.',
   'fact.change': '{where}, {label} teve {pct} dos votos para candidatos: {pp} pontos de diferença em relação a {prev}.',
   'fact.start': '{where}, {label} teve {pct} dos votos para candidatos: é o começo da série.',
+  'fact.old': '{measure}: no cartão de uma cidade em 2018 ou 2022, este número vem dos mesmos arquivos do TSE e da mesma conta do ciclo atual. As contas dessas cidades, ciclo a ciclo, não têm página própria. Esta é a regra.',
 }
 
 /** Skeletons: a few keys each, to show the shape of a translation. Everything missing reads in Portuguese. */

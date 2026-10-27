@@ -166,3 +166,27 @@ export function raceFacts(races: readonly { nome: string; uf: string; slug: stri
   })
   return { scope: c.scope, page: c.page, title: report, subtitle: std('fact.sub.report', { name: report }), back: { path: 'relatorios/disputas-mais-apertadas/', label: std('fact.back.report', { name: report }) }, fixture, facts, rounds: [{ ano: 2026, turno: 2 }] }
 }
+
+/**
+ * The cycles before the latest have no fact page per city (35,000 pages that would triple the site): the city card's "ver cálculo" of those views opens this one
+ * page, which gives the rule of each kind of figure (the same formulas as the latest cycle, and where the numbers are read from). Every anchor of the card has its record here.
+ */
+export const OLDER_ANCHORS: Record<string, string> = {
+  frase: 'frase', votaram: 'votaram', naoVotaram: 'naoVotaram', a: 'candidato', b: 'candidato', outros: 'candidato', abstencao: 'parte', brancos: 'parte', nulos: 'parte', margem: 'margem',
+}
+export function olderCyclesFacts(fixture: boolean, olderRounds: { ano: number; turno: number }[]): FactPage {
+  const c: Ctx = { scope: 'metodo', page: 'ciclos-anteriores', fixture, checks: ['municipios', 'national'] }
+  const value = std('fact.in.old')
+  const kinds: [string, string, string, [string, string][]][] = [
+    ['frase', std('fact.measure.frase'), std('fact.f.frase'), [[std('fact.in.aptos'), 'turnout.csv · aptos'], [std('fact.in.naoVotaram'), ''], [std('fact.in.first'), 'votes.csv · votos'], [std('fact.in.second'), 'votes.csv · votos']]],
+    ['votaram', std('fact.measure.votaram'), std('fact.f.votaram'), [[std('fact.in.aptos'), 'turnout.csv · aptos'], [std('fact.in.validos'), 'turnout.csv · validos']]],
+    ['naoVotaram', std('fact.measure.naoVotaram'), std('fact.f.naoVotaram'), [[std('fact.in.aptos'), 'turnout.csv · aptos'], [std('fact.in.validos'), 'turnout.csv · validos']]],
+    ['candidato', std('fact.measure.candidato'), std('fact.f.candidate'), [[std('fact.in.votos', { name: '' }).trim(), 'votes.csv · votos'], [std('fact.in.validos'), 'turnout.csv · validos']]],
+    ['parte', std('fact.measure.parte'), std('fact.f.notVotedPart'), [[std('fact.in.brancos'), 'turnout.csv · brancos'], [std('fact.in.nulos'), 'turnout.csv · nulos + anulados_apu_sep'], [std('fact.in.naoVotaram'), '']]],
+    ['margem', std('fact.measure.margem'), `${std('fact.f.margin')}; ${std('fact.f.fits')}`, [[std('fact.in.first'), 'votes.csv · votos'], [std('fact.in.second'), 'votes.csv · votos'], [std('fact.in.naoVotaram'), '']]],
+  ]
+  const facts = kinds.map(([anchor, title, formula, inputs]) =>
+    rec(c, anchor, title, '', both('fact.old', { measure: title }), inputs.map(([label, field]) => ({ label, ...(field ? { field } : {}), value })), formula, [std('fact.w.old')], anchor === 'margem' ? { name: std(METHOD_DOCS.margin.key), href: METHOD_DOCS.margin.href } : undefined),
+  )
+  return { scope: c.scope, page: c.page, title: std('fact.sub.old'), subtitle: std('fact.sub.old'), back: { path: 'sobre-os-dados/', label: std('fact.back.old') }, fixture, facts, rounds: olderRounds }
+}

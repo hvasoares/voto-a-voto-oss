@@ -13,8 +13,8 @@ import { CHECK_KINDS, sealLines, sealProblems, type CheckKind } from './checks'
 import { loadChecks } from './checks-load'
 import { assertPublishable } from './gate'
 import { loadCityFacts } from './load'
-import { CURIOSITIES_PAGE } from './model'
-import { brasilFacts, compareFacts, raceFacts, stateCyclesFacts, type FactPage } from './other'
+import { CURIOSITIES_PAGE, LATEST_CYCLE } from './model'
+import { brasilFacts, compareFacts, olderCyclesFacts, raceFacts, stateCyclesFacts, type FactPage } from './other'
 import { closestRaces, computeReports } from '../reports/compute'
 import { loadReportsData } from '../reports/load'
 import { displayName } from '@/shared/city-search'
@@ -55,6 +55,8 @@ export function loadFactPages(): Promise<FactPage[]> {
       for (const [page, facts] of found.pages) {
         const curiosities = page === CURIOSITIES_PAGE
         const [ano, turno] = curiosities ? [0, 0] : page.split('-').map(Number)
+        // Only the latest cycle has a page per city and round; the earlier ones are explained by the one page `olderCyclesFacts` builds (the records are still gated in load.ts).
+        if (!curiosities && ano! < LATEST_CYCLE) continue
         out.push({
           scope: `${city.uf}/${city.slug}`,
           page,
@@ -67,6 +69,7 @@ export function loadFactPages(): Promise<FactPage[]> {
         })
       }
     }
+    out.push(olderCyclesFacts(fixture, CYCLES.filter((a) => a < LATEST_CYCLE).flatMap((ano) => [1, 2].map((turno) => ({ ano, turno })))))
     out.push(brasilFacts(await loadBrasil(), await isFixtureDataset()))
     const stats = await stateStats()
     for (const ciclo of COMPARE_CYCLES) out.push(compareFacts((await buildCompareRows(stats, ciclo)).slice(0, 6), ciclo, fixture))

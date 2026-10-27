@@ -18,9 +18,14 @@ The id names the place, the cycle, the round and the measure, never a number or 
 (the unit test pins it with different numbers). Measures of the city card: `frase` (the card's sentence), `votaram`, `naoVotaram`, `a`, `b`, `outros` (round 1 with more than
 two candidates), `abstencao`, `brancos`, `nulos`, `margem`. The cards of the curiosities have `td tu ml mh bl bh`.
 
-**Deviation, one page per view, not one per number.** The ticket says each number has "its own permalink page". The real dataset has 5,760 cities, about 57 records per
-view-set: one page per record is 328,502 pages (`check:facts:real`), against 35,335 pages when the records of one city, cycle and round share a page. A static build and the
-1 GB of the Pages site cannot hold the first. Each record is still its own address (fragment), its own section with its own id, and the page highlights the one the link names (`:target`).
+**Deviation 1, one page per view, not one per number.** The ticket says each number has "its own permalink page". The real dataset has 5,760 cities, about 57 records per
+view-set: one page per record is 328,502 pages (`check:facts:real`). Each record is still its own address (fragment), its own section with its own id, and the page highlights the one the link names (`:target`).
+
+**Deviation 2, only the latest cycle has a page per city and round (measured, see #62).** One page per city, cycle and round was 35,335 pages and 757 MB raw (about 21 KB each; the real site went from 1.0 GB to 1.77 GB
+raw and 64,302 pages). With only the latest cycle (2026, two rounds, plus the curiosities) it is 12,383 pages and 256 MB. The "ver cálculo" of a 2018 or 2022 view of the city card opens the one page
+`/fato/metodo/ciclos-anteriores/#<tipo>` (`olderCyclesFacts`, six records: the sentence, voted, did not vote, candidates, blank/null/abstention, margin) which gives the rule, the dataset fields and the
+formula of each kind of figure, in both registers, with the seal; it has no worked numbers of a city (its worked line says to replace each quantity by the city's). The records of the earlier views are still built
+and gated for every city (`load.ts`), so the card cannot print a figure without its record; only their pages are not written. `LATEST_CYCLE` (`model.ts`) is the one constant.
 
 ## What the card links
 

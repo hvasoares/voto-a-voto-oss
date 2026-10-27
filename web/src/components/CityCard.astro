@@ -22,7 +22,9 @@ import { viewFigures, viewSentence, viewMargin, viewArc, viewTwin, headlineId } 
 import { curiosityCard } from '@/slots/city/curiosities'
 import { loadCityFacts } from '@/lib/facts/load'
 import { factLinks } from '@/lib/facts/gate'
-import { CURIOSITIES_PAGE } from '@/lib/facts/model'
+import { CURIOSITIES_PAGE, LATEST_CYCLE } from '@/lib/facts/model'
+import { OLDER_ANCHORS } from '@/lib/facts/other'
+import { getFactPage } from '@/lib/facts/pages'
 import { defaultView, viewHref, viewId, type View } from '@/slots/city/city-view'
 
 interface Props {
@@ -62,7 +64,12 @@ const view = asked ?? defaultView(has)
 // The fact records (#61): every figure below links to its record ("ver cálculo"); factLinks fails the build for a figure with no record
 // or a record with no source or no calculation, so no number of the card is published unexplained.
 const cityFacts = (await loadCityFacts(uf, slug))!
-const linksOf = (page: string) => factLinks(cityFacts.pages.get(page) ?? [], `the city card /${uf}/${slug}/ (${page})`, base)
+// The earlier cycles have no fact page per city (it would triple the site): their links open the one page of the rules (`olderCyclesFacts`).
+const olderLinks = factLinks((await getFactPage('metodo', 'ciclos-anteriores')).facts, `the city card /${uf}/${slug}/ (earlier cycles)`, base)
+const linksOf = (page: string) => {
+  if (page !== CURIOSITIES_PAGE && Number(page.split('-')[0]) < LATEST_CYCLE) return (anchor: string) => olderLinks(OLDER_ANCHORS[anchor] ?? anchor)
+  return factLinks(cityFacts.pages.get(page) ?? [], `the city card /${uf}/${slug}/ (${page})`, base)
+}
 
 const banner = fixture ? 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS'.replace(' · ', '  ·  ') : undefined
 const title = `${name} · ${ufLabel(city.uf)}`

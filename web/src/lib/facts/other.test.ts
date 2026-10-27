@@ -4,7 +4,7 @@ import { buildCompareRows, cycleBlocksFor, stateStats } from '../compare-data'
 import { gateProblems } from './gate'
 import { closestRaces, computeReports } from '../reports/compute'
 import { loadReportsData } from '../reports/load'
-import { brasilFacts, compareFacts, raceFacts, stateCyclesFacts } from './other'
+import { brasilFacts, compareFacts, OLDER_ANCHORS, olderCyclesFacts, raceFacts, stateCyclesFacts } from './other'
 
 const by = (facts: { anchor: string }[]) => Object.fromEntries(facts.map((f) => [f.anchor, f])) as Record<string, (typeof facts)[number] & { sentences: { standard: string; plain: string }; calculation: { worked: string[] }; shown: string; inputs: { label: string; value: string }[]; checks: string[] }>
 
@@ -102,5 +102,19 @@ describe('facts of the closest-races report', async () => {
     expect(text).toContain('lula')
     expect(text).toContain('flavio')
     expect(text).not.toMatch(/vence|venceu|porque|por causa|ganhou|derrot|culpa|devido/)
+  })
+})
+
+describe('the page of the rules of the earlier cycles', () => {
+  const page = olderCyclesFacts(true, [{ ano: 2018, turno: 1 }, { ano: 2018, turno: 2 }, { ano: 2022, turno: 1 }, { ano: 2022, turno: 2 }])
+  it('has one record for every kind of figure the city card prints, through the gate', () => {
+    expect(gateProblems(page.facts)).toEqual([])
+    expect(page.facts.map((x) => x.anchor).sort()).toEqual([...new Set(Object.values(OLDER_ANCHORS))].sort())
+  })
+  it('says it is the rule, not the city\'s numbers, and keeps the same ids whatever the data', () => {
+    expect(page.facts.every((x) => x.id.startsWith('metodo/ciclos-anteriores/'))).toBe(true)
+    expect(page.facts[0]!.sentences.standard).toContain('não têm página própria')
+    expect(page.facts[0]!.sentences.plain).toContain('não têm página própria')
+    expect(page.rounds).toHaveLength(4)
   })
 })

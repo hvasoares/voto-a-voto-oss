@@ -46,8 +46,8 @@ const title = `${std('fact.title')} · ${fp.title} · Voto a Voto`
       <p class="page__subtitle">{fp.subtitle}</p>
       <div class="facts">
         {facts.map((f) => (
-          <section class="fact" id={f.anchor} aria-labelledby={`${f.anchor}-t`} data-fact={f.id}>
-            <h2 class="fact__title" id={`${f.anchor}-t`}>{f.title}</h2>
+          <section class="fact" id={f.anchor} data-fact={f.id}>
+            <h2 class="fact__title">{f.title}</h2>
             {(['standard', 'plain'] as const).map((register) => <p class="fact__sentence" data-register={register}>{f.sentences[register]}</p>)}
             <h3 class="fact__label">{std('fact.inputs')}</h3>
             <dl class="fact__inputs">

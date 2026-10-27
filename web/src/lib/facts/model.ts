@@ -9,7 +9,7 @@
  * (`rj/cidade-exemplo/2026-1/votaram`), so a link or a citation of a fact keeps meaning the same thing in every edition.
  */
 import type { CityResult, Segment } from '@/shared/city-model'
-import { formatInt, formatPct } from '@/shared/city-model'
+import { CYCLES, formatInt, formatPct } from '@/shared/city-model'
 import type { Fact as Curiosity } from '../curiosities'
 import type { CheckKind } from './checks'
 import { headline } from '../sentences/headline'
@@ -18,6 +18,8 @@ import { DEFAULT_LOCALE, message as say, REGISTERS, type Locale, type MessageKey
 
 /** The page of the facts of the curiosities card: it is the city's, not a cycle's. */
 export const CURIOSITIES_PAGE = 'comparacoes'
+/** The latest cycle: the only one with a fact page per city and round (the earlier cycles are explained on `/fato/metodo/ciclos-anteriores/`, to keep the site small). */
+export const LATEST_CYCLE = Math.max(...CYCLES)
 /** The TSE open-data portal, where the numbers come from. */
 export const TSE_URL = 'https://dadosabertos.tse.jus.br/'
 const REPO = 'https://github.com/hvasoares/voto-a-voto-oss/blob/main/'
