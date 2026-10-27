@@ -7,6 +7,9 @@
  */
 import { countLabel, rowMarkup, stateRows } from '@/slots/state/state-list'
 import { normalizeBase, withBase } from '@/paths'
+import PageDataDownload from '@/components/PageDataDownload.astro'
+import { cityDataPath, stateDataPath } from '@/lib/api'
+import { SHARD_VERSION } from 'virtual:data-shards'
 import Base from '@/layouts/Base.astro'
 import CityMapMap from '@/components/CityMapMap'
 import { loadCityMapData, semContornoOf } from '@/lib/city-map-data'
@@ -69,6 +72,7 @@ const showMap = cityMap.rows.length > 0
         <a data-link="cycles" href={href(`/tres-ciclos/${uf}/`)}>Ver os três ciclos do estado ›</a>
       </nav>
     </main>
+    <PageDataDownload href={href(stateDataPath(SHARD_VERSION, uf!))} filename={`${uf}.json`} />
     <footer class="source-footer" data-component="source-footer">{fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a></footer>
   </div>
   <script>

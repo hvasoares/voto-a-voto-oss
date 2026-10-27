@@ -6,6 +6,9 @@
  * city's own shard; the card script switches panels client-side and the page then loads nothing — no /data/ request.
  */
 import { normalizeBase, withBase } from '@/paths'
+import PageDataDownload from '@/components/PageDataDownload.astro'
+import { cityDataPath, stateDataPath } from '@/lib/api'
+import { SHARD_VERSION } from 'virtual:data-shards'
 import { REGISTER_KEY } from '@/lib/sentences/register-store'
 import { loadCityShard, datasetFixture } from '@/lib/shard-files'
 import { cityShardResult } from '@/lib/city-shard'
@@ -79,6 +82,7 @@ const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: T
       {overseas ? '' : <a href={href(`/${uf}/`)}>Ver o estado ›</a>}
     </nav>
   </main>
+  {!backdrop && <PageDataDownload href={href(cityDataPath(SHARD_VERSION, uf, slug))} filename={`${uf}-${slug}.json`} />}
   <footer class="source-footer" data-component="source-footer">
     {footer}<a class="source-footer__about" href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>

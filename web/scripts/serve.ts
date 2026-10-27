@@ -18,7 +18,8 @@ export function startServer(root = resolve(process.env.OUT_DIR ?? 'dist'), port 
     const url = new URL(req.url ?? '/', 'http://x')
     const send = async (file: string, status: number) => {
       const body = await readFile(file)
-      res.writeHead(status, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream' })
+      // GitHub Pages answers every file with this header; the static API (ticket #64) relies on it.
+      res.writeHead(status, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream', 'access-control-allow-origin': '*' })
       res.end(body)
     }
     const notFound = () => send(join(root, '404.html'), 404)

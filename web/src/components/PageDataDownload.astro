@@ -1,0 +1,16 @@
+---
+/**
+ * "Baixar os dados desta página" (ticket #64): on desktop, a link in the footer of a data page to exactly the file the
+ * page was drawn from (the same shard, or the page's own data file), downloaded as it is. Hidden below 1024 px by an
+ * inline media rule, so the phone downloads no new CSS or JS and the page loads no data for it; the link is only an address.
+ */
+interface Props {
+  href: string
+  filename: string
+  /** `row`: sits at the right end of a row of links (the frame of /brasil/); `footer` (default): its own line above the page footer. */
+  placement?: 'row' | 'footer'
+}
+const { href, filename, placement = 'footer' } = Astro.props
+---
+<style is:inline>.page-data{display:none}@media (min-width:1024px){.page-data{display:block;text-align:right;font-weight:700}.page-data--footer{margin:8px 20px 0}}</style>
+<p class={`page-data page-data--${placement}`} data-component="page-data"><a href={href} download={filename} data-page-data-download>Baixar os dados desta página ›</a></p>

@@ -7,6 +7,9 @@
  */
 import Base from '@/layouts/Base.astro'
 import { normalizeBase, withBase } from '@/paths'
+import PageDataDownload from '@/components/PageDataDownload.astro'
+import { cityDataPath, stateDataPath } from '@/lib/api'
+import { SHARD_VERSION } from 'virtual:data-shards'
 import { loadCityRoutes } from '@/lib/city-routes'
 import { datasetFixture, loadCityShard } from '@/lib/shard-files'
 import { cityShardResult } from '@/lib/city-shard'
@@ -55,6 +58,7 @@ const other = DEFAULT_TURNO === 2 ? 1 : 2
       <a class="cycles-switch" href={`${here}?turno=${other}`} data-switch data-base={here} data-turno={other}>Ver o {other}º turno ›</a>
       <nav class="cycles-links" aria-label="Mais sobre a cidade"><a href={href(`/${uf}/${slug}/`)}>Cartão da cidade</a></nav>
     </main>
+    <PageDataDownload href={href(cityDataPath(SHARD_VERSION, uf!, slug!))} filename={`${uf}-${slug}.json`} />
     <footer class="source-footer" data-component="source-footer">
       Fonte: TSE, dados finais<a class="source-footer__about" href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
     </footer>

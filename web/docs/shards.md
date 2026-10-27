@@ -83,3 +83,12 @@ the budgets need a fresh number.
 
 The dataset changes on its own schedule: these numbers were measured in October 2026. Every shard
 is rebuilt on every build, so the sizes cannot drift from the dataset without a build noticing.
+## Public static API (issue #64)
+
+The shards above are the API: `/data/v<fingerprint>/…` is served as it is, with open CORS (GitHub Pages sends
+`Access-Control-Allow-Origin: *`; `scripts/serve.ts` does the same), no analytics and no server. `api/latest.json` is the stable
+pointer (edition, fingerprint, absolute endpoint addresses) because the directory name changes with the data; every edition's
+`edicoes/<id>/edition.json` never changes. The reference page is `/api/`. Public subset: city, state, totals, search and centroids;
+`peers.json` is a build input and is not documented as API. Desktop pages (city card, three cycles, state, /brasil/) link
+"Baixar os dados desta página" to the file the page is drawn from: the city or state shard itself, or `/brasil/dados.json`, the
+`BrasilView` the page renders, serialized as it is. The link is hidden below 1024 px by an inline media rule (no new CSS or JS for the phone).
