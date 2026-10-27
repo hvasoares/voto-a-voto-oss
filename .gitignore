@@ -13,3 +13,10 @@ wheels/
 .cache/
 outbox/
 .DS_Store
+
+# Local-only working state — never publish
+.claude/
+.scratch/
+.mcp.json
+node_modules/
+thoughts/

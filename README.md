@@ -12,7 +12,10 @@ Covers the 2018, 2022 and 2026 presidential elections at municipality level, wit
 - `src/voto_a_voto/dataset.py`, `reconcile.py`, `manifest.py`, `reference.py` assemble the tables, check them against the TSE's own totals and describe where they came from.
 - `src/voto_a_voto/cli.py` is the `voto-data` command (`build`, `check`).
 - `scripts/munzona_to_municipios.py` is the old 2018/2022 aggregation script, kept until the new pipeline replaces it.
-- `thoughts/` holds design and research notes.
+
+## Deploy
+
+`make deploy` pushes `main` to `origin` — the public `voto-a-voto-oss` repository — where GitHub Actions builds the site from the committed dataset and publishes it to GitHub Pages.
 
 ## `make data`
 

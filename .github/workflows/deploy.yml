@@ -32,14 +32,17 @@ jobs:
       - name: Build static site
         run: npm run build
         env:
-          # Project site at https://<user>.github.io/voto-a-voto/. Use "/" with a custom domain.
-          SITE_BASE: /voto-a-voto/
+          # Project site at https://<user>.github.io/voto-a-voto-oss/. Use "/" with a custom domain.
+          SITE_BASE: /voto-a-voto-oss/
           # The committed TSE dataset (5,570 cities) — the walking skeleton's real pages.
           DATA_DIR: ../data
           # Ticket #20 consent-first GA4: Astro inlines only PUBLIC_-prefixed vars into client
           # bundles; empty/unset keeps analytics a strict no-op.
           PUBLIC_GA_MEASUREMENT_ID: ${{ vars.PUBLIC_GA_MEASUREMENT_ID }}
       - uses: actions/configure-pages@v5
+        with:
+          # Create the Pages site on first deploy instead of failing if it does not exist yet.
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: web/dist
