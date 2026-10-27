@@ -48,8 +48,29 @@
     "Dados fictícios de teste, no mesmo formato dos dados reais. Não são resultados de eleição."
   ],
   "publication": {
-    "checks": [],
-    "mode": "manual"
+    "checks": [
+      {
+        "detail": "todos os resultados de 2026 estão marcados como finais pelo TSE",
+        "name": "Dados finais, não ao vivo",
+        "ok": true
+      },
+      {
+        "detail": "5 tabelas com as colunas esperadas e o manifesto completo",
+        "name": "Esquema das tabelas",
+        "ok": true
+      },
+      {
+        "detail": "os totais de 2018, 2022 e 2026, com o exterior, batem com os do TSE",
+        "name": "Totais nacionais iguais aos do TSE",
+        "ok": true
+      },
+      {
+        "detail": "duas montagens dos mesmos arquivos dão bytes idênticos",
+        "name": "Build determinístico",
+        "ok": true
+      }
+    ],
+    "mode": "automatic"
   },
   "schema_version": 1,
   "totals": {

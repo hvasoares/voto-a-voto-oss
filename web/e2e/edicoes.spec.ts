@@ -31,6 +31,9 @@ test.describe('editions', () => {
     await page.goto(base + 'edicoes/2026-10-20/')
     await expect(page.locator('h1')).toHaveText('Edição de 20/10/2026')
     await expect(page.locator('#main')).toContainText('mostram hoje outra edição')
+    await expect(page.locator('[data-publication]')).toHaveAttribute('data-publication', 'automatic')
+    await expect(page.locator('[data-component="edition-checks"] li')).toHaveCount(4)
+    await expect(page.locator('[data-component="edition-checks"]')).toContainText('Passou: Totais nacionais iguais aos do TSE')
   })
 
   test('the list shows the newest edition first and links the feed', async ({ page }) => {
@@ -48,6 +51,7 @@ test.describe('editions', () => {
     const xml = await feed.text()
     expect(xml.indexOf('2026-10-26')).toBeLessThan(xml.indexOf('2026-10-20'))
     expect(xml).not.toMatch(/<script|google/i)
+    expect(xml).toContain('passou: Totais nacionais iguais aos do TSE')  // the automatic publication records its checks
   })
 
   test('the data page explains what an edition is and how to cite one', async ({ page }) => {
@@ -57,6 +61,15 @@ test.describe('editions', () => {
     await expect(section).toContainText('nunca muda depois de publicado')
     await expect(section.locator('[data-current-edition]')).toHaveAttribute('href', base + 'edicoes/2026-10-26/')
     await expect(section.locator('[data-component="citation"]')).toContainText('edição de 26/10/2026')
+  })
+
+  test('the data page states the Final, não ao vivo rule in plain words', async ({ page }) => {
+    await page.goto(base + 'sobre-os-dados/')
+    const rule = page.locator('[data-component="final-rule"]')
+    await expect(page.locator('#final-nao-ao-vivo')).toHaveText('Final, não ao vivo')
+    await expect(rule).toContainText('não apuração ao vivo')
+    await expect(rule).toContainText('Dados parciais nunca são publicados')
+    await expect(rule).toContainText('nada é publicado')
   })
 
   test('opening an edition makes no request beyond the site', async ({ page }) => {

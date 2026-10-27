@@ -11,13 +11,33 @@ Covers the 2018, 2022 and 2026 presidential elections at municipality level, wit
 - `src/voto_a_voto/munzona.py`, `cities.py` are pure parsers (open-data CSVs; city index, slugs, regions).
 - `src/voto_a_voto/dataset.py`, `reconcile.py`, `manifest.py`, `reference.py` assemble the tables, check them against the TSE's own totals and describe where they came from.
 - `src/voto_a_voto/centroids.py` fetches the municipality centroids IBGE publishes (27 small state files into `.cache/ibge/`, once) for the site's "Usar minha localização" (ticket #40).
-- `src/voto_a_voto/cli.py` is the `voto-data` command (`build`, `check`).
+- `src/voto_a_voto/editions.py`, `publishing.py` freeze `data/` as dated, immutable editions in `editions/` and publish them automatically when the TSE data is final (tickets #59, #60).
+- `src/voto_a_voto/cli.py` is the `voto-data` command (`build`, `check`, `publish-edition`, `rollback-edition`, `publish-auto`).
 - `src/voto_a_voto/nonvoters.py` is the measure of ticket #24 (`make nonvoters`, note in `docs/nonvoters-vs-margin.md`): in what share of cities the people who did not vote outnumber the winning margin.
 - `scripts/munzona_to_municipios.py` is the old 2018/2022 aggregation script, kept until the new pipeline replaces it.
 
 ## Deploy
 
 `make deploy` pushes `main` to `origin` — the public `voto-a-voto-oss` repository — where GitHub Actions builds the site from the committed dataset and publishes it to GitHub Pages.
+
+## Editions (`editions/`)
+
+An edition is a frozen, dated copy of `data/`: `editions/<id>/data/` (the six files, byte for byte) and `editions/<id>/edition.json` (id, date, fingerprint, counts, notes, the size and SHA-256 of every file and how it was published). The id is the newest collection date in the manifest (`2026-10-27`; `2026-10-27-2` for a different dataset published the same day). The site serves each one at `/edicoes/<id>/`, lists them at `/edicoes/` and in the Atom feed `/edicoes/feed.atom`, and every page footer names the edition it shows (the one whose fingerprint is the `data/` being built; the build fails if there is none).
+
+```
+make publish-edition           # after `make data`: freezes data/ as a new edition (DATE=YYYY-MM-DD to choose the date); nothing happens if data/ already is one
+make data-check                # also checks every edition against its edition.json and that data/ is one of them
+```
+
+A published edition is never rewritten: publishing creates a new directory, an existing id is an error, `make data-check` fails if any frozen file or `edition.json` changes, and the site copies each `edition.json` unchanged.
+
+### Automatic publishing and the "Final, não ao vivo" rule
+
+`voto-data publish-auto` (run every 6 hours by `.github/workflows/publish-edition.yml`, or by hand) builds the data, then publishes a new edition only if all of these pass: the 2026 results are marked final by the TSE (partial data is never published), the tables have the committed schema, the national totals including overseas equal the TSE's own files, and a second build from the cache is byte-identical. The checks are stored in the edition (`publication.checks`) and shown on its page and in the feed. If any check fails nothing is published, `data/` and every edition stay as they were, the command exits 1 and `editions/status.json` records the failed check and why. When the data is the same as an existing edition, nothing happens.
+
+### Rollback
+
+`make rollback-edition` restores `data/` to the edition before the one `data/` shows (it copies `editions/<previous>/data/*` back; no edition is touched). Review the diff, commit `data/` and push: the site then shows the previous edition, and the newer edition stays published at its own address and in the feed. `publish-auto` does not undo a rollback: while the source data equals an existing edition it leaves `data/` alone. To go forward again, restore the newer `data/` with `git checkout <commit> -- data` or publish a corrected build.
 
 ## `make data`
 

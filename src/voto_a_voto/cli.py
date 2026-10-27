@@ -4,6 +4,7 @@
     voto-data check [--editions-dir editions]
     voto-data publish-edition [--date YYYY-MM-DD]
     voto-data rollback-edition
+    voto-data publish-auto [--offline]
 
 ``build`` fetches only what is missing or changed, reconciles everything against the TSE's own totals and writes
 ``data/`` last, so a failed run never leaves a half-written dataset. ``check`` re-validates ``data/`` with no network.
@@ -241,6 +242,11 @@ def main(argv=None, services: Services | None = None) -> int:
     publish_parser.add_argument("--data-dir", default="data")
     publish_parser.add_argument("--editions-dir", default="editions")
     publish_parser.add_argument("--date", default=None, help="data da edição (padrão: a coleta mais recente do manifesto)")
+    auto_parser = commands.add_parser("publish-auto", help="monta os dados, confere e, só se tudo passar e for final, publica uma nova edição (ticket #60)")
+    auto_parser.add_argument("--offline", action="store_true", help="não usa a rede; falha se algo não estiver no cache")
+    auto_parser.add_argument("--data-dir", default="data")
+    auto_parser.add_argument("--cache-dir", default=".cache")
+    auto_parser.add_argument("--editions-dir", default="editions")
     rollback_parser = commands.add_parser("rollback-edition", help="restaura data/ para a edição anterior à que ele mostra; nenhuma edição muda")
     rollback_parser.add_argument("--data-dir", default="data")
     rollback_parser.add_argument("--editions-dir", default="editions")
@@ -259,6 +265,19 @@ def main(argv=None, services: Services | None = None) -> int:
             print(f"publish-edition FAILED: {error}", file=sys.stderr)
             return 1
         print(f"{args.editions_dir}/{published.id}: {'published' if published.created else 'already published, nothing written'}")
+        return 0
+
+    if args.command == "publish-auto":
+        from voto_a_voto import publishing
+
+        options = BuildOptions(ALL_CYCLES, args.offline, False, Path(args.data_dir), Path(args.cache_dir))
+        outcome = publishing.run_gate(publishing.options_builder(options, services), options.data_dir, Path(args.editions_dir), options.cache_dir)
+        for step in outcome.checks:
+            print(f"{'ok  ' if step.ok else 'FAIL'} {step.name}: {step.detail}")
+        if outcome.result == "rejected":
+            print(f"publish-auto REJECTED: nothing was published; the reason is in {args.editions_dir}/status.json", file=sys.stderr)
+            return 1
+        print("publish-auto: no new data, nothing to publish" if outcome.result == "unchanged" else f"publish-auto: edition {outcome.edition} published")
         return 0
 
     if args.command == "rollback-edition":

@@ -1,0 +1,55 @@
+name: publish-edition
+# Ticket #60: when the TSE has finalized new data, a validated build publishes itself as a new edition (editions/<id>/) with no
+# human step. `voto-data publish-auto` publishes nothing unless the 2026 results are final, the tables have the committed schema,
+# the national totals equal the TSE's and two builds give the same bytes; a failure leaves the reason in editions/status.json.
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: publish-edition
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/cache@v4
+        with:
+          path: .cache
+          key: tse-cache-${{ github.run_id }}
+          restore-keys: tse-cache-
+      - name: Build, check and publish when everything passes
+        id: gate
+        run: uv run voto-data publish-auto
+        continue-on-error: true
+      - name: Commit the new edition, or the reason it was not published
+        id: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data editions
+          if git diff --cached --quiet; then
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "data: automatic edition at TSE finalization (publish-auto)"
+            git push origin HEAD:main
+            echo "pushed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Deploy the site (a push made with GITHUB_TOKEN does not start deploy-pages by itself)
+        if: steps.commit.outputs.pushed == 'true' && steps.gate.outcome == 'success'
+        run: gh workflow run deploy.yml --ref main
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Fail the run when the gate rejected the build (the reason is in editions/status.json)
+        if: steps.gate.outcome == 'failure'
+        run: |
+          cat editions/status.json
+          exit 1
