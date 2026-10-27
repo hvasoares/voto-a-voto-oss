@@ -206,8 +206,8 @@ export default function CityMapMap({ data, base, geoUrl, ufNome }: CityMapProps)
         {(['lista', 'mapa'] as const).map((v) => (
           <a
             key={v}
-            aria-pressed={vista === v}
-            className={'grid min-h-9 place-items-center rounded-md px-3 text-[13px]' + (vista === v ? ' bg-primary font-bold text-primary-foreground' : ' cursor-pointer text-muted-foreground')}
+            aria-current={vista === v ? 'true' : undefined}
+            className={'grid min-h-11 place-items-center rounded-md px-3 text-[13px]' + (vista === v ? ' bg-primary font-bold text-primary-foreground' : ' cursor-pointer text-muted-foreground')}
             href={v === 'mapa' ? '?vista=mapa' : '?'}
             onClick={(e) => {
               e.preventDefault()
