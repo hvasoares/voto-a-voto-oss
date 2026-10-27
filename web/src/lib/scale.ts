@@ -56,6 +56,11 @@ export function swingLegend(swings: readonly number[]): { bins: DivBin[]; edges:
   return { bins: [...bins, 'zero', 'pos1', 'pos2', 'pos3'], edges, negativeNote: hasNegative ? null : 'Sem estados com variação negativa' }
 }
 
+/** Dark ink on the light steps, paper on the dark ones (contrast, like the frames). */
+export function fgOf(bin: DivBin): 'var(--foreground)' | 'var(--background)' {
+  return bin === 'zero' || bin === 'neg1' || bin === 'pos1' ? 'var(--foreground)' : 'var(--background)'
+}
+
 /**
  * Tile edge (px) scaled by valid votes, between MIN (usable tap target at 390px) and MAX.
  * sqrt keeps the area feeling proportional without letting the smallest tile sink below MIN.
