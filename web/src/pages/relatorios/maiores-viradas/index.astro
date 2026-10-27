@@ -1,0 +1,87 @@
+---
+// "Maiores viradas, cidades de 100 mil+ votos" (ticket #13): the same ranked-list pattern as
+// /relatorios/cidades-que-viraram/ (ticket #12), under the bigger minimum-size rule. Only the swing
+// of the 100 mil+ cities toward the first candidate is listed; the ones that moved away are a
+// computed count the lead labels (a ranking of "biggest swing toward the other side" only lists
+// the cities that moved least — runoff highlights note). Fixture state renders the empty list.
+import Base from '@/layouts/Base.astro'
+import { MIN_BIG_SWING_VALIDOS, computeReports, rankedBigSwings } from '@/lib/reports/compute'
+import { formatInt, formatSignedPp } from '@/lib/reports/format'
+import { loadReportsData } from '@/lib/reports/load'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { displayName, ufLabel } from '@site/shared/city-search'
+import { normalizeBase, withBase } from '@site/paths'
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const input = await loadReportsData()
+const { margins, pair } = computeReports(input)
+const lula = displayName(pair.nomePrimeiro)
+const flavio = displayName(pair.nomeSegundo)
+const { toward, awayCount } = rankedBigSwings(margins)
+const minMilhares = `${formatInt(MIN_BIG_SWING_VALIDOS / 1000)} mil`
+const share = cn(buttonVariants({ variant: 'default' }), 'min-h-11 w-full rounded-md text-body font-bold leading-[18px] text-primary-foreground')
+const badge = 'flex size-8 flex-none items-center justify-center rounded-full bg-primary pb-px text-[13px] font-bold leading-none text-primary-foreground'
+const awayLine =
+  awayCount > 0 ? `${formatInt(awayCount)} dessas cidades viraram no sentido contrário (${flavio}) e não estão na lista` : `Nenhuma dessas cidades virou no sentido contrário (${flavio})`
+/** Where the 2º turno ended: still lost, won or tied (every row's margin2 carries its sign). */
+const outcome = (margin2: number): string => (margin2 > 0 ? `venceu no 2º turno` : margin2 < 0 ? `perdeu no 2º turno` : `empatou no 2º turno`)
+---
+
+<Base title="Maiores viradas, cidades de 100 mil+ votos · Voto a Voto">
+  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pb-2 pt-16" id="main" data-page="relatorios" data-report="maiores-viradas">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px]" href={href('/relatorios/')}>‹ Relatórios</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">Maiores viradas, cidades de 100 mil+ votos</h1>
+    <p class="mt-2 text-body leading-[21px]">
+      As viradas mais fortes para {lula}, entre as cidades com {minMilhares}+ votos válidos — cidades grandes, cuja
+      variação pesa mais. Virada = a variação da margem entre o 1º e o 2º turno de 2026, em pontos percentuais (pp).
+    </p>
+    <p class="mt-1 text-small leading-[15px] text-muted-foreground" data-sized>
+      {formatInt(toward.length)} cidades no filtro · {awayLine}. Margem = % de {lula} menos % de {flavio} dos votos válidos.
+    </p>
+
+    <section class="mt-2" aria-label="Maiores viradas">
+      <table class="w-full border-collapse text-left" data-swing-table>
+        <caption class="sr-only">Virada (pp), margem no 1º e no 2º turno e votos válidos de cada cidade</caption>
+        <tbody>
+          {toward.map((r, i) => (
+            <tr class="border-t border-border" data-swing={`${r.nome.toLowerCase()}-${r.uf}`}>
+              <td class="w-12 py-3.5 align-middle">
+                <span class={badge}>{i + 1}</span>
+              </td>
+              <td class="py-3.5 align-middle">
+                <a class="block min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
+                  <span class="block text-body font-bold leading-[18px] text-foreground">{displayName(r.nome)}/{ufLabel(r.uf)}</span>
+                  <span class="mt-[6px] block text-small leading-[15px] text-muted-foreground">
+                    Virada {formatSignedPp(r.swing)} · Margem {formatSignedPp(r.margin1)} → {formatSignedPp(r.margin2)} ({outcome(r.margin2)}) · {formatInt(r.validos2)} votos válidos
+                  </span>
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {toward.length === 0 && <p class="mt-2 text-small text-muted-foreground" data-empty>Nenhuma cidade de {minMilhares}+ votos válidos.</p>}
+    </section>
+
+    <p class="mt-2 rounded-lg bg-secondary px-3 py-3 text-center text-small font-medium leading-[15px] text-secondary-foreground" data-notice>
+      <svg class="mr-1 inline-block -translate-y-px" viewBox="0 0 12 13" width="10" height="11" aria-hidden="true" focusable="false">
+        <circle cx="6" cy="6.5" r="5.8" fill="none" stroke="currentColor" stroke-width="1.4" />
+        <text x="6" y="10.4" text-anchor="middle" font-size="9.5" fill="currentColor" font-family="Georgia, serif">i</text>
+      </svg>
+      Compare por pontos percentuais, não por votos absolutos
+    </p>
+
+    <div class="mt-6 flex min-h-11 flex-col gap-2" data-share>
+      <button class={share} type="button" data-share-report>Compartilhar</button>
+      <span class="text-center text-small text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
+    </div>
+  </main>
+  <footer class="mx-auto mt-2 w-full max-w-[430px] border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+    Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+  </footer>
+  <script>
+    import '@/scripts/report-analytics'
+  </script>
+</Base>
