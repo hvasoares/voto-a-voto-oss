@@ -85,3 +85,6 @@ export async function hoverState(page: Page, uf: string) {
   const box = (await mapFrame(page).locator(`[data-map-uf="${uf}"] text`).boundingBox())!
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
 }
+
+/** "Mapa por estado" at 1024 px and up is the document of a lazy iframe (#54). */
+export const mapaFrame = (page: Page) => page.frameLocator('[data-mapa-frame]')

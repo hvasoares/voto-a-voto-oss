@@ -18,6 +18,7 @@ import { formatInt } from '@/shared/city-model'
 import { UF_TILES } from '@/slots/home/uf-grid'
 import { getAnalytics } from '@/analytics'
 import { formatSwing } from '@/lib/margins'
+import { panelLines } from '@/lib/state-map-panel'
 import { ufFullLabel, UF_NAMES } from '@/lib/uf-names'
 import type { StateMapData, StateMapRow } from '@/lib/state-map-data'
 import { BIN_COLOR, fgOf, marginBin, marginLegend, swingBin, swingLegend, tileEdge, type DivBin } from '@/lib/scale'
@@ -278,18 +279,11 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
 function SelectedDetails({ kind, data, uf }: { kind: MapKind; data: StateMapData; uf: string }) {
   const row = data.rows.find((r) => r.uf === uf)
   if (!row) return null
+  const [first, second] = panelLines(kind, data, row)
   return (
     <>
-      <p className="text-body leading-[18px]">Votos válidos (2º turno): {fmtInt(row.validos2)}</p>
-      {kind === 'margin' ? (
-        <p className="mt-1 text-body leading-[18px]">
-          Margem ({data.ladoANomeCompleto} − {data.ladoBNomeCompleto}): {fmt(row.margin2)} pp. Na eleição anterior: {fmt(row.margin1)} pp.
-        </p>
-      ) : (
-        <p className="mt-1 text-body leading-[18px]">
-          A margem de {data.ladoANomeCompleto} sobre {data.ladoBNomeCompleto} era de {fmt(row.margin1)} pp e passou para {fmt(row.margin2)} pp. Variação: {fmt(row.swing)} pp.
-        </p>
-      )}
+      <p className="text-body leading-[18px]">{first}</p>
+      <p className="mt-1 text-body leading-[18px]">{second}</p>
     </>
   )
 }

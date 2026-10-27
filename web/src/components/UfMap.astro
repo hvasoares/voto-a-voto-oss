@@ -2,11 +2,13 @@
 /**
  * The SVG state map of Brazil (ticket #53; reused by "Mapa por estado", #54), pre-rendered at build time as static inline SVG:
  * it needs no JavaScript to draw, and every state that has a page is a link with a title and a text label (its abbreviation, or
- * the value #54 prints). Hover and focus are CSS only (screens.css, `.uf-map`). Geometry: src/lib/uf-map.ts over the committed
- * file data/geo/uf-outlines.json. A state the dataset has no page for is drawn, not linked (like the inert tiles).
+ * the value #54 prints). Hover and focus are CSS only (uf-map.css); #54's panel script only reads the `data-*` of the links.
+ * Geometry: src/lib/uf-map.ts over the committed file data/geo/uf-outlines.json. A state the dataset has no page for is drawn,
+ * not linked (like the inert tiles).
  */
 import { loadUfMap } from '@/lib/uf-map'
 import { UF_NOME, ufFullLabel } from '@/lib/uf-names'
+import type { MapCell } from '@/lib/state-map-panel'
 import { withBase } from '@/paths'
 
 interface Props {
@@ -17,8 +19,12 @@ interface Props {
   label?: string
   /** Link target: `_top` inside a fragment document (an SVG <a> does not take the <base target>). */
   target?: string
+  /** #54: colour, printed value and panel text of each state. Without it the map is neutral and prints the abbreviations. */
+  cells?: Record<string, MapCell>
+  /** #54: the state the panel shows first. */
+  selected?: string
 }
-const { available, base, label = 'Mapa do Brasil por estado', target } = Astro.props
+const { available, base, label = 'Mapa do Brasil por estado', target, cells, selected } = Astro.props
 const map = loadUfMap()
 const KEY = 15
 ---
@@ -26,15 +32,22 @@ const KEY = 15
   {map.shapes.map((s) => {
     const linked = available.has(s.uf)
     const c = s.callout
+    const cell = cells?.[s.uf]
+    const fill = cell ? `fill:${cell.fill}` : undefined
     const inner = (
       <>
         <title>{UF_NOME[s.uf]}</title>
-        <path d={s.d} />
+        <path d={s.d} style={fill} />
         {c ? (
           <>
             <line x1={c.lineFrom[0]} y1={c.lineFrom[1]} x2={c.lineTo[0]} y2={c.lineTo[1]} />
-            <rect x={c.keyX} y={c.keyY} width={KEY} height={KEY} />
-            <text x={c.textX} y={c.textY}>{s.uf.toUpperCase()}</text>
+            <rect x={c.keyX} y={c.keyY} width={KEY} height={KEY} style={fill} />
+            <text x={c.textX} y={c.textY}>{cell ? `${s.uf.toUpperCase()} ${cell.text}` : s.uf.toUpperCase()}</text>
+          </>
+        ) : cell ? (
+          <>
+            <text x={s.labelX} y={s.labelY - 1} text-anchor="middle" style={`fill:${cell.fg}`}>{s.uf.toUpperCase()}</text>
+            <text class="uf-map__value" x={s.labelX} y={s.labelY + 12} text-anchor="middle" style={`fill:${cell.fg}`}>{cell.text}</text>
           </>
         ) : (
           <text x={s.labelX} y={s.labelY + 4} text-anchor="middle">{s.uf.toUpperCase()}</text>
@@ -42,7 +55,19 @@ const KEY = 15
       </>
     )
     return linked ? (
-      <a href={withBase(base, `/${s.uf}/`)} target={target} data-map-uf={s.uf} aria-label={ufFullLabel(s.uf)}>{inner}</a>
+      <a
+        href={withBase(base, `/${s.uf}/`)}
+        target={target}
+        data-map-uf={s.uf}
+        aria-label={cell?.label ?? ufFullLabel(s.uf)}
+        data-selected={selected === s.uf ? 'true' : undefined}
+        data-big={cell?.big}
+        data-name={cell?.name}
+        data-line1={cell?.lines[0]}
+        data-line2={cell?.lines[1]}
+        data-x={s.labelX}
+        data-y={s.labelY}
+      >{inner}</a>
     ) : (
       <g data-map-uf={s.uf} aria-disabled="true">{inner}</g>
     )

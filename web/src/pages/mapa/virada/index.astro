@@ -14,15 +14,23 @@ const data = await loadStateMapData()
 ---
 
 <Base title="Mapa por estado: virada · Voto a Voto">
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16" id="main" data-page="mapa-virada">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px]" href={href('/')}>‹ Início</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">Mapa por estado: virada</h1>
-    <p class="mt-1 font-serif text-lead leading-[22px] wrap-anywhere">Variação da margem entre o 1º e o 2º turno de {data.ano}, em pontos percentuais (pp), por estado.</p>
+  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16 md:max-w-[720px] lg:grid lg:max-w-[1240px] lg:pt-8" id="main" data-page="mapa-virada">
+    <div class="lg:relative lg:z-10 lg:col-start-1 lg:row-start-1 lg:w-[610px] lg:self-start">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('/')}>‹ Início</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">Mapa por estado: virada</h1>
+    <p class="mt-1 font-serif text-lead leading-[22px] wrap-anywhere lg:text-[16px] lg:text-muted-foreground">Variação da margem entre o 1º e o 2º turno de {data.ano}, em pontos percentuais (pp), por estado.</p>
+    </div>
+    {/* The phone layout (tile mosaic, #11): not drawn from 1024 px up, where the map document below takes its place (#54). */}
+    <div class="lg:hidden">
     <StateMapMap client:interaction kind="swing" base={base} data={data} />
     <noscript><p class="mt-1.5 text-small leading-[14px] text-muted-foreground">A vista de mapa precisa de JavaScript. O mosaico acima funciona sem.</p></noscript>
     <p class="mt-1.5 text-small leading-[14px]" data-island-failed hidden>O mapa da virada não está disponível agora. Escolha um estado na página inicial.</p>
-  </main>
-  <footer class="mx-5 mt-2 border-t border-border pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+  
+    </div>
+    {/* 1024 px and up: the SVG map, scale, panel and table as the document of a lazy iframe; a phone never requests it (docs/checkpoints/issue-53.md). */}
+    <iframe class="hidden h-[760px] w-full border-0 lg:col-start-1 lg:row-start-1 lg:block" src={href('/fragmentos/mapa-por-estado/virada/')} title="Mapa por estado: o mapa, a escala, o estado selecionado e a tabela" loading="lazy" data-mapa-frame></iframe>
+</main>
+  <footer class="mx-5 mt-2 border-t border-border pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary md:mx-auto md:w-full md:max-w-[680px] lg:mt-6 lg:max-w-[1200px] lg:border-t-0 lg:text-left" data-component="source-footer">
     Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>
   <script>

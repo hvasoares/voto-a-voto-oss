@@ -8,3 +8,5 @@
 .uf-map a:hover path, .uf-map a:hover rect { fill: var(--c-rule); }
 .uf-map a:focus-visible { outline: none; }
 .uf-map a:focus-visible path, .uf-map a:focus-visible rect { stroke: var(--c-accent); stroke-width: 2.5; fill: var(--c-rule); }
+.uf-map .uf-map__value { font-weight: 400; font-size: 11px; }
+.uf-map a[data-selected="true"] path { stroke: var(--foreground); stroke-width: 2.5; }

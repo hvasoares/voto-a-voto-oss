@@ -1,0 +1,136 @@
+---
+/**
+ * The desktop body of "Mapa por estado" and "Mapa por estado: virada" (#54), as the document of a lazy iframe that only exists from
+ * 1024 px up (src/pages/mapa/*.astro; the reason is the phone's HTML weight, see docs/checkpoints/issue-53.md). Everything is
+ * pre-rendered: the tabs (links between the two routes), the SVG map coloured at build time from the dataset's own rows (each state
+ * prints its value on the map or its callout), the numeric scale, the selected-state panel at its default state, and the table
+ * alternative. The one script (inline, ~1 KB, so no request of its own) lets hover and keyboard focus fill the panel; without it the
+ * panel keeps its default state and every state link still works.
+ */
+import UfMap from '@/components/UfMap.astro'
+import { loadStateMapData } from '@/lib/state-map-data'
+import { defaultUf, mapCells, valueOf } from '@/lib/state-map-panel'
+import type { MapKind } from '@/lib/state-map-panel'
+import { BIN_COLOR, marginLegend, swingLegend } from '@/lib/scale'
+import { formatInt } from '@/shared/city-model'
+import { normalizeBase, withBase } from '@/paths'
+import { ufFullLabel } from '@/lib/uf-names'
+import { formatSwing } from '@/lib/margins'
+
+interface Props {
+  kind: MapKind
+}
+const { kind } = Astro.props
+const base = normalizeBase(import.meta.env.BASE_URL)
+const data = await loadStateMapData()
+const cells = mapCells(kind, data)
+const available = new Set(data.rows.map((r) => r.uf))
+const selected = defaultUf(data.rows)
+const first = cells[selected]
+const legend = kind === 'margin' ? marginLegend() : swingLegend(data.rows.map((r) => r.swing))
+const sorted = [...data.rows].sort((a, b) => b.validos2 - a.validos2)
+const hint = 'Passe o mouse ou use as setas para trocar de estado. Cada valor também está impresso no mapa, então a cor nunca é a única pista.'
+---
+<div class="mf" data-kind={kind}>
+  <div class="mf__grid">
+    <div class="mf__left">
+    {/* The page's own heading sits over the top of this document (src/pages/mapa/): the tabs start below it (150 px, see map-fragment.css). */}
+    <nav class="mf__tabs" aria-label="Margem ou virada">
+      <a href={withBase(base, '/mapa/')} target="_top" aria-current={kind === 'margin' ? 'page' : undefined}>Margem (2º turno)</a>
+      <a href={withBase(base, '/mapa/virada/')} target="_top" aria-current={kind === 'swing' ? 'page' : undefined}>Virada (1º→2º)</a>
+    </nav>
+    <UfMap
+      available={available}
+      base={base}
+      target="_top"
+      cells={cells}
+      selected={selected}
+      label={`Mapa do Brasil por estado, ${kind === 'margin' ? `margem de ${data.ladoANome} sobre ${data.ladoBNome} no 2º turno` : `variação da margem de ${data.ladoANome} sobre ${data.ladoBNome} entre os turnos`}: cada estado imprime o seu valor no mapa ou ao lado dele.`}
+    />
+    </div>
+    <div>
+      <section class="mf__panel" data-slot="mapa-selecionado" aria-label="Estado selecionado">
+        <div class="mf__head">
+          <p class="mf__name" aria-live="polite"><span data-sel-uf>{selected.toUpperCase()}</span> · selecionado<span class="sr" data-sel-name>{first ? ` · ${first.name}` : ''}</span></p>
+          <p class="mf__big" aria-hidden="true" data-sel-big>{first?.big}</p>
+        </div>
+        <p class="mf__line" data-sel-line1>{first?.lines[0]}</p>
+        <p class="mf__line" data-sel-line2>{first?.lines[1]}</p>
+        <p class="mf__hint">{hint}</p>
+        <a class="mf__open" href={withBase(base, `/${selected}/`)} target="_top" data-abrir-estado="1" data-base={base}>Abrir estado</a>
+      </section>
+      <figure class="mf__scale" data-slot="mapa-escala">
+        <figcaption>
+          {kind === 'margin'
+            ? `Margem (pp) = % de ${data.ladoANome} menos % de ${data.ladoBNome}. Sinal +: ${data.ladoANome} à frente. Sinal −: ${data.ladoBNome} à frente.`
+            : `Variação da margem entre os turnos (pp). Positivo: a margem se moveu para ${data.ladoANome}; negativo: para ${data.ladoBNome}.`}
+        </figcaption>
+        <div class="mf__bar" aria-hidden="true">{legend.bins.map((bin) => <div style={`background:${BIN_COLOR[bin]}`}></div>)}</div>
+        <div class="mf__edges" aria-hidden="true">{legend.edges.map((edge) => <span>{edge}</span>)}</div>
+        <span class="sr">Escala, da esquerda para a direita: {legend.edges.join(', ')} pp.</span>
+        {'negativeNote' in legend && legend.negativeNote && <p class="mf__note">{legend.negativeNote}</p>}
+        <p class="mf__note">Tamanho igual para todos os estados. Cada estado imprime seu valor: a cor nunca é a única pista.</p>
+      </figure>
+    </div>
+  </div>
+  <details class="mf__table" data-slot="mapa-tabela">
+    <summary>Tabela por estado</summary>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Estado</th>
+          <th scope="col">Votos válidos (2º turno)</th>
+          <th scope="col">{kind === 'margin' ? 'Margem (pp)' : 'Variação (pp)'}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {sorted.map((row) => (
+          <tr>
+            <td><a href={withBase(base, `/${row.uf}/`)} target="_top" aria-label={`${ufFullLabel(row.uf)}: ${formatSwing(valueOf(row, kind))} pp`}>{row.uf.toUpperCase()}</a></td>
+            <td>{formatInt(row.validos2)}</td>
+            <td>{formatSwing(valueOf(row, kind))}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </details>
+</div>
+{/* Hover and keyboard focus (arrow keys too) fill the panel from the data-* of the links. */}
+<script is:inline>
+  (function () {
+    var q = function (s) { return document.querySelector(s) }
+    var links = [].slice.call(document.querySelectorAll('a[data-map-uf]'))
+    var open = q('[data-abrir-estado]')
+    var show = function (a) {
+      if (!a || a.getAttribute('data-selected') === 'true') return
+      links.forEach(function (l) { l.removeAttribute('data-selected') })
+      a.setAttribute('data-selected', 'true')
+      q('[data-sel-uf]').textContent = a.getAttribute('data-map-uf').toUpperCase()
+      q('[data-sel-name]').textContent = ' · ' + a.getAttribute('data-name')
+      q('[data-sel-big]').textContent = a.getAttribute('data-big')
+      q('[data-sel-line1]').textContent = a.getAttribute('data-line1')
+      q('[data-sel-line2]').textContent = a.getAttribute('data-line2')
+      open.setAttribute('href', a.getAttribute('href'))
+    }
+    links.forEach(function (a) {
+      a.addEventListener('mouseenter', function () { show(a) })
+      a.addEventListener('focus', function () { show(a) })
+    })
+    var dir = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }
+    document.addEventListener('keydown', function (e) {
+      var d = dir[e.key]
+      var cur = document.activeElement
+      if (!d || !cur || cur.getAttribute('data-map-uf') === null) return
+      var x = +cur.getAttribute('data-x'), y = +cur.getAttribute('data-y'), best = null, bestScore = 1e9
+      links.forEach(function (l) {
+        if (l === cur) return
+        var dx = +l.getAttribute('data-x') - x, dy = +l.getAttribute('data-y') - y
+        var along = dx * d[0] + dy * d[1], across = Math.abs(dx * d[1] - dy * d[0])
+        if (along <= 0) return
+        var score = along + 2 * across
+        if (score < bestScore) { best = l; bestScore = score }
+      })
+      if (best) { e.preventDefault(); best.focus() }
+    })
+  })()
+</script>
