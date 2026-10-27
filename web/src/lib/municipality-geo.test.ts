@@ -178,6 +178,8 @@ describe('public/geo/municipios-<uf>.json, all 27 states (ticket #17)', () => {
     expect(semContornoOf('xx', [{ ...emptyRow(), cdIbge: '9900100' }])).toBe(1)
   })
 
+  // All 27 state meshes parse and validate in one test — over vitest's 5s default on CI runners
+  // (green locally in ~3s, flaky from ~5s), so the test carries its own explicit budget.
   it('every ring of every shape is closed, long enough to draw, and inside the declared viewBox', () => {
     for (const [uf, json] of meshes) {
       const parsed = parseMunicipalityMesh(json)
@@ -192,7 +194,7 @@ describe('public/geo/municipios-<uf>.json, all 27 states (ticket #17)', () => {
         }
       }
     }
-  })
+  }, 30_000)
 })
 
 /** Determinism of the generator core: same mesh in, byte-identical output out (vitest pins it). */
