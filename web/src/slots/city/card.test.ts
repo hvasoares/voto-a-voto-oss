@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { buildCityResult } from '../../shared/city-model'
 import { headline } from '../../lib/sentences/headline'
-import { headlineId, viewPanel } from './card'
+import { headlineId, viewMargin, viewPanel } from './card'
 
 const result = buildCityResult({
   turnout: { ano: 2026, turno: 1, uf: 'rj', cdMunicipio: '1', aptos: 100000, comparecimento: 76600, abstencoes: 23400, brancos: 3000, nulos: 3600, anuladosApuSep: 0, validos: 70000 },
@@ -31,5 +31,17 @@ describe('card panel', () => {
     expect(none).toContain('Sem dados nesse ciclo.')
     expect(none).toContain('Não temos dados dessa eleição para este lugar.')
     expect(none).not.toContain('data-register-switch')
+  })
+})
+
+describe('margin line of a view', () => {
+  it('is in both registers, the standard one first, with the frame figures', () => {
+    const html = viewMargin(result, place).toString()
+    expect(html).toContain('Faltaram 2.800 votos para virar: cabem 10 vezes nos 30.000 que não votaram.')
+    expect(html).toContain('Esse número cabe 10 vezes nas 30.000 pessoas que não votaram.')
+    expect(html.indexOf('data-register="standard"')).toBeLessThan(html.indexOf('data-register="plain"'))
+  })
+  it('is empty when the round has nothing to turn or no data', () => {
+    expect(viewMargin(undefined, place).toString()).toBe('')
   })
 })

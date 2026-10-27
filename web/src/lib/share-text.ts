@@ -2,11 +2,14 @@
  * The text that goes with the picture, PURE: the card's headline sentence (`headline()`, the catalog's wording, the same
  * sentence as the picture's text alternative) followed by the link. Same treatment for every candidate.
  *
- *   {headline} {url}
+ *   {headline} {margin line} {url}
+ *
+ * The margin line (#26: the votes that would have changed the result, plain arithmetic) is left out when the round has none.
  */
 import type { CityResult } from '@/shared/city-model'
 import type { Register } from './sentences/catalog'
 import { headline } from './sentences/headline'
+import { marginLine } from './sentences/margin'
 
 export interface ShareTextOptions {
   cityName: string
@@ -24,5 +27,6 @@ export function shortAddress(url: string): string {
 }
 
 export function shareText(r: CityResult, o: ShareTextOptions): string {
-  return `${headline(r, { cityName: o.cityName, overseas: o.overseas, register: o.register })} ${o.url}`
+  const place = { cityName: o.cityName, overseas: o.overseas, register: o.register }
+  return [headline(r, place), marginLine(r, place), o.url].filter(Boolean).join(' ')
 }

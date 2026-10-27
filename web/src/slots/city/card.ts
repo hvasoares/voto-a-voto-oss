@@ -1,6 +1,7 @@
 import type { CityResult } from '../../shared/city-model'
 import { DEFAULT_LOCALE, REGISTERS, message, type Register } from '../../lib/sentences/catalog'
 import { headline, type Place } from '../../lib/sentences/headline'
+import { marginLine } from '../../lib/sentences/margin'
 import { toLegendRows, toTurnoutBarProps } from '../../shared/city-figures'
 import { candidateRow, turnoutBar } from '../../shared/components'
 import { html, type Raw } from '../../shared/html'
@@ -39,6 +40,16 @@ export function viewSentence(result: CityResult | undefined, place: Place, view:
     (v) => html`<div data-register="${v.register}"><p class="city-headline" data-headline>${headline(result, v.place)}</p><p class="city-headline__note">${message({ locale, register: v.register }, 'headline.note')}</p></div>`,
   )
   return html`${registerSwitch(locale)}<div class="city-sentence" id="${headlineId(view)}" aria-live="polite">${sentence}</div>`
+}
+
+/**
+ * The margin line (#26) of one view, in both registers: the votes that would have changed the result and how many times
+ * that fits in the people who did not vote. Empty when the round has nothing to turn (no data, one candidate).
+ */
+export function viewMargin(result: CityResult | undefined, place: Place): Raw {
+  const lines = voices(place).map((v) => ({ register: v.register, text: marginLine(result, v.place) }))
+  if (!lines[0]!.text) return html``
+  return html`${lines.map((l) => html`<p class="city-margin" data-register="${l.register}" data-margin>${l.text}</p>`)}`
 }
 
 /** Both parts in one string: what the card showed before the two columns (the phone order). */

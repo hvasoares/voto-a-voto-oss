@@ -44,6 +44,14 @@ export const KEYS = [
   'phrase.below',
   'runnerUp.tied',
   'runnerUp.role',
+  /** The margin line (#26): the votes that would have changed the result, and how many times that fits in the people who did not vote. Plain arithmetic, no intent. */
+  'margin.tie',
+  'margin.gap.one',
+  'margin.gap.other',
+  'margin.fits.one',
+  'margin.fits.other',
+  'margin.exceeds',
+  'margin.end',
   /** Pipe-separated words for the counts 0 to 10; a larger count is written in digits. */
   'numberWords',
   /** Put before a label that already says "Candidato X" (fixture, unnamed candidates). */
@@ -100,6 +108,13 @@ const ptBR: Record<Key, string> = {
   'phrase.below': 'menos do que',
   'runnerUp.tied': 'cada um dos {count} candidatos empatados em segundo lugar ({names})',
   'runnerUp.role': ', o segundo mais votado,',
+  'margin.tie': 'Empate na frente: a diferença entre os mais votados é de 0 votos.',
+  'margin.gap.one': 'Faltou {n} voto para virar',
+  'margin.gap.other': 'Faltaram {n} votos para virar',
+  'margin.fits.one': ': cabe {times} vez nos {m} que não votaram.',
+  'margin.fits.other': ': cabem {times} vezes nos {m} que não votaram.',
+  'margin.exceeds': ': mais do que os {m} que não votaram.',
+  'margin.end': '.',
   numberWords: 'zero|um|dois|três|quatro|cinco|seis|sete|oito|nove|dez',
   'label.article': 'o {name}',
   'pct.lessThan': 'menos de {pct}',
@@ -147,6 +162,13 @@ const ptBRPlain: Record<Exclude<Key, StandardOnly>, string> = {
   'phrase.below': 'Isso é menos do que',
   'runnerUp.tied': 'cada um dos {count} candidatos empatados em segundo lugar ({names})',
   'runnerUp.role': ', o segundo mais votado,',
+  'margin.tie': 'Houve empate na frente. A diferença entre os mais votados é de 0 votos.',
+  'margin.gap.one': 'Faltou {n} voto para virar o resultado',
+  'margin.gap.other': 'Faltaram {n} votos para virar o resultado',
+  'margin.fits.one': '. Esse número cabe {times} vez nas {m} pessoas que não votaram.',
+  'margin.fits.other': '. Esse número cabe {times} vezes nas {m} pessoas que não votaram.',
+  'margin.exceeds': '. Esse número é maior do que as {m} pessoas que não votaram.',
+  'margin.end': '.',
   numberWords: 'zero|um|dois|três|quatro|cinco|seis|sete|oito|nove|dez',
   'label.article': 'o {name}',
   'pct.lessThan': 'menos de {pct}',
@@ -196,7 +218,7 @@ export function fill(tpl: string, params: Record<string, string | number>): stri
 }
 
 /** The keys that come as a `.one` / `.other` pair. */
-export type PluralKey = 'nobodyTurnedOut' | 'nonVoters.count' | 'votes.count'
+export type PluralKey = 'nobodyTurnedOut' | 'nonVoters.count' | 'votes.count' | 'margin.gap' | 'margin.fits'
 
 /** Zero reads as "other" ("0 votos"), although CLDR files 0 under "one" for Portuguese. */
 export function pluralCategory(locale: Locale, count: number): 'one' | 'other' {

@@ -11,13 +11,13 @@ describe('share content per register', async () => {
 
   it('the standard text and alt are the headline; the picture carries the alt as its title', () => {
     expect(content.variants.standard.alt).toBe('Em Cidade Exemplo, no 1º turno de 2026, 30% do eleitorado não votou, quase tanto quanto o Candidato B recebeu (33,6%).')
-    expect(content.variants.standard.text).toBe(`${content.variants.standard.alt} https://x.br/rj/cidade-exemplo/`)
+    expect(content.variants.standard.text).toBe(`${content.variants.standard.alt} Faltaram 2.800 votos para virar: cabem 10 vezes nos 30.000 que não votaram. https://x.br/rj/cidade-exemplo/`)
     expect(content.text).toBe(content.variants.standard.text)
     expect(content.svg).toContain(`<title>${content.variants.standard.alt}</title>`)
   })
   it('the plain text and alt follow the chosen register, the picture is the same drawing', () => {
     expect(content.variants.plain.alt).toBe('Em Cidade Exemplo, no 1º turno de 2026, 30% das pessoas que podiam votar não votaram. Isso é quase igual ao que o Candidato B recebeu: 33,6%.')
-    expect(content.variants.plain.text).toBe(`${content.variants.plain.alt} https://x.br/rj/cidade-exemplo/`)
+    expect(content.variants.plain.text).toBe(`${content.variants.plain.alt} Faltaram 2.800 votos para virar o resultado. Esse número cabe 10 vezes nas 30.000 pessoas que não votaram. https://x.br/rj/cidade-exemplo/`)
     const plain = pictureSvg(content, 'plain')
     expect(plain).toContain(`<title>${content.variants.plain.alt}</title>`)
     expect(plain.replace(/<title>.*?<\/title>/, '')).toBe(content.svg.replace(/<title>.*?<\/title>/, ''))

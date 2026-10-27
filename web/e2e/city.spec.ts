@@ -154,7 +154,9 @@ test.describe('city card without JavaScript', () => {
     await expect(card(page).locator('.legend__row')).toHaveCount(5)
     await expect(card(page).locator('.city-headline:visible')).toContainText('no 2º turno de 2026')
     await expect(page.getByRole('link', { name: 'Compartilhar' })).toBeVisible()
-    await expect(page.locator('[data-view][hidden]')).toHaveCount(10) // five other views, in both columns
+    // The margin line (#26) is in the page too: the default view is round 2 of 2026: 640 votes, which fit 49 times in 31.566 people.
+    await expect(page.locator('[data-margin]:visible')).toHaveText('Faltaram 640 votos para virar: cabem 49 vezes nos 31.566 que não votaram.')
+    await expect(page.locator('[data-view][hidden]')).toHaveCount(15) // five other views, in each of the three columns
   })
 })
 
@@ -282,6 +284,6 @@ test.describe('city card without JavaScript: the register', () => {
     await page.goto(city)
     await expect(card(page).locator('[data-headline]:visible')).toContainText('do eleitorado não votou')
     await expect(card(page).locator('.register')).toBeHidden()
-    await expect(card(page).locator('[data-register="plain"]')).toBeHidden()
+    for (const plain of await card(page).locator('[data-register="plain"]').all()) await expect(plain).toBeHidden()
   })
 })

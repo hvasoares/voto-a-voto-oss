@@ -3,6 +3,7 @@ import type { Candidate, Turnout, Vote } from '@/data'
 import { buildCityResult, type CityResult } from '@/shared/city-model'
 import { shareText, shortAddress } from './share-text'
 import { headline } from './sentences/headline'
+import { marginLine } from './sentences/margin'
 
 const turnout = (o: Partial<Turnout> = {}): Turnout => ({ ano: 2026, turno: 2, uf: 'rj', cdMunicipio: '1', aptos: 1000, comparecimento: 800, abstencoes: 200, brancos: 20, nulos: 30, anuladosApuSep: 0, validos: 750, ...o })
 const cand = (numero: number, nome: string, turno: 1 | 2 = 2): Candidate => ({ ano: 2026, turno, candidatoNumero: numero, nomeUrna: nome, partido: 'X' })
@@ -24,9 +25,10 @@ describe('shortAddress', () => {
 describe('shareText', () => {
   const url = 'https://votoavoto.exemplo.br/rj/cidade-teste/'
 
-  it('is the card headline followed by the link', () => {
+  it('is the card headline, the margin line and the link', () => {
     const txt = shareText(two, { cityName: 'Cidade Teste', url })
-    expect(txt).toBe(`${headline(two, { cityName: 'Cidade Teste' })} ${url}`)
+    expect(txt).toBe(`${headline(two, { cityName: 'Cidade Teste' })} ${marginLine(two, { cityName: 'Cidade Teste' })} ${url}`)
+    expect(txt).toContain('Faltaram 150 votos para virar')
     expect(txt).toMatch(/^Em Cidade Teste, no 2º turno de 2026, \d+(,\d)?% do eleitorado não votou/)
   })
 
@@ -35,6 +37,11 @@ describe('shareText', () => {
     const b = shareText(result({}, [[13, 300], [22, 450]]), { cityName: 'X', url: 'u' })
     const shape = (t: string) => t.replace(/Ana Souza|Bruno Lima/g, 'N').replace(/\d+/g, '#')
     expect(shape(a)).toBe(shape(b))
+  })
+
+  it('a round with nothing to turn has no margin line: the text is the headline and the link', () => {
+    const one = result({ aptos: 1000, comparecimento: 500, validos: 500 }, [[13, 500]])
+    expect(shareText(one, { cityName: 'X', url: 'u' })).toBe(`${headline(one, { cityName: 'X' })} u`)
   })
 
   it('zero turnout and no electorate have their own neutral sentence', () => {
@@ -55,7 +62,7 @@ describe('shareText', () => {
   it('over the fixture city: the sentence matches the numbers of the city card', async () => {
     const { loadCityResult } = await import('./shard-files')
     const r = (await loadCityResult('rj', 'cidade-exemplo', 2026, 1))!
-    expect(shareText(r, { cityName: 'Cidade Exemplo', url })).toBe(`Em Cidade Exemplo, no 1º turno de 2026, 30% do eleitorado não votou, quase tanto quanto o Candidato B recebeu (33,6%). ${url}`)
+    expect(shareText(r, { cityName: 'Cidade Exemplo', url })).toBe(`Em Cidade Exemplo, no 1º turno de 2026, 30% do eleitorado não votou, quase tanto quanto o Candidato B recebeu (33,6%). Faltaram 2.800 votos para virar: cabem 10 vezes nos 30.000 que não votaram. ${url}`)
   })
 
   it('is a plain single line, fits a WhatsApp message and keeps only simple characters in its own words', () => {
