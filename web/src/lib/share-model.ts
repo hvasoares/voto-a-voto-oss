@@ -24,6 +24,9 @@ export interface ShareContentOptions {
   base: string
   /** Fictitious data (manifest.fixture). */
   fixture: boolean
+  /** Display size of the picture (the drawing stays the viewBox of the share card); the card size when omitted. */
+  width?: number
+  height?: number
 }
 
 export function shareContent(result: CityResult, city: Pick<City, 'uf' | 'slug' | 'nome'>, o: ShareContentOptions): ShareContent {
@@ -31,7 +34,7 @@ export function shareContent(result: CityResult, city: Pick<City, 'uf' | 'slug' 
   const address = shortAddress(url)
   const names = { cityName: displayName(city.nome), ufLabel: ufLabel(city.uf) }
   return {
-    svg: shareCardSvg(result, { ...names, address, fixture: o.fixture }),
+    svg: shareCardSvg(result, { ...names, address, fixture: o.fixture, width: o.width, height: o.height }),
     text: shareText(result, { ...names, url }),
     url,
     address,
