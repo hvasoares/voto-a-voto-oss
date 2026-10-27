@@ -11,6 +11,8 @@
  *   and the legend carries the boundary numbers of the bins.
  */
 
+import { colors } from '@site/shared/tokens'
+
 export type DivBin = 'zero' | 'neg1' | 'neg2' | 'neg3' | 'pos1' | 'pos2' | 'pos3'
 
 /** Half a tenth of a pp: absolute margins below this read as zero. */
@@ -56,9 +58,40 @@ export function swingLegend(swings: readonly number[]): { bins: DivBin[]; edges:
   return { bins: [...bins, 'zero', 'pos1', 'pos2', 'pos3'], edges, negativeNote: hasNegative ? null : 'Sem estados com variação negativa' }
 }
 
-/** Dark ink on the light steps, paper on the dark ones (contrast, like the frames). */
+/** The hex behind each bin: the same swatches the CSS custom properties point at, so the label
+ * ink is derived from the fill's own luminance instead of a fixed white. */
+const BIN_HEX: Record<DivBin, string> = {
+  neg3: colors['div-neg-3'],
+  neg2: colors['div-neg-2'],
+  neg1: colors['div-neg-1'],
+  zero: colors['div-zero'],
+  pos1: colors['div-pos-1'],
+  pos2: colors['div-pos-2'],
+  pos3: colors['div-pos-3'],
+}
+
+/** WCAG relative luminance of a #rrggbb fill (6-digit hex only). */
+function relLuminance(hex: string): number {
+  const lin = (channel: string) => {
+    const s = parseInt(channel, 16) / 255
+    return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4
+  }
+  return 0.2126 * lin(hex.slice(1, 3)) + 0.7152 * lin(hex.slice(3, 5)) + 0.0722 * lin(hex.slice(5, 7))
+}
+
+/** Contrast ratio of the two luminances (WCAG); a=foreground-ish or the fill, order does not matter. */
+function contrastRatio(a: number, b: number): number {
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
+}
+
+const INK_LUM = relLuminance(colors.ink)
+const PAPER_LUM = relLuminance(colors.paper)
+
+/** Dark ink on the light steps, paper on the dark ones — whichever inks the fill better
+ * (deterministic per bin; the white is left to the two saturated extremes). */
 export function fgOf(bin: DivBin): 'var(--foreground)' | 'var(--background)' {
-  return bin === 'zero' || bin === 'neg1' || bin === 'pos1' ? 'var(--foreground)' : 'var(--background)'
+  const lum = relLuminance(BIN_HEX[bin])
+  return contrastRatio(INK_LUM, lum) >= contrastRatio(PAPER_LUM, lum) ? 'var(--foreground)' : 'var(--background)'
 }
 
 /**

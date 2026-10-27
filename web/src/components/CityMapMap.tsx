@@ -59,6 +59,77 @@ export const RENDER_WIDTH = 350
 /** A shape shows its value once the row text is >= this wide on screen (the panel covers the rest). */
 const VALUE_PX = 26
 const NAME_PX = 46
+/** Label box estimate (viewBox units): bold 11px digits per char, and 10px name text per char;
+ * deliberately a little over so the real text never reaches where the estimate allowed none. */
+const VALUE_CHAR = 6.6
+const NAME_CHAR = 5.4
+/** Which inline labels a shape draws at the current zoom (after the placement pass). */
+export interface ShapeLabels {
+  value: boolean
+  nome: boolean
+}
+
+/** Estimated box of an inline label around its baseline (label text sits upright in the SVG). */
+interface LabelRect {
+  x0: number
+  y0: number
+  x1: number
+  y1: number
+}
+
+const rectOf = (cx: number, baselineY: number, w: number, above: number, below: number): LabelRect => ({
+  x0: cx - w / 2,
+  x1: cx + w / 2,
+  y0: baselineY - above,
+  y1: baselineY + below,
+})
+
+const hits = (a: LabelRect, b: LabelRect): boolean => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1
+
+const within = (r: LabelRect, w: Window_): boolean => r.x0 >= w.x && r.y0 >= w.y && r.x1 <= w.x + w.w && r.y1 <= w.y + w.h
+
+/**
+ * The collision pass of the map labels (review of the #16 captures): at fit-all several shapes of
+ * the same cluster would print their numbers through each other, and names would clip at the
+ * container's edge. Greedy placement admits a label only if its estimated box stays inside the
+ * VIEWPORT at the CURRENT zoom and free of every already-placed box; bigger shapes (and then the
+ * bigger margins) claim their labels first, and every shape's value is tried before its name. The
+ * full text stays in the row's aria-label and tooltip either way.
+ */
+export function placeLabels(shapes: ReturnType<typeof meshShapes>, byIbge: Map<string, CityMarginRow>, win: Window_): Map<string, ShapeLabels> {
+  const pxUnit = RENDER_WIDTH / win.w
+  const out = new Map<string, ShapeLabels>()
+  type Cand = { kind: keyof ShapeLabels; codarea: string; prio: number; sec: number; rect: LabelRect }
+  const candidates: Cand[] = []
+  for (const shape of shapes) {
+    const row = byIbge.get(shape.codarea)
+    if (!row || row.margin2 === null) continue
+    const bb = bboxOf(shape)
+    out.set(shape.codarea, { value: false, nome: false })
+    // A value only prints where it was already legible at this zoom (same gates as before)...
+    if (bb.w * pxUnit >= VALUE_PX && bb.h * pxUnit >= 13)
+      candidates.push({ kind: 'value', codarea: shape.codarea, prio: bb.w * bb.h, sec: Math.abs(row.margin2), rect: rectOf(shape.cx, shape.cy - 2, fmt(row.margin2).length * VALUE_CHAR, 10, 3) })
+    // ...and a name only where it fits without clipping mid-word or crossing the container edge.
+    if (bb.w * pxUnit >= NAME_PX && bb.h * pxUnit >= 22)
+      candidates.push({ kind: 'nome', codarea: shape.codarea, prio: bb.w * bb.h, sec: Math.abs(row.margin2), rect: rectOf(shape.cx, shape.cy + 10, displayName(row.nome).length * NAME_CHAR, 8, 3) })
+  }
+  const placed: LabelRect[] = []
+  const admit = (kind: keyof ShapeLabels) => {
+    candidates
+      .filter((c) => c.kind === kind)
+      .sort((a, b) => b.prio - a.prio || b.sec - a.sec || a.codarea.localeCompare(b.codarea))
+      .forEach((cand) => {
+        if (!within(cand.rect, win)) return
+        if (placed.some((p) => hits(p, cand.rect))) return
+        placed.push(cand.rect)
+        out.get(cand.codarea)![kind] = true
+      })
+  }
+  admit('value')
+  admit('nome')
+  return out
+}
+
 /** Pointer movement (px) under which a drag is still a tap. */
 const TAP_PX = 6
 
@@ -338,6 +409,8 @@ function MapView({
   const shapes = meshShapes(mesh)
   const matched = shapes.filter((s) => byIbge.has(s.codarea))
   const unmatched = shapes.length - matched.length
+  // The labels fit the CURRENT window: the collision pass re-runs on every pan/zoom.
+  const labels = placeLabels(shapes, byIbge, current)
 
   return (
     <div className="mt-2" data-slot="mapa-municipios">
@@ -357,13 +430,8 @@ function MapView({
           const row = byIbge.get(shape.codarea)
           const bin = binOf(row)
           const name = row ? displayName(row.nome) : ''
-          // On-screen size of the shape at the current zoom decides its inline label
-          // (rendered px per viewBox unit = RENDER_WIDTH / current.w).
-          const pxUnit = RENDER_WIDTH / current.w
-          const bbox = bboxOf(shape)
           const isSel = !!row && selected === row.cdMunicipio
-          const showValue = !!row && row.margin2 !== null && bbox.w * pxUnit >= VALUE_PX && bbox.h * pxUnit >= 13
-          const showName = !!row && row.margin2 !== null && bbox.w * pxUnit >= NAME_PX && bbox.h * pxUnit >= 22
+          const lab = labels.get(shape.codarea)
           const label = row
             ? `${displayName(row.nome)}: ${valueText(row, ladoANome, ladoBNome)}; ${fmtInt(row.validos2)} votos válidos`
             : `Código IBGE ${shape.codarea}: município da malha sem dados neste dataset`
@@ -377,20 +445,20 @@ function MapView({
                 strokeWidth={Math.max(0.4, current.w / full.w)}
               />
               {isSel && <path d={toPath(shape.pts)} fill="none" stroke="var(--foreground)" strokeWidth={2.5} pointerEvents="none" />}
-              {showValue && (
+              {lab?.value && (
                 <text
                   fill={bin ? fgOf(bin) : 'var(--foreground)'}
                   fontSize={11}
                   fontWeight={700}
                   textAnchor="middle"
                   x={shape.cx}
-                  y={shape.cy + (showName ? -2 : 4)}
+                  y={shape.cy - 2}
                   pointerEvents="none"
                 >
                   {fmt(row!.margin2!)}
                 </text>
               )}
-              {showName && (
+              {lab?.nome && (
                 <text fill={bin ? fgOf(bin) : 'var(--foreground)'} fontSize={10} textAnchor="middle" x={shape.cx} y={shape.cy + 10} pointerEvents="none">
                   {name}
                 </text>
@@ -474,10 +542,11 @@ function Selecionado({
   return (
     <div className="mt-2 border-t border-border pt-2" data-slot="mapa-selecionado">
       <div className="flex items-baseline justify-between gap-3">
-        <p aria-live="polite" className="font-serif text-body font-bold wrap-anywhere">
+        {/* The big figure never wraps: number and unit stay together even under a two-line title. */}
+        <p aria-live="polite" className="min-w-0 font-serif text-body font-bold wrap-anywhere">
           {displayName(row.nome)} · {row.margin2 === null ? 'sem dados' : 'selecionado'}
         </p>
-        <p className="font-serif text-[28px] font-bold leading-[30px]" aria-hidden="true">
+        <p className="shrink-0 whitespace-nowrap font-serif text-[28px] font-bold leading-[30px]" aria-hidden="true">
           {row.margin2 === null ? '—' : `${fmt(row.margin2)} pp`}
         </p>
       </div>
