@@ -50,4 +50,19 @@ describe('map-pending page script', () => {
     await loaded()
     expect(document.querySelector('astro-island')?.hasAttribute('data-pending-uf')).toBe(false)
   })
+
+  it('keeps the tapped municipality (data-cd) too, on a separate attribute', async () => {
+    document.body.innerHTML = `
+      <astro-island data-slot="city-map">
+        <a data-cd="58001" href="/s/rj/cidade/">Cidade</a>
+      </astro-island>
+    `
+    await import('./map-pending')
+    const tile = document.querySelector('a[data-cd]') as HTMLElement
+    pointerdown(tile)
+    click(tile)
+    const island = document.querySelector('astro-island') as HTMLElement
+    expect(island.getAttribute('data-pending-cd')).toBe('58001')
+    expect(island.hasAttribute('data-pending-uf')).toBe(false)
+  })
 })

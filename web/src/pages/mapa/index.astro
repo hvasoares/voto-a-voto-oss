@@ -20,6 +20,8 @@ const data = await loadStateMapData()
     <p class="mt-1 font-serif text-lead leading-[22px] wrap-anywhere">Margem de {data.ladoANome} sobre {data.ladoBNome} no 2º turno de {data.ano}, em pontos percentuais (pp), por estado.</p>
     <StateMapMap client:interaction kind="margin" base={base} data={data} />
     <noscript><p class="mt-1.5 text-small leading-[14px] text-muted-foreground">A vista de mapa precisa de JavaScript. O mosaico acima funciona sem.</p></noscript>
+    {/* Drill-down: /mapa/rj/ is the one built municipality map so far (ticket #16; the other UFs are #17). */}
+    <p class="mt-2" data-mapa-municipio><a class="inline-flex min-h-11 items-center font-serif text-lead leading-[22px] font-normal text-primary" href={href('/mapa/rj/')}>Mapa por município · Rio de Janeiro ›</a></p>
     <p class="mt-1.5 text-small leading-[14px]" data-island-failed hidden>O mapa por estado não está disponível agora. Escolha um estado na página inicial.</p>
   </main>
   <footer class="mx-5 mt-2 border-t border-border pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">

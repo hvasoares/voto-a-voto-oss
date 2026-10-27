@@ -117,7 +117,7 @@ describe('buildBrasil: tiny hand-made scope', () => {
 })
 
 describe('buildBrasil: the committed fixture dataset (fixtures/data, 2026 round 2)', () => {
-  const fixtures = resolve('..', 'fixtures', 'data')
+  const fixtures = resolve('fixtures', 'data')
   expect(existsSync(fixtures), 'fixtures dataset missing').toBe(true)
 
   const scope = (dir: string, ano = 2026, turno = 2 as const) => {
