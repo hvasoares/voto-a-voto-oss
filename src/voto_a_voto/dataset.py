@@ -61,15 +61,26 @@ class CandidateRow:
     partido: str
 
 
+@dataclass(frozen=True, order=True)
+class CentroidRow:
+    """The centre of a municipality as IBGE publishes it (WGS84 degrees); one row per city that has an IBGE code."""
+
+    cd_ibge: str
+    lat: float
+    lon: float
+
+
 CITY_COLUMNS = tuple(f.name for f in fields(CityRow))
 TURNOUT_COLUMNS = tuple(f.name for f in fields(TurnoutRow))
 VOTE_COLUMNS = tuple(f.name for f in fields(VoteRow))
 CANDIDATE_COLUMNS = tuple(f.name for f in fields(CandidateRow))
+CENTROID_COLUMNS = tuple(f.name for f in fields(CentroidRow))
 TABLES = {
     "cities.csv": (CityRow, CITY_COLUMNS),
     "turnout.csv": (TurnoutRow, TURNOUT_COLUMNS),
     "votes.csv": (VoteRow, VOTE_COLUMNS),
     "candidates.csv": (CandidateRow, CANDIDATE_COLUMNS),
+    "centroids.csv": (CentroidRow, CENTROID_COLUMNS),
 }
 
 
@@ -90,9 +101,13 @@ class Dataset:
     turnout: list[TurnoutRow]
     votes: list[VoteRow]
     candidates: list[CandidateRow]
+    centroids: list[CentroidRow] = field(default_factory=list)
 
     def table(self, name: str) -> list:
-        return {"cities.csv": self.cities, "turnout.csv": self.turnout, "votes.csv": self.votes, "candidates.csv": self.candidates}[name]
+        return {
+            "cities.csv": self.cities, "turnout.csv": self.turnout, "votes.csv": self.votes, "candidates.csv": self.candidates,
+            "centroids.csv": self.centroids,
+        }[name]
 
 
 def cycle_from_results(ano: int, results: Iterable[dict]) -> CycleData:
@@ -167,7 +182,7 @@ def csv_bytes(rows: Iterable, columns: tuple[str, ...]) -> bytes:
 
 
 def write_dataset(dataset: Dataset, out_dir) -> dict[str, dict]:
-    """Writes the four CSVs; returns ``{file: {"rows", "bytes", "sha256"}}`` for the manifest."""
+    """Writes the CSVs; returns ``{file: {"rows", "bytes", "sha256"}}`` for the manifest."""
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     report = {}
@@ -182,7 +197,7 @@ def write_dataset(dataset: Dataset, out_dir) -> dict[str, dict]:
 
 
 def read_dataset(data_dir) -> Dataset:
-    """Loads the four CSVs, failing with the file name when a header or a value is not what we wrote."""
+    """Loads the CSVs, failing with the file name when a header or a value is not what we wrote."""
     tables = {}
     for name, (row_type, columns) in TABLES.items():
         path = Path(data_dir) / name
@@ -196,7 +211,7 @@ def read_dataset(data_dir) -> Dataset:
                 tables[name] = [row_type(*(kind(value) for kind, value in zip(types, record, strict=True))) for record in reader]
         except (ValueError, TypeError) as error:
             raise ValueError(f"{name}: {error}") from error
-    return Dataset(tables["cities.csv"], tables["turnout.csv"], tables["votes.csv"], tables["candidates.csv"])
+    return Dataset(tables["cities.csv"], tables["turnout.csv"], tables["votes.csv"], tables["candidates.csv"], tables["centroids.csv"])
 
 
 def write_manifest(manifest: dict, path) -> bytes:

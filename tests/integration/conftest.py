@@ -44,6 +44,23 @@ class FakeCdn:
         return StreamResponse(200, {"etag": '"z"', "content-length": str(len(body)), "cache-control": "max-age=1000"}, iter([body]))
 
 
+class FakeIbge:
+    """Plays IBGE's mesh metadata service: one list per state code, a centroid for every IBGE city code it is given."""
+
+    def __init__(self, centroids: dict[str, tuple[float, float]]):
+        self.centroids = centroids  # 7-digit IBGE code -> (lat, lon)
+        self.requests: list[str] = []
+
+    def __call__(self, url, headers):
+        self.requests.append(url)
+        state = url.split("/estados/")[1].split("/")[0]
+        items = [
+            {"id": code, "nivel-geografico": "município", "centroide": {"latitude": lat, "longitude": lon}}
+            for code, (lat, lon) in sorted(self.centroids.items()) if code.startswith(state)
+        ]
+        return 200, {}, json.dumps(items)
+
+
 def scaled_national(payload: dict, factor: int) -> dict:
     """A national file that is `factor` times the city file: valid for a world where every city file is the same."""
     scaled = json.loads(json.dumps(payload))
@@ -95,10 +112,16 @@ def fake_cdn(munzona_rows, fixtures_dir):
 
 
 @pytest.fixture
-def services(make_site, fake_cdn):
+def fake_ibge(config_jws):
+    codes = sorted(city["cdi"] for state in decode_jws(config_jws)["abr"] for city in state["mu"] if city.get("cdi"))
+    return FakeIbge({code: (-10.0 - index, -50.0 + index) for index, code in enumerate(codes)})
+
+
+@pytest.fixture
+def services(make_site, fake_cdn, fake_ibge):
     """A tiny world: 2026 has 5 Brazilian cities + 3 overseas posts in the config; 2018/2022 come from trimmed real rows."""
     site, _ = make_site()
     return Services(
-        fetch_transport=site, stream_transport=fake_cdn, published={}, brazilian_cities={2018: 1, 2022: 1, 2026: 5},
+        fetch_transport=site, stream_transport=fake_cdn, ibge_transport=fake_ibge, published={}, brazilian_cities={2018: 1, 2022: 1, 2026: 5},
         clock=lambda: 1_000_000.0, sleep=lambda seconds: None,
     ), site, fake_cdn

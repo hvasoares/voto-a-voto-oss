@@ -88,7 +88,7 @@ def test_manifest_is_sorted_and_carries_a_schema_version(written):
     _, manifest = written
 
     assert manifest["schema_version"] == 1
-    assert list(manifest["outputs"]) == ["candidates.csv", "cities.csv", "turnout.csv", "votes.csv"]
+    assert list(manifest["outputs"]) == ["candidates.csv", "centroids.csv", "cities.csv", "turnout.csv", "votes.csv"]
 
 
 def test_a_changed_byte_is_caught_by_the_file_hash(written):

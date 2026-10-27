@@ -11,10 +11,10 @@ import json
 import sys
 import time
 from collections import Counter
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
-from voto_a_voto import nonvoters, reconcile
+from voto_a_voto import centroids, nonvoters, reconcile
 from voto_a_voto.cities import City, parse_cities
 from voto_a_voto.dataset import CycleData, Dataset, assemble, cycle_from_munzona, cycle_from_results, read_dataset, write_dataset, write_manifest
 from voto_a_voto.manifest import build_manifest, check_manifest, summarize_results_files, turnout_identity
@@ -47,6 +47,7 @@ class Services:
 
     fetch_transport: object = None  # (url, headers) -> (status, headers, text); None = real HTTPS with retries
     stream_transport: object = https_stream
+    ibge_transport: object = None  # (url, headers) -> (status, headers, text); None = real HTTPS with retries
     published: dict[tuple[int, int], NationalTotals] = field(default_factory=lambda: dict(PUBLISHED_2018_2022))
     brazilian_cities: dict[int, int] = field(default_factory=lambda: dict(BRAZILIAN_CITIES))
     clock: object = time.time
@@ -132,6 +133,7 @@ def all_findings(dataset: Dataset, reference: dict, brazilian_cities: dict[int, 
         *reconcile.check_vote_sums(dataset),
         *reconcile.check_national_totals(dataset, reference),
         *reconcile.check_aggregates(dataset),
+        *centroids.check_centroids(dataset),
     ]
 
 
@@ -162,6 +164,17 @@ def build(options: BuildOptions, services: Services) -> BuildResult:
     if result.failures:
         return result
     dataset = assemble(cycles, config_cities)
+    try:
+        fetched = centroids.fetch(
+            centroids.state_codes(dataset.cities), options.cache_dir, transport=services.ibge_transport, offline=options.offline,
+            clock=services.clock, sleep=services.sleep,
+        )
+    except (DownloadError, OfflineCacheMissError, OSError) as error:
+        result.failures.append(f"IBGE centroids: {error}")
+        return result
+    dataset = replace(dataset, centroids=centroids.rows_for(dataset.cities, fetched.by_code))
+    sources.append(fetched.source)
+    result.summary.append(f"IBGE centroids: {len(dataset.centroids)} municipalities from {fetched.source['files']} state files")
     result.dataset = dataset
     result.findings = all_findings(dataset, reference, services.brazilian_cities)
     result.manifest = {"sources": sources, "reference": reference, "identity": turnout_identity(dataset, reported)}

@@ -94,6 +94,11 @@
       "rows": 42,
       "sha256": "2f14be28331480d641e66e141184838ac2efd1a05ecc2f81d43f36a0bc48a31e"
     },
+    "centroids.csv": {
+      "bytes": 141913,
+      "rows": 5570,
+      "sha256": "e789a8abb3b038fb304309016519fd75f68cedf71e4cdd33ecd1bf3116048e3d"
+    },
     "cities.csv": {
       "bytes": 373759,
       "rows": 5760,
@@ -165,6 +170,15 @@
       "id": "tse_results_2026",
       "kind": "results_site",
       "newest_generation": "2026-10-25T23:27:44"
+    },
+    {
+      "digest": "32453d216cc698ac77582a6e03e7edb523196be1c5bbfb4c381b2167bd42887d",
+      "files": 27,
+      "id": "ibge_malhas_metadados",
+      "kind": "ibge_api",
+      "retrieved_at": "2026-10-27T18:44:42Z",
+      "rows": 5570,
+      "url": "https://servicodados.ibge.gov.br/api/v3/malhas/estados/{code}/metadados?intrarregiao=municipio"
     }
   ],
   "turnout_identity": [

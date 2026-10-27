@@ -7,7 +7,7 @@ import pytest
 from voto_a_voto.cli import main
 from voto_a_voto.reconcile import NationalTotals
 
-FILES = ("cities.csv", "turnout.csv", "votes.csv", "candidates.csv", "manifest.json")
+FILES = ("cities.csv", "turnout.csv", "votes.csv", "candidates.csv", "centroids.csv", "manifest.json")
 
 
 def run(args, services, tmp_path):
@@ -18,7 +18,7 @@ def snapshot(directory: Path) -> dict[str, bytes]:
     return {name: (directory / name).read_bytes() for name in FILES}
 
 
-def test_build_writes_the_four_tables_and_the_manifest(services, tmp_path, capsys):
+def test_build_writes_the_five_tables_and_the_manifest(services, tmp_path, capsys):
     svc, _, _ = services
 
     code = run(["build"], svc, tmp_path)
@@ -32,7 +32,7 @@ def test_build_writes_the_four_tables_and_the_manifest(services, tmp_path, capsy
     manifest = json.loads((tmp_path / "data" / "manifest.json").read_text(encoding="utf-8"))
     assert {s["id"] for s in manifest["sources"]} == {
         "votacao_candidato_munzona_2018", "detalhe_votacao_munzona_2018",
-        "votacao_candidato_munzona_2022", "detalhe_votacao_munzona_2022", "tse_results_2026",
+        "votacao_candidato_munzona_2022", "detalhe_votacao_munzona_2022", "tse_results_2026", "ibge_malhas_metadados",
     }
     site = next(s for s in manifest["sources"] if s["id"] == "tse_results_2026")
     assert (site["cities"], site["files"], site["final"]) == (8, 8 * 2 + 2 + 1, 8 * 2 + 2)  # config has no "and" marker
@@ -184,3 +184,50 @@ def test_check_fails_when_there_is_no_manifest(services, tmp_path):
     svc, _, _ = services
 
     assert run(["check"], svc, tmp_path) == 1
+
+
+def test_build_adds_the_ibge_centroids_of_the_cities_that_have_an_ibge_code(services, tmp_path, capsys):
+    svc, _, _ = services
+    run(["build"], svc, tmp_path)
+
+    lines = (tmp_path / "data" / "centroids.csv").read_text(encoding="utf-8").splitlines()
+    cities = (tmp_path / "data" / "cities.csv").read_text(encoding="utf-8").splitlines()[1:]
+
+    assert lines[0] == "cd_ibge,lat,lon"
+    assert [line.split(",")[0] for line in lines[1:]] == sorted(city.split(",")[2] for city in cities if city.split(",")[2])
+    assert "IBGE centroids: 5 municipalities" in capsys.readouterr().out
+    source = next(s for s in json.loads((tmp_path / "data" / "manifest.json").read_text(encoding="utf-8"))["sources"] if s["id"] == "ibge_malhas_metadados")
+    assert source["rows"] == 5 and source["files"] >= 1
+
+
+def test_a_second_build_and_an_offline_one_do_not_ask_ibge_again(services, fake_ibge, tmp_path):
+    svc, _, _ = services
+    run(["build"], svc, tmp_path)
+    asked = len(fake_ibge.requests)
+
+    run(["build"], svc, tmp_path)
+    run(["build", "--offline"], svc, tmp_path)
+
+    assert len(fake_ibge.requests) == asked
+
+
+def test_ibge_being_down_fails_the_build_and_writes_nothing(services, tmp_path, capsys):
+    svc, _, _ = services
+    svc.ibge_transport = lambda url, headers: (503, {}, "")
+
+    code = run(["build"], svc, tmp_path)
+
+    assert code == 1
+    assert "IBGE centroids" in capsys.readouterr().err
+    assert not (tmp_path / "data").exists()
+
+
+def test_check_fails_when_a_city_loses_its_centroid(services, tmp_path, capsys):
+    svc, _, _ = services
+    run(["build"], svc, tmp_path)
+    path = tmp_path / "data" / "centroids.csv"
+    lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
+    path.write_text("".join(lines[:-1]), encoding="utf-8")
+
+    assert run(["check"], svc, tmp_path) == 1
+    assert "centroids" in capsys.readouterr().err
