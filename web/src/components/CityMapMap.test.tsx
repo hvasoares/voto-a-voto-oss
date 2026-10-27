@@ -274,8 +274,12 @@ describe('CityMapMap: the label placement pass (placeLabels)', () => {
       await user.click(screen.getByRole('link', { name: 'Mapa' }))
       await waitFor(() => expect(document.querySelector('[data-slot="mapa-municipios"]')?.querySelectorAll('a[data-cd-ibge]')).toHaveLength(2))
       // Rio, the bigger shape: both labels — the value above the name, paper ink on the dark pos3 fill
-      const anchor = document.querySelector('a[data-cd-ibge="3399001"]')!
-      const texts = [...anchor.querySelectorAll('text')]
+      // (labels live in a SECOND pass, above every fill: a neighbour's fill never overprints a text)
+      const map = document.querySelector('[data-slot="mapa-municipios"] svg')!
+      const kids = [...map.children].map((el) => el.tagName.toLowerCase())
+      expect(kids.filter((t) => t === 'a')).toHaveLength(2) // shapes first
+      expect(kids.indexOf('g')).toBeGreaterThan(kids.lastIndexOf('a')) // labels after every fill
+      const texts = [...map.querySelectorAll('g[data-cd-ibge="3399001"] text')]
       expect(texts).toHaveLength(2)
       expect(texts[0]!.getAttribute('y')).toBe('33') // shape.cy - 2
       expect(texts[0]!.textContent).toBe('+50,0')
@@ -283,9 +287,8 @@ describe('CityMapMap: the label placement pass (placeLabels)', () => {
       expect(texts[1]!.getAttribute('y')).toBe('45') // shape.cy + 10: the name never prints under the value
       expect(texts[1]!.textContent).toBe('Rio de Janeiro')
       // Carmo's own name falls past the container edge; its value still prints, the text stays
-      const carmo = document.querySelector('a[data-cd-ibge="3399002"]')!
-      expect(carmo.querySelectorAll('text')).toHaveLength(1)
-      expect(carmo.getAttribute('aria-label')).toContain('+50,0 pp')
+      expect(map.querySelectorAll('g[data-cd-ibge="3399002"] text')).toHaveLength(1)
+      expect(document.querySelector('a[data-cd-ibge="3399002"]')!.getAttribute('aria-label')).toContain('+50,0 pp')
     } finally {
       fetchJson = MESH
     }

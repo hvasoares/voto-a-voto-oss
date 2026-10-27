@@ -71,6 +71,19 @@ is — the page file is the only `rj`-specific piece.
    Status: DONE — commit "web: capture-review fixes — label placement pass, luminance ink, panel
    figure nowrap (issue-16 checkpoint 3)".
 
+4. **Labels above all shapes (re-review residual).** MapView drew paths and text interleaved in the
+   per-shape loop, so a neighbour's fill or border stroke overprinted labels near cluster edges
+   (sliced glyphs, one value losing its sign — the direction unreadable). MapView now draws ALL
+   shape paths first (fills, borders, the selection outline) and then ALL admitted labels in a
+   second SVG pass (`g[data-cd-ibge]` groups, `pointerEvents="none"`; `placeLabels` output
+   unchanged — the collision pass already keeps labels off each other, this is z-order only):
+   no fill or border can ever cut a value or a name again. The full row text stays in each
+   shape's aria-label/tooltip; the island test pins the z-order (labels after the last fill) and
+   the real spec reads Rio's inline value from the label group.
+
+   Status: DONE — commit "web: draw map labels above all shapes — second SVG pass so no fill
+   overprints a value (issue-16 checkpoint 4)".
+
    Deviations from the frames / parent plan, deliberate:
    - The ROUTE is `/mapa/rj/` (the ticket's own placeholder page): ticket #50 will port the state
      page and host this island under `data-placeholder="state-map"`; until then this is the state's
