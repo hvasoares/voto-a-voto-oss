@@ -163,6 +163,7 @@ test.describe('city card: the headline sentence', () => {
     await waitReady(page)
     const sentence = 'Em Cidade Exemplo, no 1º turno de 2026, 30% do eleitorado não votou, quase tanto quanto o Candidato B recebeu (33,6%).'
     await expect(headline(page)).toHaveText(sentence)
+    await expect(card(page).locator('.city-headline__note')).toHaveText('Frase gerada dos números · também o texto alternativo')
     const panel = card(page)
     await expect(panel).toHaveAttribute('role', 'group')
     const id = await headline(page).getAttribute('id')

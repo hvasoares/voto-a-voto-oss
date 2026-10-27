@@ -160,10 +160,11 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .city-card .turnout__title:first-child { margin-top: 15px; }
 .city-card .bar + .turnout__title { margin-top: 17px; }
 .city-card .legend { margin-top: 12px; }
-.city-headline { font: 400 15px/21px var(--font-serif); margin: 35px -16px 0; }
+.city-page .city-headline { font: 400 18px/24px var(--font-serif); margin: 26px -16px 0; }
+.city-page .city-headline__note { font: 400 11px/14px var(--font-sans); color: var(--c-ink); margin: 6px -16px 0; }
 .city-nodata { margin: 24px 0; font-size: var(--fs-lead); color: var(--c-muted); }
 .city-share {
-  display: flex; align-items: center; justify-content: center; height: 48px; margin-top: 13px;
+  display: flex; align-items: center; justify-content: center; height: 48px; margin-top: 18px;
   background: var(--c-accent); color: var(--c-accent-fg); border-radius: var(--radius); font-size: 15px; padding-bottom: 1px;
 }
 .city-links { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 7px; padding-top: 15px; border-top: 1px solid var(--c-rule); }

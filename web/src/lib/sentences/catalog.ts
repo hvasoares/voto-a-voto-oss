@@ -12,6 +12,8 @@
 export const KEYS = [
   /** Shown instead of a sentence when the city has no data in the cycle. */
   'noData',
+  /** The small line under the headline: where the sentence comes from. */
+  'headline.note',
   /** The start of every sentence: where and when. */
   'lead.city',
   'lead.overseas',
@@ -53,6 +55,7 @@ export const DEFAULT_LOCALE: Locale = 'pt-BR'
 
 const ptBR: Record<Key, string> = {
   noData: 'Sem dados nesse ciclo.',
+  'headline.note': 'Frase gerada dos números · também o texto alternativo',
   'lead.city': 'Em {city}, no {turno}º turno de {ano}, ',
   'lead.overseas': 'No exterior, em {city}, no {turno}º turno de {ano}, ',
   noElectorate: '{lead}não há eleitores aptos registrados.',
