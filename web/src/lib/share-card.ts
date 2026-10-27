@@ -23,6 +23,7 @@
  */
 import type { CityResult, Segment, SegmentKey } from '@/shared/city-model'
 import { colors, fonts } from '@/shared/tokens'
+import { DEFAULT_LOCALE, message, type Locale, type MessageKey } from './sentences/catalog'
 
 /** The fields of a CityResult the picture and the share text read. A CityResult is one. */
 export interface PictureResult extends Pick<CityResult, 'ano' | 'turno' | 'aptos' | 'validos' | 'votedPct' | 'notVotedPct'> {
@@ -43,6 +44,8 @@ export interface ShareCardOptions {
   address: string
   /** Fictitious data: draws the "EXEMPLO" tag and the fictitious-data brand line. */
   fixture?: boolean
+  /** The language of the words drawn around the numbers (the catalog's `card.*`); Portuguese by default. */
+  locale?: Locale
   /** Display size of the SVG element; the drawing itself stays 1080x1070. */
   width?: number
   height?: number
@@ -125,11 +128,11 @@ export const rect = (x: number, y: number, w: number, h: number, fill: string, e
 
 const LABEL = 44
 /** Candidate segments: "Name 52%", else a shortened name, else "52%". Other segments: "Abstenção 78%", else "Br". */
-function segmentLabel(s: Seg, width: number): string {
+function segmentLabel(s: Seg, width: number, others: string): string {
   const room = width - 24
   const fits = (t: string) => textWidth(t, LABEL, true) <= room
   if (s.key === 'a' || s.key === 'b' || s.key === 'outros') {
-    const name = s.key === 'outros' ? 'Outros' : s.label
+    const name = s.key === 'outros' ? others : s.label
     const full = `${name} ${s.pct}%`
     if (fits(full)) return full
     const short = `${fit(name, LABEL, room - textWidth(` ${s.pct}%`, LABEL, true), true)} ${s.pct}%`
@@ -143,14 +146,14 @@ function segmentLabel(s: Seg, width: number): string {
 }
 
 /** A bar of `segs`: widths proportional to the integer percents (which add up to 100), 10 px gaps as in the frame. */
-function bar(segs: Seg[], y: number, h: number): string {
+function bar(segs: Seg[], y: number, h: number, others: string): string {
   const shown = segs.filter((s) => s.pct > 0)
   const unit = (INNER - (shown.length - 1) * GAP) / 100
   let x = LEFT
   return shown
     .map((s) => {
       const w = s.pct * unit
-      const label = segmentLabel(s, w)
+      const label = segmentLabel(s, w, others)
       const out = rect(x, y, w, h, FILL[s.key]) + (label ? text(x + w / 2, y + h / 2 + 15, LABEL, label, { weight: 600, fill: TEXT_ON[s.key], anchor: 'middle' }) : '')
       x += w + GAP
       return out
@@ -170,6 +173,7 @@ function addressLines(address: string): { size: number; lines: string[] } {
 }
 
 export function shareCardSvg(r: PictureResult, o: ShareCardOptions): string {
+  const say = (key: MessageKey, params: Record<string, string | number> = {}) => message({ locale: o.locale ?? DEFAULT_LOCALE, register: 'standard' }, key, params)
   const out: string[] = []
   out.push(rect(0, 0, W, H, colors.paper))
   out.push(`<rect x="5" y="5" width="${W - 10}" height="${H - 10}" fill="none" stroke="${colors.ink}" stroke-width="10"/>`)
@@ -177,10 +181,10 @@ export function shareCardSvg(r: PictureResult, o: ShareCardOptions): string {
   // Header: fictitious tag and "Presidente {ano}".
   let hx = LEFT
   if (o.fixture) {
-    out.push(rect(LEFT, 69, 285, 78, colors.flag, ' rx="10"'), text(LEFT + 142, 122, 44, 'EXEMPLO', { weight: 700, anchor: 'middle' }))
+    out.push(rect(LEFT, 69, 285, 78, colors.flag, ' rx="10"'), text(LEFT + 142, 122, 44, say('card.example'), { weight: 700, anchor: 'middle' }))
     hx = 422
   }
-  out.push(text(hx, 122, 44, `Presidente ${r.ano}`, { weight: 600, fill: colors.muted }))
+  out.push(text(hx, 122, 44, say('card.president', { ano: r.ano }), { weight: 600, fill: colors.muted }))
 
   // City name (serif), then cycle, round and UF, then the hairline.
   const { size, lines } = nameLines(o.cityName)
@@ -188,25 +192,25 @@ export function shareCardSvg(r: PictureResult, o: ShareCardOptions): string {
   const baseline1 = two ? 270 : 311
   lines.forEach((line, i) => out.push(text(LEFT, baseline1 + i * 76, size, line, { serif: true })))
   const sub = two ? 406 : 390
-  out.push(text(LEFT, sub, 44, `${r.ano} · ${r.turno}º turno · ${fit(o.ufLabel, 44, 400)}`, { fill: colors.muted }))
+  out.push(text(LEFT, sub, 44, say('card.round', { ano: r.ano, turno: r.turno, uf: fit(o.ufLabel, 44, 400) }), { fill: colors.muted }))
   const d = two ? 8 : 0
   out.push(rect(LEFT, 430 + d, INNER, 4, colors.rule))
 
   if (r.aptos <= 0) {
-    out.push(text(LEFT, 540 + d, 46, 'Sem eleitores aptos registrados', { weight: 700 }))
+    out.push(text(LEFT, 540 + d, 46, say('card.noElectorate'), { weight: 700 }))
   } else {
-    out.push(text(LEFT, 517 + d, 46, `Votaram: ${r.votedPct}% do eleitorado`, { weight: 700 }))
-    if (r.validos > 0) out.push(bar(r.voted, 545 + d, 108))
-    else out.push(rect(LEFT, 545 + d, INNER, 108, colors['paper-2']), text(W / 2, 545 + d + 54 + 15, LABEL, 'Nenhum voto válido', { weight: 600, fill: colors.muted, anchor: 'middle' }))
-    out.push(text(LEFT, 740 + d, 46, `Não votaram: ${r.notVotedPct}% do eleitorado`, { weight: 700 }))
-    out.push(bar(r.notVoted, 771 + d, 108))
+    out.push(text(LEFT, 517 + d, 46, say('card.voted', { pct: r.votedPct }), { weight: 700 }))
+    if (r.validos > 0) out.push(bar(r.voted, 545 + d, 108, say('card.others')))
+    else out.push(rect(LEFT, 545 + d, INNER, 108, colors['paper-2']), text(W / 2, 545 + d + 54 + 15, LABEL, say('card.noValid'), { weight: 600, fill: colors.muted, anchor: 'middle' }))
+    out.push(text(LEFT, 740 + d, 46, say('card.notVoted', { pct: r.notVotedPct }), { weight: 700 }))
+    out.push(bar(r.notVoted, 771 + d, 108, say('card.others')))
   }
 
   // Address (no QR), then the brand and source line.
   const addr = addressLines(o.address)
   const lastAddr = 995 + (addr.lines.length - 1) * 38
   addr.lines.forEach((line, i) => out.push(text(W / 2, 995 - (addr.lines.length - 1) * 8 + i * 38, addr.size, line, { weight: 600, anchor: 'middle' })))
-  const brand = o.fixture ? 'Voto a Voto · Dados fictícios. Fonte real: TSE.' : 'Voto a Voto · Fonte: TSE'
+  const brand = say(o.fixture ? 'card.brand.fixture' : 'card.brand')
   const brandSize = [38, 34, 30].find((sz) => textWidth(brand, sz) <= INNER) ?? 30
   out.push(text(W / 2, Math.max(1040, lastAddr + 48), brandSize, brand, { fill: colors.muted, anchor: 'middle' }))
 
@@ -215,5 +219,5 @@ export function shareCardSvg(r: PictureResult, o: ShareCardOptions): string {
 
 /** `svg` (made by `shareCardSvg`) with another `<title>`: the same drawing, the text alternative of another register. */
 export function withAlt(svg: string, alt: string): string {
-  return svg.replace(/<title>[\s\S]*?<\/title>/, () => `<title>${esc(alt)}</title>`)
+  return svg.replace(/(<title\b[^>]*>)[\s\S]*?<\/title>/, (_, open: string) => `${open}${esc(alt)}</title>`)
 }

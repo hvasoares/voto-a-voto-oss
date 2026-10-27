@@ -17,6 +17,7 @@ import { displayName } from '@/shared/city-search'
 import { defaultView } from '@/slots/city/city-view'
 import { shareContent } from '@/lib/share-model'
 import { siteOrigin } from '@/lib/share-url'
+import { currentEdition } from '@/lib/editions-load'
 
 export async function getStaticPaths() {
   return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug }, props: { nome: city.nome } }))
@@ -30,11 +31,12 @@ const shard = (await loadCityShard(uf!, slug!))!
 const city = shard.city
 const name = displayName(nome)
 const fixture = await datasetFixture()
+const edition = (await currentEdition()).id
 
 // The view the page pre-prints is the card's default; ?ciclo/?turno is the ShareSheet island's business.
 const view = defaultView((ano, turno) => !!cityShardResult(shard, ano, turno))
 const result = cityShardResult(shard, view.ano, view.turno)
-const content = result ? shareContent(result, city, { origin: siteOrigin(), base, fixture }) : null
+const content = result ? shareContent(result, city, { origin: siteOrigin(), base, fixture, edition }) : null
 const closeHref = href(`/${uf}/${slug}/`)
 ---
 <Base title={`Compartilhar · ${name}`}>
@@ -62,7 +64,7 @@ const closeHref = href(`/${uf}/${slug}/`)
       <h1 class="font-serif text-title font-normal leading-[30px]">Compartilhar resultado</h1>
       <a class="min-h-11 px-1 pt-1 text-body font-bold" href={closeHref} data-close>Fechar<span class="hidden md:inline" aria-hidden="true"> ×</span></a>
     </div>
-    <ShareSheet client:idle uf={city.uf} slug={city.slug} view={view} initial={content} origin={siteOrigin()} base={base} fixture={fixture} />
+    <ShareSheet client:idle uf={city.uf} slug={city.slug} view={view} initial={content} origin={siteOrigin()} base={base} fixture={fixture} edition={edition} />
     {/* Mostrar QR floats this city's canonical link scannably (route /:uf/:slug/qr/); it does not depend on
       * the round, so it renders even when the view has no result. */}
     <a class="mt-2 flex min-h-11 w-full items-center justify-center rounded-md border border-border bg-background text-body font-bold text-foreground" href={href(`/${uf}/${slug}/qr/`)} data-qr-link>

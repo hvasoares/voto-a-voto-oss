@@ -4,18 +4,16 @@ import { getAnalytics } from '@/analytics'
 import { Button } from '@/components/ui/button'
 import PlacePicker, { type PickedPlace } from '@/components/PlacePicker'
 import { withBase } from '@/paths'
-import { cityShardResult, type CityShard } from '@/lib/city-shard'
+import type { CityShard } from '@/lib/city-shard'
 import { DEFAULT_LOCALE, message } from '@/lib/sentences/catalog'
-import { statCard, MEASURES, type Measure } from '@/lib/sentences/stat'
+import { MEASURES, type Measure } from '@/lib/sentences/stat'
+import { statContent } from '@/lib/stat-content'
 import { readRegister } from '@/lib/sentences/register-store'
-import { choiceQuery, DOWNLOAD_LABELS, MEASURE_LABELS, parseChoice, SIZE_LABELS, statFilename, type GeneratorChoice } from '@/lib/generator-model'
+import { choiceQuery, DOWNLOAD_LABELS, MEASURE_LABELS, parseChoice, SIZE_LABELS, type GeneratorChoice } from '@/lib/generator-model'
 import { performShare, type ShareNavigator } from '@/lib/share-flow'
 import { saveBlob, svgToPng } from '@/lib/share-raster'
-import { shortAddress } from '@/lib/share-text'
-import { cityUrl } from '@/lib/share-url'
-import { STAT_SIZES, STAT_SIZE_IDS, statCardSvg, type StatSize } from '@/lib/stat-card'
+import { STAT_SIZES, STAT_SIZE_IDS, type StatSize } from '@/lib/stat-card'
 import { displayName } from '@/shared/city-search'
-import { defaultView } from '@/slots/city/city-view'
 
 /**
  * The card generator (#25): pick a city, one measure and a size; the picture is drawn here, in the browser, by `statCardSvg`
@@ -30,6 +28,8 @@ export interface CardGeneratorProps {
   origin: string
   /** Fictitious data (manifest.fixture). */
   fixture: boolean
+  /** The id of the data edition: the picture carries it with its other keys (#38). */
+  edition: string
 }
 
 const PREVIEW_WIDTH: Record<StatSize, string> = { square: 'max-w-[220px]', story: 'max-w-[124px]', preview: 'max-w-[300px]' }
@@ -45,7 +45,7 @@ const MESSAGES = {
 
 type Loaded = { state: 'idle' } | { state: 'loading' } | { state: 'failed' } | { state: 'ready'; shard: CityShard }
 
-export default function CardGenerator({ base, origin, fixture }: CardGeneratorProps) {
+export default function CardGenerator({ base, origin, fixture, edition }: CardGeneratorProps) {
   const [choice, setChoice] = useState<GeneratorChoice>({ measure: 'nonVoters', size: 'square' })
   const [place, setPlace] = useState<PickedPlace>()
   const [loaded, setLoaded] = useState<Loaded>({ state: 'idle' })
@@ -82,29 +82,22 @@ export default function CardGenerator({ base, origin, fixture }: CardGeneratorPr
   const card = useMemo(() => {
     if (loaded.state !== 'ready') return undefined
     const { shard } = loaded
-    const view = defaultView((ano, turno) => !!cityShardResult(shard, ano, turno))
-    const result = cityShardResult(shard, view.ano, view.turno)
-    const cityName = displayName(shard.city.nome)
-    const register = readRegister()
-    const stat = statCard(result, choice.measure, { cityName, overseas: shard.city.uf === 'zz', ano: view.ano, turno: view.turno, register })
-    const url = cityUrl(origin, base, shard.city.uf, shard.city.slug)
-    const address = shortAddress(url)
-    const svg = result ? statCardSvg(stat, { size: choice.size, address, fixture }) : undefined
-    return { view, result, stat, url, address, svg, city: shard.city, name: statFilename(shard.city, choice.measure, view, choice.size) }
-  }, [loaded, choice.measure, choice.size, origin, base, fixture])
+    const content = statContent(shard, { measure: choice.measure, size: choice.size, register: readRegister(), origin, base, fixture, edition })
+    return { ...content, city: shard.city }
+  }, [loaded, choice.measure, choice.size, origin, base, fixture, edition])
 
   // The PNG is made as soon as the picture changes, so Compartilhar can reach navigator.share inside the tap.
   useEffect(() => {
     setFile(undefined)
     if (!card?.svg) return
-    const ready = svgToPng(card.svg, card.name, STAT_SIZES[choice.size]).catch(() => undefined)
+    const ready = svgToPng(card.svg, card.filename, STAT_SIZES[choice.size]).catch(() => undefined)
     readyRef.current = ready
     let live = true
     void ready.then((f) => live && setFile(f))
     return () => {
       live = false
     }
-  }, [card?.svg, card?.name, choice.size])
+  }, [card?.svg, card?.filename, choice.size])
 
   const update = (next: GeneratorChoice) => {
     setChoice(next)
@@ -122,7 +115,7 @@ export default function CardGenerator({ base, origin, fixture }: CardGeneratorPr
   const download = async () => {
     const f = file ?? (await readyRef.current)
     if (f) saveBlob(f, f.name)
-    else if (card?.svg) saveBlob(new Blob([card.svg], { type: 'image/svg+xml' }), card.name.replace(/\.png$/, '.svg'))
+    else if (card?.svg) saveBlob(new Blob([card.svg], { type: 'image/svg+xml' }), card.filename.replace(/\.png$/, '.svg'))
   }
   const onDownload = () =>
     void download().then(
@@ -132,6 +125,11 @@ export default function CardGenerator({ base, origin, fixture }: CardGeneratorPr
       },
       () => setStatus(MESSAGES.downloadFailed),
     )
+  const onDownloadSvg = () => {
+    if (!card?.svg) return
+    saveBlob(new Blob([card.svg], { type: 'image/svg+xml;charset=utf-8' }), card.filename.replace(/\.png$/, '.svg'))
+    getAnalytics().event('card_svg_downloaded', { size: choice.size, measure: choice.measure })
+  }
   const onShare = () => {
     if (!card) return
     void performShare({ nav: navigator as ShareNavigator, file, text: `${card.stat.alt} ${card.url}`, download }).then((r) => {
@@ -197,6 +195,9 @@ export default function CardGenerator({ base, origin, fixture }: CardGeneratorPr
         </Button>
         <button type="button" className="min-h-11 text-small font-bold text-primary disabled:opacity-50" disabled={!ready} onClick={onCopyAlt} data-act="copy-alt">
           Copiar texto alternativo
+        </button>
+        <button type="button" className="min-h-11 text-small text-primary underline disabled:opacity-50" disabled={!ready} onClick={onDownloadSvg} data-act="download-svg">
+          Baixar em SVG (com texto, para leitores de tela)
         </button>
       </div>
       <p className="min-h-6 text-small leading-[17px] text-muted-foreground" role="status" aria-live="polite" data-status>

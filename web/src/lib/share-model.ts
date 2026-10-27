@@ -6,7 +6,8 @@ import type { City } from '@/data'
 import { displayName, ufLabel } from '@/shared/city-search'
 import type { CityResult } from '@/shared/city-model'
 import { shareCardSvg, withAlt } from './share-card'
-import { REGISTERS, type Register } from './sentences/catalog'
+import { annotateSvg, type CardKeys } from './card-keys'
+import { DEFAULT_LOCALE, REGISTERS, type Locale, type Register } from './sentences/catalog'
 import { headline } from './sentences/headline'
 import { shareText, shortAddress } from './share-text'
 import { cityUrl } from './share-url'
@@ -23,6 +24,8 @@ export interface ShareContent {
   address: string
   /** `voto-a-voto-rj-cidade-exemplo-2026-turno-2.png` (ASCII: slugs are). */
   filename: string
+  /** What the picture carries to be reopened (#38); present when the options named an edition. */
+  keys?: CardKeys
 }
 
 export interface ShareContentOptions {
@@ -30,6 +33,10 @@ export interface ShareContentOptions {
   base: string
   /** Fictitious data (manifest.fixture). */
   fixture: boolean
+  /** The id of the data edition the card shows: given, the picture is the self-describing one (#38: keys, description, language). */
+  edition?: string
+  /** The language of the card's words; Portuguese by default. */
+  locale?: Locale
   /** Display size of the picture (the drawing stays the viewBox of the share card); the card size when omitted. */
   width?: number
   height?: number
@@ -40,12 +47,16 @@ export function shareContent(result: CityResult, city: Pick<City, 'uf' | 'slug' 
   const address = shortAddress(url)
   const names = { cityName: displayName(city.nome), ufLabel: ufLabel(city.uf) }
   const overseas = city.uf === 'zz'
+  const locale = o.locale ?? DEFAULT_LOCALE
   const variants = Object.fromEntries(
-    REGISTERS.map((register) => [register, { alt: headline(result, { cityName: names.cityName, overseas, register }), text: shareText(result, { cityName: names.cityName, overseas, url, register }) }]),
+    REGISTERS.map((register) => [register, { alt: headline(result, { cityName: names.cityName, overseas, register, locale }), text: shareText(result, { cityName: names.cityName, overseas, url, register, locale }) }]),
   ) as ShareContent['variants']
   const alt = variants.standard.alt
+  const keys: CardKeys | undefined = o.edition ? { view: `city:${result.ano}-${result.turno}`, places: [`${city.uf}/${city.slug}`], edition: o.edition, lang: locale } : undefined
+  const drawn = shareCardSvg(result, { ...names, alt, address, fixture: o.fixture, width: o.width, height: o.height, locale })
   return {
-    svg: shareCardSvg(result, { ...names, alt, address, fixture: o.fixture, width: o.width, height: o.height }),
+    svg: keys ? annotateSvg(drawn, keys, { address }) : drawn,
+    keys,
     text: variants.standard.text,
     variants,
     url,

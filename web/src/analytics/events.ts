@@ -179,6 +179,12 @@ export const EVENTS: EventDoc[] = [
     emitted: ['src/components/CardGenerator.tsx'],
   },
   {
+    name: 'card_svg_downloaded',
+    description: 'The self-describing SVG of the card generator picture was downloaded (text kept as text, with title and description).',
+    props: { size: 'square | story | preview', measure: 'nonVoters | margin | turnout' },
+    emitted: ['src/components/CardGenerator.tsx'],
+  },
+  {
     name: 'qr_screen_shown',
     description: 'The Mostrar QR screen (/:uf/:slug/qr/ or the demo /qr/) was shown.',
     props: {},

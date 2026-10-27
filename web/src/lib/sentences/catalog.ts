@@ -86,6 +86,19 @@ export const KEYS = [
   'stat.margin.other',
   'stat.turnout',
   'stat.unavailable',
+  /** The chrome of the pictures (#38): the words drawn around the numbers, so a card exists in each language. Same in both registers. */
+  'card.example',
+  'card.president',
+  'card.round',
+  'card.noElectorate',
+  'card.voted',
+  'card.notVoted',
+  'card.noValid',
+  'card.others',
+  'card.brand',
+  'card.brand.fixture',
+  /** The long description (`<desc>`) of a picture: what it is and where its numbers come from. */
+  'card.desc',
   /** Pipe-separated words for the counts 0 to 10; a larger count is written in digits. */
   'numberWords',
   /** Put before a label that already says "Candidato X" (fixture, unnamed candidates). */
@@ -111,7 +124,7 @@ export const DEFAULT_LOCALE: Locale = 'pt-BR'
 export { DEFAULT_REGISTER, REGISTERS, type Register }
 
 /** Keys that read the same in both registers, so they have no plain version: the register switch's own labels and the page-head description for crawlers. */
-export const STANDARD_ONLY_KEYS = ['register.label', 'register.standard', 'register.plain', 'preview.fixture', 'preview.intro', 'preview.noResult', 'preview.noElectorate', 'preview.noValidVotes', 'preview.default'] as const satisfies readonly Key[]
+export const STANDARD_ONLY_KEYS = ['card.example', 'card.president', 'card.round', 'card.noElectorate', 'card.voted', 'card.notVoted', 'card.noValid', 'card.others', 'card.brand', 'card.brand.fixture', 'card.desc', 'register.label', 'register.standard', 'register.plain', 'preview.fixture', 'preview.intro', 'preview.noResult', 'preview.noElectorate', 'preview.noValidVotes', 'preview.default'] as const satisfies readonly Key[]
 type StandardOnly = (typeof STANDARD_ONLY_KEYS)[number]
 
 const ptBR: Record<Key, string> = {
@@ -179,6 +192,17 @@ const ptBR: Record<Key, string> = {
   'stat.margin.other': 'votos separaram os dois candidatos mais votados em {city}, no {turno}º turno de {ano}.',
   'stat.turnout': 'do eleitorado de {city} compareceu no {turno}º turno de {ano}.',
   'stat.unavailable': 'Esta medida não se aplica a {city} no {turno}º turno de {ano}.',
+  'card.example': 'EXEMPLO',
+  'card.president': 'Presidente {ano}',
+  'card.round': '{ano} · {turno}º turno · {uf}',
+  'card.noElectorate': 'Sem eleitores aptos registrados',
+  'card.voted': 'Votaram: {pct}% do eleitorado',
+  'card.notVoted': 'Não votaram: {pct}% do eleitorado',
+  'card.noValid': 'Nenhum voto válido',
+  'card.others': 'Outros',
+  'card.brand': 'Voto a Voto · Fonte: TSE',
+  'card.brand.fixture': 'Voto a Voto · Dados fictícios. Fonte real: TSE.',
+  'card.desc': 'Imagem do Voto a Voto com números do TSE, edição {edition}. Endereço: {address}.',
   numberWords: 'zero|um|dois|três|quatro|cinco|seis|sete|oito|nove|dez',
   'label.article': 'o {name}',
   'pct.lessThan': 'menos de {pct}',
@@ -272,6 +296,17 @@ const ptBRPlain: Record<Exclude<Key, StandardOnly>, string> = {
 /** Skeletons: a few keys each, to show the shape of a translation. Everything missing reads in Portuguese. */
 const en: Partial<Record<Key, string>> = {
   noData: 'No data for this cycle.',
+  'card.example': 'EXAMPLE',
+  'card.president': 'President {ano}',
+  'card.round': '{ano} · round {turno} · {uf}',
+  'card.noElectorate': 'No registered voters',
+  'card.voted': 'Voted: {pct}% of the electorate',
+  'card.notVoted': 'Did not vote: {pct}% of the electorate',
+  'card.noValid': 'No valid votes',
+  'card.others': 'Others',
+  'card.brand': 'Voto a Voto · Source: TSE',
+  'card.brand.fixture': 'Voto a Voto · Fictitious data. Real source: TSE.',
+  'card.desc': 'Voto a Voto picture with TSE numbers, edition {edition}. Address: {address}.',
   'lead.city': 'In {city}, in round {turno} of {ano}, ',
   'lead.overseas': 'Abroad, in {city}, in round {turno} of {ano}, ',
   noElectorate: '{lead}there are no registered voters.',
@@ -279,6 +314,17 @@ const en: Partial<Record<Key, string>> = {
 
 const es: Partial<Record<Key, string>> = {
   noData: 'Sin datos en este ciclo.',
+  'card.example': 'EJEMPLO',
+  'card.president': 'Presidente {ano}',
+  'card.round': '{ano} · {turno}.ª vuelta · {uf}',
+  'card.noElectorate': 'Sin electores registrados',
+  'card.voted': 'Votaron: {pct}% del electorado',
+  'card.notVoted': 'No votaron: {pct}% del electorado',
+  'card.noValid': 'Ningún voto válido',
+  'card.others': 'Otros',
+  'card.brand': 'Voto a Voto · Fuente: TSE',
+  'card.brand.fixture': 'Voto a Voto · Datos ficticios. Fuente real: TSE.',
+  'card.desc': 'Imagen de Voto a Voto con números del TSE, edición {edition}. Dirección: {address}.',
   'lead.city': 'En {city}, en la {turno}.ª vuelta de {ano}, ',
   'lead.overseas': 'En el exterior, en {city}, en la {turno}.ª vuelta de {ano}, ',
   noElectorate: '{lead}no hay electores registrados.',

@@ -1,4 +1,6 @@
 /** SVG -> PNG File in the browser (canvas). Browser only; the drawing itself is the pure shareCardSvg. */
+import { readSvgKeys, textDigest } from './card-keys'
+import { embedPngKeys } from './png-keys'
 import { SHARE_CARD_SIZE } from './share-card'
 
 const loadImage = (url: string) =>
@@ -22,7 +24,11 @@ export async function svgToPng(svg: string, filename: string, size: { width: num
     g.drawImage(img, 0, 0, canvas.width, canvas.height)
     const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'))
     if (!blob) throw new Error('the picture could not be encoded')
-    return new File([blob], filename, { type: 'image/png' })
+    // A self-describing card (#38) puts its keys and a digest of its words in the PNG, so a dropped PNG can reopen the view.
+    const keys = readSvgKeys(svg)
+    const bytes = new Uint8Array(await blob.arrayBuffer())
+    const png = keys.ok ? embedPngKeys(bytes, { ...keys.keys, check: await textDigest(svg) }) : bytes
+    return new File([png as Uint8Array<ArrayBuffer>], filename, { type: 'image/png' })
   } finally {
     URL.revokeObjectURL(url)
   }

@@ -27,9 +27,11 @@ export interface ShareSheetProps {
   base: string
   /** Fictitious data (manifest.fixture). */
   fixture: boolean
+  /** The id of the data edition: the picture carries it with its other keys (#38). */
+  edition: string
 }
 
-export default function ShareSheet({ uf, slug, view, initial, origin, base, fixture }: ShareSheetProps) {
+export default function ShareSheet({ uf, slug, view, initial, origin, base, fixture, edition }: ShareSheetProps) {
   const [content, setContent] = useState<ShareContent | null>(initial)
   const [viewId, setViewId] = useState(`${view.ano}-${view.turno}`)
   // The register the reader chose on the city card (remembered in this browser only); the server renders the standard one.
@@ -48,7 +50,7 @@ export default function ShareSheet({ uf, slug, view, initial, origin, base, fixt
       const shard = (await res.json()) as CityShard
       const result = cityShardResult(shard, asked.ano, asked.turno)
       if (!live) return
-      setContent(result ? shareContent(result, shard.city, { origin, base, fixture }) : null)
+      setContent(result ? shareContent(result, shard.city, { origin, base, fixture, edition }) : null)
       setViewId(`${asked.ano}-${asked.turno}`)
     })().catch(() => {
       if (live) {
@@ -59,7 +61,7 @@ export default function ShareSheet({ uf, slug, view, initial, origin, base, fixt
     return () => {
       live = false
     }
-  }, [uf, slug, view.ano, view.turno, initial, origin, base, fixture])
+  }, [uf, slug, view.ano, view.turno, initial, origin, base, fixture, edition])
 
   // The sheet frame states the view it draws (the [data-view] and [data-filename] contract of the page).
   useEffect(() => {

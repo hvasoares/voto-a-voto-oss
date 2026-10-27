@@ -15,6 +15,7 @@
  */
 import { colors } from '@/shared/tokens'
 import { esc, fit, rect, stripControl, text, textWidth, wrap } from './share-card'
+import { DEFAULT_LOCALE, message, type Locale } from './sentences/catalog'
 import type { Stat } from './sentences/stat'
 
 export const STAT_SIZES = {
@@ -33,6 +34,8 @@ export interface StatCardOptions {
   fixture?: boolean
   /** Replaces the text alternative (`<title>`), e.g. the plain register's; the stat's own `alt` by default. */
   alt?: string
+  /** The language of the words around the number (the catalog's `card.*`); Portuguese by default. */
+  locale?: Locale
 }
 
 const LEFT = 98
@@ -66,14 +69,15 @@ function lines(line: string, sizes: number[], max: number, maxLines: number): { 
 
 export function statCardSvg(stat: Stat, o: StatCardOptions): string {
   const { width: W, height: H } = STAT_SIZES[o.size]
+  const say = (key: 'card.example' | 'card.brand' | 'card.brand.fixture') => message({ locale: o.locale ?? DEFAULT_LOCALE, register: 'standard' }, key)
   const out: string[] = [rect(0, 0, W, H, colors.paper), `<rect x="5" y="5" width="${W - 10}" height="${H - 10}" fill="none" stroke="${colors.ink}" stroke-width="10"/>`]
   const inner = W - 2 * LEFT
   const wide = o.size === 'preview'
   const tagY = wide ? 52 : 69
-  if (o.fixture) out.push(rect(LEFT, tagY, 285, 78, colors.flag, ' rx="10"'), text(LEFT + 142, tagY + 53, 44, 'EXEMPLO', { weight: 700, anchor: 'middle' }))
+  if (o.fixture) out.push(rect(LEFT, tagY, 285, 78, colors.flag, ' rx="10"'), text(LEFT + 142, tagY + 53, 44, say('card.example'), { weight: 700, anchor: 'middle' }))
 
   const addrSize = wide ? 34 : 44
-  const brand = o.fixture ? 'Voto a Voto · Dados fictícios. Fonte real: TSE.' : 'Voto a Voto · Fonte: TSE'
+  const brand = say(o.fixture ? 'card.brand.fixture' : 'card.brand')
   const brandSize = wide ? 28 : 38
   const bottom = H - (wide ? 36 : 56)
   const addrY = bottom - (wide ? 42 : 58)

@@ -34,7 +34,7 @@ afterEach(() => {
 const open = async (search = '?cidade=rj/cidade-exemplo') => {
   history.replaceState(null, '', `/gerador/${search}`)
   const user = userEvent.setup()
-  const { container } = render(<CardGenerator base="/" origin="https://votoavoto.exemplo.br" fixture={true} />)
+  const { container } = render(<CardGenerator base="/" origin="https://votoavoto.exemplo.br" fixture={true} edition="2026-10-26" />)
   return { user, root: container.querySelector<HTMLElement>('[data-card-generator]')! }
 }
 const title = (root: HTMLElement) => root.querySelector('[data-preview-picture] svg title')?.textContent

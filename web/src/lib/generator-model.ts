@@ -19,7 +19,7 @@ export const MEASURE_LABELS: Record<Measure, string> = { nonVoters: 'Quem não v
 export const SIZE_LABELS: Record<StatSize, string> = { square: 'Quadrado', story: 'Story', preview: 'Prévia de link' }
 export const DOWNLOAD_LABELS: Record<StatSize, string> = { square: 'Baixar imagem quadrada', story: 'Baixar imagem Story', preview: 'Baixar imagem de prévia' }
 
-const QUERY_MEASURE: Record<Measure, string> = { nonVoters: 'nao-votou', margin: 'margem', turnout: 'comparecimento' }
+export const QUERY_MEASURE: Record<Measure, string> = { nonVoters: 'nao-votou', margin: 'margem', turnout: 'comparecimento' }
 const CITY = /^([a-z]{2})\/([a-z0-9-]+)$/
 
 /** `?cidade=rj/cidade-exemplo&medida=margem&tamanho=story`; the defaults are left out. */
