@@ -300,3 +300,10 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
   [data-component="outros-estados"] [data-mini-pcts] > * { grid-row: 2; font-size: 13px; line-height: 16px; font-weight: 700; }
   [data-component="outros-estados"] [data-mini-bars] > * > span:first-child { display: none; }
 }
+
+/* ---- desktop (G10, #57): Sobre os dados in the 720 px column: sections breathe, section titles are 28 px (frame 14). ---- */
+@media (min-width: 1024px) {
+  [data-page="sobre-os-dados"] > section { margin-top: 28px; padding-top: 24px; }
+  [data-page="sobre-os-dados"] > section h2 { font-size: 28px; line-height: 34px; }
+  [data-page="sobre-os-dados"] > section p, [data-page="sobre-os-dados"] > section li { font-size: 15px; line-height: 22px; }
+}
