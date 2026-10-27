@@ -14,8 +14,9 @@ const ADDRESS = (process.env.PUBLIC_DONATION_URL ?? '').trim()
 const pages = (dir = DIST): string[] =>
   readdirSync(dir).flatMap((name) => {
     const path = join(dir, name)
-    // `fragmentos`: the desktop fragment documents (iframes, no footer of their own: G10)
-    if (statSync(path).isDirectory()) return name === '_astro' || name === 'data' || name === 'geo' || name === 'preview' || name === 'fragmentos' ? [] : pages(path)
+    // `fragmentos`: the desktop fragment documents (iframes, no footer of their own: G10); `embed`: the city widgets (#29), which live
+    // inside other people's sites and carry no footer, no script and no donation link of ours
+    if (statSync(path).isDirectory()) return name === '_astro' || name === 'data' || name === 'geo' || name === 'preview' || name === 'fragmentos' || name === 'embed' ? [] : pages(path)
     return name.endsWith('.html') ? [path] : []
   })
 
