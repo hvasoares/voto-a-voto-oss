@@ -43,8 +43,8 @@ const address = shortAddress(url)
           enviar por mensagem, use o botão Compartilhar.
         </p>
         <a class="mt-[84px] flex min-h-12 items-center justify-center rounded-md border border-border bg-background text-body text-foreground" href={backHref} data-back>Voltar</a>
-        {/* data-ticket="20": analytics qr_screen_shown / poster_printed (the interface comes with #20); inert today, nothing is emitted. */}
-        <div data-placeholder="qr-analytics" data-ticket="20" data-events="qr_screen_shown,poster_printed" hidden></div>
+        {/* Events of ticket #20 via src/scripts/qr-analytics.ts: qr_screen_shown on load, poster_printed on print. */}
+        <div data-events="qr_screen_shown,poster_printed" hidden></div>
       </div>
     </section>
 
@@ -70,5 +70,9 @@ const address = shortAddress(url)
         margin: 12mm;
       }
     </style>
+    {/* The two QR events are a tiny dedicated script (ticket #20): still no island — the screen stays static. */}
+    <script>
+      import '@/scripts/qr-analytics'
+    </script>
   </main>
 </Base>

@@ -6,7 +6,13 @@ import { normalizeBase } from '../src/paths'
 export const base = normalizeBase(process.env.SITE_BASE)
 export const mode: 'local' | 'production' = process.env.E2E_MODE === 'production' ? 'production' : 'local'
 
-/** Origins other than the site itself that may be requested. Analytics: none exists yet (ticket #20 adds its origin HERE). */
+/**
+ * Origins other than the site itself that may be requested. Ticket #20 (GA4) is consent-gated by
+ * construction: before consent NOTHING is loaded and NO request leaves the site, so this list stays
+ * empty for the allow-list traces — the consent e2e (e2e/consent.spec.ts) stubs and blocks
+ * googletagmanager.com itself, per test, around the granted/blocked scenarios.
+ * A granted consent sends Google non-GET beacons anyway (never covered by this GET-only check).
+ */
 export const ANALYTICS_ORIGINS: string[] = []
 
 /** Approved CDN origins: only the production build may use them. Empty until the user chooses a provider (see README). */
