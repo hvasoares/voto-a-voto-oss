@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { cdn } from './integrations/cdn'
 import { dataset, shardsModule } from './integrations/dataset'
 import { interaction } from './integrations/interaction'
+import { previewImages } from './integrations/preview-images'
 import { themePlugin } from './integrations/theme'
 
 // SITE_BASE: "/" (default) or "/voto-a-voto/" for the GitHub project Pages site.
@@ -16,7 +17,7 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   build: { format: 'directory' },
-  integrations: [dataset(), interaction(), cdn(), react()],
+  integrations: [dataset(), previewImages(), interaction(), cdn(), react()],
   vite: {
     plugins: [shardsModule(), themePlugin(), tailwindcss()],
     resolve: {
