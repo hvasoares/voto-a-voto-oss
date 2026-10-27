@@ -5,6 +5,7 @@ import { createSearchController } from '@/slots/home/search-ui'
 import { Card } from '@/components/ui/card'
 import { Command, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 import { loadSearchCities } from '@/lib/search-data'
+import { savePlace } from '@/lib/place-store'
 
 /** One `search` event once typing pauses, not one per keystroke (same as the vanilla home). */
 const DEBOUNCE_MS = 600
@@ -83,7 +84,10 @@ export default function CitySearch({ base }: { base: string }) {
                     data-position={i + 1}
                     data-uf={h.uf}
                     className="flex min-h-12 flex-1 items-center justify-between gap-3 px-3 text-foreground"
-                    onClick={() => controller?.resultTap(i + 1, h.uf)}
+                    onClick={() => {
+                      controller?.resultTap(i + 1, h.uf)
+                      savePlace({ kind: 'city', uf: h.uf, slug: h.slug, nome: h.nome })
+                    }}
                   >
                     <span className="text-body font-bold leading-[18px] wrap-anywhere">{h.nome}</span>
                     <span className="flex-none text-small text-muted-foreground">{h.ufLabel}</span>

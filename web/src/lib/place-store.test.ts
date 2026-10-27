@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { NOTICE_STORAGE_KEY } from './consent'
-import { forgetAll, placeHref, placeLabel, PLACE_KEY, readPlace, savePlace, STORED_ITEMS } from './place-store'
+import { forgetAll, placeHref, placeLabel, PLACE_KEY, readPlace, savePlace } from './place-store'
+import { STORED_ITEMS } from './stored-items'
 import { REGISTER_KEY } from './sentences/register-store'
 
 // A fake storage: the store only needs these four methods, and nothing here touches a browser.
@@ -35,8 +36,8 @@ describe('place store', () => {
     const s = memory()
     savePlace(city, s)
     expect(readPlace(s)).toEqual(city)
-    savePlace({ kind: 'state', uf: 'mt' }, s)
-    expect(readPlace(s)).toEqual({ kind: 'state', uf: 'mt' })
+    savePlace({ kind: 'state', uf: 'mt', nome: 'Mato Grosso' }, s)
+    expect(readPlace(s)).toEqual({ kind: 'state', uf: 'mt', nome: 'Mato Grosso' })
   })
 
   it('keeps only the fields of a place, nothing else the caller passed along', () => {
@@ -49,7 +50,8 @@ describe('place store', () => {
     ['not json', '{'],
     ['an array', '[]'],
     ['an unknown kind', '{"kind":"street","uf":"rj"}'],
-    ['a uf that is not two letters', '{"kind":"state","uf":"rio"}'],
+    ['a uf that is not two letters', '{"kind":"state","uf":"rio","nome":"X"}'],
+    ['a state without a name', '{"kind":"state","uf":"rj"}'],
     ['a city without a slug', '{"kind":"city","uf":"rj","nome":"X"}'],
     ['a slug with a path in it', '{"kind":"city","uf":"rj","slug":"../x","nome":"X"}'],
   ])('ignores a stored value that is %s', (_label, raw) => {
@@ -60,9 +62,9 @@ describe('place store', () => {
 
   it('links a city to its page and a state to its page, and names them', () => {
     expect(placeHref(city)).toBe('/rj/cidade-exemplo/')
-    expect(placeHref({ kind: 'state', uf: 'mt' })).toBe('/mt/')
+    expect(placeHref({ kind: 'state', uf: 'mt', nome: 'Mato Grosso' })).toBe('/mt/')
     expect(placeLabel(city)).toBe('Cidade Exemplo · RJ')
-    expect(placeLabel({ kind: 'state', uf: 'mt' })).toBe('Mato Grosso')
+    expect(placeLabel({ kind: 'state', uf: 'mt', nome: 'Mato Grosso' })).toBe('Mato Grosso')
   })
 
   it('forgets everything the site stored, and only that', () => {

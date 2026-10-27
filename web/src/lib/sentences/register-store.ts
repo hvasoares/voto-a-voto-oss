@@ -4,7 +4,9 @@
  */
 import { DEFAULT_REGISTER, REGISTERS, type Register } from './register'
 
-export const REGISTER_KEY = 'voto-a-voto:register'
+import { REGISTER_KEY } from '../storage-keys'
+
+export { REGISTER_KEY }
 
 type Store = Pick<Storage, 'getItem' | 'setItem'>
 

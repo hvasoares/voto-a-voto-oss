@@ -6,7 +6,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { EXPLORE } from '@/lib/explore'
 import { loadStateCodes } from '@/lib/states'
-import { ufFullLabel } from '@/lib/uf-names'
+import { UF_NOME, ufFullLabel } from '@/lib/uf-names'
 import Base from '@/layouts/Base.astro'
 
 const base = normalizeBase(import.meta.env.BASE_URL)
@@ -24,11 +24,18 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
     <CitySearch client:interaction base={base} />
     <p class="mt-1.5 text-small leading-[14px]" data-island-failed hidden>A busca não está disponível agora. Escolha um estado abaixo.</p>
     <noscript><p class="mt-1.5 text-small leading-[14px]">A busca precisa de JavaScript. Escolha um estado abaixo.</p></noscript>
+    <div class="relative mb-[-2px] mt-[10px] flex h-12 items-start rounded-lg border border-border bg-secondary pl-[11px]" data-place-shortcut data-base={base} hidden>
+      <span class="flex min-w-0 max-w-[200px] flex-col gap-[3px] pt-[7px]">
+        <span class="text-[10px] uppercase leading-3 text-muted-foreground" data-place-label>Sua cidade</span>
+        <a class="text-body font-bold leading-[18px] wrap-anywhere text-primary" data-place-link href={href('/')}></a>
+      </span>
+      <button type="button" class="absolute bottom-[-1px] right-[11px] h-11 cursor-pointer border-0 bg-transparent p-0 pt-[10px] text-[11px] leading-3 text-muted-foreground underline" data-place-forget>esquecer meus dados</button>
+    </div>
     <p class="mt-1.5 text-small leading-[14px]">Ou escolha um estado. Toque para ver os municípios.</p>
     <nav class="mt-1 grid justify-center gap-px [grid-auto-rows:44px] [grid-template-columns:repeat(7,44px)]" aria-label="Estados" data-uf-grid>
       {UF_TILES.map((t) =>
         available.has(t.uf) ? (
-          <a class={tile} style={`grid-column:${t.col};grid-row:${t.row}`} href={href(`/${t.uf}/`)} data-uf={t.uf} aria-label={ufFullLabel(t.uf)}>{t.uf.toUpperCase()}</a>
+          <a class={tile} style={`grid-column:${t.col};grid-row:${t.row}`} href={href(`/${t.uf}/`)} data-uf={t.uf} data-nome={UF_NOME[t.uf]} aria-label={ufFullLabel(t.uf)}>{t.uf.toUpperCase()}</a>
         ) : (
           <span class={cn(tile, 'select-none')} style={`grid-column:${t.col};grid-row:${t.row}`} data-uf={t.uf} aria-disabled="true">{t.uf.toUpperCase()}</span>
         ),
@@ -54,5 +61,6 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
   </footer>
   <script>
     import '@/scripts/tile-analytics'
+    import '@/scripts/home-place'
   </script>
 </Base>

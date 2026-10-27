@@ -19,7 +19,9 @@ export interface StorageLike {
   removeItem(key: string): void
 }
 
-export const NOTICE_STORAGE_KEY = 'voto-a-voto:notice'
+import { NOTICE_STORAGE_KEY } from './storage-keys'
+
+export { NOTICE_STORAGE_KEY }
 
 export interface NoticeStore {
   /** The current state; `'unknown'` until the visitor advances the banner (or after `forget()`). */
