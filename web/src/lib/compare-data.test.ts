@@ -1,8 +1,20 @@
 import { describe, expect, it } from 'vitest'
-import type { Candidate, DataStore, Manifest, Turnout, TurnoutQuery, Vote } from '@site/data'
-import { intersection } from './compare-data'
+import type { Candidate, City, DataStore, Manifest, Turnout, TurnoutQuery, Vote } from '@site/data'
 import { buildCompareRow, buildCycleBlocks, type RunoffTally } from './compare'
-import { buildCompareRows, buildStateStats, compareTallies, electPair, labelsOf, roundOf, tallyOf, type StateStats } from './compare-data'
+import {
+  buildCompareRows,
+  buildStateStats,
+  compareTallies,
+  cycleBlocksFor,
+  electPair,
+  intersection,
+  labelsOf,
+  otherLargestStates,
+  roundOf,
+  stateOrder,
+  tallyOf,
+  type StateStats,
+} from './compare-data'
 
 /**
  * A synthetic dataset in the shape of the real one: 2018 and 2022 have municipalities A and B;
@@ -28,7 +40,7 @@ function t(ano: number, turno: 1 | 2, uf: string, cd: string, validos: number): 
 
 const VOTES: Vote[] = [
   v(2018, 2, 'sp', 'A', 13, 380),
-  v(2018, 2, 'sp', 'A', 17, 400),
+  v(2018, 2, 'sp', 'A', 17, 420),
   v(2022, 2, 'sp', 'A', 13, 380),
   v(2022, 2, 'sp', 'A', 22, 420),
   v(2026, 2, 'sp', 'A', 13, 400),
@@ -36,7 +48,7 @@ const VOTES: Vote[] = [
   v(2022, 2, 'sp', 'B', 13, 200),
   v(2022, 2, 'sp', 'B', 22, 300),
   v(2018, 2, 'sp', 'B', 13, 200),
-  v(2018, 2, 'sp', 'B', 22, 290), // candidate 22 does not exist in 2018; the pairing ignores it
+  v(2018, 2, 'sp', 'B', 17, 300), // in every R2 round the two ballot candidates sum to the valid votes (the shape of the real data)
   v(2026, 2, 'sp', 'B', 13, 250),
   v(2026, 2, 'sp', 'B', 22, 250),
   v(2026, 2, 'sp', 'C', 13, 500),
@@ -66,12 +78,12 @@ function c(ano: number, turno: 1 | 2, candidatoNumero: number, nomeUrna: string,
   return { ano, turno, candidatoNumero, nomeUrna, partido }
 }
 
-/** The smallest DataStore the loader needs (buildStateStats reads only turnout, votes and candidates). */
-function fakeStore(input: { turnout: Turnout[]; votes: Vote[]; candidates: Candidate[] }): DataStore {
+/** The smallest DataStore the loader needs (buildStateStats reads citiesByUf too, for the top city). */
+function fakeStore(input: { turnout: Turnout[]; votes: Vote[]; candidates: Candidate[]; cities?: City[] }): DataStore {
   return {
-    cities: () => Promise.resolve([]),
-    city: () => Promise.resolve(undefined),
-    citiesByUf: () => Promise.resolve([]),
+    cities: () => Promise.resolve(input.cities ?? []),
+    city: (uf: string, slug: string) => Promise.resolve((input.cities ?? []).find((c) => c.uf === uf && c.slug === slug)),
+    citiesByUf: (uf: string) => Promise.resolve((input.cities ?? []).filter((c) => c.uf === uf)),
     states: () => Promise.resolve([]),
     turnout: async (q?: TurnoutQuery) => (q ? input.turnout.filter(matches.turnout(q)) : input.turnout),
     votes: async (q?: TurnoutQuery) => (q ? input.votes.filter(matches.votes(q)) : input.votes),
@@ -81,6 +93,16 @@ function fakeStore(input: { turnout: Turnout[]; votes: Vote[]; candidates: Candi
   }
 }
 
+const BOA_ESPERANCA: City = {
+  uf: 'mt',
+  cdMunicipio: 'D',
+  cdIbge: '5100102',
+  nome: 'Boa Esperança do Norte',
+  slug: 'boa-esperanca-do-norte',
+  regiao: 'CO',
+  ciclos: [2026],
+}
+
 const matches = {
   turnout: (q: TurnoutQuery) => (x: Turnout) =>
     (q.ano === undefined || x.ano === q.ano) && (q.turno === undefined || x.turno === q.turno) && (q.uf === undefined || x.uf === q.uf.toLowerCase()),
@@ -88,7 +110,8 @@ const matches = {
     (q.ano === undefined || x.ano === q.ano) && (q.turno === undefined || x.turno === q.turno) && (q.uf === undefined || x.uf === q.uf.toLowerCase()),
 }
 
-const stateStats = buildStateStats(fakeStore({ turnout: TURNOVER, votes: VOTES, candidates: CANDIDATES }))
+const stateStats = buildStateStats(fakeStore({ turnout: TURNOVER, votes: VOTES, candidates: CANDIDATES, cities: [BOA_ESPERANCA] }))
+const stateStatsNoCity = buildStateStats(fakeStore({ turnout: TURNOVER, votes: VOTES, candidates: CANDIDATES }))
 
 async function stat(uf: string): Promise<StateStats> {
   const all = await stateStats
@@ -130,7 +153,7 @@ describe('state aggregation (build time)', () => {
     const s = (await stat('sp'))
     const { old } = compareTallies(s, 2018)!
     expect(old.left).toBe(580)
-    expect(old.rival).toBe(400) // only candidate 17 (the 2018 "Bolsonaro"); the 2022 "Bolsonaro" (22) votes are ignored
+    expect(old.rival).toBe(720) // the 2018 rival is candidate 17 (the 2018 "Bolsonaro"): candidate 22 has no 2018 rows at all
   })
 
   it('elects the ticket pairing when the candidates exist and the two leaders otherwise', async () => {
@@ -175,5 +198,56 @@ describe('state aggregation (build time)', () => {
     const row = rows[0]!
     expect(row).toMatchObject({ uf: 'sp', validos: 1500 })
     expect(row.left.diffVotes).toBe(650 - 580)
+  })
+
+  it('orders the states for screen 13 by 2026 valid votes, ties by UF, zz never listed', async () => {
+    const stats = await stateStats
+    expect(stateOrder(stats)).toEqual([
+      { uf: 'sp', validos: 2400 },
+      { uf: 'mt', validos: 1234 },
+    ])
+  })
+
+  it('picks "Outros estados" as the six largest states minus the page state', async () => {
+    const stats = await stateStats
+    expect(otherLargestStates(stats, 'sp').map((s) => s.uf)).toEqual(['mt'])
+    expect(otherLargestStates(stats, 'mt').map((s) => s.uf)).toEqual(['sp'])
+  })
+
+  it('builds the three cycle blocks of screen 13 from each round own pairing', async () => {
+    const s = (await stat('sp'))
+    const blocks = cycleBlocksFor(s)
+    expect(blocks.map((b) => b.ano)).toEqual([2018, 2022, 2026])
+    expect(blocks.map((b) => b.status)).toEqual(['data', 'data', 'data'])
+    // 2018 pairs 13 with 17 (ticket): 13 x 380 + 200, 17 x 420 + 300 of 1300 validos
+    expect(blocks[0]!.left!.pct).toBe('44,6') // 580 of 1300 = 44.6153
+    expect(blocks[0]!.rival!.pct).toBe('55,4')
+    expect(blocks[0]!.changePp).toBeUndefined()
+    // 2022 pairs 13 with 22: exactly the same vote totals -> the same shares
+    expect(blocks[1]!.left!.pct).toBe('44,6')
+    expect(blocks[1]!.rival!.pct).toBe('55,4')
+    expect(blocks[1]!.changePp).toBe('0,0')
+    expect(blocks[1]!.changeVs).toBe(2018)
+    // 2026 over A+B+C: 13 x 1150, 22 x 1250 of 2400 -> left '47,9' (47.9166), rival 1250/2400
+    expect(blocks[2]!.left!.pct).toBe('47,9')
+    expect(blocks[2]!.rival!.pct).toBe('52,1')
+    expect(blocks[2]!.changePp).toBe('+3,3')
+    expect(blocks[2]!.changeVs).toBe(2022)
+  })
+
+  it('keeps the sem-dados blocks of a 2026-only state (never zeros, no change line)', async () => {
+    const mt = (await stat('mt'))
+    const blocks = cycleBlocksFor(mt)
+    expect(blocks.map((b) => b.status)).toEqual(['no-data', 'no-data', 'data'])
+    expect(blocks[0]!.left).toBeUndefined()
+    expect(blocks[2]!.changePp).toBeUndefined()
+    expect(blocks[2]!.changeVs).toBeUndefined()
+  })
+
+  it('points "ver os três ciclos de uma cidade" at the largest city of the state in 2026 R2', async () => {
+    const mt = (await stat('mt'))
+    expect(mt.topCity).toEqual({ slug: 'boa-esperanca-do-norte', nome: 'Boa Esperança do Norte' })
+    const all = await stateStatsNoCity
+    expect(all.find((s) => s.uf === 'mt')!.topCity).toBeUndefined() // no cities.csv -> no link target, the section hides it
   })
 })
