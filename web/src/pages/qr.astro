@@ -6,11 +6,11 @@
  * demoable without an address context.
  *
  * Data: build-time Node reading the shard of the fixture city (never the browser's CSV): the demo always draws
- * the fixture city, whichever DATA_DIR the build uses (a real-data build has no cidade-exemplo). The whole
- * screen is pre-rendered static markup — no JavaScript at all: the QR is a deterministic glyph from
+ * the fixture city, whichever DATA_DIR the build uses (a real-data build has no cidade-exemplo). The screen is
+ * pre-rendered static markup — no island, no hydration: the QR is a deterministic glyph from
  * src/lib/qr-code.ts (build time), the poster is CSS (@media print / @page A4), printing comes from the
- * browser's own print command, and the analytics events (screen shown, poster printed) are ticket #20 (the
- * data-ticket="20" marker inside the template — nothing is emitted today).
+ * browser's own print command. The only scripts are the site-wide consent boot (Base, #20 — the events wait
+ * for consent) and the tiny qr-analytics script the template imports (screen shown, poster printed, #20).
  */
 import { displayName } from '@/shared/city-search'
 import { normalizeBase, withBase } from '@/paths'

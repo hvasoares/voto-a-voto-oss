@@ -5,7 +5,9 @@
  * boot script (src/scripts/analytics-boot.ts) reveals it only while the visitor has NOT decided, wires
  * Aceitar/Recusar and, on both answers, remembers the choice — until then NOTHING is loaded and no
  * request goes to Google. A previous choice shows the small status line when the visitor re-opens the
- * banner through the consent-change affordance.
+ * banner through the consent-change affordance. It sits at z-40, BELOW the page's own bottom overlays
+ * (the share sheet and dialogs are z-50): a first visit can still use those screens — the banner
+ * reappears once the overlay closes, and the consent-first guarantee is in the boot script, not the paint.
  */
 interface Props {
   /** Absolute base path of the site (the "Privacidade" detail link points at /sobre-os-dados/#privacidade). */
@@ -18,7 +20,7 @@ const { privacyHref } = Astro.props
   data-consent-banner
   role="region"
   aria-label="Consentimento para métricas de uso"
-  class="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background"
+  class="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background"
   hidden
 >
   <div class="mx-auto flex w-full max-w-[430px] flex-col gap-2 px-5 py-3">
