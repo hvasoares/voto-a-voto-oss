@@ -48,7 +48,7 @@ const raceLine = (r: (typeof races)[number]): string =>
         <caption class="sr-only">A diferença de votos, os votos de cada candidato e a margem em pp de cada cidade</caption>
         <tbody>
           {shown.map((r, i) => (
-            <tr class="border-t border-border" data-race={`${r.nome.toLowerCase()}-${r.uf}`}>
+            <tr class="border-t border-border" data-race={r.slug}>
               <td class="w-12 py-3.5 align-middle">
                 <span class={badge}>{i + 1}</span>
               </td>
