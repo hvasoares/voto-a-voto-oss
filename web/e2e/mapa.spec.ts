@@ -28,7 +28,7 @@ test.describe('mapa: content', () => {
     await expect(page.locator('[data-slot="mapa-selecionado"]')).toContainText('· selecionado')
     await expect(page.getByRole('link', { name: 'Abrir estado' })).toHaveAttribute('href', `${base}rj/`) // most valid votes of the fixture
     await expect(page.locator('footer')).toContainText('Fonte: TSE, dados finais · Sobre os dados ›')
-    await expect(page.locator('#consent-slot')).toHaveCount(1)
+    await expect(page.locator('#consent-banner')).toHaveCount(1)
   })
 
   test('one tile per state of the dataset; overseas never appears', async ({ page }) => {
