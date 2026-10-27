@@ -12,7 +12,7 @@ test.describe('home: content', () => {
     await expect(page.getByText('Ou escolha um estado. Toque para ver os municípios.')).toBeVisible()
     await expect(page.getByRole('heading', { level: 2 })).toHaveText('Para explorar')
     await expect(page.locator('footer')).toContainText('Dados oficiais do TSE · Sobre os dados ›')
-    await expect(page.locator('#consent-slot')).toHaveCount(1)
+    await expect(page.locator('#consent-banner')).toHaveCount(1)
   })
 
   test('draws 27 tiles; states of the dataset are anchors, the others inert; overseas is never a state', async ({ page }) => {

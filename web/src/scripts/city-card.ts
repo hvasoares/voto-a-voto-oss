@@ -1,6 +1,6 @@
 /** Progressive enhancement of the city card: switching cycle and round without a request or a reload.
  * All six panels are pre-rendered in the page; this only shows them and updates the address. Browser only. */
-import { getAnalytics } from '@/analytics'
+import { getAnalytics, onAnalyticsReady } from '@/analytics'
 import { createCityTracker, parseView, viewHref, viewId, type View } from '@/slots/city/city-view'
 
 const card = document.querySelector<HTMLElement>('[data-city-card]')
@@ -33,7 +33,9 @@ if (card) {
   // The pre-rendered page shows the default view; the address may ask for another.
   const asked = parseView(new URLSearchParams(location.search), has)
   if (viewId(asked) !== viewId(current)) show(asked)
-  tracker.viewed(current)
+  // A view event when the page opens — emitted when the consent boot settles (#20, see report-analytics.ts);
+  // the tracker holds the late-bound analytics, so the flush of a remembered consent reaches it.
+  onAnalyticsReady(() => tracker.viewed(current))
   // Mark for the e2e specs: the deferred module script took over the page.
   document.documentElement.dataset.ready = 'city-card'
 
