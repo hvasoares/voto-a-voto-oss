@@ -61,5 +61,8 @@ writeFileSync(`${out}/turnout.csv`, ['ano,turno,uf,cd_municipio,aptos,comparecim
 writeFileSync(`${out}/votes.csv`, ['ano,turno,uf,cd_municipio,candidato_numero,votos', ...sorted(rows.votes)].join('\n') + '\n')
 const cand = [2018, 2022, 2026].flatMap((ano) => [1, 2].flatMap((t) => [`${ano},${t},91,Candidato A,PA`, `${ano},${t},92,Candidato B,PB`]))
 writeFileSync(`${out}/candidates.csv`, ['ano,turno,candidato_numero,nome_urna,partido', ...cand].join('\n') + '\n')
+// Fictitious centres, each inside its own state (rj near Rio, sp near São Paulo); the 2026-only city has none, as in the real data.
+const centre = (c: Spec, i: number): [number, number] => (c.uf === 'rj' ? [-22.9 + i * 0.05, -43.2 + i * 0.05] : [-23.5, -46.6])
+writeFileSync(`${out}/centroids.csv`, ['cd_ibge,lat,lon', ...cities.filter((c) => c.ibge && c.uf !== 'mt').map((c, i) => `${c.ibge},${centre(c, i)[0].toFixed(4)},${centre(c, i)[1].toFixed(4)}`)].join('\n') + '\n')
 writeFileSync(`${out}/manifest.json`, JSON.stringify({ fixture: true, note: 'Fictitious fixture data with the same schema as data/ from ticket #1. Not election results.', sources: [] }, null, 2) + '\n')
 console.log('fixtures written to', out)

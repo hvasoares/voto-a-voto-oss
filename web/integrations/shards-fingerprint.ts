@@ -13,14 +13,14 @@ import { dataDir } from '../src/lib/data-dir'
 export const SHARD_VIRTUAL_ID = 'virtual:data-shards'
 
 /**
- * The five committed dataset files, already in fingerprint order (code-point). Mirrors the DATA_FILES of the
+ * The six committed dataset files (the five the app store reads and `centroids.csv`, ticket #40, which only the shards use), already in fingerprint order (code-point). Mirrors the DATA_FILES of the
  * site store; shards.test.ts locks the two lists so the store and the shards cannot drift apart.
  */
-export const FINGERPRINT_FILES = ['candidates.csv', 'cities.csv', 'manifest.json', 'turnout.csv', 'votes.csv'] as const
+export const FINGERPRINT_FILES = ['candidates.csv', 'centroids.csv', 'cities.csv', 'manifest.json', 'turnout.csv', 'votes.csv'] as const
 
 export type DataFile = (typeof FINGERPRINT_FILES)[number]
 
-/** Sources of one dataset (its five file texts), the input of the fingerprint and of the shard builder. */
+/** Sources of one dataset (its six file texts), the input of the fingerprint and of the shard builder. */
 export type ShardSources = Record<DataFile, string>
 
 /** A short, deterministic digest of the dataset: the shard directory name ("a stale copy is never served"). */

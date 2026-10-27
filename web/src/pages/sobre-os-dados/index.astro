@@ -39,7 +39,7 @@ const githubManifest = GITHUB_URL + GITHUB_MANIFEST_PATH
 
     <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="de-onde-vem">
       <h2 class="font-serif text-section font-normal leading-[25px]" id="de-onde-vem">De onde vêm os números</h2>
-      <p class="mt-[5px]">Todos os números do site vêm de publicações oficiais do Tribunal Superior Eleitoral (TSE). Não há pesquisa própria, estimativa ou fonte de terceiros.</p>
+      <p class="mt-[5px]">Todos os números de eleição do site vêm de publicações oficiais do Tribunal Superior Eleitoral (TSE). Não há pesquisa própria nem estimativa. A única outra fonte é geográfica, do Instituto Brasileiro de Geografia e Estatística (IBGE), e não traz nenhum resultado: o centro de cada município, usado só pelo botão "Usar minha localização".</p>
       <p class="mt-1">Resultados de 2026: arquivos oficiais assinados, um por município, do site de resultados do TSE (resultados.tse.jus.br), coletados em {COLLECTION_DATE}. Estão finalizados nos dois turnos: {fmt(BR_CITIES_2026)} municípios, {fmt(SECTIONS_APURADAS.counted)} de {fmt(SECTIONS_APURADAS.total)} seções apuradas, mais {OVERSEAS_POSTS_2026} postos de votação no exterior.</p>
       <p class="mt-1">Resultados de 2018 e 2022: bases de dados abertos do TSE com a votação de presidente por município e zona, coletadas em {COLLECTION_DATE} e somadas por município — {fmt(BR_CITIES_2018_2022)} municípios por ciclo, só as linhas de presidente do arquivo nacional.</p>
 
@@ -56,7 +56,7 @@ const githubManifest = GITHUB_URL + GITHUB_MANIFEST_PATH
         ))}
       </ul>
       <p class="mt-1 text-small leading-[14px] text-muted-foreground">O <code>digest</code> da linha de 2026 reúne em um único SHA-256 o hash de cada arquivo coletado, ordenado por nome, e a <code>geração</code> é a data mais recente que o TSE marcou em um arquivo coletado. Manifesto no GitHub: <a href={githubManifest}>data/manifest.json ›</a></p>
-      <p class="mt-1">O site lê só as tabelas que o pipeline grava somadas por município: {tables}, todas conferidas contra o manifesto. Os arquivos originais do TSE ficam no cache da coleta, não no site: nada aqui baixa de novo um arquivo do TSE para mostrar um número.</p>
+      <p class="mt-1">O site lê só as tabelas que o pipeline grava somadas por município: {tables}, todas conferidas contra o manifesto. Os centros dos municípios (centroids.csv) vêm do serviço de malhas do IBGE, um arquivo por estado; o município de Boa Esperança do Norte/MT, criado depois da malha que o IBGE publica, não tem centro e por isso nunca é oferecido como a cidade mais próxima. Os arquivos originais do TSE ficam no cache da coleta, não no site: nada aqui baixa de novo um arquivo do TSE para mostrar um número.</p>
     </section>
 
     <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="calculo">
@@ -124,7 +124,7 @@ const githubManifest = GITHUB_URL + GITHUB_MANIFEST_PATH
 
     <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="licenca">
       <h2 class="font-serif text-section font-normal leading-[25px]" id="licenca">Fontes e licença</h2>
-      <p class="mt-[5px]">Nenhum material de terceiros é usado no site: as fontes do texto são as do navegador do leitor e toda figura é desenhada a partir dos dados do TSE. Os números vêm das publicações oficiais do TSE listadas em "De onde vêm os números" — os resultados assinados de 2026 e o diretório de dados abertos do TSE.</p>
+      <p class="mt-[5px]">Nenhum material de terceiros é usado no site: as fontes do texto são as do navegador do leitor e toda figura é desenhada a partir dos dados do TSE e da geografia do IBGE. Os números vêm das publicações oficiais do TSE listadas em "De onde vêm os números" — os resultados assinados de 2026 e o diretório de dados abertos do TSE; o IBGE só dá o centro de cada município.</p>
       <p class="mt-1">O repositório distribui os arquivos somados a partir desses originais e registra, no manifesto, o URL, a data e o hash de cada um deles: a versão exata usada pode ser conferida a qualquer momento junto ao TSE.</p>
     </section>
 

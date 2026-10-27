@@ -54,7 +54,7 @@ test.describe('sobre os dados page', () => {
   test('shows the manifest sources with bytes, date and hash recorded', async ({ page }) => {
     await page.goto(path)
     const entries = page.locator('[data-component="manifest-list"] [data-source]')
-    await expect(entries).toHaveCount(5)
+    await expect(entries).toHaveCount(6)
     const source2018 = entries.filter({ hasText: 'votacao_candidato_munzona_2018.zip' })
     await expect(source2018).toHaveCount(1)
     await expect(source2018).toContainText('Coleta (UTC): 26/10/2026 21:55')

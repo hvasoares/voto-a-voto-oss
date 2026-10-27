@@ -44,9 +44,11 @@ const report = (label: string, list: FileSize[], indices: number[]): string => {
 const citySizes = ofFiles(built.files.filter((f) => f.path.includes('/city/')))
 const stateSizes = ofFiles(built.files.filter((f) => f.path.includes('/state/')))
 const search = sizeOf(built.files.find((f) => f.path.endsWith('search.json'))!.json)
+const centroids = sizeOf(built.files.find((f) => f.path.endsWith('centroids.json'))!.json)
 const totals = sizeOf(built.files.find((f) => f.path.endsWith('totals.json'))!.json)
 
 console.log(report('city shards', citySizes, []))
 console.log(report('state shards', stateSizes, []))
 console.log(`totals.json: raw ${kb(totals.raw)} / gzip ${kb(totals.gzip)}`)
 console.log(`search.json: raw ${kb(search.raw)} / gzip ${kb(search.gzip)} (fetched once, when the search field gains focus)`)
+console.log(`centroids.json: raw ${kb(centroids.raw)} / gzip ${kb(centroids.gzip)} (fetched once, when "Usar minha localização" is tapped)`)

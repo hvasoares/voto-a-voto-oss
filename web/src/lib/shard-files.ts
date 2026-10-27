@@ -13,7 +13,7 @@ import { dataDir } from './data-dir'
 import { cityShardResult, type CityShard } from './city-shard'
 import type { CityResult } from '../shared/city-model'
 
-const FINGERPRINT_FILES = ['candidates.csv', 'cities.csv', 'manifest.json', 'turnout.csv', 'votes.csv'] as const
+const FINGERPRINT_FILES = ['candidates.csv', 'centroids.csv', 'cities.csv', 'manifest.json', 'turnout.csv', 'votes.csv'] as const
 
 /** The JSON text of every shard file, keyed by its path relative to public/data. Memoised per dataset. */
 const memos = new Map<string, Promise<BuiltShards>>()

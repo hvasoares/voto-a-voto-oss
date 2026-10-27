@@ -134,7 +134,7 @@ describe('the real rasteriser', () => {
   it('the fixture city picture is a compact PNG worth publishing (the size budget of the ticket)', async () => {
     // the drawing itself comes from the shared function (the fixture city's latest round)
     const shardSources: Record<string, string> = {}
-    for (const f of ['candidates.csv', 'cities.csv', 'manifest.json', 'turnout.csv', 'votes.csv'])
+    for (const f of ['candidates.csv', 'centroids.csv', 'cities.csv', 'manifest.json', 'turnout.csv', 'votes.csv'])
       shardSources[f] = readFileSync(resolve('fixtures/data', f), 'utf8')
     const built = buildShards(shardSources as never)
     const shard = JSON.parse(built.files.find((f) => f.path.endsWith('/city/rj/cidade-exemplo.json'))!.json)

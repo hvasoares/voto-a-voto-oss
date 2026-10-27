@@ -28,6 +28,7 @@ describe('manifest table of the page (SOURCES) matches data/manifest.json', () =
     expect(SOURCES).toHaveLength(manifest.sources.length)
     for (const s of manifest.sources) {
       if (s.kind === 'opendata') expect(SOURCES.some((r) => r.label.startsWith(s.id))).toBe(true)
+      else if (s.kind === 'ibge_api') expect(SOURCES.some((r) => r.label.includes('servicodados.ibge.gov.br'))).toBe(true)
       else expect(SOURCES.some((r) => r.label.includes('resultados.tse.jus.br'))).toBe(true)
     }
   })
@@ -39,6 +40,15 @@ describe('manifest table of the page (SOURCES) matches data/manifest.json', () =
       expect(row.sha256).toBe(source.sha256)
       expect(formatUtc(row.retrievedAt)).toBe(formatUtc(source.retrieved_at))
     }
+  })
+
+  it('the IBGE entry shows the state files and their digest, and the centroid table is counted among the outputs', () => {
+    const ibge = manifest.sources.find((s) => s.kind === 'ibge_api')!
+    const row: SourceLine = SOURCES[5]!
+    expect(row.files).toBe(ibge.files)
+    expect(row.digest).toBe(ibge.digest)
+    expect(formatUtc(row.retrievedAt)).toBe(formatUtc(ibge.retrieved_at))
+    expect(OUTPUT_ROWS['centroids.csv']).toBe(manifest.outputs['centroids.csv']!.rows)
   })
 
   it('the 2026 entry shows files, final count, digest and newest generation', () => {

@@ -15,10 +15,11 @@ The version directory changes whenever the dataset changes, so a stale copy is n
 | City | `city/<uf>/<slug>.json` | The city card, one request per page view |
 | State | `state/<uf>.json` | State list pages |
 | Totals | `totals.json` | National and region totals |
+| Centroids | `centroids.json` | The IBGE centre of every city that has one, by state (#40); fetched only when "Usar minha localização" is tapped |
 | Peers | `peers.json` | The closest peer cities of every city (#23; method in `peer-similarity.md`; no screen reads it yet) |
 
-`<fingerprint>` is 16 hex characters of sha256 over the five committed dataset files
-(`cities.csv`, `turnout.csv`, `votes.csv`, `candidates.csv`, `manifest.json`). Client and page
+`<fingerprint>` is 16 hex characters of sha256 over the six committed dataset files
+(`cities.csv`, `turnout.csv`, `votes.csv`, `candidates.csv`, `centroids.csv`, `manifest.json`). Client and page
 code learn it through `virtual:data-shards` (`@/shards` exports `SHARD_VERSION`).
 
 ## Fields
@@ -40,6 +41,10 @@ code learn it through `virtual:data-shards` (`@/shards` exports `SHARD_VERSION`)
 **Totals** — `{ national: cycles, regions: { [regiao]: cycles } }`; the sums per cycle and round
 over all their cities. Overseas posts enter the national totals and form the `"exterior"` region.
 A region has a block only when it has cities — never invented.
+
+**Centroids** — `{ [uf]: [[slug, lat, lon], ...] }`, WGS84 degrees with the 4 decimals IBGE gives, cities sorted by slug within a state. A city
+without an IBGE centre (Boa Esperança do Norte/MT) and the overseas posts are absent; a centre that is not a city of `cities.csv` breaks the build.
+The nearest city is found on the device (`src/lib/nearest-city.ts`); the position is never sent.
 
 **Search** — an array of `[nome, slug, uf]` rows, every city (overseas included).
 

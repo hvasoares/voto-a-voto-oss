@@ -7,8 +7,9 @@
  *   v<fingerprint>/state/<uf>.json        one state: its cities with the fields a list needs (name and slug)
  *   v<fingerprint>/totals.json            national and per-region sums of turnout and votes, per cycle and round
  *   v<fingerprint>/peers.json             the closest peer cities of every city (ticket #23, src/lib/peers.ts)
+ *   v<fingerprint>/centroids.json         the IBGE centre of every city that has one, by state (ticket #40, src/lib/nearest-city.ts)
  *
- * The fingerprint is a sha256 over the five dataset files, so the paths change whenever the dataset changes and
+ * The fingerprint is a sha256 over the six dataset files, so the paths change whenever the dataset changes and
  * a stale copy is never served (web/docs/shards.md records layout and budgets). Everything here is deterministic:
  * same dataset in, byte-identical files out (code-point ordering only, never the runtime locale).
  *
@@ -19,18 +20,18 @@
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import {
-  DATA_FILES,
   type City,
   type Turno,
   type Turnout,
 } from '@/data'
-import { parseCandidates, parseCities, parseTurnout, parseVotes } from '@/data/csv'
+import { parseCandidates, parseCentroids, parseCities, parseTurnout, parseVotes } from '@/data/csv'
+import { encodeCentroids } from './centroids'
 import { dataDir } from '../src/lib/data-dir'
 import { computePeers, encodePeers } from '../src/lib/peers'
-import { datasetFingerprint, type ShardSources } from './shards-fingerprint'
+import { datasetFingerprint, FINGERPRINT_FILES, type ShardSources } from './shards-fingerprint'
 
 /** Bumped when the shard layout changes: a cached version directory is rebuilt when this does not match. */
-export const SHARD_GENERATOR = 'voto-shards/2'
+export const SHARD_GENERATOR = 'voto-shards/3'
 
 export const TURNOUT_FIELDS = ['aptos', 'comparecimento', 'abstencoes', 'brancos', 'nulos', 'anuladosApuSep', 'validos'] as const
 type TurnoutFields = Pick<Turnout, (typeof TURNOUT_FIELDS)[number]>
@@ -157,6 +158,11 @@ export function buildShards(sources: ShardSources): BuiltShards {
   const files = composeShards(`v${fingerprint}`, byCity, national, regions, candidatesByRound)
   // Peer cities (#23): one small index-encoded file; overseas posts are left out by the method itself.
   files.push({ path: `v${fingerprint}/peers.json`, json: JSON.stringify(encodePeers(computePeers({ cities, turnout, votes }))) })
+  // City centres (#40): fetched only when a visitor taps "Usar minha localização".
+  const centres = encodeCentroids(cities, parseCentroids(sources['centroids.csv']), (message) => {
+    throw new ShardError(message)
+  })
+  files.push({ path: `v${fingerprint}/centroids.json`, json: JSON.stringify(centres) })
   return { fingerprint, files }
 }
 
@@ -262,7 +268,7 @@ function composeShards(
 export function generateShards(publicData: string, env: Record<string, string | undefined> = process.env, cwd = process.cwd()): string {
   const dir = dataDir(env, cwd)
   const sources = {} as Record<string, string>
-  for (const f of DATA_FILES) {
+  for (const f of FINGERPRINT_FILES) {
     try {
       sources[f] = readFileSync(resolve(dir, f), 'utf8')
     } catch (error) {

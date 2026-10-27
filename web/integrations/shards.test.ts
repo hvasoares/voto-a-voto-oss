@@ -7,16 +7,16 @@
 import { mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
-import { DATA_FILES } from '@/data'
 import { describe, expect, it } from 'vitest'
 import { dataDir } from '../src/lib/data-dir'
 import { buildShards, byText, datasetFingerprint, datasetFingerprintFromDisk, generateShards, ShardError, type ShardSources } from './shards'
+import { DATA_FILES } from '@/data'
 import { FINGERPRINT_FILES } from './shards-fingerprint'
 import { verifyShards } from './shards-verify'
 
 /** Sources of a dataset directory (default: the committed fixture dataset web/ uses). */
 function sourcesOf(env: Record<string, string | undefined> = {}): ShardSources {
-  return Object.fromEntries(DATA_FILES.map((f) => [f, readFileSync(resolve(dataDirOf(env), f), 'utf8')])) as ShardSources
+  return Object.fromEntries(FINGERPRINT_FILES.map((f) => [f, readFileSync(resolve(dataDirOf(env), f), 'utf8')])) as ShardSources
 }
 
 function dataDirOf(env: Record<string, string | undefined>): string {
@@ -96,8 +96,8 @@ it('the fingerprint changes when the dataset changes and is stable otherwise', (
   expect(expectedFingerprint).toBe(buildFixture().fingerprint)
 })
 
-it('the fingerprint covers exactly the dataset files the app store reads (no drift)', () => {
-  expect([...FINGERPRINT_FILES].sort(byText)).toEqual([...DATA_FILES].sort(byText))
+it('the fingerprint covers exactly the dataset files the app store reads, plus the centroids the shards add (no drift)', () => {
+  expect([...FINGERPRINT_FILES].sort(byText)).toEqual([...DATA_FILES, 'centroids.csv'].sort(byText))
 })
 
 it('the fingerprint on disk agrees with the built shards (nothing stale served)', async () => {
@@ -181,6 +181,7 @@ function synthetic(): ShardSources {
       '2026,1,88,YPSILON,PY\n' +
       '2026,2,77,DELTA,PD\n',
     'manifest.json': '{}',
+    'centroids.csv': 'cd_ibge,lat,lon\n',
   }
 }
 
@@ -283,5 +284,32 @@ describe('peers.json (#23)', () => {
   })
   it('regenerating gives the same bytes', () => {
     expect(fileOf(buildFixture(), 'peers.json')).toBe(fileOf(built, 'peers.json'))
+  })
+})
+
+describe('centroids.json (#40)', () => {
+  const built = buildFixture()
+  const shard = jsonOf(built, 'centroids.json') as Record<string, [string, number, number][]>
+
+  it('has, per state, the cities that have an IBGE centre: [slug, lat, lon], sorted, the overseas post and a city without a centre left out', () => {
+    expect(Object.keys(shard)).toEqual(['rj', 'sp'])
+    expect(shard.rj!.map(([slug]) => slug)).toEqual(['cidade-exemplo', 'cidade-exemplo-a', 'cidade-exemplo-b', 'cidade-exemplo-c', 'cidade-exemplo-d', 'cidade-exemplo-e'])
+    expect(shard.sp!.map(([slug]) => slug)).toEqual(['cidade-exemplo-paulista'])
+    for (const rows of Object.values(shard)) for (const [, lat, lon] of rows) expect(Number.isFinite(lat) && Number.isFinite(lon)).toBe(true)
+  })
+
+  it('regenerating gives the same bytes, and the file is versioned like the others', () => {
+    expect(fileOf(buildFixture(), 'centroids.json')).toBe(fileOf(built, 'centroids.json'))
+    expect(built.files.some((f) => f.path === `v${built.fingerprint}/centroids.json`)).toBe(true)
+  })
+
+  it('a centre for a city the dataset does not have breaks the build', () => {
+    const sources = { ...synthetic(), 'centroids.csv': 'cd_ibge,lat,lon\n9,-1,-1\n' }
+    expect(() => buildShards(sources)).toThrow(ShardError)
+  })
+
+  it('a dataset without centres still builds, with an empty file', () => {
+    const empty = JSON.parse(fileOf(buildShards(synthetic()), 'centroids.json')!)
+    expect(empty).toEqual({})
   })
 })

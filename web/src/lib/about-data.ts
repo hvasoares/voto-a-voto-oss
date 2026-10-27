@@ -79,6 +79,15 @@ export const SOURCES: SourceLine[] = [
     newestGeneration: '2026-10-25T23:27:44',
     digest: '62db05bd3b2b103ea650e58e63d52b4fa08943b120ada2520823ea46b78ee10f',
   },
+  {
+    label: 'servicodados.ibge.gov.br/api/v3/malhas (metadados por estado)',
+    kind: 'IBGE: centro de cada município, para o botão "Usar minha localização" (só geografia, nenhum resultado)',
+    retrievedAt: '2026-10-27T18:44:42Z',
+    bytes: 0,
+    sha256: '',
+    files: 27,
+    digest: '32453d216cc698ac77582a6e03e7edb523196be1c5bbfb4c381b2167bd42887d',
+  },
 ]
 
 /** Sections of 2026 counted, from the TSE final data (highlights note, 26/10/2026). */
@@ -113,7 +122,7 @@ export const SALVADOR_ANULADOS_APU_SEP = 746
 export const ELECTORATE_2022_RECONFIRMED = 156454011
 
 /** Rows of the committed tables the site reads (manifest `outputs`). */
-export const OUTPUT_ROWS = { 'cities.csv': 5760, 'turnout.csv': 34498, 'votes.csv': 240981, 'candidates.csv': 42 } as const
+export const OUTPUT_ROWS = { 'cities.csv': 5760, 'turnout.csv': 34498, 'votes.csv': 240981, 'candidates.csv': 42, 'centroids.csv': 5570 } as const
 
 /** Repository of the project, linked from "Confira você mesmo" and "Código aberto". */
 export const GITHUB_URL = 'https://github.com/hvasoares/voto-a-voto-oss'
