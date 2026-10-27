@@ -35,6 +35,7 @@
   --text-lead: var(--sketch-text-lead);
   --text-body: var(--sketch-text-body);
   --text-small: var(--sketch-text-small);
+  --text-tiny: var(--sketch-text-tiny);
 }
 
 @layer base {

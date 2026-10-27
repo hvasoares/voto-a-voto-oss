@@ -15,7 +15,7 @@
 import { createStore, type DataStore, type Turno } from '@site/data'
 import { diskSource } from '@site/data/node'
 import { dataDir } from './data-dir'
-import { buildCompareRow, runoffPair, shortName, sortCompareRows, type CompareRow, type RunoffTally } from './compare'
+import { buildCompareRow, buildCycleBlocks, CYCLES, runoffPair, shortName, sortCompareRows, type CompareRow, type CycleBlock, type RunoffTally } from './compare'
 
 const OVERSEAS_UF = 'zz'
 
@@ -39,6 +39,8 @@ export interface StateStats {
   rounds: Map<string, RoundStats>
   /** Candidates of the dataset, by (ano, turno) -> number -> urna name. */
   candidateNames: Map<string, Map<number, string>>
+  /** The largest city of the state in 2026 R2 valid votes (the "ver os três ciclos de uma cidade" target). */
+  topCity?: { slug: string; nome: string }
 }
 
 const roundKey = (ano: number, turno: number): string => `${ano}-${turno}`
@@ -90,7 +92,48 @@ export async function buildStateStats(store: DataStore): Promise<StateStats[]> {
   }
   for (const s of states.values()) s.candidateNames = names
 
+  // "Ver os três ciclos de uma cidade" (screen 13) needs a city of the state: the largest one by 2026 R2 valid votes.
+  for (const s of states.values()) {
+    const cities = await store.citiesByUf(s.uf)
+    const r = s.rounds.get(roundKey(2026, 2))
+    let best: { cd: string; validos: number } | undefined
+    for (const cd of r?.muniValidos.keys() ?? []) {
+      const v = r!.muniValidos.get(cd) ?? 0
+      if (!best || v > best.validos) best = { cd, validos: v }
+    }
+    if (best) {
+      const city = cities.find((c) => c.cdMunicipio === best!.cd)
+      if (city) s.topCity = { slug: city.slug, nome: city.nome }
+    }
+  }
+
   return [...states.values()].sort((a, b) => a.uf.localeCompare(b.uf, 'pt'))
+}
+
+/** All states in screen-13 order: 2026 R2 valid votes first, ties (and states without the round) by UF. */
+export function stateOrder(stats: readonly StateStats[]): { uf: string; validos: number }[] {
+  return stats
+    .map((s) => ({ uf: s.uf, validos: tallyOf(s, 2026, 2)?.validos ?? 0 }))
+    .sort((a, b) => b.validos - a.validos || a.uf.localeCompare(b.uf, 'pt'))
+}
+
+/** The six largest states (the list the compare screens show), minus `uf`: the "Outros estados" of screen 13. */
+export function otherLargestStates(stats: readonly StateStats[], uf: string, n = 6): StateStats[] {
+  const ufs = new Set(stateOrder(stats).slice(0, n).map((x) => x.uf))
+  ufs.delete(uf)
+  const byUf = new Map(stats.map((s) => [s.uf, s]))
+  return stateOrder(stats.filter((s) => ufs.has(s.uf))).map((x) => byUf.get(x.uf)!)
+}
+
+/** The three cycle blocks of screen 13 for one state (both turnos are aggregated; the screen shows round 2). */
+export function cycleBlocksFor(s: StateStats): CycleBlock[] {
+  const tallies = new Map<number, RunoffTally>()
+  for (const ano of CYCLES) {
+    const t = tallyOf(s, ano, 2)
+    if (t && t.validos > 0) tallies.set(ano, t)
+  }
+  const labels = { [2018]: labelsOf(s, 2018), [2022]: labelsOf(s, 2022), [2026]: labelsOf(s, 2026) }
+  return buildCycleBlocks({ tallies, labels })
 }
 
 export function roundOf(s: StateStats, ano: number, turno: Turno): RoundStats | undefined {
@@ -150,15 +193,17 @@ export function electPair(
   return { left: Math.min(a, b), rival: Math.max(a, b), rule: 'leaders' }
 }
 
-/** Short side labels of one round, from candidates.csv (never invented): 13 -> "Lula", 22 (2026) -> "Flavio". */
+/** Short side labels of one round, from candidates.csv (never invented): 13 -> "Lula", 22 (2026) -> "Flavio".
+ *  Without the round's rows the pairing falls back to the ticket rule and names to "Candidato nº N" (never shortened). */
 export function labelsOf(s: StateStats, ano: number, turno: Turno = 2): Record<'left' | 'rival', string> {
   const r = roundOf(s, ano, turno)
   const names = s.candidateNames.get(candidateKey(ano, turno)) ?? new Map<number, string>()
   const pair = (r && electPair(r.votesByCandidate, ano)) ?? { ...runoffPair(ano), rule: 'ticket' as const }
-  return {
-    left: shortName(names.get(pair.left) ?? `Candidato nº ${pair.left}`),
-    rival: shortName(names.get(pair.rival) ?? `Candidato nº ${pair.rival}`),
+  const label = (n: number): string => {
+    const name = names.get(n)
+    return name ? shortName(name) : `Candidato nº ${n}`
   }
+  return { left: label(pair.left), rival: label(pair.rival) }
 }
 
 /** The paired tallies 2026 vs `ciclo` of one state: both over the municipalities the two cycles have. */

@@ -40,21 +40,21 @@ const intro = `Eleição presidencial 2026 (2º turno) comparada com a de ${cicl
       )}
     </nav>
 
-    <p class="mt-2" data-component="intro">{intro}</p>
+    <p class="mt-2 text-tiny leading-[12px] text-muted-foreground" data-component="intro">{intro}</p>
 
     <ul class="mt-2 list-none p-0" data-component="compare-rows">
       {rows.map((row) => (
-        <li class="border-t border-border py-2.5 first:border-t-0" data-uf={row.uf}>
+        <li class="border-t border-border py-2.5 pl-[14px] pr-[14px]" data-uf={row.uf}>
           <div class="flex items-baseline justify-between gap-2">
-            <a class="min-h-11 text-body font-bold leading-[17px] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary" href={href(`/${row.uf}/`)}>{row.uf.toUpperCase()}</a>
-            <span class="text-small leading-[14px] text-muted-foreground">{formatInt(row.validos)} votos válidos</span>
+            <a class="text-body font-bold leading-[17px] text-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary" href={href(`/${row.uf}/`)}>{row.uf.toUpperCase()}</a>
+            <span class="text-tiny leading-[12px] text-muted-foreground">{formatInt(row.validos)} votos válidos</span>
           </div>
-          <div class="mt-1">
+          <div class="mt-[5px]">
             {sidesOf(row).map(({ side, token }) => (
-              <div class="flex items-start py-[3px] text-body leading-[17px]" data-side={side.label}>
-                <span class={`mt-[3px] mr-[5px] h-[11px] w-[11px] flex-none rounded-[2px] ${token === 'lula' ? 'bg-lula' : 'bg-bolsonaro'}`} aria-hidden="true"></span>
+              <div class="flex items-start py-[4px] text-tiny leading-[13px]" data-side={side.label}>
+                <span class={`mt-[2px] mr-[5px] h-[10px] w-[10px] flex-none rounded-[2px] ${token === 'lula' ? 'bg-lula' : 'bg-bolsonaro'}`} aria-hidden="true"></span>
                 <span class="min-w-0 flex-1 wrap-anywhere">
-                  <strong class="font-bold">{side.label}</strong>
+                  {side.label}
                   {' '}{side.pct26}% · {ciclo}: {side.pctOld}% · <span class="tabular-nums">{formatSignedInt(side.diffVotes)}</span> votos
                   <span class="sr-only"> ({side.votos26} em 2026; {side.votosOld} em {ciclo})</span>
                 </span>
