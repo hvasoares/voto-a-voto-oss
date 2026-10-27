@@ -79,6 +79,16 @@ export async function loadSearchShard(): Promise<SearchShard | undefined> {
   return shardJson<SearchShard>('search.json')
 }
 
+/** Every UF the dataset has a state page for (the search shard's ufs; no overseas post is a state). */
+export async function loadStateUfs(): Promise<string[]> {
+  return [...new Set(((await loadSearchShard()) ?? []).map(([, , uf]) => uf))].filter((uf) => uf !== 'zz').sort()
+}
+
+/** Every city of the search shard in `StateRow` shape, for the build-time routes of one state. */
+export async function loadStateCities(uf: string): Promise<{ nome: string; slug: string }[]> {
+  return ((await loadSearchShard()) ?? []).filter(([, , cityUf]) => cityUf === uf).map(([nome, slug]) => ({ nome, slug }))
+}
+
 /** `manifest.fixture` of the configured dataset (build time only): the EXEMPLO banner and footer wording depend on it. */
 export async function datasetFixture(): Promise<boolean> {
   const manifest = JSON.parse(readFileSync(resolve(dataDir(), 'manifest.json'), 'utf8')) as { fixture?: boolean }

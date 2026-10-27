@@ -39,6 +39,38 @@ test('capture share / default', async ({ page }) => {
   )
 })
 
+/* State page (#50, the ported Sketch frame "5 Estado"), next to site/reference/05-estado.png. */
+test('capture state / default', async ({ page }) => {
+  await page.goto(`${base}rj/`)
+  await page.evaluate(() => document.fonts.ready)
+  await page.waitForFunction(() => document.documentElement.dataset.stateSearch !== undefined)
+  await page.evaluate(() => window.scrollTo(0, 0))
+  const dir = resolve('.captures', 'state')
+  mkdirSync(dir, { recursive: true })
+  const file = resolve(dir, 'default.png')
+  await page.screenshot({ path: file, animations: 'disabled' })
+  writeFileSync(
+    resolve(dir, 'default.json'),
+    JSON.stringify({ slot: 'state', state: 'default', route: `${base}rj/`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'site/reference/05-estado.png', capture: file }, null, 2) + '\n',
+  )
+})
+
+/* The sketch fixture state (?fixture=sketch) draws the frame's own illustrative figures, for the comparison with site/reference/05-estado.png. */
+test('capture state / sketch', async ({ page }) => {
+  await page.goto(`${base}rj/?fixture=sketch`)
+  await page.evaluate(() => document.fonts.ready)
+  await page.waitForFunction(() => document.documentElement.dataset.stateSearch !== undefined)
+  await page.evaluate(() => window.scrollTo(0, 0))
+  const dir = resolve('.captures', 'state')
+  mkdirSync(dir, { recursive: true })
+  const file = resolve(dir, 'sketch.png')
+  await page.screenshot({ path: file, animations: 'disabled' })
+  writeFileSync(
+    resolve(dir, 'sketch.json'),
+    JSON.stringify({ slot: 'state', state: 'sketch', route: `${base}rj/?fixture=sketch`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'site/reference/05-estado.png', capture: file }, null, 2) + '\n',
+  )
+})
+
 /* The shard-contract city page of ticket #49 (the card is #50): the review folder is .captures/city/. */
 test('capture city / contract page', async ({ page }) => {
   await page.goto(`${base}rj/cidade-exemplo/`)

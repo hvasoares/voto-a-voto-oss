@@ -1,5 +1,4 @@
-/** Pure logic of the state page: what rows to list and the frame's illustrative figures. No DOM, no I/O. */
-import type { City } from '../../data'
+/** Pure logic of the state page: what rows to list. No DOM, no I/O. */
 import { displayName, fold } from '../../shared/city-search'
 import { html } from '../../shared/html'
 
@@ -10,7 +9,7 @@ export interface StateRow {
 }
 
 /** Every municipality of the state, alphabetical ignoring accents and case. Nothing is dropped or capped. */
-export function stateRows(cities: City[]): StateRow[] {
+export function stateRows(cities: readonly { nome: string; slug: string }[]): StateRow[] {
   return cities
     .map((c) => ({ slug: c.slug, nome: displayName(c.nome), key: fold(c.nome) }))
     .sort((a, b) => a.key.localeCompare(b.key) || a.slug.localeCompare(b.slug))
