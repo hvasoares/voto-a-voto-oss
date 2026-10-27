@@ -18,7 +18,10 @@ test.describe('brasil: content (fixture build)', () => {
     await expect(page.getByText(/^2º turno de 20\d\d$/)).toBeVisible()
     await expect(page.getByText(/100% da barra = votos válidos de/)).toBeVisible()
     await expect(page.locator('[data-brasil-bar]')).toHaveCount(1)
-    await expect(page.getByText('Barra de cima: % dos votos válidos. Barra de baixo: % do eleitorado (Não = não compareceram).')).toBeVisible()
+    // the legend caption breaks after "(Não =" like the frame, so match its two parts instead of the whole line
+    const legend = page.locator('[data-brasil-regioes] > p').first()
+    await expect(legend).toContainText('Barra de cima: % dos votos válidos.')
+    await expect(legend).toContainText('Barra de baixo: % do eleitorado (Não = não compareceram).')
     // the correction: the wrong sentence is gone; brancos/nulos are shown per region
     await expect(page.getByText(/O arquivo não separa brancos e nulos/)).toHaveCount(0)
     await expect(page.locator('[data-brancos-nulos]')).toHaveCount(2) // the fixture has two regions

@@ -18,12 +18,17 @@ const view = await loadBrasil()
 const fixture = await isFixtureDataset()
 
 // Colors of the Sketch frame 8: the first candidate of a bar (lower ballot number) is the red one,
-// the second the blue one; turnout bar = warm grey bar, "Não" barely filled.
-const candidateSeg = 'bg-[var(--c-lula)] text-[var(--c-accent-fg)]'
-const secondSeg = 'bg-[var(--c-bolsonaro)] text-[var(--c-accent-fg)]'
-const turnoutSeg = 'bg-[var(--c-abstencao)] text-[var(--c-ink)]'
-const notTurnoutSeg = 'bg-[var(--c-paper-2)] text-[var(--c-ink)]'
-const segBase = 'flex min-w-0 items-center justify-center overflow-hidden text-small'
+// the second the blue one; the turnout bar fills "Compareceram" with the dark taupe (v2/ring) and
+// "Não" — the abstention slice — with v2/abstencao. Bars carry the 2 px paper gap the frame shows
+// between slices; the national bar is inset by a gutter step and 28 px tall, region bars full width.
+// Slice labels are 600 10 px (the old-site state-page/cycle-bar idiom); NB: `text-small` must not go
+// through cn() with a text color here (tailwind-merge drops the unknown token class) — every segment
+// carries its own text size.
+const candidateSeg = 'bg-[var(--c-lula)] text-[var(--c-accent-fg)] text-[10px] font-semibold'
+const secondSeg = 'bg-[var(--c-bolsonaro)] text-[var(--c-accent-fg)] text-[10px] font-semibold'
+const turnoutSeg = 'bg-[var(--c-ring)] text-[var(--c-ink)] text-[10px] font-semibold leading-[13px]'
+const notTurnoutSeg = 'bg-[var(--c-abstencao)] text-[var(--c-ink)] text-[10px] font-semibold leading-[13px]'
+const segBase = 'flex min-w-0 items-center justify-center overflow-hidden whitespace-nowrap'
 ---
 <Base title="Brasil e regiões · Voto a Voto">
   <main class="min-w-0 flex-1 px-5 pt-16 pb-2" id="main" data-brasil-view>
@@ -35,14 +40,16 @@ const segBase = 'flex min-w-0 items-center justify-center overflow-hidden text-s
       )
     }
     <p class="mb-3 print:hidden">
-      <a class="inline-flex min-h-11 items-center rounded-[var(--radius)] border border-border bg-background px-4 text-lead text-[var(--c-ink)]" href={href('/')}>‹ Início</a>
+      <a class="-ml-2 inline-flex min-h-12 min-w-[116px] items-center rounded-[var(--radius)] border border-border bg-background px-4 text-[15px] text-[var(--c-ink)]" href={href('/')}>‹ Início</a>
     </p>
-    <h1 class="font-serif text-title font-normal leading-[33px] wrap-anywhere">Brasil e regiões</h1>
-    <p class="mt-1 text-lead text-muted-foreground">2º turno de {view.ano}</p>
+    <h1 class="font-serif text-[26px] font-normal leading-[36px] wrap-anywhere">Brasil e regiões</h1>
+    {/* State-page ramp of the old site, measured from the same design family (site/src/shared/base.css
+    .state-page): title 26/36, subtitle 14/16 pulled 4px up against the title, back button 15px. */}
+    <p class="mt-[-4px] text-[13px] leading-[15px] text-muted-foreground">2º turno de {view.ano}</p>
 
-    <section class="pt-10" aria-labelledby="brasil-votos-validos" data-brasil-national>
-      <h2 id="brasil-votos-validos" class="pl-4 text-body font-bold leading-[20px]">Brasil, votos válidos</h2>
-      <div class="mt-3 flex h-6" role="img" aria-label="Votos válidos no Brasil, por candidato" data-brasil-bar>
+    <section class="pt-6" aria-labelledby="brasil-votos-validos" data-brasil-national>
+      <h2 id="brasil-votos-validos" class="pl-4 text-[13px] font-bold leading-[14px]">Brasil, votos válidos</h2>
+      <div class="mx-4 mt-2 flex h-7 gap-[2px]" role="img" aria-label="Votos válidos no Brasil, por candidato" data-brasil-bar>
         {view.nationalCandidates.map((c, i) => (
           <span
             class={cn(segBase, i === 0 ? candidateSeg : secondSeg)}
@@ -58,19 +65,21 @@ const segBase = 'flex min-w-0 items-center justify-center overflow-hidden text-s
       </p>
     </section>
 
-    <section class="pt-10" aria-labelledby="brasil-por-regiao" data-brasil-regioes>
-      <h2 id="brasil-por-regiao" class="font-serif text-section font-normal leading-[25px]">Por região</h2>
-      <p class="mt-1 text-small leading-[16px] text-muted-foreground">
-        Barra de cima: % dos votos válidos. Barra de baixo: % do eleitorado (Não = não compareceram).
+    <section class="pt-6" aria-labelledby="brasil-por-regiao" data-brasil-regioes>
+      <h2 id="brasil-por-regiao" class="font-serif text-[16px] font-normal leading-[21px]">Por região</h2>
+      {/* the frame's legend caption runs at ~10 px with a ~12 px pitch and breaks after "(Não =" */}
+      <p class="mt-1 text-[10px] leading-[12px] text-muted-foreground">
+        Barra de cima: % dos votos válidos. Barra de baixo: % do eleitorado (Não ={' '}
+        <br />não compareceram).
       </p>
       <ul class="mt-1 list-none p-0">
         {view.regions.map((r) => (
-          <li class="pt-5" data-regiao={r.regiao}>
+          <li class="pt-1.5" data-regiao={r.regiao}>
             <div class="flex items-baseline justify-between gap-2">
-              <h3 class="text-lead font-bold leading-[20px]">{r.label}</h3>
-              <p class="text-right text-small text-[var(--c-ink)]">{r.shareText}% dos votos válidos do país</p>
+              <h3 class="text-[13px] font-bold leading-[16px]">{r.label}</h3>
+              <p class="text-right text-[11px] text-[var(--c-ink)]">{r.shareText}% dos votos válidos do país</p>
             </div>
-            <div class="mt-2 flex h-6" role="img" aria-label={`${r.label}: votos válidos, por candidato`}>
+            <div class="mt-1 flex h-6 gap-[2px]" role="img" aria-label={`${r.label}: votos válidos, por candidato`}>
               {r.candidates.map((c, i) => (
                 <span
                   class={cn(segBase, i === 0 ? candidateSeg : secondSeg)}
@@ -81,17 +90,17 @@ const segBase = 'flex min-w-0 items-center justify-center overflow-hidden text-s
                 </span>
               ))}
             </div>
-            <div class="mt-1 flex h-6" role="img" aria-label={`${r.label}: eleitorado que compareceu e que não compareceu`}>
+            <div class="mt-0.5 flex h-6 gap-[2px]" role="img" aria-label={`${r.label}: eleitorado que compareceu e que não compareceu`}>
               <span class={cn(segBase, turnoutSeg)} style={`flex-grow:${r.compareceramScaled};flex-basis:0`}>{`Compareceram ${r.compareceramText}%`}</span>
               <span class={cn(segBase, notTurnoutSeg)} style={`flex-grow:${1000 - r.compareceramScaled};flex-basis:0`}>{`Não ${r.naoText}%`}</span>
             </div>
-            <p class="mt-1 text-small leading-[16px] text-muted-foreground" data-brancos-nulos>
+            <p class="mt-0.5 text-[10px] leading-[13px] text-muted-foreground" data-brancos-nulos>
               Brancos {r.brancosText}% · Nulos {r.nulosText}% do comparecimento.
             </p>
           </li>
         ))}
       </ul>
-      <p class="mt-3 text-small leading-[18px] text-[var(--c-ink)]" data-brasil-note>
+      <p class="mt-3 text-[10px] leading-[13px] text-[var(--c-ink)]" data-brasil-note>
         Não compareceram = eleitorado que não compareceu. Brancos e nulos fazem parte do comparecimento e aparecem em cada região.
       </p>
     </section>
