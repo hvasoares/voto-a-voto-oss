@@ -231,3 +231,17 @@ def test_check_fails_when_a_city_loses_its_centroid(services, tmp_path, capsys):
 
     assert run(["check"], svc, tmp_path) == 1
     assert "centroids" in capsys.readouterr().err
+
+
+def test_check_with_editions_requires_data_to_be_a_published_edition(services, tmp_path, capsys):
+    svc, _, _ = services
+    run(["build"], svc, tmp_path)
+    editions_dir = tmp_path / "editions"
+
+    assert main(["check", "--data-dir", str(tmp_path / "data"), "--editions-dir", str(editions_dir)], services=svc) == 1
+    assert "make publish-edition" in capsys.readouterr().err
+
+    assert main(["publish-edition", "--data-dir", str(tmp_path / "data"), "--editions-dir", str(editions_dir)], services=svc) == 0
+    assert main(["check", "--data-dir", str(tmp_path / "data"), "--editions-dir", str(editions_dir)], services=svc) == 0
+    assert main(["publish-edition", "--data-dir", str(tmp_path / "data"), "--editions-dir", str(editions_dir)], services=svc) == 0
+    assert "already published" in capsys.readouterr().out

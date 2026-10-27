@@ -1,7 +1,9 @@
 """``voto-data``: download, cache, normalize and verify the TSE data behind the site (imperative shell).
 
     voto-data build [--cycles 2018,2022,2026] [--offline] [--allow-partial]
-    voto-data check
+    voto-data check [--editions-dir editions]
+    voto-data publish-edition [--date YYYY-MM-DD]
+    voto-data rollback-edition
 
 ``build`` fetches only what is missing or changed, reconciles everything against the TSE's own totals and writes
 ``data/`` last, so a failed run never leaves a half-written dataset. ``check`` re-validates ``data/`` with no network.
@@ -14,7 +16,7 @@ from collections import Counter
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
-from voto_a_voto import centroids, nonvoters, reconcile
+from voto_a_voto import centroids, editions, nonvoters, reconcile
 from voto_a_voto.cities import City, parse_cities
 from voto_a_voto.dataset import CycleData, Dataset, assemble, cycle_from_munzona, cycle_from_results, read_dataset, write_dataset, write_manifest
 from voto_a_voto.manifest import build_manifest, check_manifest, summarize_results_files, turnout_identity
@@ -234,6 +236,14 @@ def main(argv=None, services: Services | None = None) -> int:
     build_parser.add_argument("--cache-dir", default=".cache")
     check_parser = commands.add_parser("check", help="valida data/ sem rede")
     check_parser.add_argument("--data-dir", default="data")
+    check_parser.add_argument("--editions-dir", default=None, help="também valida as edições publicadas e que data/ é uma delas")
+    publish_parser = commands.add_parser("publish-edition", help="congela data/ como uma nova edição datada e imutável (ticket #59)")
+    publish_parser.add_argument("--data-dir", default="data")
+    publish_parser.add_argument("--editions-dir", default="editions")
+    publish_parser.add_argument("--date", default=None, help="data da edição (padrão: a coleta mais recente do manifesto)")
+    rollback_parser = commands.add_parser("rollback-edition", help="restaura data/ para a edição anterior à que ele mostra; nenhuma edição muda")
+    rollback_parser.add_argument("--data-dir", default="data")
+    rollback_parser.add_argument("--editions-dir", default="editions")
     nonvoters_parser = commands.add_parser("nonvoters", help="imprime a medida do ticket #24: não-votantes maiores que a margem, por ciclo, turno e estado")
     nonvoters_parser.add_argument("--data-dir", default="data")
     args = parser.parse_args(argv)
@@ -242,8 +252,28 @@ def main(argv=None, services: Services | None = None) -> int:
         print(nonvoters.render(nonvoters.measure(read_dataset(args.data_dir))), end="")
         return 0
 
+    if args.command == "publish-edition":
+        try:
+            published = editions.publish(Path(args.data_dir), Path(args.editions_dir), date=args.date)
+        except editions.EditionError as error:
+            print(f"publish-edition FAILED: {error}", file=sys.stderr)
+            return 1
+        print(f"{args.editions_dir}/{published.id}: {'published' if published.created else 'already published, nothing written'}")
+        return 0
+
+    if args.command == "rollback-edition":
+        try:
+            restored = editions.rollback(Path(args.editions_dir), Path(args.data_dir))
+        except editions.EditionError as error:
+            print(f"rollback-edition FAILED: {error}", file=sys.stderr)
+            return 1
+        print(f"{args.data_dir} restored to edition {restored}; no edition was changed")
+        return 0
+
     if args.command == "check":
         findings = check(Path(args.data_dir), services)
+        if args.editions_dir is not None:
+            findings += editions.check_editions(Path(args.editions_dir), Path(args.data_dir))
         if findings:
             print(f"data-check FAILED: {len(findings)} finding(s)", file=sys.stderr)
             print_findings(findings)

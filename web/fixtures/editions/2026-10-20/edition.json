@@ -1,0 +1,81 @@
+{
+  "counts": {
+    "municipalities": 8,
+    "municipalities_per_cycle": {
+      "2018": 7,
+      "2022": 7,
+      "2026": 8
+    },
+    "overseas_posts": 1,
+    "rows": {
+      "candidates.csv": 12,
+      "centroids.csv": 7,
+      "cities.csv": 9,
+      "turnout.csv": 50,
+      "votes.csv": 100
+    }
+  },
+  "date": "2026-10-20",
+  "files": {
+    "candidates.csv": {
+      "bytes": 345,
+      "sha256": "06276cf0c458adb6e081ee22dc335fec3fd484a25e451b72bbc9a6a7a644bb6b"
+    },
+    "centroids.csv": {
+      "bytes": 198,
+      "sha256": "f82839b690608815b064b55c214601f10e45e0a2f0e66e4c18fdaf06e71eeb42"
+    },
+    "cities.csv": {
+      "bytes": 734,
+      "sha256": "e5b406c4ba56fb081f1a1269ad2fd1368599482e550f816d0e41bb50c646936f"
+    },
+    "manifest.json": {
+      "bytes": 131,
+      "sha256": "ce23eb01692dd3b7d79bb7a9b980967c82c6ad6f0eec67284fc004b42cd32783"
+    },
+    "turnout.csv": {
+      "bytes": 2713,
+      "sha256": "fa5c4000550cf89800d40b57b4612c9f9e3f8869af2bae7a3464efde288446f3"
+    },
+    "votes.csv": {
+      "bytes": 2549,
+      "sha256": "3f865d9b48cbfbf0d3fcc6d97725c37f57a88f5c705a2ec77d9945223d8bb8f5"
+    }
+  },
+  "fingerprint": "73a6429a71ec4586",
+  "id": "2026-10-20",
+  "notes": [
+    "Dados fictícios de teste, no mesmo formato dos dados reais. Não são resultados de eleição."
+  ],
+  "publication": {
+    "checks": [],
+    "mode": "manual"
+  },
+  "schema_version": 1,
+  "totals": {
+    "2018-1": {
+      "comparecimento": 535316,
+      "validos": 504744
+    },
+    "2018-2": {
+      "comparecimento": 534249,
+      "validos": 503005
+    },
+    "2022-1": {
+      "comparecimento": 548420,
+      "validos": 518311
+    },
+    "2022-2": {
+      "comparecimento": 520551,
+      "validos": 489228
+    },
+    "2026-1": {
+      "comparecimento": 635779,
+      "validos": 596739
+    },
+    "2026-2": {
+      "comparecimento": 605041,
+      "validos": 568348
+    }
+  }
+}

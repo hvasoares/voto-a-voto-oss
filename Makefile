@@ -1,4 +1,4 @@
-.PHONY: test tse-scrape data data-2018 data-2022 data-2026 data-check nonvoters deploy \
+.PHONY: test tse-scrape data data-2018 data-2022 data-2026 data-check publish-edition rollback-edition nonvoters deploy \
         install typecheck web-test browser e2e e2e-pages e2e-real build-deploy ci web-install
 
 test:
@@ -16,9 +16,18 @@ data:
 data-2026 data-2022 data-2018:
 	uv run voto-data build --cycles $(subst data-,,$@)
 
-# Valida data/ sem rede: hashes do manifest, contagens, identidades e totais nacionais do TSE.
+# Valida data/ sem rede: hashes do manifest, contagens, identidades e totais nacionais do TSE; e as edições
+# publicadas em editions/ (intactas, e data/ é uma delas).
 data-check:
-	uv run voto-data check
+	uv run voto-data check --editions-dir editions
+
+# Congela data/ como uma nova edição datada e imutável em editions/ (#59). Rodar depois de `make data`; não faz nada se data/ já é uma edição.
+publish-edition:
+	uv run voto-data publish-edition $(if $(DATE),--date $(DATE))
+
+# Restaura data/ para a edição anterior à que ele mostra (#60). Nenhuma edição publicada muda; veja o README.
+rollback-edition:
+	uv run voto-data rollback-edition
 
 # Reproduz as tabelas de docs/nonvoters-vs-margin.md (não-votantes maiores que a margem, por ciclo, turno e estado) a partir de data/.
 nonvoters:
