@@ -2,7 +2,20 @@ name: deploy-pages
 on:
   push:
     branches: [main]
-    paths: ['web/**', 'data/**', 'editions/**', '.github/workflows/deploy.yml']
+    # Anything that can change the published site. Docs, end-to-end specs, unit tests and the test fixtures cannot
+    # (the negations come last: they subtract from the patterns above).
+    paths:
+      - 'web/**'
+      - 'data/**'
+      - 'editions/**'
+      - '.github/workflows/deploy.yml'
+      - '!web/docs/**'
+      - '!web/e2e/**'
+      - '!web/fixtures/**'
+      - '!web/**/*.test.ts'
+      - '!web/**/*.test.tsx'
+      - '!web/playwright*.config.ts'
+      - '!web/README.md'
   workflow_dispatch:
 
 permissions:
@@ -29,6 +42,16 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - run: npm ci
       - run: npm test
+      - name: Cache the link-preview rasters
+        uses: actions/cache@v4
+        with:
+          path: web/.cache/previews
+          # Exact match only, no restore-keys: the build reuses a cached raster by its city path alone, so a raster
+          # drawn by older code or from an older dataset must never be restored. The key is the dataset (its manifest
+          # holds the digest of every table) plus the code that draws the picture (integrations/preview-images.ts,
+          # link-preview, share-card and its sentences, the city model); tests are left out so editing one does not
+          # throw the cache away.
+          key: previews-${{ hashFiles('data/manifest.json', 'web/integrations/preview-images.ts', 'web/src/lib/link-preview.ts', 'web/src/lib/share-*.ts', 'web/src/lib/stat-card.ts', 'web/src/lib/city-shard.ts', 'web/src/lib/sentences/**', 'web/src/shared/city-model.ts', 'web/src/data/**', 'web/src/slots/city/city-view.ts', '!**/*.test.ts') }}
       - name: Build static site
         run: npm run build
         env:
