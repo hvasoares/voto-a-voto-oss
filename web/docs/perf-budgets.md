@@ -25,10 +25,15 @@ O que o script soma por rota:
 
 | Rota | html | css | eagerJs | islandJs | total medido |
 |---|---|---|---|---|---|
-| `/` (home) | 12 KB | 16 KB | 3 KB | 120 KB | **101.0K** |
+| `/` (home) | 12 KB | 16 KB | 4.2 KB (#35/#40: era 3 KB) | 120 KB | **101.0K** |
 | `/rj/cidade-exemplo/` (cartão) | 4 KB (#58: a frase pronta nos dois registros) | 16 KB | 3 KB | 3 KB | **15.2K** |
 | `/mapa/` (tile map por estado) | 12 KB | 16 KB | 3 KB | 85 KB | **92.9K** |
 | `/relatorios/cidades-que-viraram/` (relatório) | 12 KB | 16 KB | 3 KB | 3 KB | **14.1K** |
+
+**Mudança de orçamento (#35, #40):** o `eagerJs` da home passou de 3 KB para 4.2 KB. A home agora lê o aparelho ao carregar
+(o atalho "Sua cidade" e o "esquecer meus dados", ~0.6 KB gzip) e traz o botão "Usar minha localização"; o código que pede a posição
+e o arquivo dos centros (70 KB gzip) só carregam no toque, mas o `import()` dinâmico faz o Vite acrescentar seu carregador (~0.9 KB gzip) ao script
+da página (medido: embutir o código custou mais, 5.4 KB contra 4.9 KB de JS na página). Medido: eagerJs da home 4.1K; o html da home cresce ~0.4 KB gzip (markup do atalho, do botão e das notas; `measure.ts`: 6.4K -> 6.8K).
 
 Os orçamentos foram calibrados para o site já passar de folga — a intenção do ticket foi
 **fixar o piso atual como linha de base**, para que regressões de peso (voltar a CDNs, importar

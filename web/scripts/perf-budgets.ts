@@ -48,7 +48,8 @@ export interface Budget {
 
 /** Budgets in KB, gzip. Set from #19's intent (see docs/perf-budgets.md); the script fails loudly on a miss. */
 export const BUDGETS: Record<RouteId, Budget> = {
-  home: { html: 12, css: 16, eagerJs: 3, islandJs: 120 },
+  // Home eagerJs 3 -> 4.2 KB (#35/#40): the Sua cidade shortcut and the location button run on the home page (docs/perf-budgets.md).
+  home: { html: 12, css: 16, eagerJs: 4.2, islandJs: 120 },
   city: { html: 4, css: 16, eagerJs: 3, islandJs: 3 },
   mapa: { html: 12, css: 16, eagerJs: 3, islandJs: 85 },
   report: { html: 12, css: 16, eagerJs: 3, islandJs: 3 },
