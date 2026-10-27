@@ -8,7 +8,7 @@ import { loadEditions } from './editions-load'
 const edition = (id: string, date = id.slice(0, 10), extra: Partial<Edition> = {}): Edition => ({
   schema_version: 1, id, date, fingerprint: 'abcdabcdabcdabcd',
   counts: { municipalities: 5571, overseas_posts: 186, municipalities_per_cycle: { '2026': 5571 }, rows: { 'votes.csv': 240981, 'turnout.csv': 34498 } },
-  totals: {}, notes: ['Dados finais do TSE & mais <nada>.'], files: {}, publication: { mode: 'manual', checks: [] }, ...extra,
+  totals: {}, release: { identifier: `voto-a-voto-${id}`, license: 'CC-BY-4.0', url: '', files: {} }, notes: ['Dados finais do TSE & mais <nada>.'], files: {}, publication: { mode: 'manual', checks: [] }, ...extra,
 })
 
 describe('order and labels', () => {

@@ -1,0 +1,10 @@
+uf,cd_municipio,cd_ibge,nome,slug,regiao,ciclos
+rj,99001,3399001,Cidade Exemplo,cidade-exemplo,sudeste,2018;2022;2026
+rj,99002,3399002,Cidade Exemplo A,cidade-exemplo-a,sudeste,2018;2022;2026
+rj,99003,3399003,Cidade Exemplo B,cidade-exemplo-b,sudeste,2018;2022;2026
+rj,99004,3399004,Cidade Exemplo C,cidade-exemplo-c,sudeste,2018;2022;2026
+rj,99005,3399005,Cidade Exemplo D,cidade-exemplo-d,sudeste,2018;2022;2026
+rj,99006,3399006,Cidade Exemplo E,cidade-exemplo-e,sudeste,2018;2022;2026
+sp,99101,3599101,Cidade Exemplo Paulista,cidade-exemplo-paulista,sudeste,2018;2022;2026
+mt,99201,5199201,Boa Esperança do Norte,boa-esperanca-do-norte,centro-oeste,2026
+zz,99301,,Exterior (posto exemplo),exterior-exemplo,exterior,2018;2022;2026

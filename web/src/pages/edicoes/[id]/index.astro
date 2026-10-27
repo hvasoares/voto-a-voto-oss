@@ -5,7 +5,7 @@
  */
 import Base from '@/layouts/Base.astro'
 import { formatUtc, shortHash } from '@/lib/about'
-import { citation, editionLabel, editionPath, type Edition } from '@/lib/editions'
+import { citation, editionLabel, editionPath, releasePath, type Edition } from '@/lib/editions'
 import { currentEdition, loadEditions } from '@/lib/editions-load'
 import { siteOrigin } from '@/lib/share-url'
 import { formatInt } from '@/shared/city-model'
@@ -31,7 +31,7 @@ const counts = edition.counts
     <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="conteudo">
       <h2 class="font-serif text-section font-normal leading-[25px]" id="conteudo">O que tem nesta edição</h2>
       <ul class="mt-[5px] list-disc space-y-1 pl-5" data-component="edition-counts">
-        <li>{formatInt(counts.municipalities)} municípios e {formatInt(counts.overseas_posts)} postos de votação no exterior.</li>
+        <li>{formatInt(counts.municipalities)} municípios e {formatInt(counts.overseas_posts)} {counts.overseas_posts === 1 ? 'posto de votação' : 'postos de votação'} no exterior.</li>
         {Object.entries(counts.municipalities_per_cycle).map(([ano, n]) => <li>{ano}: {formatInt(n)} municípios com dados.</li>)}
         <li>{formatInt(counts.rows['votes.csv'] ?? 0)} linhas de votos por candidato e {formatInt(counts.rows['turnout.csv'] ?? 0)} de comparecimento.</li>
       </ul>
@@ -44,6 +44,20 @@ const counts = edition.counts
       <h2 class="font-serif text-section font-normal leading-[25px]" id="como-citar">Como citar</h2>
       <p class="mt-[5px] break-words" data-component="citation">{citation(edition, address)}</p>
       <p class="mt-1 text-small leading-[16px] text-muted-foreground">Um número citado desta edição continua o mesmo para quem abrir o endereço depois.</p>
+    </section>
+
+    <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="dados-abertos" data-component="release">
+      <h2 class="font-serif text-section font-normal leading-[25px]" id="dados-abertos">Dados abertos desta edição</h2>
+      <p class="mt-[5px]">Os resultados por município em CSV e NDJSON, com dicionário de dados, LEIAME, arquivo de citação e SHA-256 de cada arquivo. Os endereços pertencem a esta edição e nunca mudam.</p>
+      <p class="mt-1" data-release-identifier>Identificador: <strong>{edition.release.identifier}</strong>. Licença: <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">{edition.release.license}</a>, com atribuição ao TSE e ao projeto. Leia o <a href={href(releasePath(edition.id) + 'LEIAME.md')}>LEIAME</a> para os cuidados (empates, exterior, ciclos sem dados).</p>
+      <ul class="mt-1 list-none p-0" data-component="release-files">
+        {Object.entries(edition.release.files).map(([name, f]) => (
+          <li class="border-t border-border py-2 first:border-t-0 first:pt-0" data-release-file={name}>
+            <a class="font-bold break-all" href={href(releasePath(edition.id) + name)}>{name}</a>
+            <span class="block text-small leading-[16px]">{formatInt(f.bytes)} bytes · SHA-256 <span title={f.sha256}>{shortHash(f.sha256)}</span></span>
+          </li>
+        ))}
+      </ul>
     </section>
 
     <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="publicacao">

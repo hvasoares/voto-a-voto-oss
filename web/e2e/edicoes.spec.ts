@@ -21,7 +21,7 @@ test.describe('editions', () => {
     await expect(page).toHaveURL(base + 'edicoes/2026-10-26/')
     await expect(page.locator('h1')).toHaveText('Edição de 26/10/2026')
     await expect(page.locator('[data-edition-id]')).toHaveText('2026-10-26')
-    await expect(page.locator('[data-component="edition-counts"]')).toContainText('8 municípios e 1 postos de votação no exterior')
+    await expect(page.locator('[data-component="edition-counts"]')).toContainText('8 municípios e 1 posto de votação no exterior')
     await expect(page.locator('[data-component="edition-files"] [data-file]')).toHaveCount(6)
     await expect(page.locator('[data-component="citation"]')).toContainText('edição de 26/10/2026 (2026-10-26)')
     await expect(page.locator('[data-component="citation"]')).toContainText(base + 'edicoes/2026-10-26/')
@@ -70,6 +70,30 @@ test.describe('editions', () => {
     await expect(rule).toContainText('não apuração ao vivo')
     await expect(rule).toContainText('Dados parciais nunca são publicados')
     await expect(rule).toContainText('nada é publicado')
+  })
+
+  test('the edition page offers the open dataset: files, licence, identifier and the way to cite', async ({ page, request }) => {
+    await page.goto(base + 'edicoes/2026-10-26/')
+    const release = page.locator('[data-component="release"]')
+    await expect(release.locator('[data-release-identifier]')).toContainText('voto-a-voto-2026-10-26')
+    await expect(release.locator('[data-release-identifier]')).toContainText('CC-BY-4.0')
+    await expect(release.locator('[data-release-file]')).toHaveCount(12)
+    const link = release.locator('[data-release-file="votes.ndjson"] a')
+    await expect(link).toHaveAttribute('href', base + 'edicoes/2026-10-26/dados/votes.ndjson')
+    const sums = await (await request.get(base + 'edicoes/2026-10-26/dados/SHA256SUMS')).text()
+    expect(sums).toContain('  votes.csv')
+    const csv = await (await request.get(base + 'edicoes/2026-10-26/dados/votes.csv')).text()
+    expect(csv.split('\n')[0]).toBe('ano,turno,uf,cd_municipio,candidato_numero,votos')
+    const first = await (await request.get(base + 'edicoes/2026-10-26/dados/votes.ndjson')).text()
+    expect(JSON.parse(first.split('\n')[0]!)).toMatchObject({ ano: 2018, turno: 1 })
+    const readme = await (await request.get(base + 'edicoes/2026-10-26/dados/LEIAME.md')).text()
+    expect(readme).toContain('Empates')
+    expect(readme).toContain('Como citar')
+  })
+
+  test('the data page says the licence and how the open data is cited', async ({ page }) => {
+    await page.goto(base + 'sobre-os-dados/')
+    await expect(page.locator('[data-component="open-data"]')).toContainText('Creative Commons Atribuição 4.0')
   })
 
   test('opening an edition makes no request beyond the site', async ({ page }) => {

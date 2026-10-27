@@ -1,0 +1,9 @@
+{"uf":"rj","cd_municipio":99001,"cd_ibge":"3399001","nome":"Cidade Exemplo","slug":"cidade-exemplo","regiao":"sudeste","ciclos":[2018,2022,2026]}
+{"uf":"rj","cd_municipio":99002,"cd_ibge":"3399002","nome":"Cidade Exemplo A","slug":"cidade-exemplo-a","regiao":"sudeste","ciclos":[2018,2022,2026]}
+{"uf":"rj","cd_municipio":99003,"cd_ibge":"3399003","nome":"Cidade Exemplo B","slug":"cidade-exemplo-b","regiao":"sudeste","ciclos":[2018,2022,2026]}
+{"uf":"rj","cd_municipio":99004,"cd_ibge":"3399004","nome":"Cidade Exemplo C","slug":"cidade-exemplo-c","regiao":"sudeste","ciclos":[2018,2022,2026]}
+{"uf":"rj","cd_municipio":99005,"cd_ibge":"3399005","nome":"Cidade Exemplo D","slug":"cidade-exemplo-d","regiao":"sudeste","ciclos":[2018,2022,2026]}
+{"uf":"rj","cd_municipio":99006,"cd_ibge":"3399006","nome":"Cidade Exemplo E","slug":"cidade-exemplo-e","regiao":"sudeste","ciclos":[2018,2022,2026]}
+{"uf":"sp","cd_municipio":99101,"cd_ibge":"3599101","nome":"Cidade Exemplo Paulista","slug":"cidade-exemplo-paulista","regiao":"sudeste","ciclos":[2018,2022,2026]}
+{"uf":"mt","cd_municipio":99201,"cd_ibge":"5199201","nome":"Boa Esperança do Norte","slug":"boa-esperanca-do-norte","regiao":"centro-oeste","ciclos":[2026]}
+{"uf":"zz","cd_municipio":99301,"cd_ibge":null,"nome":"Exterior (posto exemplo)","slug":"exterior-exemplo","regiao":"exterior","ciclos":[2018,2022,2026]}

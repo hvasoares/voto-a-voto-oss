@@ -14,6 +14,7 @@ import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
+from voto_a_voto import release
 from voto_a_voto.reconcile import Finding
 
 SCHEMA_VERSION = 1
@@ -105,7 +106,7 @@ def notes_of(manifest: dict) -> list[str]:
 def describe(files: dict[str, bytes], edition_id: str, date: str, publication: dict) -> dict:
     """The ``edition.json`` content for a dataset: a pure function of the files, the id, the date and the publication record."""
     manifest = json.loads(files["manifest.json"].decode("utf-8"))
-    return {
+    record = {
         "schema_version": SCHEMA_VERSION,
         "id": edition_id,
         "date": date,
@@ -116,6 +117,8 @@ def describe(files: dict[str, bytes], edition_id: str, date: str, publication: d
         "files": {name: file_entry(files[name]) for name in DATA_FILES},
         "publication": publication,
     }
+    record["release"] = release.describe(release.build(files, record), edition_id)  # the open dataset release (#63)
+    return record
 
 
 def dump_json(value: dict) -> bytes:
@@ -157,6 +160,9 @@ def publish(data_dir: Path, editions_dir: Path, *, date: str | None = None, publ
     (target / "data").mkdir(parents=True)
     for name, content in files.items():
         (target / "data" / name).write_bytes(content)
+    (target / "release").mkdir()
+    for name, content in release.build(files, record).items():
+        (target / "release" / name).write_bytes(content)
     (target / EDITION_FILE).write_bytes(dump_json(record))
     return Published(edition_id, created=True)
 
@@ -177,6 +183,24 @@ def check_edition(editions_dir: Path, edition_id: str, edition: dict) -> list[Fi
     again = describe(files, edition_id, edition["date"], edition["publication"])
     if dump_json(again) != (directory / EDITION_FILE).read_bytes():
         findings.append(Finding("editions", f"{edition_id}: edition.json is not what the frozen data describes"))
+    findings += check_release(directory, edition_id, edition, release.build(files, again))
+    return findings
+
+
+def check_release(directory: Path, edition_id: str, edition: dict, expected: dict[str, bytes]) -> list[Finding]:
+    """The files of ``release/`` are exactly what the frozen data gives, and what edition.json recorded."""
+    findings = []
+    on_disk = {path.name for path in (directory / "release").glob("*")} if (directory / "release").is_dir() else set()
+    for name in sorted(on_disk - set(expected)):
+        findings.append(Finding("editions", f"{edition_id}: release/{name} is not part of the release"))
+    for name, content in expected.items():
+        path = directory / "release" / name
+        if not path.exists():
+            findings.append(Finding("editions", f"{edition_id}: release/{name} is missing"))
+        elif path.read_bytes() != content:
+            findings.append(Finding("editions", f"{edition_id}: release/{name} differs from what the frozen data gives (a release never changes)"))
+        if edition.get("release", {}).get("files", {}).get(name) != file_entry(content):
+            findings.append(Finding("editions", f"{edition_id}: release/{name} differs from edition.json"))
     return findings
 
 

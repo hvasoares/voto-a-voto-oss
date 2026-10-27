@@ -25,6 +25,8 @@ export interface Edition {
   notes: string[]
   files: Record<string, { bytes: number; sha256: string }>
   publication: { mode: 'manual' | 'automatic'; checks: { name: string; ok: boolean; detail: string }[] }
+  /** The open dataset release of the edition (ticket #63), served under `edicoes/<id>/dados/`. */
+  release: { identifier: string; license: string; url: string; files: Record<string, { bytes: number; sha256: string }> }
 }
 
 /** Newest first; the date decides, the id breaks ties (`2026-10-27-2` is later than `2026-10-27`). */
@@ -41,6 +43,8 @@ export function editionLabel(edition: Pick<Edition, 'id' | 'date'>): string {
 /** Site-relative address of an edition (pass it through `withBase`). */
 export const EDITIONS_PATH = 'edicoes/'
 export const editionPath = (id: string): string => `${EDITIONS_PATH}${id}/`
+/** Site-relative address of the open dataset release of an edition. */
+export const releasePath = (id: string): string => `${editionPath(id)}dados/`
 export const FEED_PATH = 'edicoes/feed.atom'
 
 /** The line to cite an edition: name, label, id and the permanent address. */

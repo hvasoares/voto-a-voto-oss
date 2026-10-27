@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "Se usar estes dados, cite esta edição."
+title: "Voto a Voto: resultados da eleição presidencial por município, edição 2026-10-27"
+version: "2026-10-27"
+date-released: "2026-10-27"
+license: CC-BY-4.0
+url: "https://voto-a-voto.com/edicoes/2026-10-27/dados/"
+repository-code: "https://github.com/hvasoares/voto-a-voto-oss"
+identifiers:
+  - type: other
+    value: "voto-a-voto-2026-10-27"
+    description: "Identificador da edição"
+  - type: url
+    value: "https://voto-a-voto.com/edicoes/2026-10-27/dados/"
+    description: "Endereço permanente"
+authors:
+  - name: "Voto a Voto"

@@ -72,6 +72,61 @@
     ],
     "mode": "automatic"
   },
+  "release": {
+    "files": {
+      "CITATION.cff": {
+        "bytes": 616,
+        "sha256": "9cbcab3fccb63bc06ef9f5797893a3c12dced7b2d2abe5298a177e0590937a43"
+      },
+      "LEIAME.md": {
+        "bytes": 3879,
+        "sha256": "dd4ab12e2dd6f846baa272db63117bc19d0acbacc175d5a723c2e045452c5a95"
+      },
+      "SHA256SUMS": {
+        "bytes": 872,
+        "sha256": "6815741fed79b8270d7a8a5fe306b0b0304f573bbb4d23b01670859634160932"
+      },
+      "candidates.csv": {
+        "bytes": 345,
+        "sha256": "06276cf0c458adb6e081ee22dc335fec3fd484a25e451b72bbc9a6a7a644bb6b"
+      },
+      "candidates.ndjson": {
+        "bytes": 1032,
+        "sha256": "827050ace33b19b996d16e5376d358830405bd5dcee1614bf4fdf80626624fbc"
+      },
+      "cities.csv": {
+        "bytes": 734,
+        "sha256": "e5b406c4ba56fb081f1a1269ad2fd1368599482e550f816d0e41bb50c646936f"
+      },
+      "cities.ndjson": {
+        "bytes": 1372,
+        "sha256": "994d18c4524388be5c3047079bdb778de5827f7632710444de1f3fa3c70da61c"
+      },
+      "dicionario.csv": {
+        "bytes": 4485,
+        "sha256": "70c3c969ad398da7cc04bd941584b0f26e70db70403a0ce3fd5555ccce9e412d"
+      },
+      "turnout.csv": {
+        "bytes": 2713,
+        "sha256": "fa5c4000550cf89800d40b57b4612c9f9e3f8869af2bae7a3464efde288446f3"
+      },
+      "turnout.ndjson": {
+        "bytes": 8766,
+        "sha256": "4552cc4287b05afd34bb4ce7194ac4e303131ae0653c1cd8b596fdd358556608"
+      },
+      "votes.csv": {
+        "bytes": 2549,
+        "sha256": "3f865d9b48cbfbf0d3fcc6d97725c37f57a88f5c705a2ec77d9945223d8bb8f5"
+      },
+      "votes.ndjson": {
+        "bytes": 9000,
+        "sha256": "de9f8b08d7c9f28de691b8994d17efbdaf97e2f2a9709b766b244b74205650ad"
+      }
+    },
+    "identifier": "voto-a-voto-2026-10-20",
+    "license": "CC-BY-4.0",
+    "url": "https://voto-a-voto.com/edicoes/2026-10-20/dados/"
+  },
   "schema_version": 1,
   "totals": {
     "2018-1": {

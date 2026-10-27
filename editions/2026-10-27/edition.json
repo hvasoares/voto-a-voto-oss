@@ -52,6 +52,61 @@
     "checks": [],
     "mode": "manual"
   },
+  "release": {
+    "files": {
+      "CITATION.cff": {
+        "bytes": 616,
+        "sha256": "bd0d25266476ba6d38120692c38fa62eda18a91dfc181b024e4df8a3170205df"
+      },
+      "LEIAME.md": {
+        "bytes": 3890,
+        "sha256": "f84a6f6184d4f7f189d249ee62fe4352ebba357971a451469f3a78ab42507c60"
+      },
+      "SHA256SUMS": {
+        "bytes": 872,
+        "sha256": "d128297124da37ed9be8cf181038e170c0ec1ccbfee9a08d3fbf61d285712480"
+      },
+      "candidates.csv": {
+        "bytes": 1210,
+        "sha256": "2f14be28331480d641e66e141184838ac2efd1a05ecc2f81d43f36a0bc48a31e"
+      },
+      "candidates.ndjson": {
+        "bytes": 3727,
+        "sha256": "8c4de84c91b5fc7d8daadd303f10ae76777646cd5d000fc67200b547a21a5ac0"
+      },
+      "cities.csv": {
+        "bytes": 373759,
+        "sha256": "84129d7d660bf3e6634c068a302d7391852438eab930dad1c89f7b0c2ba71809"
+      },
+      "cities.ndjson": {
+        "bytes": 811849,
+        "sha256": "27cfc39432eaba751719ae36245472e63bf330c06946acff675d504815944755"
+      },
+      "dicionario.csv": {
+        "bytes": 4485,
+        "sha256": "70c3c969ad398da7cc04bd941584b0f26e70db70403a0ce3fd5555ccce9e412d"
+      },
+      "turnout.csv": {
+        "bytes": 1593550,
+        "sha256": "d6d7af5369579ceaf09e045703dd6e5023893092ed45a146bc17e600a1b566de"
+      },
+      "turnout.ndjson": {
+        "bytes": 5836707,
+        "sha256": "48a159bef6f45ee5f0049ae966f95a3bc66664883e20816d1b9e264be380017d"
+      },
+      "votes.csv": {
+        "bytes": 5370300,
+        "sha256": "7353e7f416163fefee3ccc55c608187422ad895a6d181a2686d77efb942c86df"
+      },
+      "votes.ndjson": {
+        "bytes": 21034016,
+        "sha256": "32ae9232e7cc7f584eb2bd12d162f94b3f262e3d2163a727ac6527c9bc95bd33"
+      }
+    },
+    "identifier": "voto-a-voto-2026-10-27",
+    "license": "CC-BY-4.0",
+    "url": "https://voto-a-voto.com/edicoes/2026-10-27/dados/"
+  },
   "schema_version": 1,
   "totals": {
     "2018-1": {

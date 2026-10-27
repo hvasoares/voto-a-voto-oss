@@ -18,6 +18,15 @@ describe('writeEditions', () => {
     expect(read(out, '2026-10-26')).toBe(readFileSync(resolve(fixtures, '2026-10-26/edition.json'), 'utf8'))
   })
 
+  it('serves the release files under dados/, byte for byte', () => {
+    const out = scratch()
+    writeEditions(out, fixtures)
+    for (const name of readdirSync(resolve(fixtures, '2026-10-26/release'))) {
+      expect(readFileSync(resolve(out, 'edicoes/2026-10-26/dados', name)).equals(readFileSync(resolve(fixtures, '2026-10-26/release', name)))).toBe(true)
+    }
+    expect(readdirSync(resolve(out, 'edicoes/2026-10-26/dados'))).toContain('SHA256SUMS')
+  })
+
   it('publishing a new edition never changes the files of an older one', () => {
     const source = scratch()
     cpSync(resolve(fixtures, '2026-10-20'), resolve(source, '2026-10-20'), { recursive: true })
