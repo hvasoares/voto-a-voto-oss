@@ -34,6 +34,9 @@ const cityName = displayName(city.nome)
 const closeHref = href('/')
 const sub = city.uf === 'zz' ? 'Voto no exterior' : `${fixture ? 'Município fictício' : 'Município'} · rj`
 const NOTE = 'O link vai no texto da mensagem; a imagem leva só o endereço curto, sem QR.'
+// Ticket #9 wires the old slot contract's "Mostrar QR" link here; the target is the demo /qr/ screen until
+// #50 ports the real /:uf/:slug/qr/ route (then this becomes the same city's QR screen, data-ticket="50").
+const qrHref = href('/qr/')
 ---
 <Base title={`Compartilhar · ${cityName}`}>
   <main class="min-w-0 flex-1">
@@ -73,6 +76,11 @@ const NOTE = 'O link vai no texto da mensagem; a imagem leva só o endereço cur
       {content && <p class="mt-3 text-small leading-[17px] text-muted-foreground" data-note>{NOTE}</p>}
       {content && <noscript><p class="mt-1 text-small leading-[17px]" data-nojs>Compartilhar e baixar a imagem precisam de JavaScript; o texto abaixo pode ser copiado e enviado com o endereço.</p></noscript>}
       {content && <ShareActions client:idle text={content.text} svg={content.svg} filename={content.filename} />}
+      {content && (
+        <a class="mt-2 flex min-h-11 w-full items-center justify-center rounded-md border border-border bg-background text-body font-bold" href={qrHref} data-qr-link data-ticket="50 to replace">
+          Mostrar QR
+        </a>
+      )}
       <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
         {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
       </footer>

@@ -38,3 +38,36 @@ test('capture share / default', async ({ page }) => {
     JSON.stringify({ slot: 'share', state: 'default', route: `${base}compartilhar/`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'site/reference/03-compartilhamento.png', capture: file }, null, 2) + '\n',
   )
 })
+
+/* Ticket #9: the Mostrar QR demo screen (fixture city), next to site/reference/04-mostrar-qr.png. */
+test('capture qr / default', async ({ page }) => {
+  await page.goto(`${base}qr/`)
+  await page.evaluate(() => document.fonts.ready)
+  await page.evaluate(() => window.scrollTo(0, 0))
+  const dir = resolve('.captures', 'qr')
+  mkdirSync(dir, { recursive: true })
+  const file = resolve(dir, 'default.png')
+  await page.screenshot({ path: file, animations: 'disabled' })
+  writeFileSync(
+    resolve(dir, 'default.json'),
+    JSON.stringify({ slot: 'qr', state: 'default', route: `${base}qr/`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'site/reference/04-mostrar-qr.png', capture: file }, null, 2) + '\n',
+  )
+})
+
+/* Ticket #9: the printable poster, A4 emulated (print media at 794x1123 CSS px = 210x297 mm at 96 dpi). */
+test('capture qr / poster-print', async ({ page }) => {
+  await page.setViewportSize({ width: 794, height: 1123 })
+  await page.emulateMedia({ media: 'print' })
+  await page.goto(`${base}qr/`)
+  await page.evaluate(() => document.fonts.ready)
+  await expect(page.locator('[data-poster]')).toBeVisible()
+  await expect(page.locator('[data-qr-screen]')).toBeHidden()
+  const dir = resolve('.captures', 'qr')
+  mkdirSync(dir, { recursive: true })
+  const file = resolve(dir, 'poster-print.png')
+  await page.screenshot({ path: file, animations: 'disabled' })
+  writeFileSync(
+    resolve(dir, 'poster-print.json'),
+    JSON.stringify({ slot: 'qr', state: 'poster-print', route: `${base}qr/`, viewport: page.viewportSize(), scrollY: 0, fullPage: false, media: 'print', reference: 'A4 (210x297) print layer of the same ticket', capture: file }, null, 2) + '\n',
+  )
+})
