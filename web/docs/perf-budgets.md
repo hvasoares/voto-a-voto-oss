@@ -26,7 +26,7 @@ O que o script soma por rota:
 | Rota | html | css | eagerJs | islandJs | total medido |
 |---|---|---|---|---|---|
 | `/` (home) | 12 KB | 16 KB | 4.2 KB (#35/#40: era 3 KB) | 120 KB | **101.0K** |
-| `/rj/cidade-exemplo/` (cartão) | 4.6 KB (#58: a frase pronta nos dois registros; #51: a barra superior de desktop, pré-renderizada em todas as páginas) | 16 KB | 3 KB | 3 KB | **15.2K** |
+| `/rj/cidade-exemplo/` (cartão) | 5.2 KB (#58: a frase pronta nos dois registros; #51: a barra superior de desktop, pré-renderizada em todas as páginas; #52: a segunda coluna do cartão) | 16 KB | 3 KB | 3 KB | **15.2K** |
 | `/mapa/` (tile map por estado) | 12 KB | 16 KB | 3 KB | 85 KB | **92.9K** |
 | `/relatorios/cidades-que-viraram/` (relatório) | 12 KB | 16 KB | 3 KB | 3 KB | **14.1K** |
 
@@ -35,7 +35,7 @@ O que o script soma por rota:
 e o arquivo dos centros (70 KB gzip) só carregam no toque, mas o `import()` dinâmico faz o Vite acrescentar seu carregador (~0.9 KB gzip) ao script
 da página (medido: embutir o código custou mais, 5.4 KB contra 4.9 KB de JS na página). Medido: eagerJs da home 4.1K; o html da home cresce ~0.4 KB gzip (markup do atalho, do botão e das notas; `measure.ts`: 6.4K -> 6.8K).
 
-**Mudança de orçamento (#51):** o `html` do cartão passou de 4 KB para 4.6 KB: a barra superior do desktop (marca, campo de busca, três links) é HTML pré-renderizado em toda página, escondida abaixo de 1024 px (medido no celular: +0.7 KB gzip de HTML em toda página, +0.6 KB no CSS compartilhado, nenhum byte de JS nem requisição nova: o módulo do desktop é carregado por um trecho inline atrás de `matchMedia`, e o campo só vira o `CitySearch` real no primeiro foco).
+**Mudança de orçamento (#51, #52):** o `html` do cartão passou de 4 KB para 4.6 KB (#51) e para 5.2 KB (#52, a segunda coluna do cartão e as descrições dos links, ~0.5 KB): a barra superior do desktop (marca, campo de busca, três links) é HTML pré-renderizado em toda página, escondida abaixo de 1024 px (medido no celular: +0.7 KB gzip de HTML em toda página, +0.6 KB no CSS compartilhado, nenhum byte de JS nem requisição nova: o módulo do desktop é carregado por um trecho inline atrás de `matchMedia`, e o campo só vira o `CitySearch` real no primeiro foco).
 
 Os orçamentos foram calibrados para o site já passar de folga — a intenção do ticket foi
 **fixar o piso atual como linha de base**, para que regressões de peso (voltar a CDNs, importar

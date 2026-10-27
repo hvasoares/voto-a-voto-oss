@@ -50,8 +50,9 @@ export interface Budget {
 export const BUDGETS: Record<RouteId, Budget> = {
   // Home eagerJs 3 -> 4.2 KB (#35/#40): the Sua cidade shortcut and the location button run on the home page (docs/perf-budgets.md).
   home: { html: 12, css: 16, eagerJs: 4.2, islandJs: 120 },
-  // City html 4 -> 4.6 KB (#51): the desktop top bar's pre-rendered markup (~0.7 KB gzip) is in every page's HTML; no script, no new request.
-  city: { html: 4.6, css: 16, eagerJs: 3, islandJs: 3 },
+  // City html 4 -> 5.2 KB (#51, #52): the desktop top bar's pre-rendered markup (~0.7 KB gzip) is in every page's HTML, and the two-column card adds
+  // its second column's wrappers and the links' one-line descriptions (~0.5 KB); no script, no new request.
+  city: { html: 5.2, css: 16, eagerJs: 3, islandJs: 3 },
   mapa: { html: 12, css: 16, eagerJs: 3, islandJs: 85 },
   report: { html: 12, css: 16, eagerJs: 3, islandJs: 3 },
 }
