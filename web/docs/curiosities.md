@@ -26,13 +26,19 @@ own group, so a group of 48 has ranks 1 to 48 and "Grupo: 48 cidades" counts the
 - A fact needs: a group of at least **20 cities** (`MIN_GROUP`; the tiny fixture dataset uses 2), a measure that is not equal for
   the whole group, a rank in the first quarter of the group and **no lower than the 25th** (`MAX_RANK`: "251ª de 1.272" is not a curiosity; the frame's worst fact is the 12th of 48).
 - The three facts with the smallest rank / group size win; ties go turnout, margin, blank. A city with no fact, or in a
-  group below the minimum, shows no card, no link and has no `/curiosidades/` page.
+  group below the minimum, shows no card.
 
 ## Where it shows
 
-- from 1024 px: the card under the figures of the city card (frame "2 Cartão da cidade (desktop, com as linhas V3)");
-- on a phone: its own screen `/<uf>/<slug>/curiosidades/` (frame "21 Curiosidades da cidade"), reached by "Curiosidades da cidade ›"
-  in the links under Compartilhar and left by "‹ Voltar ao cartão da cidade". Both are pre-rendered; no script, no request.
+It is a card on the city page (ticket #33: "a card on the City page, not a separate screen"), pre-rendered in the page's HTML for every
+city that has facts, in both registers; no script, no request, no page of its own and no link to one:
+
+- from 1024 px: under the figures of the city card (frame "2 Cartão da cidade (desktop, com as linhas V3)");
+- on a phone: in the single column, after the twin line and before Compartilhar (frame "2 Cartão da cidade, com curiosidades (card na
+  página)"). The markup is the same block; CSS (`.city-body` as a flex column below 1024 px, `order`) places it.
+
+(Until the decision of 2026-10 the phone had its own screen `/<uf>/<slug>/curiosidades/`, frame "21 Curiosidades da cidade", reached by a
+link under Compartilhar; both are gone and the build no longer emits that path.)
 
 ## The file
 

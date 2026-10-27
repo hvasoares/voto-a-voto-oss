@@ -27,3 +27,29 @@ desktop `/rj/cidade-exemplo/` at 1440x900 against "2 Cartão da cidade (desktop,
 | 8 | status bar "9:41", home indicator | drawn | absent | accepted-platform |
 
 Verdict: PASS (no blockers).
+
+## Revision (2026-10): the card on the city page on phones too; the separate page is removed
+
+Decision (Option A): the ticket says "a card on the City page, not a separate screen". The phone no longer has `/<uf>/<slug>/curiosidades/`,
+the link "Curiosidades da cidade ›" under Compartilhar, the `curio.link`, `curio.link.sub`, `curio.back` and `curio.footer` keys and the
+page's CSS; the card that was already in the city page's HTML (hidden on phones) is now shown. On a phone it sits after the twin line and
+before Compartilhar (CSS: `.city-body` a flex column below 1024 px, `.city-left`/`.city-right` as `display: contents`, `order`); from
+1024 px it is unchanged, under the figures. Cities with no card show nothing. Frame 1 of the old page ("21 Curiosidades da cidade") stays
+in Sketch as history; the build now matches the new frame "2 Cartão da cidade, com curiosidades (card na página)".
+
+### Screenshot review (phone, 390x844, `/rj/cidade-exemplo/?turno=1`, full page; frame: "2 Cartão da cidade, com curiosidades (card na página)")
+
+| # | Location | Frame shows | Render shows | Severity |
+|---|---|---|---|---|
+| 1 | between the figures and the card | headline, twin line only | the register switch, the arc pill and the margin line above the twin line | accepted: the base frame ("with the twin line") predates them; their own frames draw them, and the order is the build's existing one |
+| 2 | card position | after the twin line (20 px), 18 px above Compartilhar | same (measured 20 and 18) | none |
+| 3 | title, note box, three fact cards | muted 12 px title, paper-2 note box, three bordered cards (rank 44 px serif accent, text serif 17/22, hairline, group line 11 px) | same | none |
+| 4 | gaps | 16 px title to note, 14 px note to facts, 10 px between facts | were 14 / 14 / 14: fixed in screens.css (16 / 14 / 10); the desktop overrides are untouched | fixed (was code-fixable) |
+| 5 | numerals, group sizes | "3ª / 12ª / 5ª", "48 cidades" | "1ª", groups of 2 to 3 (fixture has 8 cities, minimum group 2); fact heights vary with the wrapped text (the frame's cards are a fixed 120 px) | accepted: illustrative numbers in the frame |
+| 6 | removed from the old page | footer text, "‹ Voltar ao cartão da cidade" | absent | none (not in the new frame) |
+| 7 | fixture banner, "Dados fictícios" line, edition/privacy footer | banner and fixture line drawn; no edition line | edition/privacy line under the page | accepted: not part of the frames |
+| 8 | status bar "9:41", home indicator | drawn | absent | accepted-platform |
+| 9 | other blocks | n/a | back, title, tabs, figures, headline, arc, margin, twin, Compartilhar, links, footer at the same x, y and size as before the change (checked by bounding boxes on a city without a card) | none |
+
+Verdict: PASS (no blockers). Phone first load, before/after (`measure.ts`, `/rj/cidade-exemplo/`, 390x844): JS 5064 B gzip (10155 raw), data 0,
+requests the same; CSS 15642 -> 15605 B gzip (the page's rules are gone); HTML 6128 -> 6106 B gzip (-22 B: the link is gone).
