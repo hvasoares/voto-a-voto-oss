@@ -35,6 +35,8 @@ export function shadcnVariables(): Record<string, string> {
     ...Object.fromEntries(Object.entries(colors).map(([k, v]) => [`--c-${k}`, v])),
     '--sketch-font-sans': fonts.sans,
     '--sketch-font-serif': fonts.serif,
+    '--sketch-lula': colors.lula,
+    '--sketch-bolsonaro': colors.bolsonaro,
     '--gutter': `${layout.gutter}px`,
     '--min-tap': `${layout.minTap}px`,
     ...Object.fromEntries(Object.entries(colors).map(([k, v]) => [`--sketch-color-${k}`, v])),

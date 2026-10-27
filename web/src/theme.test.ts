@@ -20,6 +20,9 @@ describe('Sketch tokens mapped onto the shadcn theme variables', () => {
   it('uses the Sketch fonts, the 4 px radius and the 20 px gutter', () => {
     expect(vars['--sketch-font-sans']).toBe(fonts.sans)
     expect(vars['--sketch-font-serif']).toBe(fonts.serif)
+    // the two party swatches the compare screens and screen 13 paint bars with (sketch tokens)
+    expect(vars['--sketch-lula']).toBe(colors.lula)
+    expect(vars['--sketch-bolsonaro']).toBe(colors.bolsonaro)
     expect(vars['--radius']).toBe(`${radius.control}px`)
     expect(vars['--gutter']).toBe(`${layout.gutter}px`)
   })
