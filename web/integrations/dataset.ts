@@ -1,5 +1,6 @@
 import type { AstroIntegration } from 'astro'
 import { resolve } from 'node:path'
+import { writeEditions } from './editions'
 import { generateShards, shardsModule } from './shards'
 
 /**
@@ -15,6 +16,8 @@ export function dataset(): AstroIntegration {
       'astro:config:setup': ({ config }) => {
         const root = new URL(config.root).pathname
         generateShards(resolve(root, 'public/data'), process.env, root)
+        // The editions (#59) are served beside the shards: committed in editions/, copied unchanged.
+        writeEditions(resolve(root, 'public'))
       },
     },
   }

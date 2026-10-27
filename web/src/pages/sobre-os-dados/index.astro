@@ -22,6 +22,9 @@ import { formatInt } from '@/shared/city-model'
 import { STORED_ITEMS } from '@/lib/stored-items'
 import { donationUrl } from '@/lib/donation'
 import DonationLink from '@/components/DonationLink.astro'
+import { citation, editionLabel, editionPath, FEED_PATH } from '@/lib/editions'
+import { currentEdition } from '@/lib/editions-load'
+import { siteOrigin } from '@/lib/share-url'
 import { normalizeBase, withBase } from '@/paths'
 
 const base = normalizeBase(import.meta.env.BASE_URL)
@@ -33,6 +36,8 @@ const tables = Object.entries(OUTPUT_ROWS)
   .join(', ')
 const githubManifest = GITHUB_URL + GITHUB_MANIFEST_PATH
 const donations = donationUrl() !== undefined
+const edition = await currentEdition()
+const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
 ---
 
 <Base title="Sobre os dados · Voto a Voto">
@@ -117,6 +122,15 @@ const donations = donationUrl() !== undefined
         <li>Some os votos de presidente do município e compare com o número na página dele.</li>
         <li>No repositório, rode <code>make data-check</code>: refaz, sem rede, todas as conferências da lista acima.</li>
       </ol>
+    </section>
+
+    <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="edicoes" data-component="editions">
+      <h2 class="font-serif text-section font-normal leading-[25px]" id="edicoes">Edições dos dados</h2>
+      <p class="mt-[5px]">Uma edição é uma cópia datada de todos os dados do site, publicada em um endereço próprio que nunca muda depois de publicado. Uma edição nova não apaga nem altera as anteriores: um número citado de uma edição continua o mesmo para quem abrir o endereço depois. O rodapé de cada página diz de qual edição vêm os números e leva até ela.</p>
+      <p class="mt-1">Edição que o site mostra agora: <a href={href(editionPath(edition.id))} data-current-edition>{editionLabel(edition)}</a>. Todas as edições, da mais nova para a mais antiga: <a href={href('edicoes/')}>lista de edições</a> e <a href={href(FEED_PATH)}>feed Atom</a>.</p>
+      <h3 class="mt-2 text-body font-bold leading-[18px]">Como citar uma edição</h3>
+      <p class="mt-[5px] break-words" data-component="citation">{citation(edition, editionAddress)}</p>
+      <p class="mt-1 text-small leading-[16px] text-muted-foreground">Cite sempre o endereço da edição, não o de uma página do site, que mostra a edição mais recente.</p>
     </section>
 
     <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="codigo">

@@ -1,0 +1,36 @@
+---
+/**
+ * Every edition, newest first (ticket #59). Plain HTML: no island, no data fetch.
+ */
+import Base from '@/layouts/Base.astro'
+import { editionLabel, editionPath, FEED_PATH } from '@/lib/editions'
+import { currentEdition, loadEditions } from '@/lib/editions-load'
+import { formatInt } from '@/shared/city-model'
+import { normalizeBase, withBase } from '@/paths'
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const editions = loadEditions()
+const current = await currentEdition()
+---
+
+<Base title="Edições dos dados · Voto a Voto">
+  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16" id="main" data-page="edicoes">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px]" href={href('sobre-os-dados/#edicoes')}>‹ Sobre os dados</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">Edições dos dados</h1>
+    <p class="mt-[5px]">Cada edição é uma cópia datada dos dados, em um endereço que nunca muda depois de publicado. Os números do site vêm da edição mais recente; as anteriores continuam acessíveis.</p>
+    <ul class="mt-2 list-none p-0" data-component="edition-list">
+      {editions.map((e) => (
+        <li class="border-t border-border py-2 first:border-t-0" data-edition={e.id}>
+          <a class="font-bold" href={href(editionPath(e.id))}>Edição de {editionLabel(e)}</a>
+          {e.id === current.id && <span class="ml-1 text-small text-muted-foreground">(a que o site mostra)</span>}
+          <span class="block text-small leading-[16px] text-muted-foreground">{formatInt(e.counts.municipalities)} municípios, {formatInt(e.counts.overseas_posts)} postos no exterior</span>
+        </li>
+      ))}
+    </ul>
+    <p class="mt-2"><a href={href(FEED_PATH)} data-feed-link>Feed Atom das edições</a></p>
+  </main>
+  <footer class="mx-auto w-full max-w-[430px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+    Fonte: TSE, dados finais
+  </footer>
+</Base>

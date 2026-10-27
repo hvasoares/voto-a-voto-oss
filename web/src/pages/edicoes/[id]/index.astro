@@ -1,0 +1,75 @@
+---
+/**
+ * One edition (ticket #59), at its immutable address. Plain HTML: id, date, counts, notes, how it was published and
+ * the size and SHA-256 of each file it froze.
+ */
+import Base from '@/layouts/Base.astro'
+import { formatUtc, shortHash } from '@/lib/about'
+import { citation, editionLabel, editionPath, type Edition } from '@/lib/editions'
+import { currentEdition, loadEditions } from '@/lib/editions-load'
+import { siteOrigin } from '@/lib/share-url'
+import { formatInt } from '@/shared/city-model'
+import { normalizeBase, withBase } from '@/paths'
+
+export function getStaticPaths() {
+  return loadEditions().map((edition) => ({ params: { id: edition.id }, props: { edition } }))
+}
+const { edition } = Astro.props as { edition: Edition }
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const current = await currentEdition()
+const address = `${siteOrigin()}${href(editionPath(edition.id))}`
+const counts = edition.counts
+---
+
+<Base title={`Edição de ${editionLabel(edition)} · Voto a Voto`}>
+  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16" id="main" data-page="edicao" data-edition={edition.id}>
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px]" href={href('edicoes/')}>‹ Edições</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">Edição de {editionLabel(edition)}</h1>
+    <p class="mt-[5px]">Identificador <strong data-edition-id>{edition.id}</strong>. Esta edição não muda: os arquivos abaixo têm tamanho e SHA-256 registrados em <a href={href(editionPath(edition.id) + 'edition.json')}>edition.json</a>.{edition.id === current.id ? ' É a edição que as páginas do site mostram hoje.' : ' As páginas do site mostram hoje outra edição.'}</p>
+
+    <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="conteudo">
+      <h2 class="font-serif text-section font-normal leading-[25px]" id="conteudo">O que tem nesta edição</h2>
+      <ul class="mt-[5px] list-disc space-y-1 pl-5" data-component="edition-counts">
+        <li>{formatInt(counts.municipalities)} municípios e {formatInt(counts.overseas_posts)} postos de votação no exterior.</li>
+        {Object.entries(counts.municipalities_per_cycle).map(([ano, n]) => <li>{ano}: {formatInt(n)} municípios com dados.</li>)}
+        <li>{formatInt(counts.rows['votes.csv'] ?? 0)} linhas de votos por candidato e {formatInt(counts.rows['turnout.csv'] ?? 0)} de comparecimento.</li>
+      </ul>
+      <ul class="mt-1 list-disc space-y-1 pl-5" data-component="edition-notes">
+        {edition.notes.map((note) => <li>{note}</li>)}
+      </ul>
+    </section>
+
+    <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="como-citar">
+      <h2 class="font-serif text-section font-normal leading-[25px]" id="como-citar">Como citar</h2>
+      <p class="mt-[5px] break-words" data-component="citation">{citation(edition, address)}</p>
+      <p class="mt-1 text-small leading-[16px] text-muted-foreground">Um número citado desta edição continua o mesmo para quem abrir o endereço depois.</p>
+    </section>
+
+    <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="publicacao">
+      <h2 class="font-serif text-section font-normal leading-[25px]" id="publicacao">Como foi publicada</h2>
+      <p class="mt-[5px]" data-publication={edition.publication.mode}>{edition.publication.mode === 'automatic' ? 'Publicação automática, depois das verificações abaixo.' : 'Publicação manual, a partir de dados que passaram nas conferências do repositório.'}</p>
+      {edition.publication.checks.length > 0 && (
+        <ul class="mt-1 list-disc space-y-1 pl-5" data-component="edition-checks">
+          {edition.publication.checks.map((c) => <li>{c.ok ? 'Passou' : 'Falhou'}: {c.name}. {c.detail}</li>)}
+        </ul>
+      )}
+    </section>
+
+    <section class="mt-2 border-t border-border pt-[7px] pb-2" aria-labelledby="arquivos">
+      <h2 class="font-serif text-section font-normal leading-[25px]" id="arquivos">Arquivos congelados</h2>
+      <ul class="mt-[5px] list-none p-0" data-component="edition-files">
+        {Object.entries(edition.files).map(([name, f]) => (
+          <li class="border-t border-border py-2 first:border-t-0 first:pt-0" data-file={name}>
+            <span class="font-bold break-all">{name}</span>
+            <span class="block text-small leading-[16px]">{formatInt(f.bytes)} bytes · SHA-256 <span title={f.sha256}>{shortHash(f.sha256)}</span></span>
+          </li>
+        ))}
+      </ul>
+      <p class="mt-1 text-small leading-[14px] text-muted-foreground">Dados de {formatUtc(edition.date)}. Impressão digital dos dados: {edition.fingerprint}.</p>
+    </section>
+  </main>
+  <footer class="mx-auto w-full max-w-[430px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+    Fonte: TSE, dados finais
+  </footer>
+</Base>
