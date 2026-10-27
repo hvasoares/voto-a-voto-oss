@@ -1,5 +1,5 @@
 {
-  "ranAt": "2026-10-27T06:09:23.304Z",
+  "ranAt": "2026-10-27T06:17:50.906Z",
   "dataDir": "/Users/hvasoares/dev/voto-a-voto/.claude/worktrees/agent-a2bf15549ab7d3540/data",
   "tseBase": "https://resultados.tse.jus.br/oficial",
   "figuresVerified": 44,
@@ -146,34 +146,6 @@
       "match": true
     },
     {
-      "figure": "MARQUINHO/pr 2º turno: votos válidos",
-      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/pr/pr75485-c0001-e006258-u.jws | data/turnout.csv (turno 2, 75485)",
-      "expected": "3060",
-      "live": "3060",
-      "match": true
-    },
-    {
-      "figure": "MARQUINHO/pr 2º turno: comparecimento",
-      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/pr/pr75485-c0001-e006258-u.jws | data/turnout.csv (turno 2, 75485)",
-      "expected": "3127",
-      "live": "3127",
-      "match": true
-    },
-    {
-      "figure": "MARQUINHO/pr 2º turno: votos de Lula",
-      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/pr/pr75485-c0001-e006258-u.jws | data/votes.csv (turno 2, 75485, candidato 13)",
-      "expected": "1530",
-      "live": "1530",
-      "match": true
-    },
-    {
-      "figure": "MARQUINHO/pr 2º turno: votos de Flavio Bolsonaro",
-      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/pr/pr75485-c0001-e006258-u.jws | data/votes.csv (turno 2, 75485, candidato 22)",
-      "expected": "1530",
-      "live": "1530",
-      "match": true
-    },
-    {
       "figure": "MARQUINHO/pr 1º turno: votos válidos",
       "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/pr/pr75485-c0001-e006257-u.jws | data/turnout.csv (turno 1, 75485)",
       "expected": "2970",
@@ -199,6 +171,34 @@
       "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/pr/pr75485-c0001-e006257-u.jws | data/votes.csv (turno 1, 75485, candidato 22)",
       "expected": "1473",
       "live": "1473",
+      "match": true
+    },
+    {
+      "figure": "MARQUINHO/pr 2º turno: votos válidos",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/pr/pr75485-c0001-e006258-u.jws | data/turnout.csv (turno 2, 75485)",
+      "expected": "3060",
+      "live": "3060",
+      "match": true
+    },
+    {
+      "figure": "MARQUINHO/pr 2º turno: comparecimento",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/pr/pr75485-c0001-e006258-u.jws | data/turnout.csv (turno 2, 75485)",
+      "expected": "3127",
+      "live": "3127",
+      "match": true
+    },
+    {
+      "figure": "MARQUINHO/pr 2º turno: votos de Lula",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/pr/pr75485-c0001-e006258-u.jws | data/votes.csv (turno 2, 75485, candidato 13)",
+      "expected": "1530",
+      "live": "1530",
+      "match": true
+    },
+    {
+      "figure": "MARQUINHO/pr 2º turno: votos de Flavio Bolsonaro",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/pr/pr75485-c0001-e006258-u.jws | data/votes.csv (turno 2, 75485, candidato 22)",
+      "expected": "1530",
+      "live": "1530",
       "match": true
     },
     {
@@ -258,34 +258,6 @@
       "match": true
     },
     {
-      "figure": "SÃO PAULO/sp 2º turno: votos válidos",
-      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/sp/sp71072-c0001-e006258-u.jws | data/turnout.csv (turno 2, 71072)",
-      "expected": "6962277",
-      "live": "6962277",
-      "match": true
-    },
-    {
-      "figure": "SÃO PAULO/sp 2º turno: comparecimento",
-      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/sp/sp71072-c0001-e006258-u.jws | data/turnout.csv (turno 2, 71072)",
-      "expected": "7284071",
-      "live": "7284071",
-      "match": true
-    },
-    {
-      "figure": "SÃO PAULO/sp 2º turno: votos de Lula",
-      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/sp/sp71072-c0001-e006258-u.jws | data/votes.csv (turno 2, 71072, candidato 13)",
-      "expected": "3864354",
-      "live": "3864354",
-      "match": true
-    },
-    {
-      "figure": "SÃO PAULO/sp 2º turno: votos de Flavio Bolsonaro",
-      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/sp/sp71072-c0001-e006258-u.jws | data/votes.csv (turno 2, 71072, candidato 22)",
-      "expected": "3097923",
-      "live": "3097923",
-      "match": true
-    },
-    {
       "figure": "SÃO PAULO/sp 1º turno: votos válidos",
       "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/sp/sp71072-c0001-e006257-u.jws | data/turnout.csv (turno 1, 71072)",
       "expected": "6552820",
@@ -311,6 +283,34 @@
       "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/sp/sp71072-c0001-e006257-u.jws | data/votes.csv (turno 1, 71072, candidato 22)",
       "expected": "2760747",
       "live": "2760747",
+      "match": true
+    },
+    {
+      "figure": "SÃO PAULO/sp 2º turno: votos válidos",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/sp/sp71072-c0001-e006258-u.jws | data/turnout.csv (turno 2, 71072)",
+      "expected": "6962277",
+      "live": "6962277",
+      "match": true
+    },
+    {
+      "figure": "SÃO PAULO/sp 2º turno: comparecimento",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/sp/sp71072-c0001-e006258-u.jws | data/turnout.csv (turno 2, 71072)",
+      "expected": "7284071",
+      "live": "7284071",
+      "match": true
+    },
+    {
+      "figure": "SÃO PAULO/sp 2º turno: votos de Lula",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/sp/sp71072-c0001-e006258-u.jws | data/votes.csv (turno 2, 71072, candidato 13)",
+      "expected": "3864354",
+      "live": "3864354",
+      "match": true
+    },
+    {
+      "figure": "SÃO PAULO/sp 2º turno: votos de Flavio Bolsonaro",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/sp/sp71072-c0001-e006258-u.jws | data/votes.csv (turno 2, 71072, candidato 22)",
+      "expected": "3097923",
+      "live": "3097923",
       "match": true
     }
   ]

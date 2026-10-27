@@ -9,9 +9,9 @@
  *   - data/turnout.csv + data/votes.csv (the dataset the site pre-renders its pages from), and
  *   - data/manifest.json national_reference (the pinned TSE published totals).
  *
- * Every comparison is one recorded figure; the run passes only when ALL of them match. Requires
- * network access; each request has a short timeout (--timeout-ms, default 10000) and the total is
- * capped by requiring 200s or fewer.
+ * Every comparison is one recorded figure; the run passes only when ALL of them match. The recorded
+ * JSON lands in web/docs/launch-gate/tse-live-verification.json. Requires network access; each
+ * request has a short timeout (TIMEOUT_MS, default 10000).
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -25,8 +25,6 @@ interface CityRow { uf: string; code: string; slug: string; nome: string }
 /** Cities of the live sample (slug). All come from ../data/cities.csv. */
 const SAMPLE_SLUGS = ['sp/sao-paulo', 'rj/rio-de-janeiro', 'df/brasilia', 'ba/salvador', 'pr/marquinho', 'mg/itabirito', 'rj/campos-dos-goytacazes']
 
-const pt = (n: number) => new Intl.NumberFormat('pt-BR').format(n)
-
 function cities(dataDir: string): CityRow[] {
   const lines = readFileSync(resolve(dataDir, 'cities.csv'), 'utf8').trim().split('\n')
   const header = lines[0]!.split(',')
@@ -35,14 +33,14 @@ function cities(dataDir: string): CityRow[] {
   return lines.slice(1).map((l) => l.split(',')).filter((r) => wanted.has(r[slug]!)).map((r) => ({ uf: r[uf]!, code: r[code]!, slug: r[slug]!, nome: r[nome]! }))
 }
 
-function datasetRows(dataDir: string, file: string, keyCols: (h: string) => number[]): Map<string, string[]> {
+function datasetRows(dataDir: string, file: string, keyCols: (h: string[]) => number[]): Map<string, string[]> {
   const lines = readFileSync(resolve(dataDir, file), 'utf8').trim().split('\n')
   const header = lines[0]!.split(',')
-  const idx = keyCols(header)
+  const idx: number[] = keyCols(header)
   return new Map(lines.slice(1).map((l) => l.split(',')).map((r) => [idx.map((i) => r[i]!).join('|'), r]))
 }
 
-/** The 2026 turnout/votes rows keyed `turno|uf|code` (or `turno|candidato` summed nationally). */
+/** The 2026 turnout/votes rows keyed `turno|uf|code` (or the candidate votes summed nationally). */
 function dataset2026(dataDir: string) {
   const turnout = datasetRows(dataDir, 'turnout.csv', (h) => [h.indexOf('turno'), h.indexOf('uf'), h.indexOf('cd_municipio')])
   const votes = datasetRows(dataDir, 'votes.csv', (h) => [h.indexOf('turno'), h.indexOf('uf'), h.indexOf('cd_municipio'), h.indexOf('candidato_numero')])
@@ -62,8 +60,7 @@ function decodeJws(text: string): Record<string, any> {
 }
 
 async function fetchJson(url: string, timeoutMs: number): Promise<Record<string, any>> {
-  const control = AbortSignal.timeout(timeoutMs)
-  const res = await fetch(url, { signal: control, headers: { 'User-Agent': 'voto-a-voto launch-gate verification' } })
+  const res = await fetch(url, { signal: AbortSignal.timeout(timeoutMs), headers: { 'User-Agent': 'voto-a-voto launch-gate verification' } })
   if (!res.ok) throw new Error(`${res.status} ${url}`)
   return decodeJws(await res.text())
 }
@@ -79,49 +76,46 @@ async function main() {
   const dataDir = resolve(process.env.DATA_DIR ?? '../data')
   const timeoutMs = Number(process.env.TIMEOUT_MS ?? 10_000)
   const figures: { figure: string; source: string; expected: string; live: string; match: boolean }[] = []
-  const record = (figure: string, source: string, expected: number | string, live: number | string, match = `${expected}` === `${live}`) =>
+  const record = (figure: string, source: string, expected: number | string, live: number | string, match: boolean) =>
     figures.push({ figure, source, expected: `${expected}`, live: `${live}`, match })
   const dataset = dataset2026(dataDir)
-  const manifest = JSON.parse(readFileSync(resolve(dataDir, 'manifest.json'), 'utf8'))
+  const manifest = JSON.parse(readFileSync(resolve(dataDir, 'manifest.json'), 'utf8')) as {
+    national_reference: Record<string, { validos: number; comparecimento: number; candidates: Record<string, number> }>
+  }
 
-  // national files first
-  const nationalFigureCols: Array<[string, string]> = [
-    ['comparecimento', 'e.c'], ['validos', 'v.vvc'], ['brancos', 'v.vb'], ['nulos', 'v.tvn'],
-  ]
+  // national files first (the totals the TSE publishes for the whole country, overseas included)
   for (const turno of ['1', '2'] as const) {
     const ele = ELECTIONS[turno]
     const url = `${BASE_URL}/${CYCLE}/${ele}/dados/br/br-c0001-e00${ele}-u.jws`
-    const p = await fetchJson(url, timeoutMs)
-    const live = payloadCity(p)
-    const ref = manifest.national_reference[`2026-${turno}`]
+    const live = payloadCity(await fetchJson(url, timeoutMs))
+    const ref = manifest.national_reference[`2026-${turno}`]!
     console.log(`nacional 2026-${turno}: status ${live.status} (${url})`)
-    const datasetValidos = [...dataset.turnout].filter(([, r]) => r[0] === '2026' && r[1] === turno).reduce((a, [, r]) => a + Number(r[10]!), 0)
-    const datasetComparecimento = [...dataset.turnout].filter(([, r]) => r[0] === '2026' && r[1] === turno).reduce((a, [, r]) => a + Number(r[5]!), 0)
+    const datasetValidos = [...dataset.turnout.values()].filter((r) => r[0] === '2026' && r[1] === turno).reduce((a, r) => a + Number(r[10]!), 0)
+    const datasetComparecimento = [...dataset.turnout.values()].filter((r) => r[0] === '2026' && r[1] === turno).reduce((a, r) => a + Number(r[5]!), 0)
     record(`nacional ${turno}º turno: votos válidos`, `${url} | data/manifest.json national_reference 2026-${turno} .validos | soma de data/turnout.csv`, ref.validos, live.validos, `${live.validos}` === `${ref.validos}` && `${live.validos}` === `${datasetValidos}`)
     record(`nacional ${turno}º turno: comparecimento`, `${url} | data/manifest.json national_reference 2026-${turno} .comparecimento | soma de data/turnout.csv`, ref.comparecimento, live.comparecimento, `${live.comparecimento}` === `${ref.comparecimento}` && `${live.comparecimento}` === `${datasetComparecimento}`)
     for (const [name, field] of [['Lula (13)', '13'], ['Flavio Bolsonaro (22)', '22']] as const) {
       const fromDataset = dataset.national.find((x) => x.key === `${turno}-${field}`)?.votes ?? -1
       record(`nacional ${turno}º turno: votos de ${name}`, `${url} | data/manifest.json national_reference 2026-${turno} .candidates.${field} | soma de data/votes.csv`, ref.candidates[field]!, live.votes[field]!, `${live.votes[field]}` === `${ref.candidates[field]}` && `${live.votes[field]}` === `${fromDataset}`)
     }
-    void nationalFigureCols
   }
 
-  // the cities, round 2 (the round every screen opens on) and round 1 for two of them
+  // the cities: round 2 of every sampled city, and round 1 for two of them
   for (const city of cities(dataDir)) {
-    for (const turno of ['2', ...(city.slug === 'sao-paulo' || city.slug === 'marquinho' ? ['1'] : [])] as const) {
-      const ele = ELECTIONS[turno]
+    const rounds = city.slug === 'sao-paulo' || city.slug === 'marquinho' ? ['1', '2'] : ['2']
+    for (const turno of rounds) {
+      const ele = turno === '1' ? ELECTIONS[1] : ELECTIONS[2]
       const code = city.code.padStart(5, '0')
       const uf = city.uf.toLowerCase()
       const url = `${BASE_URL}/${CYCLE}/${ele}/dados/${uf}/${uf}${code}-c0001-e00${ele}-u.jws`
-      const p = await fetchJson(url, timeoutMs)
-      const live = payloadCity(p)
+      const live = payloadCity(await fetchJson(url, timeoutMs))
       const t = dataset.turnout.get(`${turno}|${city.uf}|${city.code}`)
       console.log(`${city.nome}/${city.uf} (${city.slug}) ${turno}º turno: status ${live.status} (${url})`)
       const okTurnout = t !== undefined && Number(t[10]) === live.validos && Number(t[5]) === live.comparecimento
-      record(`${city.nome}/${city.uf} ${turno}º turno: votos válidos`, `${url} | data/turnout.csv (turno ${turno}, ${city.code})`, live.validos, t?.[10], okTurnout)
-      record(`${city.nome}/${city.uf} ${turno}º turno: comparecimento`, `${url} | data/turnout.csv (turno ${turno}, ${city.code})`, live.comparecimento, t?.[5], okTurnout)
+      record(`${city.nome}/${city.uf} ${turno}º turno: votos válidos`, `${url} | data/turnout.csv (turno ${turno}, ${city.code})`, live.validos, t?.[10] ?? '(ausente)', okTurnout)
+      record(`${city.nome}/${city.uf} ${turno}º turno: comparecimento`, `${url} | data/turnout.csv (turno ${turno}, ${city.code})`, live.comparecimento, t?.[5] ?? '(ausente)', okTurnout)
       for (const cand of ['13', '22']) {
-        const v = dataset.votes.get(`${turno}|${city.uf}|${city.code}|${cand}`)?.[5]
+        const v = dataset.votes.get(`${turno}|${city.uf}|${city.code}|${cand}`)?.[5] ?? '(ausente)'
         record(`${city.nome}/${city.uf} ${turno}º turno: votos de ${cand === '13' ? 'Lula' : 'Flavio Bolsonaro'}`, `${url} | data/votes.csv (turno ${turno}, ${city.code}, candidato ${cand})`, live.votes[cand]!, v, `${live.votes[cand]}` === `${v}`)
       }
     }
