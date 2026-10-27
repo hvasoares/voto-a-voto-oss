@@ -1,0 +1,33 @@
+---
+/**
+ * Real Mostrar QR route (ticket #9; ported to the real city route by the parent glue, next to the shared
+ * demo /qr/): pre-rendered static markup over components/QrScreen.astro — no JavaScript at all. The QR is a
+ * build-time glyph of this city's canonical link (src/lib/qr-code.ts), the poster is CSS (@media print /
+ * @page A4) and the analytics markers (data-ticket="20") stay inert until ticket #20 wires the events.
+ */
+import QrScreen from '@/components/QrScreen.astro'
+import { loadCityRoutes } from '@/lib/city-routes'
+import { normalizeBase, withBase } from '@/paths'
+import { displayName } from '@/shared/city-search'
+import { glyphSvg, qrGlyph } from '@/lib/qr-code'
+import { cityUrl, siteOrigin } from '@/lib/share-url'
+import { shortAddress } from '@/lib/share-text'
+import { datasetFixture } from '@/lib/shard-files'
+
+export async function getStaticPaths() {
+  return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug }, props: { nome: city.nome } }))
+}
+
+const { uf, slug } = Astro.params
+const { nome } = Astro.props as { nome: string }
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const fixture = await datasetFixture()
+const cityName = displayName(nome!)
+const url = cityUrl(siteOrigin(), base, uf!, slug!)
+// Quiet zone: the SVG draws 1 module of it and the card's padding (2.5 px units) completes it visually —
+// the frame's QR card has about 10 px of white before the modules (see the review notes in
+// docs/checkpoints/issue-09.md); scanning keeps the paper background as the rest of the quiet zone.
+const qr = glyphSvg(qrGlyph(url), { label: `QR de ${shortAddress(url)}`, margin: 1, paper: '#ffffff' })
+---
+<QrScreen cityName={cityName} url={url} qr={qr} fixture={fixture} closeHref={href(`/${uf}/${slug}/`)} backHref={href(`/${uf}/${slug}/compartilhar/`)} />

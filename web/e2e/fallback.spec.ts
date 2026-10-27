@@ -3,11 +3,15 @@ import { base } from './helpers'
 
 /* GitHub Pages: a path without a file gets 404.html; its script tells a valid route from a miss. */
 test.describe('404 fallback', () => {
-  test('a valid route that is not pre-rendered says so (state of the fixture data)', async ({ page }) => {
-    const res = await page.goto(`${base}tres-ciclos/rj/`)
+  // Since #14 built /tres-ciclos/:uf/ every KNOWN_ROUTES example is pre-rendered in the fixture build; the
+  // classifier's "valid" bucket stays covered by the unit tests (src/lib/fallback.test.ts). The region detail
+  // page /:uf/:regiao/ does not exist yet (it is valid only when its page declares the values), so it falls
+  // through to the not-found screen:
+  test('a route pattern with no page of its own yet is "Página não encontrada"', async ({ page }) => {
+    const res = await page.goto(`${base}brasil/norte/`)
     expect(res!.status()).toBe(404)
-    await expect(page.locator('[data-fallback="valid"]')).toBeVisible()
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Página em construção')
+    await expect(page.locator('[data-fallback="not-found"]')).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Página não encontrada')
   })
 
   test('the state page is pre-rendered now (#50 ported it, no fallback)', async ({ page }) => {

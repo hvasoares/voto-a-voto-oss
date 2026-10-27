@@ -2,10 +2,11 @@ import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
 
 /*
- * Mostrar QR screen (ticket #9) at 390x844 over the fixture dataset, on the demo route /qr/ (ticket #50 wires
- * the real /:uf/:slug/qr/ route). The screen is static markup (no JavaScript): the QR is pre-rendered SVG
- * generated at build time — its content and geometry are pinned by src/lib/qr-code.test.ts; here the page
- * contract, the print layer (the poster) and the navigation are checked.
+ * Mostrar QR screen (ticket #9) at 390x844 over the fixture dataset — the demo route /qr/ and the real
+ * city route /:uf/:slug/qr/ render the same QrScreen template. The screen is static markup (no
+ * JavaScript): the QR is pre-rendered SVG generated at build time — its content and geometry are pinned
+ * by src/lib/qr-code.test.ts; here the page contract, the print layer (the poster) and the navigation are
+ * checked.
  */
 const path = `${base}qr/`
 const URL_ = 'https://votoavoto.exemplo.br/rj/cidade-exemplo/'
@@ -111,5 +112,28 @@ test.describe('qr: the printable poster', () => {
     await expect(link).toHaveText('Mostrar QR')
     await expect(link).toHaveAttribute('href', `${base}qr/`)
     expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(44)
+  })
+})
+
+test.describe('qr: the real city route /:uf/:slug/qr/ (fixture city)', () => {
+  test('the share sheet links to the city QR route and the route carries the city on every layer', async ({ page }) => {
+    const errors = watch(page)
+    await page.goto(`${base}rj/cidade-exemplo/compartilhar/`)
+    const link = page.locator('[data-share-sheet] [data-qr-link]')
+    await expect(link).toHaveText('Mostrar QR')
+    await expect(link).toHaveAttribute('href', `${base}rj/cidade-exemplo/qr/`)
+    expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(44)
+    await link.click()
+    await expect(page.locator('[data-qr-screen] h1')).toHaveText('Mostrar QR')
+    // On the fixture build every city is fictitious, so the banner still shows; a real build
+    // (npm run test:real, real-data specs) draws the QR route without it.
+    await expect(page.locator('[data-banner]')).toHaveText('EXEMPLO · QR ILUSTRATIVO, NÃO ESCANEÁVEL')
+    await expect(page.locator('[data-address]')).toHaveText(ADDRESS)
+    await expect(page.locator('[data-qr]')).toHaveAttribute('data-url', URL_)
+    await expect(page.locator('[data-poster-city]')).toHaveText('Cidade Exemplo')
+    // Navigation is the city card and its own share sheet.
+    await expect(page.locator('[data-close]')).toHaveAttribute('href', `${base}rj/cidade-exemplo/`)
+    await expect(page.locator('[data-back]')).toHaveAttribute('href', `${base}rj/cidade-exemplo/compartilhar/`)
+    expect(errors).toEqual([])
   })
 })

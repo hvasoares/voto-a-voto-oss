@@ -59,6 +59,11 @@ const closeHref = href(`/${uf}/${slug}/`)
       <a class="min-h-11 px-1 pt-1 text-body font-bold" href={closeHref} data-close>Fechar</a>
     </div>
     <ShareSheet client:idle uf={city.uf} slug={city.slug} view={view} initial={content} origin={siteOrigin()} base={base} fixture={fixture} />
+    {/* Mostrar QR floats this city's canonical link scannably (route /:uf/:slug/qr/); it does not depend on
+      * the round, so it renders even when the view has no result. */}
+    <a class="mt-2 flex min-h-11 w-full items-center justify-center rounded-md border border-border bg-background text-body font-bold" href={href(`/${uf}/${slug}/qr/`)} data-qr-link>
+      Mostrar QR
+    </a>
     <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
       {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
     </footer>
