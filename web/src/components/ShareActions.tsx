@@ -116,7 +116,7 @@ export default function ShareActions({ text, svg, filename }: ShareActionsProps)
         <p className="mt-1 text-body leading-[18px] wrap-anywhere" data-text-body>
           {text}
         </p>
-        <Button variant="outline" className={`${BTN_OUTLINE} mt-2 min-h-9 text-small`} {...show(mounted && !!navigator.clipboard)} onClick={onCopy} data-act="copy">
+        <Button variant="outline" className={`${BTN_OUTLINE} mt-2 min-h-11 text-small`} {...show(mounted && !!navigator.clipboard)} onClick={onCopy} data-act="copy">
           Copiar texto
         </Button>
       </div>
