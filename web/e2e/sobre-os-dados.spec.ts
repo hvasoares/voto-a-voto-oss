@@ -34,10 +34,10 @@ test.describe('sobre os dados page', () => {
     await page.goto(path)
     const back = page.locator('#main').getByRole('link', { name: '‹ Início' })
     await expect(back).toHaveAttribute('href', base)
-    const repo = page.getByRole('link', { name: 'github.com/hvasoares/voto-a-voto' })
-    await expect(repo).toHaveAttribute('href', 'https://github.com/hvasoares/voto-a-voto')
+    const repo = page.getByRole('link', { name: 'github.com/hvasoares/voto-a-voto-oss' })
+    await expect(repo).toHaveAttribute('href', 'https://github.com/hvasoares/voto-a-voto-oss')
        const manifestLink = page.getByRole('link', { name: 'manifesto do repositório' })
-    await expect(manifestLink).toHaveAttribute('href', 'https://github.com/hvasoares/voto-a-voto/blob/main/data/manifest.json')
+    await expect(manifestLink).toHaveAttribute('href', 'https://github.com/hvasoares/voto-a-voto-oss/blob/main/data/manifest.json')
   })
 
   test('defines margin, swing, valid votes and cohorts in plain Portuguese', async ({ page }) => {

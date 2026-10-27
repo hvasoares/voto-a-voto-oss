@@ -25,7 +25,7 @@ jobs:
       - name: e2e under the GitHub Pages base path
         run: npm run test:e2e
         env:
-          SITE_BASE: /voto-a-voto/
+          SITE_BASE: /voto-a-voto-oss/
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

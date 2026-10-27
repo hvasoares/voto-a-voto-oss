@@ -116,7 +116,7 @@ export const ELECTORATE_2022_RECONFIRMED = 156454011
 export const OUTPUT_ROWS = { 'cities.csv': 5760, 'turnout.csv': 34498, 'votes.csv': 240981, 'candidates.csv': 42 } as const
 
 /** Repository of the project, linked from "Confira você mesmo" and "Código aberto". */
-export const GITHUB_URL = 'https://github.com/hvasoares/voto-a-voto'
+export const GITHUB_URL = 'https://github.com/hvasoares/voto-a-voto-oss'
 /** Path of the manifest inside the repository, for the GitHub link of the manifest table. */
 export const GITHUB_MANIFEST_PATH = '/blob/main/data/manifest.json'
 
