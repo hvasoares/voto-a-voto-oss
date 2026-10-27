@@ -7,7 +7,7 @@
 import { diskSource } from '@site/data/node'
 import { createStore } from '@site/data/store'
 import { dataDir } from './data-dir'
-import { buildCohorts, candidateLabels, RUNOFF_CYCLES, type CandidateRowLike, type CohortReport, type Cycle, type CityRef, type RunoffVotes } from './cohorts'
+import { buildCohorts, candidateLabels, RUNOFF_CYCLES, type CandidateRowLike, type CohortReport, type Cycle, type CityRef, type PersonLabel, type RunoffVotes } from './cohorts'
 
 const runoffPerCity = (rows: { ano: number; cdMunicipio: string; candidatoNumero: number; votos: number }[]): RunoffVotes => {
   const out: RunoffVotes = new Map()
@@ -27,7 +27,7 @@ const pairOf = (rows: CandidateRowLike[], ano: Cycle): [number, number] => {
   return [numbers[0]!, numbers[1]!]
 }
 
-export async function loadCohortReport(dirOverride?: string): Promise<CohortReport> {
+export async function loadCohortData(dirOverride?: string): Promise<{ report: CohortReport; labels: Record<string, PersonLabel> }> {
   const store = createStore(diskSource(dirOverride ?? dataDir()))
   const [votesByCycle, candidates, cities] = await Promise.all([
     Promise.all(RUNOFF_CYCLES.map((ano) => store.votes({ ano, turno: 2 }))),
@@ -49,5 +49,11 @@ export async function loadCohortReport(dirOverride?: string): Promise<CohortRepo
     2022: pairOf(candidateRows, 2022),
     2026: pairOf(candidateRows, 2026),
   } as Record<Cycle, [number, number]>
-  return buildCohorts({ votes, runoffCandidates, cities: registry }, candidateLabels(candidateRows))
+  const labels = candidateLabels(candidateRows)
+  return { report: buildCohorts({ votes, runoffCandidates, cities: registry }, labels), labels }
+}
+
+/** The report alone (what the tests and the default page path need). */
+export async function loadCohortReport(dirOverride?: string): Promise<CohortReport> {
+  return (await loadCohortData(dirOverride)).report
 }
