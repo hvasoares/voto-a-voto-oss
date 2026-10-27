@@ -1,5 +1,7 @@
 # Fact records (#61, #62)
 
+Status of #62 (see the end): the records, the seal, the gate and the highlight are done for the city card, Brasil e regiões, Comparar com 2022 / 2018, Três ciclos por estado and the report Disputas mais apertadas; five reports and the hub are not yet covered.
+
 Every number the site publishes on a page that has a record is a **fact record**: an id, a sentence (standard and plain register, from the catalog),
 the numbers it is made of (each with the dataset field it is read from, `turnout.csv · aptos`), the **source**, and the **calculation** (the rule in
 words and the same rule with the numbers in it). Code: `src/lib/facts/` (model, gate, loader, link), page: `src/pages/fato/[uf]/[slug]/[page]/`,
@@ -42,3 +44,30 @@ the numbers are arithmetic over the TSE file and do not say why anyone voted or 
 
 The percentages the card prints are whole numbers rounded so the parts of a bar add to 100 (`largestRemainder`); the record shows the exact value (`70,0%` as `70%`, `33,6%`)
 and "No cartão: 70%". Not covered by a record: the arc label and the twin line (they print years and a name, no computed figure).
+
+## Other pages (#62)
+
+`src/lib/facts/other.ts` builds the records of Brasil e regiões (`brasil/<ano>-<turno>`), Comparar com 2022 / 2018 (`comparar/<ciclo>/estados`), Três ciclos por estado
+(`estado/<uf>/tres-ciclos`) and Disputas mais apertadas (`relatorios/disputas-mais-apertadas/cidades`); `pages.ts` gathers every page of records (cities included), runs the gate over them
+and hands `sealOf` to the pages. One route draws all of them: `src/pages/fato/[...path]/`. These pages link per figure group (a bar, a region, a state row, a cycle, a race), not per
+number: the record of every number of the group is on the page the link opens. The build gate covers them: a link to a record that does not exist, or a record without source, calculation, inputs or check, fails the build.
+
+## The "conferido" seal
+
+`src/lib/facts/checks.ts` runs the build's own checks, once per build, over the dataset (`checks-load.ts`): **national** (the site's national comparecimento and votos válidos of a cycle and round
+against the totals the edition recorded when it was published, which `make data-check` already compared with the TSE national totals) and **municipios** (the sum of every city shard, overseas posts
+included, of electorate, turnout and valid votes against the national sums, and the sum of the regions against them). A failed check fails the build. Each fact names the checks that cover it
+(`Fact.checks`); the seal of a page (`components/Seal.astro`) has one line per check and round the page uses, written from the catalog (`seal.*`) with the measured numbers. No seal text is typed anywhere.
+
+## The sentence highlight (desktop only)
+
+`components/FactHighlight.tsx`, the only island of Três ciclos por estado, `client:media="(min-width: 1024px)"`. It renders nothing on the server and fetches the page of the calculation of the
+state (`/fato/estado/<uf>/tres-ciclos/`, a desktop-only request) and reads the records from it (`lib/facts/parse.ts`). The sentences are buttons (click, tap, Enter or Space; Escape clears);
+choosing one lights the bar segment (`[data-seg]` of the page) and the table cells of its cycle and writes the calculation beside them in a polite live region, so every highlighted value is also
+readable by keyboard and touch. Styles are inline: the phone's stylesheet gets only the `.seal` rules (+166 B gzip in all).
+
+## Not covered in #62 (needs a decision or a follow-up)
+
+- Reports: Cidades que viraram, Maiores viradas, Comparecimento, Votos ganhos e perdidos, Como cada grupo votou (groups of cities: numbers about groups need the same neutrality review as the page), and the hub of
+  Relatórios. The framework is the same (`FactPage`, `raceFacts` is the pattern): one builder, one `getFactPage` + `factLinks` + `Seal` in the page.
+- The state page `/<uf>/` (a count of cities) and the state recap `/<uf>/resumo/`.

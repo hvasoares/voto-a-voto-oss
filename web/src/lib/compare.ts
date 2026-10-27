@@ -118,6 +118,8 @@ export interface CompareRow {
   uf: string
   /** Valid votes of the 2026 second turno summed over the municipalities BOTH cycles have. */
   validos: number
+  /** The same over the compared cycle (what its percentages divide by): the input of the fact records (#62). */
+  validosOld: number
   left: CompareSide
   rival: CompareSide
 }
@@ -151,6 +153,7 @@ export function buildCompareRow(p: CompareRowInput): CompareRow {
   return {
     uf: p.uf,
     validos: p.c.validos,
+    validosOld: p.old.validos,
     left: side(p.c.left, p.old.left, p.labels.left, tenths26.left),
     rival: side(p.c.rival, p.old.rival, p.labels.rival, tenths26.rival),
   }

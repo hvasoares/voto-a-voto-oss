@@ -4,6 +4,11 @@ import { CYCLES, type CycleBlock } from '@/lib/compare'
 import { cycleBlocksFor, labelsOf, otherLargestStates, stateOrder, stateStats, type StateStats } from '@/lib/compare-data'
 import { normalizeBase, withBase } from '@/paths'
 import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
+import Seal from '@/components/Seal.astro'
+import FactHighlight from '@/components/FactHighlight'
+import { calcLink } from '@/lib/facts/link'
+import { factLinks } from '@/lib/facts/gate'
+import { getFactPage, sealOf } from '@/lib/facts/pages'
 
 const { uf } = Astro.params
 
@@ -20,6 +25,10 @@ const order = stateOrder(all)
 const chips = order // every state the dataset has; the row scrolls sideways on the phone
 const outros = otherLargestStates(all, uf)
 const blocks = cycleBlocksFor(state)
+// Fact records (#62): every cycle links to its records; the seal is written from the build's checks.
+const facts = await getFactPage(`estado/${uf}`, 'tres-ciclos')
+const links = factLinks(facts.facts, `/tres-ciclos/${uf}/`, base)
+const seal = await sealOf(facts)
 // The legend follows the dataset's names (never invented): 2026 left, the 2018 rival, the 2026 rival.
 const legend = { left: labelsOf(state, 2026).left, old: labelsOf(state, 2018).rival, left26: labelsOf(state, 2026).rival }
 const sides = (b: CycleBlock) => [{ s: b.left!, token: 'lula' }, { s: b.rival!, token: 'bolsonaro' }] as const
@@ -50,7 +59,7 @@ const miniRows = (st: StateStats) => Array.from({ length: CYCLES.length }, (_, i
             <>
               <div class="mt-[4px] flex h-[26px] min-w-0 overflow-hidden rounded lg:h-[36px]" role="img" aria-label={`Barras: ${b.left!.label} ${b.left!.pct}%, ${b.rival!.label} ${b.rival!.pct}% dos votos válidos`}>
                 {sides(b).map(({ s, token }) => (
-                  <span class={`flex min-w-0 items-center justify-center px-1 text-small font-bold text-white ${token === 'lula' ? 'bg-lula' : 'bg-bolsonaro'}`} style={`flex: 0 0 ${s.tenths / 10}%`}>
+                  <span data-seg={`${b.ano}-${token === 'lula' ? 'a' : 'b'}`} class={`flex min-w-0 items-center justify-center px-1 text-small font-bold text-white ${token === 'lula' ? 'bg-lula' : 'bg-bolsonaro'}`} style={`flex: 0 0 ${s.tenths / 10}%`}>
                     <span class="wrap-anywhere text-center">{s.label} {s.pct}%</span>
                   </span>
                 ))}
@@ -62,6 +71,7 @@ const miniRows = (st: StateStats) => Array.from({ length: CYCLES.length }, (_, i
                   <>{message(DEFAULT_VOICE, 'recap.start')}</>
                 )}
               </p>
+              <p class="mt-[2px] text-right"><Fragment set:html={calcLink(links(`${b.ano}-a`))} /></p>
             </>
           ) : (
             <p class="mt-1 text-tiny leading-[12px] text-muted-foreground">sem dados</p>
@@ -76,6 +86,11 @@ const miniRows = (st: StateStats) => Array.from({ length: CYCLES.length }, (_, i
     <p class="mt-1 text-tiny leading-[12px] text-muted-foreground">
       As barras mostram só os votos válidos do 2º turno: abstenção, brancos e nulos ficam de fora. Variações calculadas sem arredondar os percentuais.
     </p>
+
+    {/* The one island of the page: from 1024 px, the sentences light the bar segment and the table cell and write the calculation beside them; a phone loads none of it. */}
+    <FactHighlight client:media="(min-width: 1024px)" href={href(`/fato/estado/${uf}/tres-ciclos/`)} />
+
+    <Seal lines={seal} />
 
     <nav class="mt-1 flex flex-wrap items-center justify-between gap-x-8 gap-y-1" aria-label="Mais sobre o estado" data-component="state-links">
       <a class="flex min-h-11 min-w-[9rem] flex-1 items-center text-body font-bold" href={href(`/${uf}/`)}>Ver o estado ›</a>

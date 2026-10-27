@@ -12,11 +12,19 @@ import Base from '@/layouts/Base.astro'
 import { isFixtureDataset, loadBrasil } from '@/lib/brasil-load'
 import { cn } from '@/lib/utils'
 import PageDataDownload from '@/components/PageDataDownload.astro'
+import Seal from '@/components/Seal.astro'
+import { calcLink } from '@/lib/facts/link'
+import { factLinks } from '@/lib/facts/gate'
+import { getFactPage, sealOf } from '@/lib/facts/pages'
 
 const base = normalizeBase(import.meta.env.BASE_URL)
 const href = (path: string) => withBase(base, path)
 const view = await loadBrasil()
 const fixture = await isFixtureDataset()
+// Fact records (#62): every bar and region links to its record; the seal is written from the build's checks.
+const facts = await getFactPage('brasil', `${view.ano}-${view.turno}`)
+const links = factLinks(facts.facts, '/brasil/', base)
+const seal = await sealOf(facts)
 
 // Colors of the Sketch frame 8: the first candidate of a bar (lower ballot number) is the red one,
 // the second the blue one; the turnout bar fills "Compareceram" with the dark taupe (v2/ring) and
@@ -64,6 +72,7 @@ const segBase = 'flex min-w-0 items-center justify-center overflow-hidden whites
       <p class="mt-2 pl-4 text-small text-[var(--c-ink)]">
         100% da barra = votos válidos de {view.nationalCandidates[0]!.labelFull} + {view.nationalCandidates[1]!.labelFull}
       </p>
+      <p class="mt-1 pl-4"><Fragment set:html={calcLink(links(`pais-${view.nationalCandidates[0]!.numero}`))} /></p>
     </section>
 
     <section class="pt-6" aria-labelledby="brasil-por-regiao" data-brasil-regioes>
@@ -98,6 +107,7 @@ const segBase = 'flex min-w-0 items-center justify-center overflow-hidden whites
             <p class="mt-0.5 text-[10px] leading-[13px] text-muted-foreground" data-brancos-nulos>
               Brancos {r.brancosText}% · Nulos {r.nulosText}% do comparecimento.
             </p>
+            <p class="mt-0.5 text-right"><Fragment set:html={calcLink(links(`${r.regiao}-parcela`))} /></p>
           </li>
         ))}
       </ul>
@@ -105,6 +115,8 @@ const segBase = 'flex min-w-0 items-center justify-center overflow-hidden whites
         Não compareceram = eleitorado que não compareceu. Brancos e nulos fazem parte do comparecimento e aparecem em cada região.
       </p>
     </section>
+
+    <Seal lines={seal} />
 
     <nav class="mt-5 flex items-center justify-between border-t border-border pt-2" aria-label="Próximo">
       <a class="inline-flex min-h-11 items-center text-body font-bold text-foreground" href={href('/mapa/')}>Ver mapa por estado ›</a>

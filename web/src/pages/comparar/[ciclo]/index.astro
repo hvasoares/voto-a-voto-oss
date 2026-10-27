@@ -4,6 +4,10 @@ import { COMPARE_CYCLES, formatSignedInt, type CompareCycle } from '@/lib/compar
 import { buildCompareRows, stateStats } from '@/lib/compare-data'
 import { formatInt } from '@/shared/city-model'
 import { normalizeBase, withBase } from '@/paths'
+import Seal from '@/components/Seal.astro'
+import { calcLink } from '@/lib/facts/link'
+import { factLinks } from '@/lib/facts/gate'
+import { getFactPage, sealOf } from '@/lib/facts/pages'
 
 export async function getStaticPaths() {
   return COMPARE_CYCLES.map((ciclo) => ({ params: { ciclo: String(ciclo) } }))
@@ -21,6 +25,10 @@ const base = normalizeBase(import.meta.env.BASE_URL)
 const href = (path: string) => withBase(base, path)
 const rows = (await buildCompareRows(await stateStats(), ciclo)).slice(0, 6)
 // The frame's intro; the 2018 page adds the note that names the 2018 candidates (screen 11b).
+// Fact records (#62): every state row links to the records of its two sides; the seal is written from the build's checks.
+const facts = await getFactPage(`comparar/${ciclo}`, 'estados')
+const links = factLinks(facts.facts, `/comparar/${ciclo}/`, base)
+const seal = await sealOf(facts)
 const note2018 = ciclo === 2018 ? ' Candidatos de 2018: o do PT (13) e Bolsonaro (17).' : ''
 const intro = `Eleição presidencial 2026 (2º turno) comparada com a de ${ciclo} (2º turno), nos mesmos municípios.${note2018} Percentuais = % dos votos válidos; votos = 2026 menos ${ciclo}. Os 6 estados com mais votos válidos.`
 ---
@@ -68,10 +76,12 @@ const intro = `Eleição presidencial 2026 (2º turno) comparada com a de ${cicl
               </div>
             ))}
           </div>
+          <p class="pl-[14px] lg:pl-0" style="grid-column: 1 / -1"><Fragment set:html={calcLink(links(`${row.uf}-a`))} /></p>
         </li>
       ))}
     </ul>
     </div>
+    <Seal lines={seal} />
   </main>
   <footer class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
     Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
