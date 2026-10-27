@@ -2,7 +2,7 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
-import { setAnalytics, noopAnalytics, type Analytics } from '@site/analytics'
+import { setAnalytics, noopAnalytics, type Analytics } from '@/analytics'
 import CitySearch from './CitySearch'
 
 const SEARCH_ROWDATA: [string, string, string][] = [

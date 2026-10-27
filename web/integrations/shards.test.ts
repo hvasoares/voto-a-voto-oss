@@ -7,7 +7,7 @@
 import { mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
-import { DATA_FILES } from '@site/data'
+import { DATA_FILES } from '@/data'
 import { describe, expect, it } from 'vitest'
 import { dataDir } from '../src/lib/data-dir'
 import { buildShards, byText, datasetFingerprint, datasetFingerprintFromDisk, generateShards, ShardError, type ShardSources } from './shards'

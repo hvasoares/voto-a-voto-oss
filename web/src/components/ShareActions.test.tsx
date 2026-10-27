@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { noopAnalytics, setAnalytics, type Analytics } from '@site/analytics'
+import { noopAnalytics, setAnalytics, type Analytics } from '@/analytics'
 import ShareActions from './ShareActions'
 import { saveBlob } from '@/lib/share-raster'
 

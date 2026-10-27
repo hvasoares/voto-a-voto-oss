@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Page } from '@playwright/test'
-import { normalizeBase } from '../../site/src/paths'
+import { normalizeBase } from '../src/paths'
 
 export const base = normalizeBase(process.env.SITE_BASE)
 export const mode: 'local' | 'production' = process.env.E2E_MODE === 'production' ? 'production' : 'local'

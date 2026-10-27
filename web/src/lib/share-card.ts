@@ -21,8 +21,8 @@
  *   font files explicitly (resvg: `fontFiles` + `defaultFontFamily`/`serifFamily`/`sansSerifFamily`). Chromium and
  *   Safari rasterise it with system fonts in the browser.
  */
-import type { CityResult, Segment, SegmentKey } from '@site/shared/city-model'
-import { colors, fonts } from '@site/shared/tokens'
+import type { CityResult, Segment, SegmentKey } from '@/shared/city-model'
+import { colors, fonts } from '@/shared/tokens'
 
 /** The fields of a CityResult the picture and the share text read. A CityResult is one. */
 export interface PictureResult extends Pick<CityResult, 'ano' | 'turno' | 'aptos' | 'validos' | 'votedPct' | 'notVotedPct'> {
