@@ -83,6 +83,11 @@ const NOTE = 'O link vai no texto da mensagem; a imagem leva só o endereço cur
           Mostrar QR
         </a>
       )}
+      {content && (
+        <a class="mt-1 flex min-h-11 w-full items-center justify-center text-body font-bold text-primary" href={href('/gerador/?cidade=rj/cidade-exemplo')} data-generator-link>
+          Criar um cartão com uma medida ›
+        </a>
+      )}
       <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
         {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
       </footer>

@@ -1,0 +1,13 @@
+---
+/**
+ * The phone's page header of the card pages (the frames' "Voto a Voto | Presidente 2026" line under the status bar): wordmark,
+ * a hairline divider and the scope. Hidden from 1024 px, where the shell's top bar carries the wordmark.
+ */
+import { normalizeBase, withBase } from '@/paths'
+const base = normalizeBase(import.meta.env.BASE_URL)
+---
+<header class="mx-auto flex h-11 w-full max-w-[430px] items-center border-b border-border px-5 md:max-w-[480px] lg:hidden" data-component="phone-header">
+  <a class="font-serif text-[20px] leading-7 text-foreground" href={withBase(base, '/')}>Voto a Voto</a>
+  <span class="mx-3 h-4 w-px bg-border" aria-hidden="true"></span>
+  <span class="text-small text-muted-foreground">Presidente 2026</span>
+</header>

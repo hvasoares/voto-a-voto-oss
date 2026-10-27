@@ -68,6 +68,9 @@ const closeHref = href(`/${uf}/${slug}/`)
     <a class="mt-2 flex min-h-11 w-full items-center justify-center rounded-md border border-border bg-background text-body font-bold text-foreground" href={href(`/${uf}/${slug}/qr/`)} data-qr-link>
       Mostrar QR
     </a>
+    <a class="mt-1 flex min-h-11 w-full items-center justify-center text-body font-bold text-primary" href={href(`/gerador/?cidade=${uf}/${slug}`)} data-generator-link>
+      Criar um cartão com uma medida ›
+    </a>
     <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
       {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
     </footer>

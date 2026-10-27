@@ -9,13 +9,14 @@ const loadImage = (url: string) =>
     img.src = url
   })
 
-export async function svgToPng(svg: string, filename: string): Promise<File> {
+/** `size` is the picture's own pixel size (the viewBox): the share card's by default, the stat card's for the generator (#25). */
+export async function svgToPng(svg: string, filename: string, size: { width: number; height: number } = SHARE_CARD_SIZE): Promise<File> {
   const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }))
   try {
     const img = await loadImage(url)
     const canvas = document.createElement('canvas')
-    canvas.width = SHARE_CARD_SIZE.width
-    canvas.height = SHARE_CARD_SIZE.height
+    canvas.width = size.width
+    canvas.height = size.height
     const g = canvas.getContext('2d')
     if (!g) throw new Error('no canvas')
     g.drawImage(img, 0, 0, canvas.width, canvas.height)
