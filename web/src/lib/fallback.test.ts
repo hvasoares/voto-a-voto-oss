@@ -10,6 +10,7 @@ describe('client fallback for a path with no pre-rendered file', () => {
     expect(classifyPath('/rj/cidade-exemplo/tres-ciclos/', data)).toEqual({ kind: 'valid', route: '/:uf/:slug/tres-ciclos/' })
     expect(classifyPath('/brasil/', data)).toEqual({ kind: 'valid', route: '/brasil/' })
     expect(classifyPath('/tres-ciclos/sp/', data)).toEqual({ kind: 'valid', route: '/tres-ciclos/:uf/' })
+    expect(classifyPath('/mapa/rj/', data)).toEqual({ kind: 'valid', route: '/mapa/:uf/' }) // #17
   })
 
   it('says not found for unknown params or unknown routes', () => {

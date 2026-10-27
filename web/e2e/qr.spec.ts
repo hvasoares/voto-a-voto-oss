@@ -106,6 +106,14 @@ test.describe('qr: the printable poster', () => {
     })
   })
 
+  test('the share sheet note says the shared image carries the address, not a QR', async ({ page }) => {
+    // (issue-17's reconcile pinned this after it read the removed link as deliberate; the parent
+    // restored the Mostrar QR navigation — it was #9's approved contract and the note only talks
+    // about the shared IMAGE — so both pins live: note text here, the link in the next test.)
+    await page.goto(`${base}compartilhar/`)
+    await expect(page.locator('[data-note]')).toContainText('sem QR')
+  })
+
   test('the share sheet links to this screen (the old slot contract navigation, wired by #9)', async ({ page }) => {
     await page.goto(`${base}compartilhar/`)
     const link = page.locator('[data-qr-link]')

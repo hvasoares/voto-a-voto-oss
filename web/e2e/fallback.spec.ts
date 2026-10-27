@@ -20,6 +20,12 @@ test.describe('404 fallback', () => {
     await expect(page.locator('h1')).toHaveText('Estado selecionado: RJ')
   })
 
+  test('the state map page is pre-rendered now (issue-17 ported /mapa/:uf/, no fallback)', async ({ page }) => {
+    const res = await page.goto(`${base}mapa/rj/`)
+    expect(res!.status()).toBe(200)
+    await expect(page.locator('h1')).toHaveText('Mapa por município · Rio de Janeiro')
+  })
+
   test('a valid city route is pre-rendered now (city shards since ticket #49, no fallback)', async ({ page }) => {
     const res = await page.goto(`${base}rj/cidade-exemplo/`)
     expect(res!.status()).toBe(200)
