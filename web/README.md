@@ -40,12 +40,14 @@ web/
   components.json          shadcn config (aliases @/components, @/lib/utils)
   cdn.config.json         approved CDN origins + pinned libraries (EMPTY by default)
   integrations/           dataset (copies data to public/data), theme (virtual:theme.css), interaction (client:interaction), cdn
-  src/pages/              index.astro (home), 404.astro (client fallback)
+  src/pages/              index.astro (home), relatorios/ (hub + cidades-que-viraram, #12), sobre-os-dados/
+                          (static method page, #18), 404.astro (client fallback)
   src/layouts/Base.astro  html shell + #consent-slot
   src/components/         CitySearch.tsx (the only island) + ui/ (shadcn, copied code)
-  src/lib/                data-dir, search-data (the ONE function that loads the search data), fallback, explore, states
+  src/lib/                data-dir, search-data (the ONE function that loads the search data), fallback, explore, states,
+                          about/about-data (#18), reports/ (#12: compute, hub, format, load — build-time, pure)
   src/theme.ts            Sketch tokens -> shadcn/Tailwind variables (single place)
-  src/scripts/            tile-analytics (plain script), fallback (404 page)
+  src/scripts/            tile-analytics (plain script), report-analytics (#12 share + events), fallback (404 page)
   e2e/                    Playwright specs;  scripts/  serve.ts, measure.ts
 ```
 
