@@ -4,10 +4,16 @@ import { base } from './helpers'
 /* GitHub Pages: a path without a file gets 404.html; its script tells a valid route from a miss. */
 test.describe('404 fallback', () => {
   test('a valid route that is not pre-rendered says so (state of the fixture data)', async ({ page }) => {
-    const res = await page.goto(`${base}rj/`)
+    const res = await page.goto(`${base}tres-ciclos/rj/`)
     expect(res!.status()).toBe(404)
     await expect(page.locator('[data-fallback="valid"]')).toBeVisible()
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Página em construção')
+  })
+
+  test('the state page is pre-rendered now (#50 ported it, no fallback)', async ({ page }) => {
+    const res = await page.goto(`${base}rj/`)
+    expect(res!.status()).toBe(200)
+    await expect(page.locator('h1')).toHaveText('Estado selecionado: RJ')
   })
 
   test('a valid city route is pre-rendered now (city shards since ticket #49, no fallback)', async ({ page }) => {

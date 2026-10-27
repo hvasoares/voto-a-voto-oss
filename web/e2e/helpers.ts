@@ -43,8 +43,11 @@ export function violations(requests: Seen[], allowed: string[]): string[] {
     .map((r) => `${r.method} ${r.type} ${r.url}`)
 }
 
-/** The search is a React island that hydrates on first interaction: focus it and wait until React took over. */
-export async function activateSearch(page: Page) {
+/** Waits until the deferred module script of a page took over (the enhancement is wired). */
+export function stateReady(page: Page) {
+  return page.waitForFunction(() => document.documentElement.dataset.stateSearch !== undefined)
+}
+ export async function activateSearch(page: Page) {
   const box = page.getByRole('combobox', { name: 'Busque sua cidade' })
   await box.click()
   await page.waitForFunction(() => document.querySelector('astro-island') && !document.querySelector('astro-island')!.hasAttribute('ssr'))
