@@ -16,7 +16,7 @@ export interface CityShard {
     regiao: string
     cdMunicipio: string
     cdIbge: string
-    ciclos: string
+    ciclos: number[]
   }
   cycles: {
     [ano: string]: {

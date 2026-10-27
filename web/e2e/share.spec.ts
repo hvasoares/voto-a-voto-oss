@@ -164,7 +164,7 @@ test.describe('share: layout and requests', () => {
     const { sw, iw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: window.innerWidth }))
     expect(sw).toBeLessThanOrEqual(iw)
     for (const sel of ['[data-act="share"]', '[data-act="download"]', '[data-close]']) expect((await page.locator(sel).boundingBox())!.height).toBeGreaterThanOrEqual(44)
-    expect(violations(seen, new URL(baseURL!).origin)).toEqual([])
+    expect(violations(seen, [new URL(baseURL!).origin])).toEqual([])
   })
 })
 

@@ -43,10 +43,12 @@ export function violations(requests: Seen[], allowed: string[]): string[] {
     .map((r) => `${r.method} ${r.type} ${r.url}`)
 }
 
-/** Waits until the deferred module script of a page took over (the enhancement is wired). */
-export function stateReady(page: Page) {
-  return page.waitForFunction(() => document.documentElement.dataset.stateSearch !== undefined)
+/** Waits until the deferred module script of a page took over (the enhancement is wired); each screen script
+ * sets `documentElement.dataset.ready`. Same wait as the vanilla app's. */
+export async function waitReady(page: Page): Promise<void> {
+  await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
 }
+
  export async function activateSearch(page: Page) {
   const box = page.getByRole('combobox', { name: 'Busque sua cidade' })
   await box.click()

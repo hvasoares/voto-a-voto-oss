@@ -75,6 +75,6 @@ if (box && input && results && list) {
     const a = (e.target as Element).closest<HTMLAnchorElement>('a[data-link]')
     if (a) search.linkTap(a.dataset.link as 'map' | 'cycles')
   })
-  // Mark for the e2e specs: the module script (deferred) took over the page.
-  document.documentElement.dataset.stateSearch = 'ready'
+  // Mark for the e2e specs: the deferred module script took over the page (helpers.waitReady).
+  document.documentElement.dataset.ready = 'state-search'
 }
