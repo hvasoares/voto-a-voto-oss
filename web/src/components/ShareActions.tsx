@@ -22,6 +22,13 @@ export interface ShareActionsProps {
   filename: string
   /** The city's address (scheme included): what "Copiar link" copies where the browser has no system share sheet. */
   link: string
+  /** The label of the native share button ("Compartilhar" by default; the recap says "Compartilhar o resumo"). */
+  primaryLabel?: string
+  /** One primary action only: no message text, and "Baixar imagem" only where the browser has no system share sheet (the recap's frame). */
+  compact?: boolean
+  /** A screen's own counters, called besides the share ones: when the actions open and when a share completes (#28's recap_opened, recap_shared). */
+  onOpened?: () => void
+  onShared?: () => void
 }
 
 const MESSAGES = {
@@ -39,7 +46,7 @@ const BTN = 'min-h-11 w-full rounded-md text-body font-bold'
 const BTN_PRIMARY = `${BTN} text-primary-foreground`
 const BTN_OUTLINE = `${BTN} border border-border bg-background text-foreground`
 
-export default function ShareActions({ text, svg, filename, link }: ShareActionsProps) {
+export default function ShareActions({ text, svg, filename, link, primaryLabel = 'Compartilhar', compact = false, onOpened, onShared }: ShareActionsProps) {
   const [mounted, setMounted] = useState(false)
   // Feature-detected after hydration (the server cannot know): where the browser has no Web Share API (most desktop
   // browsers) the native share button is hidden and "Copiar link" takes its place (#52).
@@ -53,6 +60,7 @@ export default function ShareActions({ text, svg, filename, link }: ShareActions
     setMounted(true)
     setCanShare(typeof navigator.share === 'function')
     getAnalytics().event('share_opened', { has_picture: true })
+    onOpened?.()
     const ready = svgToPng(svg, filename)
     readyRef.current = ready
     void ready.then(
@@ -75,7 +83,10 @@ export default function ShareActions({ text, svg, filename, link }: ShareActions
 
   const onShare = () => {
     void performShare({ nav: navigator as ShareNavigator, file, text, download }).then((r) => {
-      if (r.status === 'shared') getAnalytics().event('share_completed', { method: r.method })
+      if (r.status === 'shared') {
+        getAnalytics().event('share_completed', { method: r.method })
+        onShared?.()
+      }
       if (r.status === 'cancelled') getAnalytics().event('share_cancelled')
       // The fallback download of a failed share also counts as an image download.
       if (r.status === 'downloaded') getAnalytics().event('image_downloaded', { how: r.method === 'download' ? 'no_share_api' : 'share_fallback' })
@@ -123,12 +134,12 @@ export default function ShareActions({ text, svg, filename, link }: ShareActions
           </p>
         )}
         <Button className={BTN_PRIMARY} {...show(mounted && canShare)} onClick={onShare} data-act="share">
-          Compartilhar
+          {primaryLabel}
         </Button>
         <Button className={BTN_PRIMARY} {...show(mounted && !canShare && !!navigator.clipboard)} onClick={onCopyLink} data-act="copy-link">
           Copiar link
         </Button>
-        <Button variant="outline" className={BTN_OUTLINE} {...show(mounted)} onClick={onDownload} data-act="download">
+        <Button variant="outline" className={BTN_OUTLINE} {...show(mounted && !(compact && canShare))} onClick={onDownload} data-act="download">
           Baixar imagem
         </Button>
         <p className="min-h-6 text-small leading-[17px] text-muted-foreground" role="status" aria-live="polite" data-status>
@@ -136,7 +147,7 @@ export default function ShareActions({ text, svg, filename, link }: ShareActions
         </p>
       </div>
       {/* Without a system share sheet the desktop dialog is just the three actions of the frame; a narrow screen keeps the message text. */}
-      <div className={`mt-1 border-t border-border pt-2 ${canShare ? '' : 'lg:hidden'}`} data-share-text data-text={text}>
+      <div className={`mt-1 border-t border-border pt-2 ${canShare ? '' : 'lg:hidden'}`} hidden={compact} data-share-text data-text={text}>
         <h2 className="text-small font-bold leading-[17px]">Texto da mensagem</h2>
         <p className="mt-1 text-body leading-[18px] wrap-anywhere" data-text-body>
           {text}

@@ -73,7 +73,7 @@ if (box && input && results && list) {
   })
   document.querySelector('.state-links')?.addEventListener('click', (e) => {
     const a = (e.target as Element).closest<HTMLAnchorElement>('a[data-link]')
-    if (a) search.linkTap(a.dataset.link as 'map' | 'cycles')
+    if (a) search.linkTap(a.dataset.link as 'map' | 'cycles' | 'recap')
   })
   // Mark for the e2e specs: the deferred module script took over the page (helpers.waitReady).
   document.documentElement.dataset.ready = 'state-search'

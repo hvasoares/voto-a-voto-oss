@@ -84,7 +84,7 @@ export const EVENTS: EventDoc[] = [
   {
     name: 'state_link_tap',
     description: 'A state page link was tapped (to the map or to the three-cycle page).',
-    props: { uf: 'State of the state page', link: 'map | cycles' },
+    props: { uf: 'State of the state page', link: 'map | cycles | recap' },
     emitted: ['src/slots/state/state-search.ts'],
   },
   {
@@ -159,6 +159,18 @@ export const EVENTS: EventDoc[] = [
     description: 'The share picture was downloaded (the picture, built in-browser; ticket #20’s image_downloaded).',
     props: { how: 'download_button | no_share_api | share_fallback' },
     emitted: ['src/components/ShareActions.tsx'],
+  },
+  {
+    name: 'recap_opened',
+    description: 'The state recap (/:uf/resumo/) was opened.',
+    props: { uf: 'State code' },
+    emitted: ['src/components/RecapShare.tsx'],
+  },
+  {
+    name: 'recap_shared',
+    description: 'The state recap was shared (the native sheet reported "shared").',
+    props: { uf: 'State code' },
+    emitted: ['src/components/RecapShare.tsx'],
   },
   {
     name: 'card_generator_opened',

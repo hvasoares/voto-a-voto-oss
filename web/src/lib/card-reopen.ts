@@ -45,7 +45,9 @@ export interface Recomputed {
 
 export type Outcome =
   | { status: 'ok' | 'altered' | 'other-edition'; keys: CardKeys; card: Recomputed; from: 'svg' | 'png' }
-  | { status: 'no-keys' | 'unreadable' | 'mismatch' | 'unsupported'; reason: string }
+  /** The keys are good but this kind of card cannot be recomputed in the browser: `href` is the page that is the site's own drawing of it. */
+  | { status: 'unsupported'; reason: string; keys: CardKeys; href?: string }
+  | { status: 'no-keys' | 'unreadable' | 'mismatch'; reason: string }
 
 /** One entry per kind of card: how to draw the card of `keys` again, once per register (the words differ, the keys do not). */
 const kinds: Record<string, (keys: CardKeys, ctx: ReopenContext) => Promise<Recomputed[] | undefined>> = {
@@ -77,6 +79,11 @@ const kinds: Record<string, (keys: CardKeys, ctx: ReopenContext) => Promise<Reco
 }
 
 const kindOf = (view: string) => view.split(':')[0]!
+
+/** The page of a card kind the browser cannot recompute: the state recap is pre-rendered per state (its numbers are state totals, not in any shard the browser reads). */
+function pageOf(keys: CardKeys, ctx: ReopenContext): string | undefined {
+  return kindOf(keys.view) === 'recap' && keys.places[0] ? `${ctx.base}${keys.places[0]}/resumo/` : undefined
+}
 
 async function recompute(keys: CardKeys, ctx: ReopenContext): Promise<Recomputed[] | 'unsupported' | undefined> {
   const make = kinds[kindOf(keys.view)]
@@ -110,7 +117,7 @@ export async function reopenFile(bytes: Uint8Array, ctx: ReopenContext): Promise
   if (problem) return { status: 'mismatch', reason: `bad-${problem}` }
 
   const cards = await recompute(keys, ctx)
-  if (cards === 'unsupported') return { status: 'unsupported', reason: kindOf(keys.view) }
+  if (cards === 'unsupported') return { status: 'unsupported', reason: kindOf(keys.view), keys, href: pageOf(keys, ctx) }
   if (!cards) return { status: 'mismatch', reason: 'unknown-place-or-view' }
 
   if (keys.edition !== ctx.edition) return { status: 'other-edition', keys, card: cards[0]!, from }

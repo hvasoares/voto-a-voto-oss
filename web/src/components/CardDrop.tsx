@@ -37,7 +37,7 @@ const MESSAGE = (o: Outcome, current: string): string => {
     case 'mismatch':
       return 'As chaves do arquivo não correspondem a nenhum cartão do site.'
     case 'unsupported':
-      return 'Este tipo de cartão ainda não pode ser reaberto aqui.'
+      return 'O arquivo é um cartão do Voto a Voto, mas este tipo não pode ser conferido no navegador. A página dele é refeita pelo site.'
     default:
       return `Não foi possível ler o arquivo. ${WHY[o.reason] ?? ''}`.trim()
   }
@@ -88,6 +88,11 @@ export default function CardDrop({ base, origin, fixture, edition }: CardDropPro
         {outcome && (
           <>
             <p className="mt-3 text-body leading-[18px]" data-message>{MESSAGE(outcome, edition)}</p>
+            {outcome.status === 'unsupported' && outcome.href && (
+              <a className="mt-3 flex min-h-11 w-full items-center justify-center rounded-md border border-border text-body font-bold text-primary" href={outcome.href} data-open-view>
+                Abrir esta vista ›
+              </a>
+            )}
             {'card' in outcome && (
               <>
                 {/* The card the SITE drew again from its own data: safe markup made by our drawing functions, never the dropped file. */}

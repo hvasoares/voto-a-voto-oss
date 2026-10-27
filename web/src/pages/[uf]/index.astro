@@ -15,6 +15,7 @@ import CityMapMap from '@/components/CityMapMap'
 import { loadCityMapData, semContornoOf } from '@/lib/city-map-data'
 import { UF_NOME } from '@/lib/uf-names'
 import { datasetFixture, loadSearchShard, loadStateShard, loadStateUfs } from '@/lib/shard-files'
+import { recapUfs } from '@/lib/recap-data'
 
 export async function getStaticPaths() {
   const ufs = await loadStateUfs()
@@ -31,6 +32,8 @@ const pageTitle = `Estado selecionado: ${label}`
 const banner = fixture ? 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS' : undefined
 const sub = `${fixture ? 'Município fictício' : 'Município'} · ${label}`
 const rows = stateRows(state.cities)
+// The recap exists for every state the three-cycle aggregates know (the overseas posts are not a state).
+const hasRecap = (await recapUfs()).includes(uf!)
 // The municipality map of this state (tickets #16+#17): the same island the focused page
 // /mapa/<uf>/ hosts, filling the placeholder #4/#50 reserved. The list view comes pre-rendered;
 // the map view fetches the committed mesh (public/geo/municipios-<uf>.json) only when asked for.
@@ -70,6 +73,7 @@ const showMap = cityMap.rows.length > 0
         <a data-link="map" href={href('/mapa/')}>Ver mapa por estado ›</a>
         <a data-link="map-municipio" href={href(`/mapa/${uf}/`)}>Ver mapa por município ›</a>
         <a data-link="cycles" href={href(`/tres-ciclos/${uf}/`)}>Ver os três ciclos do estado ›</a>
+        {hasRecap && <a data-link="recap" href={href(`/${uf}/resumo/`)}>Resumo do estado ›</a>}
       </nav>
     </main>
     <PageDataDownload href={href(stateDataPath(SHARD_VERSION, uf!))} filename={`${uf}.json`} />

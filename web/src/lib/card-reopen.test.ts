@@ -69,8 +69,8 @@ describe('reopening a dropped SVG', () => {
     expect(await reopenFile(new Uint8Array(MAX_CARD_BYTES + 1), ctx)).toEqual({ status: 'unreadable', reason: 'too-big' })
   })
   it('a kind of card that cannot be recomputed here says so', async () => {
-    const svg = cityCard().svg.replace(/city:2026-2/g, 'recap')
-    expect(await reopenFile(enc(svg), ctx)).toEqual({ status: 'unsupported', reason: 'recap' })
+    const svg = cityCard().svg.replace(/city:2026-2/g, 'recap').replace(/places="rj\/cidade-exemplo"/g, 'places="rj"')
+    expect(await reopenFile(enc(svg), ctx)).toMatchObject({ status: 'unsupported', reason: 'recap', href: '/rj/resumo/' })
   })
 })
 

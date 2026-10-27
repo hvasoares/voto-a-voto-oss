@@ -24,7 +24,7 @@ export function createStateSearch(rows: StateRow[], uf: string, analytics: Analy
     },
     resultTap: (position: number) => emit('search_result_tap', { scope: 'state', uf, position }),
     listTap: (position: number) => emit('city_list_tap', { uf, position }),
-    linkTap: (link: 'map' | 'cycles') => emit('state_link_tap', { uf, link }),
+    linkTap: (link: 'map' | 'cycles' | 'recap') => emit('state_link_tap', { uf, link }),
   }
 }
 
