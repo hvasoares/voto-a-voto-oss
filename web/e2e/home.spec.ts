@@ -63,11 +63,13 @@ test.describe('home: only the search is an island, hydrated on interaction', () 
     await page.waitForLoadState('networkidle')
     const js = () => seen.map((r) => new URL(r.url).pathname).filter((p) => p.endsWith('.js'))
     expect(js().filter((p) => /CitySearch|client\.|react/i.test(p))).toEqual([])
-    expect(seen.some((r) => r.url.endsWith('/data/cities.csv'))).toBe(false)
+    expect(seen.map((r) => new URL(r.url).pathname).filter((p) => p.includes('/data/'))).toEqual([])
     await activateSearch(page)
     await page.waitForLoadState('networkidle')
     expect(js().some((p) => /CitySearch/.test(p))).toBe(true)
-    await expect.poll(() => seen.some((r) => r.url.endsWith('/data/cities.csv'))).toBe(true)
+    await expect.poll(() => seen.some((r) => r.url.endsWith('/search.json'))).toBe(true)
+    // the home loads exactly one shard: the search index, when the field gains focus — nothing before that
+    expect(seen.map((r) => new URL(r.url).pathname).filter((p) => p.includes('/data/'))).toHaveLength(1)
   })
 
   test('exactly one copy of React/ReactDOM runs on the page', async ({ page }) => {
@@ -156,7 +158,7 @@ test.describe('home: city search', () => {
     await page.waitForLoadState('networkidle')
     expect(violations(seen, await allowedOrigins(new URL(baseURL!).origin))).toEqual([])
     const files = seen.map((r) => new URL(r.url).pathname).filter((p) => p.includes('/data/'))
-    expect(files.every((p) => p.endsWith('/cities.csv'))).toBe(true)
+    expect(files.every((p) => p.endsWith('/search.json'))).toBe(true)
   })
 })
 

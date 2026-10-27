@@ -25,7 +25,7 @@ Geist font that `shadcn init` adds was removed (the Sketch fonts are system font
 | CSS | 3.9 KB | 8.1 KB (Tailwind + shadcn base + tw-animate) |
 | JS on load, before any interaction | 18.5 KB (`app.js` holds every slot: not home-only) | 0.3 KB (tile analytics) |
 | JS after the search is used | 18.5 KB | 102 KB (React + react-dom 69 KB, island with cmdk and Radix 32 KB, glue 1 KB) |
-| data fetched by the search (fixtures / real `cities.csv`) | 0.3 KB / about 0.4 MB raw | same (until #49) |
+| data fetched by the search (fixtures / real dataset) | 0.3 KB / about 0.4 MB raw (`cities.csv`) | search shard only: 0.2 KB / 60 KB gzip (`search.json`, once the field gains focus) |
 | build time for this page | 0.5 s | 0.7 to 1.0 s |
 
 Reading: the page itself is lighter at load than before (no JS until used) but searching costs about 5.5x more JS than
@@ -39,11 +39,12 @@ web/
   astro.config.ts          base (SITE_BASE), integrations, Vite aliases
   components.json          shadcn config (aliases @/components, @/lib/utils)
   cdn.config.json         approved CDN origins + pinned libraries (EMPTY by default)
-  integrations/           dataset (copies data to public/data), theme (virtual:theme.css), interaction (client:interaction), cdn
-  src/pages/              index.astro (home), 404.astro (client fallback)
+  integrations/           dataset (writes the shards to public/data), theme (virtual:theme.css), interaction (client:interaction), cdn
+  integrations/shards.ts  the shard builder (issue #49; layout and budgets: docs/shards.md)
+  src/pages/              index.astro (home), [uf]/[slug]/index.astro (pre-rendered city page), 404.astro (client fallback)
   src/layouts/Base.astro  html shell + #consent-slot
   src/components/         CitySearch.tsx (the only island) + ui/ (shadcn, copied code)
-  src/lib/                data-dir, search-data (the ONE function that loads the search data), fallback, explore, states
+  src/lib/                data-dir, search-data (fetches the search shard), city-routes (pre-rendered city pages), fallback, explore, states
   src/theme.ts            Sketch tokens -> shadcn/Tailwind variables (single place)
   src/scripts/            tile-analytics (plain script), fallback (404 page)
   e2e/                    Playwright specs;  scripts/  serve.ts, measure.ts
@@ -68,8 +69,9 @@ Imported, not copied: the alias `@site/*` points to `../site/src/*` (Vite alias 
 | `npm run test:e2e:production` | the phone suite against the production build (approved CDN origins allowed; none today) |
 | `npm run test:cdn` | CDN mechanism tests against a fake CDN (test double) and a production build that uses it |
 | `PORT=4175 npm run serve` | serve `dist/` like GitHub Pages (301 to trailing slash, 404.html for misses, honours SITE_BASE) |
-| `npm test` | vitest: pure logic, theme mapping, island behaviour in jsdom |
+| `npm test` | vitest: shards (builder + data check), pure logic, theme mapping, island behaviour in jsdom |
 | `npm run typecheck` | `tsc --noEmit` |
+| `npm run check:shards` | shard data check + sizes (fixture dataset); `check:shards:real` for the real `../data` |
 | `npm run test:e2e` | builds, serves on E2E_PORT (default 4176) and runs Playwright at 390x844 |
 | `npm run test:real` | same against the real dataset (`DATA_DIR=../data`); skipped when missing |
 | `npm run capture` | writes `.captures/home/default.png` (fixture state, 390x844) for the screenshot review |
@@ -93,8 +95,12 @@ default `../site/fixtures/data` (committed fixtures), real data `DATA_DIR=../dat
   Use Astro's `client:visible` / `client:idle` only where eager enough is wanted. Tests wait for `astro-island` to lose its `ssr` attribute (`activateSearch` in `e2e/helpers.ts`).
 - **Theme**: Sketch tokens live in `../site/src/shared/tokens.ts`; `src/theme.ts` maps them to the shadcn variables
   (`--background`, `--primary`, ...) and `--sketch-*`; `src/styles/global.css` only wires variables to Tailwind utilities (`text-title`, `font-serif`, `bg-muted`...). No custom CSS beyond that. No dark mode.
-- **Data**: build-time Node code reads `DATA_DIR` through the existing store (`src/lib/states.ts`). The browser gets `public/data/{cities.csv,manifest.json}`
-  copied by `integrations/dataset.ts` (git-ignored). `src/lib/search-data.ts#loadSearchCities` is the single function #49 replaces with the search-index shard.
+- **Data (shards since #49)**: the build turns `DATA_DIR` into versioned JSON shards under `public/data/v<fingerprint>/`
+  (`integrations/dataset.ts` calls `integrations/shards.ts`; the directory holds no CSV). The fingerprint is a sha256 over the
+  five dataset files, so paths change with the data and a stale copy is never served. Client code learns the version through
+  `virtual:data-shards` (`SHARD_VERSION`); `src/lib/search-data.ts#loadSearchCities` fetches `search.json` when the search is used.
+  Every city is pre-rendered at `src/pages/[uf]/[slug]/` (the city itself is already in the HTML, so the page requests no shard).
+  Layout, fields, sizes and budgets: `docs/shards.md`. Verify any dataset with `npm run check:shards[:real]`.
 - **404 fallback**: `src/pages/404.astro` + `src/scripts/fallback.ts` + `src/lib/fallback.ts` (route table of the whole site). A valid route (state or city exists in
   the data) that is not pre-rendered shows "Página em construção"; anything else "Página não encontrada". When a page is ported, add its client renderer there.
 - **Analytics**: through `@site/analytics` (no-op). Events: `search {results, query_length}` after typing pauses 600 ms, `search_result_tap {position, uf}`, `state_tile_tap {uf}`. `#consent-slot` is kept in `Base.astro`.
