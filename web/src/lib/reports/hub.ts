@@ -1,9 +1,8 @@
 /**
  * The report list of the hub (frame "6 Relatórios"): seven rows, each with its headline figure,
- * computed at build time (nothing on the hub is a copied constant). Every row is a built report
- * and links through, except "Comparar com 2022 e 2018" (ticket #14 not built yet: no `to`).
+ * computed at build time (nothing on the hub is a copied constant). Every row is a built report and links through.
  */
-import { displayName } from '@site/shared/city-search'
+import { displayName } from '@/shared/city-search'
 import { biggestSwing, closestRaces, citiesWonInRunoff, MIN_BIG_SWING_VALIDOS, MIN_TURNOUT_APTOS, flipsToLula, flipsToFlavio, turnoutExtremes, type ComputedReports, type MarginInput } from './compute'
 import { formatFixedPct, formatInt, formatSignedInt, formatSignedPp } from './format'
 
@@ -12,7 +11,7 @@ export interface HubRow {
   title: string
   /** The headline figure, computed from the dataset (absent on the two entries that are lists, not reports). */
   headline?: string
-  /** The route of the report; absent while the report page is not built (only #14 today). */
+  /** The route of the report; every hub report is built and linked (since #14 landed). */
   to?: string
 }
 
@@ -70,7 +69,7 @@ export function hubRows(reports: ComputedReports, input: MarginInput): HubRow[] 
       id: 'comparar',
       title: 'Comparar com 2022 e 2018',
       headline: `Os seis maiores estados: ${lula} e ${flavio}, votos e percentuais`,
-      // Report built by ticket #14 (route /comparar/2022/).
+      to: '/comparar/2022/', // built by ticket #14
     },
     {
       id: 'como-cada-grupo-votou',

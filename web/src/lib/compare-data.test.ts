@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { Candidate, City, DataStore, Manifest, Turnout, TurnoutQuery, Vote } from '@site/data'
+import type { Candidate, City, DataStore, Manifest, Turnout, TurnoutQuery, Vote } from '@/data'
 import { buildCompareRow, buildCycleBlocks, type RunoffTally } from './compare'
 import {
   buildCompareRows,

@@ -1,6 +1,6 @@
 /**
  * Behaviour tests of the report computations. Two states:
- * - SITE FIXTURES (`../site/fixtures/data`): deterministic fake data with documented flips; the
+ * - SITE FIXTURES (`../fixtures/data`): deterministic fake data with documented flips; the
  *   fixture-state screenshots (gate 2) render these numbers.
  * - REAL DATA (`../../data`, committed): the highlight figures of the ticket must reproduce from it.
  *   Source of truth for those figures:
@@ -14,9 +14,9 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { diskSource } from '@site/data/node'
-import { createStore } from '@site/data/store'
-import { parseCandidates } from '@site/data/csv'
+import { diskSource } from '@/data/node'
+import { createStore } from '@/data/store'
+import { parseCandidates } from '@/data/csv'
 import {
   biggestSwing,
   citiesWonInRunoff,
@@ -39,7 +39,7 @@ import { loadReportsData } from './load'
 /** The repo root, one level above web/. */
 const REPO = resolve(import.meta.dirname, '../../../..')
 const REAL_DATA = resolve(REPO, 'data')
-const FIXTURE_DATA = resolve(import.meta.dirname, '../../../../site/fixtures/data')
+const FIXTURE_DATA = resolve(import.meta.dirname, '../../../fixtures/data')
 
 async function inputFrom(dir: string): Promise<MarginInput> {
   const store = createStore(diskSource(dir))
@@ -65,7 +65,7 @@ describe('candidate pairs of the dataset', () => {
   })
 })
 
-describe('fixture state (site/fixtures/data)', () => {
+describe('fixture state (fixtures/data)', () => {
   it('computes round margins from the votes and the valid votes of each round', async () => {
     const rows = computeReports(await inputFrom(FIXTURE_DATA)).margins
     // Boa Esperança do Norte/MT (2026 only): (47148-47285)/94433 = -0,15 pp; (42667-42487)/85154 = +0,21 pp.

@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { parseCandidates, parseTurnout, parseVotes } from '@site/data/csv'
-import type { Candidate, Turnout, Vote } from '@site/data'
+import { parseCandidates, parseTurnout, parseVotes } from '@/data/csv'
+import type { Candidate, Turnout, Vote } from '@/data'
 import { computeMargins, formatSwing, OVERSEAS_UF, roundPp } from './margins'
 
 /** Small fixed arrays of one synthetic cycle, used by the pure-logic tests (no election data). */

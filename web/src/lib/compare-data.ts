@@ -1,7 +1,7 @@
 /**
  * Build-time aggregation of the dataset per state, for ticket #14 (screens 11, 11b and 13).
  * Node only: an Astro build reads the whole dataset once through the same store as the other pages
- * (@site/data), aggregates it and pre-renders static pages; the browser gets HTML, never a CSV.
+ * (@/data), aggregates it and pre-renders static pages; the browser gets HTML, never a CSV.
  *
  * Rules of the ticket (and of `web/src/lib/compare.ts`):
  * - Aggregates per state across 2018, 2022 and 2026, rounds 1 and 2, excluding the overseas `zz` rows.
@@ -12,8 +12,8 @@
  *   municipality codes BOTH cycles have (2026 adds Boa Esperança do Norte — that vote never counts
  *   as a swing). Percentages still belong to one cycle per bar on screen 13.
  */
-import { createStore, type DataStore, type Turno } from '@site/data'
-import { diskSource } from '@site/data/node'
+import { createStore, type DataStore, type Turno } from '@/data'
+import { diskSource } from '@/data/node'
 import { dataDir } from './data-dir'
 import { buildCompareRow, buildCycleBlocks, CYCLES, runoffPair, shortName, sortCompareRows, type CompareRow, type CycleBlock, type RunoffTally } from './compare'
 

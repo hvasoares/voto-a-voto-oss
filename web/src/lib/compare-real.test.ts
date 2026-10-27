@@ -1,8 +1,8 @@
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { createStore } from '@site/data'
-import { diskSource } from '@site/data/node'
+import { createStore } from '@/data'
+import { diskSource } from '@/data/node'
 import { buildCompareRow, buildCycleBlocks, formatSignedInt, type CompareRow, type RunoffTally } from './compare'
 import { buildCompareRows, buildStateStats, compareTallies, labelsOf, roundOf, tallyOf, type StateStats } from './compare-data'
 

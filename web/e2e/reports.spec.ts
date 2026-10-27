@@ -7,10 +7,11 @@ import { allowedOrigins, base, collectRequests, violations } from './helpers'
  * comparecimento). All are pre-rendered Astro markup, no island and no browser data parsing: every
  * figure is in the HTML at build time, so the pages work with JavaScript off. The figures below are
  * pinned to the SITE FIXTURES (default build): "Candidato A/B" (91/92), one flip to each candidate,
- * by unit tests (src/lib/reports/*.test.ts), not hard-coded app constants.
+ * by unit tests (src/lib/reports/*.test.ts), not hard-coded app constants. Since #14, all seven rows
+ * link through (the last stub went away when /comparar/2022/ landed).
  */
 
-const STUB_TITLES = ['Comparar com 2022 e 2018']
+const STUB_TITLES: string[] = []
 
 test.describe('reports hub page', () => {
   test('carries the seven rows of the frame with their computed headlines', async ({ page }) => {
@@ -20,13 +21,14 @@ test.describe('reports hub page', () => {
     const rows = page.locator('nav[aria-label="Relatórios"] > ul > li')
     await expect(rows).toHaveCount(7)
     await expect(page.getByRole('link', { name: /Cidades que viraram no 2º turno/ })).toHaveText('Cidades que viraram no 2º turnoCandidato A virou 2 cidades; Candidato B virou 1')
-    for (const title of STUB_TITLES) await expect(rows.filter({ hasText: title }), title).toHaveCount(1)
+    for (const title of STUB_TITLES) await expect(rows.filter({ hasText: title }), title).toHaveCount(0)
     await expect(page.locator('[data-report="cidades-que-viraram"]')).toHaveAttribute('href', base + 'relatorios/cidades-que-viraram/')
+    await expect(page.locator('[data-report="comparar"]')).toHaveAttribute('href', base + 'comparar/2022/')
   })
 
-  test('marks the not-built reports with "Em breve" and no route of their own', async ({ page }) => {
+  test('links every one of the seven rows since #14 landed', async ({ page }) => {
     await page.goto(base + 'relatorios/')
-    await expect(page.getByText('Em breve')).toHaveCount(1) // only Comparar, ticket #14
+    await expect(page.getByText('Em breve')).toHaveCount(0)
     const hrefs = await page
       .locator('nav[aria-label="Relatórios"] > ul > li > a[data-report]')
       .evaluateAll((els) => els.map((e) => `${e.getAttribute('data-report')}${e.getAttribute('href')}`))
@@ -36,6 +38,7 @@ test.describe('reports hub page', () => {
       `votos-ganhos-e-perdidos${base}relatorios/votos-ganhos-e-perdidos/`,
       `disputas-mais-apertadas${base}relatorios/disputas-mais-apertadas/`,
       `comparecimento${base}relatorios/comparecimento/`,
+      `comparar${base}comparar/2022/`,
       `como-cada-grupo-votou${base}relatorios/como-cada-grupo-votou/`,
     ])
   })

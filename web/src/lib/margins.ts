@@ -13,9 +13,9 @@
  * - The overseas post (UF "zz") is excluded everywhere here, as the state aggregate of ticket #1
  *   never lists it.
  *
- * Everything here is deterministic given the arrays of the store (`@site/data`).
+ * Everything here is deterministic given the arrays of the store (`@/data`).
  */
-import type { Candidate, Turnout, Vote } from '@site/data'
+import type { Candidate, Turnout, Vote } from '@/data'
 
 export const OVERSEAS_UF = 'zz'
 

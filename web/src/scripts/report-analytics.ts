@@ -1,4 +1,4 @@
-import { getAnalytics } from '@site/analytics'
+import { getAnalytics } from '@/analytics'
 
 /**
  * Plain-HTML script of the report pages of ticket #12 (no island, no React, like tile-analytics.ts):

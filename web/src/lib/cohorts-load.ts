@@ -4,8 +4,8 @@
  * Reads the dataset of DATA_DIR through the shared store (default: the committed fixtures;
  * real data: DATA_DIR=../data), so development, tests and captures never need the network.
  */
-import { diskSource } from '@site/data/node'
-import { createStore } from '@site/data/store'
+import { diskSource } from '@/data/node'
+import { createStore } from '@/data/store'
 import { dataDir } from './data-dir'
 import { buildCohorts, candidateLabels, RUNOFF_CYCLES, type CandidateRowLike, type CohortReport, type Cycle, type CityRef, type PersonLabel, type RunoffVotes } from './cohorts'
 

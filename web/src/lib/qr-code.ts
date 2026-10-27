@@ -15,7 +15,7 @@
  *   sha-256 and round the glyph through a decoder (jsQR, dev dependency) to assert it scans back to the text.
  */
 import { qrcodegen } from './vendor/qrcodegen'
-import { colors } from '@site/shared/tokens'
+import { colors } from '@/shared/tokens'
 
 export interface QrGlyph {
   /** The encoded text, verbatim (what a phone opens when it scans). */

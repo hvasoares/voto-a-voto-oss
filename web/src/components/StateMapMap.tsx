@@ -14,9 +14,9 @@
  * chosen, `map_state_tap {uf}` when a hydrated tap selects a state.
  */
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
-import { formatInt } from '@site/shared/city-model'
-import { UF_TILES } from '@site/slots/home/uf-grid'
-import { getAnalytics } from '@site/analytics'
+import { formatInt } from '@/shared/city-model'
+import { UF_TILES } from '@/slots/home/uf-grid'
+import { getAnalytics } from '@/analytics'
 import { formatSwing } from '@/lib/margins'
 import type { StateMapData, StateMapRow } from '@/lib/state-map-data'
 import { BIN_COLOR, marginBin, marginLegend, swingBin, swingLegend, tileEdge, type DivBin } from '@/lib/scale'

@@ -3,8 +3,8 @@
  * chosen dataset (DATA_DIR, the same store the other pages read). No browser involvement: the page
  * pre-renders everything, so this runs during `astro build` / dev only.
  */
-import { createStore } from '@site/data/store'
-import { diskSource } from '@site/data/node'
+import { createStore } from '@/data/store'
+import { diskSource } from '@/data/node'
 import { dataDir } from './data-dir'
 import { buildBrasil, type BrasilView } from './brasil'
 

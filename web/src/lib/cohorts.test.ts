@@ -5,7 +5,7 @@
  * - Real data: the reference cohort table centraleleicao2026/thoughts/team/data-engineering/
  *   2026-10-26-swing-compare-cohort-figures.md section (c), computed live from the committed data/
  *   (the same pinning idea as about-data pins data/manifest.json): these numbers are the check.
- * - Fixture data: what the fixture build renders for the screenshots and e2e (site/fixtures/data,
+ * - Fixture data: what the fixture build renders for the screenshots and e2e (fixtures/data,
  *   committed).
  */
 import { readFileSync } from 'node:fs'
@@ -267,8 +267,8 @@ describe('real data (data/, committed): the reference cohort table', () => {
   })
 })
 
-describe('fixture data (site/fixtures/data): what the fixture build renders', () => {
-  const report = loadCohortReport(resolve(import.meta.dirname, '../../../site/fixtures/data'))
+describe('fixture data (fixtures/data): what the fixture build renders', () => {
+  const report = loadCohortReport(resolve(import.meta.dirname, '../../fixtures/data'))
 
   it('renders three groups of the example cities and the 2026-only city as no data', async () => {
     const r = await report
