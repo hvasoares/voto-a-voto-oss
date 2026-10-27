@@ -5,12 +5,15 @@
  *   {headline} {url}
  */
 import type { CityResult } from '@/shared/city-model'
+import type { Register } from './sentences/catalog'
 import { headline } from './sentences/headline'
 
 export interface ShareTextOptions {
   cityName: string
   /** Overseas posts read "No exterior, em ...". */
   overseas?: boolean
+  /** `standard` (default) or `plain` (linguagem simples). */
+  register?: Register
   /** The city page's full address, scheme included (it is what the recipient taps). */
   url: string
 }
@@ -21,5 +24,5 @@ export function shortAddress(url: string): string {
 }
 
 export function shareText(r: CityResult, o: ShareTextOptions): string {
-  return `${headline(r, { cityName: o.cityName, overseas: o.overseas })} ${o.url}`
+  return `${headline(r, { cityName: o.cityName, overseas: o.overseas, register: o.register })} ${o.url}`
 }

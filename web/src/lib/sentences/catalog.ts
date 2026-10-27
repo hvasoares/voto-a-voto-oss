@@ -4,11 +4,14 @@
  *
  * - `KEYS` is the one list of catalog keys. A key ending in `.one`/`.other` is a plural pair, picked with the locale's
  *   `Intl.PluralRules`.
- * - Portuguese (pt-BR) is complete (`Record<Key, string>`: a missing key is a type error). English and Spanish are
- *   skeletons: they translate what they have and everything else falls back to Portuguese without an error.
+ * - Two registers: `standard` and `plain` ("linguagem simples": short sentences, one idea each, no jargon). Portuguese
+ *   (pt-BR) is complete in both (a missing key is a type error; only the `STANDARD_ONLY_KEYS` have no plain version). English and
+ *   Spanish are skeletons: they translate what they have and everything else falls back (see `template`) without an error.
  * - Wording rule: say what the data shows, with the same words and treatment for every candidate; never why people
  *   voted as they did, never a winner label.
  */
+import { DEFAULT_REGISTER, REGISTERS, type Register } from './register'
+
 export const KEYS = [
   /** Shown instead of a sentence when the city has no data in the cycle. */
   'noData',
@@ -47,11 +50,27 @@ export const KEYS = [
   'label.article',
   'pct.lessThan',
   'pct.moreThan',
+  /** The register switch of the city card: its group label and the two choices. */
+  'register.label',
+  'register.standard',
+  'register.plain',
+  /** The meta description of a city page (what a link preview says): standard register only. */
+  'preview.fixture',
+  'preview.intro',
+  'preview.noResult',
+  'preview.noElectorate',
+  'preview.noValidVotes',
+  'preview.default',
 ] as const
 
 export type Key = (typeof KEYS)[number]
 export type Locale = 'pt-BR' | 'en' | 'es'
 export const DEFAULT_LOCALE: Locale = 'pt-BR'
+export { DEFAULT_REGISTER, REGISTERS, type Register }
+
+/** Keys that read the same in both registers, so they have no plain version: the register switch's own labels and the page-head description for crawlers. */
+export const STANDARD_ONLY_KEYS = ['register.label', 'register.standard', 'register.plain', 'preview.fixture', 'preview.intro', 'preview.noResult', 'preview.noElectorate', 'preview.noValidVotes', 'preview.default'] as const satisfies readonly Key[]
+type StandardOnly = (typeof STANDARD_ONLY_KEYS)[number]
 
 const ptBR: Record<Key, string> = {
   noData: 'Sem dados nesse ciclo.',
@@ -85,6 +104,53 @@ const ptBR: Record<Key, string> = {
   'label.article': 'o {name}',
   'pct.lessThan': 'menos de {pct}',
   'pct.moreThan': 'mais de {pct}',
+  'register.label': 'Estilo da frase',
+  'register.standard': 'Padrão',
+  'register.plain': 'Linguagem simples',
+  'preview.fixture': 'Dados fictícios (EXEMPLO). ',
+  'preview.intro': 'Resultado de {place}',
+  'preview.noResult': '{note}{intro}: o arquivo do TSE não traz votação para os ciclos do site.',
+  'preview.noElectorate': '{note}{intro}, {ano}, {turno}º turno: sem eleitores aptos registrados.',
+  'preview.noValidVotes': '{note}{intro}, {ano}, {turno}º turno: nenhum voto válido; {notVoted}% do eleitorado não votou.',
+  'preview.default': '{note}{intro}, {ano}, {turno}º turno: votaram {voted}% do eleitorado e {leader} recebeu {pct}% dos votos válidos.',
+}
+
+/**
+ * Linguagem simples: short sentences, one idea each, everyday words ("pessoas que podiam votar", not "eleitorado"),
+ * the same figures and the same neutrality as the standard register. The slots are the same as the standard template's.
+ */
+const ptBRPlain: Record<Exclude<Key, StandardOnly>, string> = {
+  noData: 'Não temos dados dessa eleição para este lugar.',
+  'headline.note': 'Frase feita com os números desta página · também é a descrição do gráfico',
+  'lead.city': 'Em {city}, no {turno}º turno de {ano}, ',
+  'lead.overseas': 'No exterior, em {city}, no {turno}º turno de {ano}, ',
+  noElectorate: '{lead}não havia pessoas registradas para votar.',
+  'nobodyTurnedOut.one': '{lead}a única pessoa que podia votar não foi votar.',
+  'nobodyTurnedOut.other': '{lead}nenhuma das {aptos} pessoas que podiam votar foi votar.',
+  noValidVotes: '{lead}nenhum candidato recebeu votos. Todos os votos foram em branco ou anulados.',
+  everyoneVoted: '{lead}todas as pessoas votaram em algum candidato.',
+  'nonVoters.share': '{share} das pessoas que podiam votar não votaram',
+  'nonVoters.count.one': '{n} de {aptos} pessoas que podiam votar não votou',
+  'nonVoters.count.other': '{n} de {aptos} pessoas que podiam votar não votaram',
+  'votes.count.one': '{n} voto',
+  'votes.count.other': '{n} votos',
+  'share.ofElectorate': 'votos de {share} das pessoas que podiam votar',
+  'tie.two': '{lead}{a} e {b} ficaram empatados na frente. Cada um recebeu {each}. {nonVoters}.',
+  'tie.many': '{lead}{count} candidatos ficaram empatados na frente. Cada um recebeu {each}. {nonVoters}.',
+  single: '{lead}{nonVoters}. {name} recebeu todos os votos dados a candidatos: {value}.',
+  vsLeader: '{lead}{nonVoters}. {phrase} {name}, o mais votado, recebeu: {value}.',
+  vsRunnerUp: '{lead}{nonVoters}. {phrase} {who}{role} recebeu: {value}.',
+  'phrase.above': 'Isso é mais do que',
+  'phrase.slightly': 'Isso é um pouco mais do que',
+  'phrase.equal': 'Isso é igual ao que',
+  'phrase.almost': 'Isso é quase igual ao que',
+  'phrase.below': 'Isso é menos do que',
+  'runnerUp.tied': 'cada um dos {count} candidatos empatados em segundo lugar ({names})',
+  'runnerUp.role': ', o segundo mais votado,',
+  numberWords: 'zero|um|dois|três|quatro|cinco|seis|sete|oito|nove|dez',
+  'label.article': 'o {name}',
+  'pct.lessThan': 'menos de {pct}',
+  'pct.moreThan': 'mais de {pct}',
 }
 
 /** Skeletons: a few keys each, to show the shape of a translation. Everything missing reads in Portuguese. */
@@ -102,11 +168,26 @@ const es: Partial<Record<Key, string>> = {
   noElectorate: '{lead}no hay electores registrados.',
 }
 
-export const CATALOG: { 'pt-BR': Record<Key, string>; en: Partial<Record<Key, string>>; es: Partial<Record<Key, string>> } = { 'pt-BR': ptBR, en, es }
+type Messages = Partial<Record<Key, string>>
+export const CATALOG: { [L in Locale]: { standard: Messages; plain: Messages } } = {
+  'pt-BR': { standard: ptBR, plain: ptBRPlain },
+  en: { standard: en, plain: {} },
+  es: { standard: es, plain: {} },
+}
 
-/** The template of `key` in `locale`, or the Portuguese one when that locale has not translated it. */
-export function template(locale: Locale, key: Key): string {
-  return CATALOG[locale]?.[key] ?? ptBR[key]
+/** What a sentence is said in: a language and a register. */
+export interface Voice {
+  locale: Locale
+  register: Register
+}
+export const DEFAULT_VOICE: Voice = { locale: DEFAULT_LOCALE, register: DEFAULT_REGISTER }
+
+/**
+ * The template of `key` for `voice`. A missing translation never errors: the voice's own register, then the same locale's
+ * standard register, then Portuguese in the asked register, and last standard Portuguese (which is always complete).
+ */
+export function template({ locale, register }: Voice, key: Key): string {
+  return CATALOG[locale]?.[register]?.[key] ?? CATALOG[locale]?.standard?.[key] ?? CATALOG['pt-BR'][register][key] ?? ptBR[key]
 }
 
 /** Fills `{slot}`s; an unknown slot is left visible as `{slot}` so a typo cannot pass silently in a test. */
@@ -122,10 +203,11 @@ export function pluralCategory(locale: Locale, count: number): 'one' | 'other' {
   return count !== 0 && new Intl.PluralRules(locale).select(count) === 'one' ? 'one' : 'other'
 }
 
-/** The sentence of `key` in `locale` with its slots filled; a plural key takes `count` and picks `.one` or `.other`. */
-export function message(locale: Locale, key: Exclude<Key, `${string}.one` | `${string}.other`>, params?: Record<string, string | number>): string
-export function message(locale: Locale, key: PluralKey, params: Record<string, string | number>, count: number): string
-export function message(locale: Locale, key: string, params: Record<string, string | number> = {}, count?: number): string {
-  const k = (count === undefined ? key : `${key}.${pluralCategory(locale, count)}`) as Key
-  return fill(template(locale, k), params)
+/** What `message` takes: a key, or the base of a plural pair (then `count` picks `.one` or `.other`). */
+export type MessageKey = Exclude<Key, `${string}.one` | `${string}.other`> | PluralKey
+
+/** The sentence of `key` for `voice` with its slots filled; a plural key takes `count`. */
+export function message(voice: Voice, key: MessageKey, params: Record<string, string | number> = {}, count?: number): string {
+  const k = (count === undefined ? key : `${key}.${pluralCategory(voice.locale, count)}`) as Key
+  return fill(template(voice, k), params)
 }

@@ -16,7 +16,7 @@
  * Overseas posts use the `lead.overseas` start ("No exterior, em ...") and the same figures.
  */
 import type { CandidateTally, CityResult } from '@/shared/city-model'
-import { DEFAULT_LOCALE, message, type Locale } from './catalog'
+import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type Locale, type MessageKey, type Register, type Voice } from './catalog'
 
 /** Below this many registered voters percentages are too coarse to read; the sentence uses counts. */
 export const TINY_ELECTORATE = 100
@@ -28,6 +28,8 @@ export interface Place {
   /** Overseas posts (uf `zz`) are "no exterior", not a city of a state. */
   overseas?: boolean
   locale?: Locale
+  /** `standard` (default) or `plain` (linguagem simples). */
+  register?: Register
 }
 
 type Band = 'above' | 'slightly' | 'equal' | 'almost' | 'below'
@@ -44,55 +46,57 @@ const round1 = (x: number) => Math.round(x * 10) / 10
 
 export function headline(r: CityResult | undefined, place: Place): string {
   const locale = place.locale ?? DEFAULT_LOCALE
-  if (!r) return message(locale, 'noData')
+  const voice: Voice = { locale, register: place.register ?? DEFAULT_REGISTER }
+  const message = (key: MessageKey, params?: Record<string, string | number>, count?: number) => say(voice, key, params, count)
+  if (!r) return message('noData')
 
   const int = (n: number) => new Intl.NumberFormat(locale).format(n)
   const pctFormat = new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 1 })
   /** 33.6 -> "33,6%"; a non-zero part never reads as 0% and a partial one never as 100%. */
   const pct = (x: number): string => {
     const v = round1(x)
-    if (x > 0 && v === 0) return message(locale, 'pct.lessThan', { pct: pctFormat.format(0.001) })
-    if (x < 100 && v >= 100) return message(locale, 'pct.moreThan', { pct: pctFormat.format(0.999) })
+    if (x > 0 && v === 0) return message('pct.lessThan', { pct: pctFormat.format(0.001) })
+    if (x < 100 && v >= 100) return message('pct.moreThan', { pct: pctFormat.format(0.999) })
     return pctFormat.format(v / 100)
   }
   const names = new Intl.ListFormat(locale, { style: 'long', type: 'conjunction' })
-  const ref = (nome: string) => (/^Candidat[oa]\b/.test(nome) ? message(locale, 'label.article', { name: nome }) : nome)
+  const ref = (nome: string) => (/^Candidat[oa]\b/.test(nome) ? message('label.article', { name: nome }) : nome)
 
-  const lead = message(locale, place.overseas ? 'lead.overseas' : 'lead.city', { city: place.cityName, turno: r.turno, ano: r.ano })
-  if (r.aptos <= 0) return message(locale, 'noElectorate', { lead })
-  if (r.comparecimento <= 0) return message(locale, 'nobodyTurnedOut', { lead, aptos: int(r.aptos) }, r.aptos)
-  if (r.validos <= 0) return message(locale, 'noValidVotes', { lead })
-  if (r.naoVotaram <= 0) return message(locale, 'everyoneVoted', { lead })
+  const lead = message(place.overseas ? 'lead.overseas' : 'lead.city', { city: place.cityName, turno: r.turno, ano: r.ano })
+  if (r.aptos <= 0) return message('noElectorate', { lead })
+  if (r.comparecimento <= 0) return message('nobodyTurnedOut', { lead, aptos: int(r.aptos) }, r.aptos)
+  if (r.validos <= 0) return message('noValidVotes', { lead })
+  if (r.naoVotaram <= 0) return message('everyoneVoted', { lead })
 
   const tiny = r.aptos < TINY_ELECTORATE
   // measure(votes) is what the sentence compares: the electorate share (one decimal) or a head count.
   const measure = (votos: number) => (tiny ? votos : round1((votos / r.aptos) * 100))
-  const show = (votos: number) => (tiny ? message(locale, 'votes.count', { n: int(votos) }, votos) : pct((votos / r.aptos) * 100))
+  const show = (votos: number) => (tiny ? message('votes.count', { n: int(votos) }, votos) : pct((votos / r.aptos) * 100))
   const nonVoters = tiny
-    ? message(locale, 'nonVoters.count', { n: int(r.naoVotaram), aptos: int(r.aptos) }, r.naoVotaram)
-    : message(locale, 'nonVoters.share', { share: pct(r.notVotedShare) })
+    ? message('nonVoters.count', { n: int(r.naoVotaram), aptos: int(r.aptos) }, r.naoVotaram)
+    : message('nonVoters.share', { share: pct(r.notVotedShare) })
 
   const [first, second] = r.ranking as [CandidateTally, CandidateTally]
   const top = r.ranking.filter((c) => c.votos === first.votos)
   if (top.length > 1) {
-    const each = tiny ? show(first.votos) : message(locale, 'share.ofElectorate', { share: show(first.votos) })
+    const each = tiny ? show(first.votos) : message('share.ofElectorate', { share: show(first.votos) })
     return top.length === 2
-      ? message(locale, 'tie.two', { lead, a: top[0]!.nome, b: top[1]!.nome, each, nonVoters })
-      : message(locale, 'tie.many', { lead, count: top.length, each, nonVoters })
+      ? message('tie.two', { lead, a: top[0]!.nome, b: top[1]!.nome, each, nonVoters })
+      : message('tie.many', { lead, count: top.length, each, nonVoters })
   }
-  if (!second || second.votos <= 0) return message(locale, 'single', { lead, nonVoters, name: ref(first.nome), value: show(first.votos) })
+  if (!second || second.votos <= 0) return message('single', { lead, nonVoters, name: ref(first.nome), value: show(first.votos) })
 
   const n = measure(r.naoVotaram)
   const against = band(n, measure(first.votos))
   if (against !== 'below') {
-    return message(locale, 'vsLeader', { lead, nonVoters, phrase: message(locale, `phrase.${against}`), name: first.nome, value: show(first.votos) })
+    return message('vsLeader', { lead, nonVoters, phrase: message(`phrase.${against}`), name: first.nome, value: show(first.votos) })
   }
   const runners = r.ranking.filter((c) => c.votos === second.votos)
   const rel = band(n, measure(second.votos))
   const who =
     runners.length === 1
       ? ref(second.nome)
-      : message(locale, 'runnerUp.tied', { count: message(locale, 'numberWords').split('|')[runners.length] ?? runners.length, names: names.format(runners.map((c) => c.nome)) })
-  const role = (rel === 'above' || rel === 'below') && runners.length === 1 ? message(locale, 'runnerUp.role') : ''
-  return message(locale, 'vsRunnerUp', { lead, nonVoters, phrase: message(locale, `phrase.${rel}`), who, role, value: show(second.votos) })
+      : message('runnerUp.tied', { count: message('numberWords').split('|')[runners.length] ?? runners.length, names: names.format(runners.map((c) => c.nome)) })
+  const role = (rel === 'above' || rel === 'below') && runners.length === 1 ? message('runnerUp.role') : ''
+  return message('vsRunnerUp', { lead, nonVoters, phrase: message(`phrase.${rel}`), who, role, value: show(second.votos) })
 }

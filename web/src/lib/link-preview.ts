@@ -12,6 +12,7 @@ import type { CityResult } from '@/shared/city-model'
 import { withBase } from '@/paths'
 import { cityUrl, siteOrigin } from './share-url'
 import { SHARE_CARD_SIZE } from './share-card'
+import { DEFAULT_VOICE, message } from './sentences/catalog'
 import { headline } from './sentences/headline'
 import { shareContent } from './share-model'
 
@@ -63,13 +64,15 @@ export function previewDescription(result: CityResult | undefined, city: Pick<Pr
   const name = displayName(city.nome)
   const label = ufLabel(city.uf)
   const place = `${name} (${label})`
-  const intro = `Resultado de ${place}`
-  const fixtureNote = fixture ? 'Dados fictícios (EXEMPLO). ' : ''
-  if (!result) return `${fixtureNote}${intro}: o arquivo do TSE não traz votação para os ciclos do site.`
-  if (result.aptos <= 0) return `${fixtureNote}${intro}, ${result.ano}, ${result.turno}º turno: sem eleitores aptos registrados.`
-  if (result.validos <= 0) return `${fixtureNote}${intro}, ${result.ano}, ${result.turno}º turno: nenhum voto válido; ${result.notVotedPct}% do eleitorado não votou.`
+  const say = (key: Parameters<typeof message>[1], params: Record<string, string | number> = {}) => message(DEFAULT_VOICE, key, params)
+  const note = fixture ? say('preview.fixture') : ''
+  const intro = say('preview.intro', { place })
+  if (!result) return say('preview.noResult', { note, intro })
+  const cycle = { note, intro, ano: result.ano, turno: result.turno }
+  if (result.aptos <= 0) return say('preview.noElectorate', cycle)
+  if (result.validos <= 0) return say('preview.noValidVotes', { ...cycle, notVoted: result.notVotedPct })
   const leader = result.voted[0]
-  return `${fixtureNote}${intro}, ${result.ano}, ${result.turno}º turno: votaram ${result.votedPct}% do eleitorado e ${leader?.label} recebeu ${leader?.pct}% dos votos válidos.`
+  return say('preview.default', { ...cycle, voted: result.votedPct, leader: leader?.label ?? '', pct: leader?.pct ?? 0 })
 }
 
 export interface PreviewHeadOptions {

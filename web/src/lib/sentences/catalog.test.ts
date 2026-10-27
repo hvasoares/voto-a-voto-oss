@@ -1,26 +1,43 @@
 import { describe, expect, it } from 'vitest'
 import { buildCityResult } from '@/shared/city-model'
-import { CATALOG, KEYS, message, pluralCategory, template, type Key } from './catalog'
+import { CATALOG, KEYS, STANDARD_ONLY_KEYS, message, pluralCategory, template, type Key, type Voice } from './catalog'
 import { headline } from './headline'
 
 const slots = (tpl: string) => [...tpl.matchAll(/\{(\w+)\}/g)].map((m) => m[1]!).sort()
+const std = (locale: Voice['locale'] = 'pt-BR'): Voice => ({ locale, register: 'standard' })
+const plain = (locale: Voice['locale'] = 'pt-BR'): Voice => ({ locale, register: 'plain' })
 
-describe('catalog', () => {
-  it('Portuguese has every key of the one list, and nothing else', () => {
-    expect(Object.keys(CATALOG['pt-BR']).sort()).toEqual([...KEYS].sort())
+describe('catalog keys', () => {
+  it('standard Portuguese has every key of the one list, and nothing else', () => {
+    expect(Object.keys(CATALOG['pt-BR'].standard).sort()).toEqual([...KEYS].sort())
+  })
+  it('plain Portuguese has every key except the standard-only keys, and nothing else', () => {
+    expect(Object.keys(CATALOG['pt-BR'].plain).sort()).toEqual(KEYS.filter((k) => !(STANDARD_ONLY_KEYS as readonly string[]).includes(k)).sort())
   })
   it('the keys are listed once', () => {
     expect(new Set(KEYS).size).toBe(KEYS.length)
   })
-  it.each(['en', 'es'] as const)('%s only translates listed keys, with the same slots as Portuguese', (locale) => {
-    for (const [key, tpl] of Object.entries(CATALOG[locale]) as [Key, string][]) {
-      expect(KEYS).toContain(key)
-      expect(slots(tpl)).toEqual(slots(CATALOG['pt-BR'][key]))
-    }
+  it.each(['en', 'es'] as const)('%s only translates listed keys, with the same slots as standard Portuguese', (locale) => {
+    for (const register of ['standard', 'plain'] as const)
+      for (const [key, tpl] of Object.entries(CATALOG[locale][register]) as [Key, string][]) {
+        expect(KEYS).toContain(key)
+        expect(slots(tpl)).toEqual(slots(CATALOG['pt-BR'].standard[key]!))
+      }
   })
+  it('plain Portuguese uses the same slots as the standard template of the same key', () => {
+    for (const [key, tpl] of Object.entries(CATALOG['pt-BR'].plain) as [Key, string][]) expect(slots(tpl), key).toEqual(slots(CATALOG['pt-BR'].standard[key]!))
+  })
+})
+
+describe('fallback', () => {
   it('a missing translation falls back to Portuguese without an error', () => {
-    expect(template('en', 'single')).toBe(CATALOG['pt-BR'].single)
-    expect(template('en', 'noData')).toBe('No data for this cycle.')
+    expect(template(std('en'), 'single')).toBe(CATALOG['pt-BR'].standard.single)
+    expect(template(std('en'), 'noData')).toBe('No data for this cycle.')
+  })
+  it('a missing plain version falls back to the locale standard, then to Portuguese', () => {
+    expect(template(plain('en'), 'noData')).toBe('No data for this cycle.')
+    expect(template(plain('en'), 'single')).toBe(CATALOG['pt-BR'].plain.single)
+    expect(template(plain('es'), 'register.plain')).toBe('Linguagem simples')
   })
   it('a whole sentence in an unfinished locale reads in Portuguese where it must and never throws', () => {
     const r = buildCityResult({
@@ -30,15 +47,19 @@ describe('catalog', () => {
     })
     expect(headline(r, { cityName: 'X', locale: 'en' })).toBe('In X, in round 1 of 2026, 10% do eleitorado não votou, menos do que C2, o segundo mais votado, recebeu (40%).')
     expect(headline(undefined, { cityName: 'X', locale: 'es' })).toBe('Sin datos en este ciclo.')
+    expect(() => headline(r, { cityName: 'X', locale: 'en', register: 'plain' })).not.toThrow()
   })
+})
+
+describe('plurals and slots', () => {
   it('zero is "other" in the plural pairs, one is "one"', () => {
     expect(pluralCategory('pt-BR', 1)).toBe('one')
     expect(pluralCategory('pt-BR', 0)).toBe('other')
     expect(pluralCategory('pt-BR', 2)).toBe('other')
-    expect(message('pt-BR', 'votes.count', { n: 1 }, 1)).toBe('1 voto')
-    expect(message('pt-BR', 'votes.count', { n: 0 }, 0)).toBe('0 votos')
+    expect(message(std(), 'votes.count', { n: 1 }, 1)).toBe('1 voto')
+    expect(message(std(), 'votes.count', { n: 0 }, 0)).toBe('0 votos')
   })
   it('a slot with no value stays visible', () => {
-    expect(message('pt-BR', 'lead.city', { city: 'X' })).toBe('Em X, no {turno}º turno de {ano}, ')
+    expect(message(std(), 'lead.city', { city: 'X' })).toBe('Em X, no {turno}º turno de {ano}, ')
   })
 })

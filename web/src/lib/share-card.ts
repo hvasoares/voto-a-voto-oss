@@ -212,3 +212,8 @@ export function shareCardSvg(r: PictureResult, o: ShareCardOptions): string {
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${o.width ?? W}" height="${o.height ?? H}" viewBox="0 0 ${W} ${H}" role="img"><title>${esc(o.alt)}</title>${out.join('')}</svg>`
 }
+
+/** `svg` (made by `shareCardSvg`) with another `<title>`: the same drawing, the text alternative of another register. */
+export function withAlt(svg: string, alt: string): string {
+  return svg.replace(/<title>[\s\S]*?<\/title>/, () => `<title>${esc(alt)}</title>`)
+}
