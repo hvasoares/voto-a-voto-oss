@@ -68,15 +68,14 @@ test.describe('city card: fixture route is the frame', () => {
     await expect(page.locator('[data-twin]')).toHaveCount(0)
     expect(errors).toEqual([])
   })
-  test('curiosities (#33): the phone shows a link, the page opens with facts that name their group and cycles, and the card is not inline', async ({ page }) => {
+  test('curiosities (#33): the card is on the city page at 390x844, between the twin line and Compartilhar, with facts that name their group and cycles', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
     await page.goto(`${city}?turno=1`)
     await waitReady(page)
-    await expect(page.locator('.city-curio')).toBeHidden()
-    const link = page.getByRole('link', { name: /Curiosidades da cidade/ })
-    await link.click()
-    await expect(page).toHaveURL(`${city}curiosidades/`)
-    await expect(page.locator('h1')).toHaveText('Cidade Exemplo')
-    const facts = page.locator('.curio__fact')
+    const card = page.locator('.city-curio')
+    await expect(card).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Curiosidades · comparada com cidades parecidas/ })).toBeVisible()
+    const facts = card.locator('.curio__fact')
     expect(await facts.count()).toBeGreaterThan(0)
     expect(await facts.count()).toBeLessThanOrEqual(3)
     for (const text of await facts.allInnerTexts()) {
@@ -84,15 +83,26 @@ test.describe('city card: fixture route is the frame', () => {
       expect(text).toMatch(/Grupo: \d+ cidades · /)
       expect(text).toMatch(/20(18|22|26)/)
     }
-    await expect(page.locator('.curio__note:visible')).toContainText('É uma comparação com cidades do mesmo perfil, não um indício de irregularidade.')
-    await page.getByRole('link', { name: /Voltar ao cartão da cidade/ }).click()
-    await expect(page).toHaveURL(city)
+    await expect(card.locator('.curio__note:visible')).toContainText('É uma comparação com cidades do mesmo perfil, não um indício de irregularidade.')
+    const y = async (selector: string) => (await page.locator(selector).first().boundingBox())!.y
+    expect(await y('[data-city-card]')).toBeLessThan(await y('.city-curio'))
+    expect(await y('[data-twin]')).toBeLessThan(await y('.city-curio'))
+    expect(await y('.city-curio')).toBeLessThan(await y('[data-share]'))
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   })
-  test('curiosities: a city whose group is too small (or measures all equal) has no link, no card and no page', async ({ page }) => {
-    await page.goto(`${base}rj/cidade-exemplo-a/`)
+  test('curiosities: there is no separate page and no link to one', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto(city)
     await expect(page.getByRole('link', { name: /Curiosidades da cidade/ })).toHaveCount(0)
+    await expect(page.locator('a[href*="curiosidades"]')).toHaveCount(0)
+    expect((await page.goto(`${city}curiosidades/`))!.status()).toBe(404)
+  })
+  test('curiosities: a city whose group is too small (or measures all equal) has no card at 390x844', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto(`${base}rj/cidade-exemplo-a/`)
     await expect(page.locator('.city-curio')).toHaveCount(0)
-    expect((await page.goto(`${base}rj/cidade-exemplo-a/curiosidades/`))!.status()).toBe(404)
+    await expect(page.getByText('Curiosidades ·')).toHaveCount(0)
+    await expect(page.getByRole('link', { name: /Curiosidades da cidade/ })).toHaveCount(0)
   })
   test('a city with no earlier cycle says which cycles are missing', async ({ page }) => {
     await page.goto(`${base}mt/boa-esperanca-do-norte/`)

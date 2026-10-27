@@ -10,8 +10,8 @@ function cyclesText(f: Fact, voice: { locale: Locale; register: Register }): str
 
 /**
  * The curiosities card of one city (#33), in both registers: the title, up to three facts (the rank, what it is the rank
- * of, the group size and the cycles compared) and the line that says it is a comparison, not a finding. `id` keeps the
- * card's two uses (inside the city card on desktop, the phone's own screen) apart for a11y labels.
+ * of, the group size and the cycles compared) and the line that says it is a comparison, not a finding. `id` keeps
+ * the heading's a11y label unique on the page.
  */
 export function curiosityCard(facts: readonly Fact[], id: string, locale: Locale = DEFAULT_LOCALE): Raw {
   if (!facts.length) return html``

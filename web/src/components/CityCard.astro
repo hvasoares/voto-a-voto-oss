@@ -12,7 +12,6 @@ import { SHARD_VERSION } from 'virtual:data-shards'
 import { registerBootScript } from '@/lib/sentences/register-store'
 import { loadCityShard, datasetFixture, loadPeersFile, loadCityNames, loadCuriositiesFile } from '@/lib/shard-files'
 import { factsOf } from '@/lib/curiosities'
-import { message } from '@/lib/sentences/catalog'
 import { twinOf } from '@/lib/peers'
 import { cityShardResult } from '@/lib/city-shard'
 import { cityArc } from '@/lib/arcs'
@@ -42,7 +41,7 @@ const name = displayName(city.nome)
 const fixture = await datasetFixture()
 const overseas = city.uf === 'zz'
 const arc = cityArc(shard)
-// Curiosities (#33): up to three rank facts; a city with too few peers has none, and then no card and no link.
+// Curiosities (#33): up to three rank facts; a city with too few peers has none, and then no card.
 const curio = await loadCuriositiesFile()
 const facts = curio && !backdrop ? factsOf(curio, uf, slug) : []
 // The twin (#31): the closest comparable city of another state, from peers.json; none for an overseas post or a city without one.
@@ -90,7 +89,7 @@ const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: T
         >
           {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} role={r ? 'group' : undefined} aria-describedby={r ? headlineId(id) : undefined} set:html={viewFigures(r, { cityName: name, overseas })} />)}
         </div>
-        {/* From 1024 px the card sits under the figures; on a phone it is its own screen (curiosidades/), reached by the link in the nav below. */}
+        {/* Under the figures from 1024 px; on a phone the CSS orders it after the twin line, before Compartilhar. A city with no fact has no card. */}
         {facts.length > 0 && <div class="city-curio" set:html={curiosityCard(facts, 'card')} />}
       </div>
       <div class="city-right">
@@ -106,7 +105,6 @@ const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: T
         <nav class="city-links" aria-label="Mais sobre a cidade">
           <a href={href('/comparar/2022/')}>Comparar com 2022 ›<span class="city-links__sub">Margem e virada desde 2022</span></a>
           <a href={here + 'tres-ciclos/'}>Ver os três ciclos ›<span class="city-links__sub">2018, 2022 e 2026 lado a lado</span></a>
-          {facts.length > 0 && <a class="city-links__curio" href={here + 'curiosidades/'}>{message({ locale: 'pt-BR', register: 'standard' }, 'curio.link')} ›</a>}
           {overseas ? '' : <a href={href(`/${uf}/`)}>Ver o estado ›<span class="city-links__sub">Municípios do estado e mapa</span></a>}
         </nav>
       </div>

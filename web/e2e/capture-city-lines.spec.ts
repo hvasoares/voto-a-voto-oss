@@ -5,8 +5,8 @@ import { base } from './helpers'
 
 /*
  * Gate 2 of the G2 city-card lines (#26, #41, #31, #33): the fixture city at 390x844 (phone frames "2 Cartão da cidade,
- * with the ... line") and at 1440x900 (desktop frame "2 Cartão da cidade (desktop, com as linhas V3)"), plus the phone
- * curiosities screen ("21 Curiosidades da cidade"). Output: web/.captures/city-lines/ (not committed).
+ * with the ... line", and "2 Cartão da cidade, com curiosidades (card na página)") and at 1440x900 (desktop frame
+ * "2 Cartão da cidade (desktop, com as linhas V3)"). Output: web/.captures/city-lines/ (not committed).
  */
 const shoot = async (page: import('@playwright/test').Page, route: string, name: string, full = false, scripted = true) => {
   await page.goto(`${base}${route}`)
@@ -25,10 +25,6 @@ test('capture city lines / phone', async ({ page }) => {
   await shoot(page, 'rj/cidade-exemplo/?turno=1', 'phone')
   // The frames are one 844 px screen; the lines sit lower on this longer page, so the rest of it is captured too.
   await shoot(page, 'rj/cidade-exemplo/?turno=1', 'phone-full', true)
-})
-test('capture city lines / curiosities phone', async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem('voto-a-voto:notice', 'acknowledged'))
-  await shoot(page, 'rj/cidade-exemplo/curiosidades/', 'curiosidades-phone', false, false)
 })
 test('capture city lines / desktop', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('voto-a-voto:notice', 'acknowledged'))

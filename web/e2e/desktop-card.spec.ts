@@ -34,7 +34,7 @@ test.describe('city card: the lines of the V3 frame (#26, #41, #31, #33)', () =>
     expect(curio.x).toBe(card.x)
     await expect(page.locator('.city-curio .curio__fact')).toHaveCount(3)
     await expect(page.locator('.city-curio .curio__note:visible')).toContainText('não um indício de irregularidade')
-    await expect(page.locator('.city-links__curio')).toBeHidden()
+    await expect(page.getByRole('link', { name: /Curiosidades da cidade/ })).toHaveCount(0)
   })
 })
 
