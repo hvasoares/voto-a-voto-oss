@@ -1,5 +1,5 @@
-import { createStore } from '@site/data/store'
-import { diskSource } from '@site/data/node'
+import { createStore } from '@/data/store'
+import { diskSource } from '@/data/node'
 import { dataDir } from './data-dir'
 
 /** Build time only (Node): the states the dataset has, to decide which UF tiles are links. */

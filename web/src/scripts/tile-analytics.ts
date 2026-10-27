@@ -1,4 +1,4 @@
-import { getAnalytics } from '@site/analytics'
+import { getAnalytics } from '@/analytics'
 
 /** One delegated listener on the plain-HTML UF grid. Event: state_tile_tap {uf}. No island, no React. */
 document.querySelector('[data-uf-grid]')?.addEventListener('click', (e) => {

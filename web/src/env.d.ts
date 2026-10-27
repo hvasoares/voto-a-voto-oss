@@ -1,4 +1,5 @@
 /// <reference path="../.astro/types.d.ts" />
+/// <reference types="vite/client" />
 declare module 'virtual:theme.css'
 declare module 'virtual:cdn-importmap' {
   /** JSON of the import map, or '' when nothing comes from a CDN. */

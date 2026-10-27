@@ -2,9 +2,9 @@
  * Everything the sheet needs for ONE view of ONE city, pure: the picture, the text, the address and the file name.
  * Used by the Astro page (build time, pre-rendered) and by the ShareSheet island (browser). No HTML.
  */
-import type { City } from '@site/data'
-import { displayName, ufLabel } from '@site/shared/city-search'
-import type { CityResult } from '@site/shared/city-model'
+import type { City } from '@/data'
+import { displayName, ufLabel } from '@/shared/city-search'
+import type { CityResult } from '@/shared/city-model'
 import { shareCardSvg } from './share-card'
 import { shareText, shortAddress } from './share-text'
 import { cityUrl } from './share-url'

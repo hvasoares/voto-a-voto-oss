@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { noopAnalytics, setAnalytics, type Analytics } from '@site/analytics'
+import { noopAnalytics, setAnalytics, type Analytics } from '@/analytics'
 import ShareActions from './ShareActions'
 import { saveBlob } from '@/lib/share-raster'
 
@@ -26,6 +26,8 @@ afterEach(() => {
   vi.clearAllMocks()
 })
 
+function setup(nav?: Record<string, unknown>, withUser?: true): ReturnType<typeof userEvent.setup>
+function setup(nav: Record<string, unknown> | undefined, withUser: false): undefined
 function setup(nav: Record<string, unknown> = {}, withUser = true) {
   const recorder: Analytics = { pageView() {}, event: (n, p) => void events.push([n, p]) }
   setAnalytics(recorder)

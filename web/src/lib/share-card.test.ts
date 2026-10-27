@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import type { Candidate, Turnout, Vote } from '@site/data'
-import { createNodeStore } from '@site/data/node'
-import { loadCityResult } from '@site/shared/city-figures'
-import { buildCityResult, type CityResult } from '@site/shared/city-model'
-import { dataDir } from './data-dir'
+import type { Candidate, Turnout, Vote } from '@/data'
+import { loadCityResult } from './shard-files'
+import { buildCityResult, type CityResult } from '@/shared/city-model'
 import { shareCardSvg, SHARE_CARD_SIZE, textWidth } from './share-card'
 
 const turnout = (o: Partial<Turnout> = {}): Turnout => ({ ano: 2026, turno: 2, uf: 'rj', cdMunicipio: '1', aptos: 1000, comparecimento: 800, abstencoes: 200, brancos: 20, nulos: 30, anuladosApuSep: 0, validos: 750, ...o })
@@ -200,9 +198,7 @@ describe('shareCardSvg: robustness', () => {
 
 describe('shareCardSvg over the fixture city (the Sketch frame figures)', () => {
   it('draws the numbers of the frame for Cidade Exemplo, round 1 of 2026', async () => {
-    const data = createNodeStore(dataDir())
-    const city = (await data.city('rj', 'cidade-exemplo'))!
-    const r = (await loadCityResult(data, city, 2026, 1))!
+    const r = (await loadCityResult('rj', 'cidade-exemplo', 2026, 1))!
     const t = all(shareCardSvg(r, { cityName: 'Cidade Exemplo', ufLabel: 'RJ', address: 'votoavoto.exemplo.br/rj/cidade-exemplo', fixture: true }))
     for (const s of ['Votaram: 70% do eleitorado', 'Não votaram: 30% do eleitorado', 'Candidato A 52%', 'Candidato B 48%', 'Abstenção 78%', '2026 · 1º turno · RJ', 'votoavoto.exemplo.br/rj/cidade-exemplo']) expect(t, s).toContain(s)
   })

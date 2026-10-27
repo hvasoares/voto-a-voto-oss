@@ -1,4 +1,4 @@
-import { matchPattern, paramNames, specificity } from '@site/routes'
+import { matchPattern, paramNames, specificity } from '@/routes'
 
 /** Every route of the site (site/README.md "Routes"). Pages are ported to Astro one ticket at a time (#50). */
 export const KNOWN_ROUTES = [

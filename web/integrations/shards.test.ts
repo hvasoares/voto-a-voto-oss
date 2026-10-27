@@ -7,7 +7,7 @@
 import { mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
-import { DATA_FILES } from '@site/data'
+import { DATA_FILES } from '@/data'
 import { describe, expect, it } from 'vitest'
 import { dataDir } from '../src/lib/data-dir'
 import { buildShards, byText, datasetFingerprint, datasetFingerprintFromDisk, generateShards, ShardError, type ShardSources } from './shards'
@@ -20,8 +20,7 @@ function sourcesOf(env: Record<string, string | undefined> = {}): ShardSources {
 }
 
 function dataDirOf(env: Record<string, string | undefined>): string {
-  const cwd = process.cwd() // web/ (tests run from the package directory)
-  return env.DATA_DIR ? resolve(cwd, env.DATA_DIR) : resolve(cwd, '../site/fixtures/data')
+  return dataDir(env)
 }
 
 const buildFixture = () => buildShards(sourcesOf())

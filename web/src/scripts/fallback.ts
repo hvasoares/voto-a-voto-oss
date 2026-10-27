@@ -1,4 +1,4 @@
-import { normalizeBase, stripBase } from '@site/paths'
+import { normalizeBase, stripBase } from '@/paths'
 import { classifyPath } from '@/lib/fallback'
 import { loadSearchCities } from '@/lib/search-data'
 

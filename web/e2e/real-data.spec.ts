@@ -5,7 +5,9 @@ import { activateSearch, allowedOrigins, base, collectRequests, violations } fro
 
 /*
  * Real-data checks. Run with `npm run test:real` (builds with DATA_DIR=../data, relative to web/). Skipped when ../data is missing.
- * Tile hrefs are asserted as correct PATHS only: state pages are not ported yet (#50), so they do not exist in this build.
+ * The 27 state tiles are asserted as correct PATHS only (the real state pages carry 5,000+ cities each); the home
+ * is what this suite exercises. City routes are pre-rendered since #49/#50: the card, three cycles and share page
+ * of every real city exist without any /data/ request.
  */
 test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
 

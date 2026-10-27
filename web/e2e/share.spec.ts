@@ -2,9 +2,9 @@ import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
 
 /*
- * Share sheet (#7) at 390x844 over the fixture dataset, on the demo route /compartilhar/ (ticket #50 wires the real
- * /:uf/:slug/compartilhar/ route). navigator.share/canShare are stubbed: a real system sheet cannot be driven here.
- * The demo view is fixed to 2026 · 1º turno (the Sketch frame's round); #50 adds the ?ciclo/?turno tests.
+ * Share sheet (#7) at 390x844 over the fixture dataset. The demo route /compartilhar/ carries the sheet contract;
+ * #50 wired the real /:uf/:slug/compartilhar/ route (the city card as backdrop), whose ?ciclo/?turno tests are the
+ * "real route" describes below. navigator.share/canShare are stubbed: a real system sheet cannot be driven here.
  */
 const path = `${base}compartilhar/`
 const URL_TEXT = 'https://votoavoto.exemplo.br/'
@@ -19,7 +19,7 @@ interface Recorded {
   png?: { width: number; height: number; signature: string }
 }
 
-async function open(page: Page, mode: Mode) {
+async function openRaw(page: Page, mode: Mode, route = path) {
   await page.addInitScript((m) => {
     const w = window as unknown as { __shares: unknown[] }
     w.__shares = []
@@ -42,8 +42,13 @@ async function open(page: Page, mode: Mode) {
       },
     })
   }, mode)
-  await page.goto(path)
+  await page.goto(route)
   await page.waitForFunction(() => { const i = document.querySelector('astro-island'); return !!i && !i.hasAttribute('ssr') })
+}
+
+/** openRaw plus the PNG-made signal; a view without data has no picture and never gets ready. */
+async function open(page: Page, mode: Mode, route = path) {
+  await openRaw(page, mode, route)
   await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
 }
 const shares = (page: Page) => page.evaluate(() => (window as unknown as { __shares: Recorded[] }).__shares)
@@ -164,7 +169,47 @@ test.describe('share: layout and requests', () => {
     const { sw, iw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: window.innerWidth }))
     expect(sw).toBeLessThanOrEqual(iw)
     for (const sel of ['[data-act="share"]', '[data-act="download"]', '[data-close]']) expect((await page.locator(sel).boundingBox())!.height).toBeGreaterThanOrEqual(44)
-    expect(violations(seen, new URL(baseURL!).origin)).toEqual([])
+    expect(violations(seen, [new URL(baseURL!).origin])).toEqual([])
+  })
+})
+
+test.describe('share: the real route (the city card as backdrop, #50)', () => {
+  const real = `${base}rj/cidade-exemplo/compartilhar/`
+  const views = [
+    ['?ciclo=2018&turno=2', '2018 · 2º turno', 'voto-a-voto-rj-cidade-exemplo-2018-turno-2.png'],
+    ['?ciclo=2022&turno=1', '2022 · 1º turno', 'voto-a-voto-rj-cidade-exemplo-2022-turno-1.png'],
+  ] as const
+  for (const [query, label, filename] of views) {
+    test(`${query} makes the island re-derive the card view fetching ONLY the own city shard`, async ({ page }) => {
+      const seen = collectRequests(page)
+      await open(page, 'files', real + query)
+      await page.waitForLoadState('networkidle')
+      const t = await page.locator('[data-share-picture]').textContent()
+      expect(t).toContain(label)
+      await expect(page.locator('[data-share-sheet]')).toHaveAttribute('data-filename', filename)
+      const data = seen.map((r) => new URL(r.url).pathname).filter((p) => p.includes('/data/'))
+      expect(data).toEqual([expect.stringMatching(/\/data\/v[0-9a-f]+\/city\/rj\/cidade-exemplo\.json$/)])
+      await page.getByRole('button', { name: 'Compartilhar' }).click()
+      await expect.poll(async () => (await shares(page))[0]?.text).toContain(`${URL_TEXT}rj/cidade-exemplo/`)
+    })
+  }
+
+  test('without a query the default view needs no /data/ request at all', async ({ page }) => {
+    const seen = collectRequests(page)
+    await open(page, 'files', real)
+    await page.waitForLoadState('networkidle')
+    expect(seen.map((r) => new URL(r.url).pathname).filter((p) => p.includes('/data/'))).toEqual([])
+  })
+
+  test('"Fechar" returns to the city card, which is the dimmed backdrop', async ({ page }) => {
+    await open(page, 'files', real)
+    await expect(page.getByRole('link', { name: 'Fechar' })).toHaveAttribute('href', `${base}rj/cidade-exemplo/`)
+    await expect(page.locator('[data-share-backdrop] [data-city-card]')).toBeVisible()
+  })
+
+  test('an address of another card view without data (Boa Esperança do Norte) says so', async ({ page }) => {
+    await openRaw(page, 'none', `${base}mt/boa-esperanca-do-norte/compartilhar/?ciclo=2022&turno=1`)
+    await expect(page.locator('[data-share-sheet] [data-nodata]')).toHaveText('Sem dados nesse ciclo.')
   })
 })
 

@@ -22,8 +22,8 @@ import {
   type City,
   type Turno,
   type Turnout,
-} from '@site/data'
-import { parseCandidates, parseCities, parseTurnout, parseVotes } from '@site/data/csv'
+} from '@/data'
+import { parseCandidates, parseCities, parseTurnout, parseVotes } from '@/data/csv'
 import { dataDir } from '../src/lib/data-dir'
 import { datasetFingerprint, type ShardSources } from './shards-fingerprint'
 
