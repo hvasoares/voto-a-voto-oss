@@ -35,7 +35,9 @@ test.describe('home: content', () => {
     ] as const) {
       await expect(page.getByRole('link', { name: new RegExp(label) })).toHaveAttribute('href', base + href)
     }
-    await expect(page.getByRole('link', { name: /Sobre os dados/ })).toHaveAttribute('href', `${base}sobre-os-dados/`)
+    // Scoped to the page's own footer: on a first visit the consent banner (#20) also carries a
+    // "Detalhes em Sobre os dados" link, and the page-wide locator would be ambiguous.
+    await expect(page.locator('footer').getByRole('link', { name: 'Sobre os dados' })).toHaveAttribute('href', `${base}sobre-os-dados/`)
   })
 
   test('does not scroll sideways', async ({ page }) => {
