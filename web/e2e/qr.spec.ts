@@ -1,5 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
+// the same generator the build rasterises with, so the pin adapts to the built base path
+import { glyphSvg, qrGlyph } from '../src/lib/qr-code'
 
 /*
  * Mostrar QR screen (ticket #9) at 390x844 over the fixture dataset — the demo route /qr/ and the real
@@ -9,8 +11,10 @@ import { base, collectRequests, violations } from './helpers'
  * checked.
  */
 const path = `${base}qr/`
-const URL_ = 'https://votoavoto.exemplo.br/rj/cidade-exemplo/'
-const ADDRESS = 'votoavoto.exemplo.br/rj/cidade-exemplo'
+const ORIGIN = 'https://votoavoto.exemplo.br'
+// Base-aware: under the project-pages build (SITE_BASE=/voto-a-voto-oss/) the QR encodes the city path behind the base.
+const URL_ = `${ORIGIN}${base}rj/cidade-exemplo/`
+const ADDRESS = `${ORIGIN.slice('https://'.length)}${base.replace(/\/$/, '')}/rj/cidade-exemplo`
 
 function watch(page: Page) {
   const errors: string[] = []
@@ -34,7 +38,8 @@ test.describe('qr: the screen', () => {
       return { label: s.getAttribute('aria-label'), viewBox: s.getAttribute('viewBox'), dark: (path.getAttribute('d') ?? '').match(/M/g)?.length }
     })
     expect(qr.label).toBe(`QR de ${ADDRESS}`)
-    expect(qr.viewBox).toBe('0 0 35 35') // 33 modules + 1 module of drawing quiet zone (the card padding adds up to the ISO ~4)
+    const expected = glyphSvg(qrGlyph(URL_), { label: `QR de ${ADDRESS}`, margin: 1, paper: '#ffffff' })
+    expect(qr.viewBox).toBe(expected.match(/viewBox="([^"]*)"/)![1]) // one drawing quiet zone; with base the URL is longer, so the glyph grows
     expect(qr.dark).toBeGreaterThan(200) // version 4, ~30% dark modules: the drawing is there, not one blank rect
     expect(await page.locator('[data-address]').textContent()).toBe(ADDRESS)
     await expect(page.locator('[data-qr]')).toHaveAttribute('data-url', URL_)

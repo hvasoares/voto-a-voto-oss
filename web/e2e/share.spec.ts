@@ -7,7 +7,8 @@ import { base, collectRequests, violations } from './helpers'
  * "real route" describes below. navigator.share/canShare are stubbed: a real system sheet cannot be driven here.
  */
 const path = `${base}compartilhar/`
-const URL_TEXT = 'https://votoavoto.exemplo.br/'
+// Base-aware: under the project-pages build the shared URL carries the base path (cityUrl withBase).
+const URL_TEXT = `https://votoavoto.exemplo.br${base}`
 const FILENAME = 'voto-a-voto-rj-cidade-exemplo-2026-turno-1.png'
 const SIG = '137,80,78,71,13,10,26,10'
 
@@ -80,9 +81,11 @@ test.describe('share: the system share sheet', () => {
   test('the picture has no QR and no image element, only the short address', async ({ page }) => {
     await open(page, 'files')
     await expect(page.locator('[data-share-picture] svg image, [data-share-picture] svg foreignObject')).toHaveCount(0)
-    const t = await page.locator('[data-share-picture] svg').innerHTML()
-    expect(t).toContain('votoavoto.exemplo.br/rj/cidade-exemplo')
-    expect(t).not.toContain('https://')
+    const html = await page.locator('[data-share-picture] svg').innerHTML()
+    // the address may wrap to two lines with a longer base path: compare all text runs joined
+    const runs = await page.locator('[data-share-picture] svg text').evaluateAll((els) => els.map((e) => e.textContent ?? '').join(''))
+    expect(runs).toContain(`votoavoto.exemplo.br${base.replace(/\/$/, '')}/rj/cidade-exemplo`)
+    expect(html).not.toContain('https://')
   })
 
   test('shares only the text when files cannot be shared', async ({ page }) => {

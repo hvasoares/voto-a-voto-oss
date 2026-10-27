@@ -100,7 +100,7 @@ test.describe('mapa/rj: content', () => {
     await page.getByRole('link', { name: 'Mapa', exact: true }).click()
     await expect(page.locator('[data-slot="mapa-municipios"]')).toBeVisible()
     await page.waitForLoadState('networkidle')
-    expect(seen).toEqual([{ path: '/geo/municipios-rj.json', method: 'GET' }])
+    expect(seen).toEqual([{ path: `${base}geo/municipios-rj.json`, method: 'GET' }])
   })
 
   test('the page works without JavaScript: rows stay plain links to the city pages', async ({ page, browser }) => {

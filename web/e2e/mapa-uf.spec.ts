@@ -89,6 +89,6 @@ test.describe('the state page hosts the map island (the #4/#50 placeholder fille
     await page.getByRole('link', { name: 'Mapa', exact: true }).click()
     await expect(page.locator('[data-slot="mapa-municipios"]')).toBeVisible()
     await page.waitForLoadState('networkidle')
-    expect(seen).toEqual([{ path: '/geo/municipios-rj.json', method: 'GET' }])
+    expect(seen).toEqual([{ path: `${base}geo/municipios-rj.json`, method: 'GET' }])
   })
 })

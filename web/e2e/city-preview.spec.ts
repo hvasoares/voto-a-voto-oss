@@ -59,7 +59,7 @@ test.describe('city page head: the preview tags', () => {
       const promised = await meta(page, 'meta[property="og:image"]')
       // the tag is absolute at the built origin; the served file is the same path on this server
       const response = await page.request.get(`${new URL(promised).pathname}`)
-      expect(new URL(promised).pathname, route).toBe(`/${file}`)
+      expect(new URL(promised).pathname, route).toBe(`${base}${file}`)
       expect(response.ok(), route).toBe(true)
       expect(response.headers()['content-type'], route).toBe('image/png')
       expect((await response.body()).length, route).toBeGreaterThan(5_000)
