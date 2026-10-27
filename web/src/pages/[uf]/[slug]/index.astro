@@ -4,11 +4,20 @@
  * the card replaced it in #50). The body is the shared CityCard component; the script switches panels client-side.
  * Pre-rendered with all six cycle/round panels in the HTML (no scripts needed to have every cycle) straight from the
  * city's own shard; the page as a whole loads nothing — no /data/ request at all.
+ * Its head describes the city's default view statically (ticket #8): the document title, the meta description and
+ * the og/twitter tags — og:image is the build-rasterised share picture (integrations/preview-images.ts), so the
+ * tags carry static strings and no JS. link-preview.ts builds every string from the city's own shard; a city the
+ * dataset has no result for still gets its title and description, just no og:image.
  */
 import Base from '@/layouts/Base.astro'
 import CityCard from '@/components/CityCard.astro'
 import { loadCityRoutes } from '@/lib/city-routes'
-import { displayName, ufLabel } from '@/shared/city-search'
+import { datasetFixture, loadCityShard } from '@/lib/shard-files'
+import { cityShardResult } from '@/lib/city-shard'
+import { defaultView } from '@/slots/city/city-view'
+import { normalizeBase } from '@/paths'
+import { siteOrigin } from '@/lib/share-url'
+import { previewHead } from '@/lib/link-preview'
 
 export async function getStaticPaths() {
   return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug }, props: { nome: city.nome } }))
@@ -16,9 +25,17 @@ export async function getStaticPaths() {
 
 const { uf, slug } = Astro.params
 const { nome } = Astro.props as { nome: string }
-const name = displayName(nome)
+
+// The head describes the card's default view — the same view the /compartilhar/ route pre-prints and
+// the preview integration rasters, so the tags, the picture and the sheet can never disagree.
+const base = normalizeBase(import.meta.env.BASE_URL)
+const shard = await loadCityShard(uf!, slug!)
+const fixture = await datasetFixture()
+const view = shard && defaultView((ano, turno) => !!cityShardResult(shard, ano, turno))
+const result = shard && view ? cityShardResult(shard, view.ano, view.turno) : undefined
+const head = previewHead({ uf: uf!, slug: slug!, nome }, result, { origin: siteOrigin(), base, fixture })
 ---
-<Base title={`${name} · ${ufLabel(uf!)} · Voto a Voto`}>
+<Base title={head.title} description={head.description} preview={head}>
   <CityCard uf={uf!} slug={slug!}>
     <script>
       import '@/scripts/city-card'
