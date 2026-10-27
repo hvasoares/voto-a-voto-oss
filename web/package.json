@@ -48,6 +48,8 @@
     "check:margin": "tsx scripts/margin-check.ts",
     "check:curiosities": "tsx scripts/curiosities-check.ts",
     "check:shards:real": "DATA_DIR=../data tsx scripts/shard-check.ts",
+    "check:facts": "tsx scripts/facts-check.ts",
+    "check:facts:real": "DATA_DIR=../data tsx scripts/facts-check.ts",
     "check:tse-live": "DATA_DIR=../data tsx scripts/verify-tse-live.ts",
     "test:e2e": "playwright test --project=phone --project=desktop",
     "test:real": "DATA_DIR=../data E2E_PORT=4176 playwright test --project=real",
