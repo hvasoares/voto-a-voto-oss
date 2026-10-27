@@ -46,7 +46,8 @@ make data                      # all cycles; downloads only what is missing or c
 make data CYCLES=2026          # only fetch 2026 (same as `make data-2026`); the other cycles must already be cached
 make data EXTRA=--offline      # no network at all; fails if something is not in the cache
 make data EXTRA=--allow-partial  # accept 2026 cities the TSE has not marked final
-make data-check                # offline validation of data/
+make data-check                # offline validation of data/ (and of data/geo/, the UF outlines)
+make data-outlines             # only the 27 UF outlines (IBGE malhas, cached in .cache/ibge) -> data/geo/uf-outlines.json + manifest.json (#53); `make data` runs it too
 make test
 ```
 

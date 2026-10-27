@@ -74,7 +74,7 @@ store), `analytics`, `paths`, `routes`, `slots/home/uf-grid` + `search-ui`, `slo
 | `npm test` | vitest: shards (builder + data check), pure logic, theme mapping, island behaviour in jsdom |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run check:shards` | shard data check + sizes (fixture dataset); `check:shards:real` for the real `../data` |
-| `npm run test:e2e` | builds, serves on E2E_PORT (default 4176) and runs Playwright at 390x844 |
+| `npm run test:e2e` | builds, serves on E2E_PORT (default 4176) and runs Playwright: project `phone` (390x844) and project `desktop` (1440x900, each spec resizes for its 390/768 checks) |
 | `npm run test:real` | same against the real dataset (`DATA_DIR=../data`); skipped when missing |
 | `npm run capture` | writes `.captures/home/default.png` (fixture state, 390x844) for the screenshot review |
 
@@ -115,6 +115,21 @@ default `fixtures/data` (committed fixtures), real data `DATA_DIR=../data`. `OUT
 - **Tests**: vitest for logic and the island (jsdom); Playwright projects `phone` (fixture, includes `network.spec.ts` allow-list, `fallback.spec.ts`, no-JS case), `real`
   (real data, shard paths), `capture` (screenshot for review). Baselines are not stored. Screenshot review: `docs/screenshot-review-protocol.md`, reviewer in a fresh context.
 - **Network rule**: every request must be a GET to the site origin; allowed extra origins are in `e2e/helpers.ts` (`ANALYTICS_ORIGINS`, and the approved CDN origins in production mode only).
+
+## Desktop (G10, tickets #51 to #57)
+
+One responsive layout from 390 px to a 720 px content column (1200 px on Home), centered above 1440 px: breakpoints at 768 and 1024 px. Same pages and URLs as on the phone.
+
+- **Shell** (`components/TopBar.astro`, in `layouts/Base.astro`): from 1024 px a slim top bar (wordmark, city search, three links) replaces each page's own header. The search field is plain
+  pre-rendered HTML; `scripts/desktop-shell.ts` (loaded by a 100-byte inline stub behind `matchMedia('(min-width: 1024px)')`, emitted as `_astro/desktop-shell.js` by
+  `integrations/desktop-shell.ts`) mounts the existing `CitySearch` into it on first focus and binds "/" to the city search. A phone never requests either file.
+- **Phone first load stays unchanged** (the rule of the whole milestone): desktop-only things are hidden by CSS and, when they would weigh the HTML, delivered as a **fragment document in a
+  lazy `<iframe>`** (`layouts/FragmentDoc.astro`, `pages/fragmentos/*`): a lazy iframe that is not drawn is never requested. Used by the Home SVG map (`mapa-uf`) and the desktop Mapa por estado
+  (`mapa-por-estado/margem`, `virada`); their hover/keyboard script is inline in the fragment. They are `noindex` and linked from nowhere.
+- **UF outlines**: `data/geo/uf-outlines.json` (`make data` / `make data-outlines`, checked by `make data-check`), projected by `src/lib/uf-map.ts`, drawn by `components/UfMap.astro`.
+- `client:slot` (`integrations/slot-directive.js`): lazy island for a map slot, in view from 1024 px up, on first interaction below it (Estado municipality map).
+- Measure: `npx tsx scripts/measure.ts <dist> --path /brasil/ --size 1440x900` (exits when done). Tests: Playwright project `desktop` (`e2e/desktop-*.spec.ts`, 1440x900, each spec resizes for 390/768); screenshot
+  review notes in `docs/checkpoints/issue-51.md` to `issue-57.md` (capture: `CAPTURE=home npx playwright test --project=capture capture-desktop`).
 
 ## CDN (production build only)
 

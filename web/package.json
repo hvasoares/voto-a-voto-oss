@@ -47,7 +47,7 @@
     "check:peers": "tsx scripts/peers-check.ts",
     "check:shards:real": "DATA_DIR=../data tsx scripts/shard-check.ts",
     "check:tse-live": "DATA_DIR=../data tsx scripts/verify-tse-live.ts",
-    "test:e2e": "playwright test --project=phone",
+    "test:e2e": "playwright test --project=phone --project=desktop",
     "test:real": "DATA_DIR=../data E2E_PORT=4176 playwright test --project=real",
     "capture": "playwright test --project=capture",
     "build:production": "BUILD_TARGET=production OUT_DIR=dist-production astro build",

@@ -24,7 +24,9 @@ test.describe('without JavaScript', () => {
   test.use({ javaScriptEnabled: false })
   test('the map works: a state link opens the state page', async ({ page }) => {
     await page.goto(base)
-    await mapFrame(page).getByRole('link', { name: /RJ · Rio de Janeiro/ }).click()
-    await expect(page).toHaveURL(`${base}rj/`)
+    // The click goes where the state's label is (inside its shape; the centre of a link's bounding box may lie over a neighbour).
+    const box = (await mapFrame(page).locator('a[data-map-uf="mt"] text').boundingBox())!
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+    await expect(page).toHaveURL(`${base}mt/`)
   })
 })

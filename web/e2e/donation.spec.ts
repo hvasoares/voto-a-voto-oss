@@ -14,7 +14,8 @@ const ADDRESS = (process.env.PUBLIC_DONATION_URL ?? '').trim()
 const pages = (dir = DIST): string[] =>
   readdirSync(dir).flatMap((name) => {
     const path = join(dir, name)
-    if (statSync(path).isDirectory()) return name === '_astro' || name === 'data' || name === 'geo' || name === 'preview' ? [] : pages(path)
+    // `fragmentos`: the desktop fragment documents (iframes, no footer of their own: G10)
+    if (statSync(path).isDirectory()) return name === '_astro' || name === 'data' || name === 'geo' || name === 'preview' || name === 'fragmentos' ? [] : pages(path)
     return name.endsWith('.html') ? [path] : []
   })
 
