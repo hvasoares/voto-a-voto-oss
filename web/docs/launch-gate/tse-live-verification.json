@@ -1,0 +1,317 @@
+{
+  "ranAt": "2026-10-27T06:17:50.906Z",
+  "dataDir": "/Users/hvasoares/dev/voto-a-voto/.claude/worktrees/agent-a2bf15549ab7d3540/data",
+  "tseBase": "https://resultados.tse.jus.br/oficial",
+  "figuresVerified": 44,
+  "mismatches": [],
+  "figures": [
+    {
+      "figure": "nacional 1º turno: votos válidos",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/br/br-c0001-e006257-u.jws | data/manifest.json national_reference 2026-1 .validos | soma de data/turnout.csv",
+      "expected": "119300788",
+      "live": "119300788",
+      "match": true
+    },
+    {
+      "figure": "nacional 1º turno: comparecimento",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/br/br-c0001-e006257-u.jws | data/manifest.json national_reference 2026-1 .comparecimento | soma de data/turnout.csv",
+      "expected": "125275835",
+      "live": "125275835",
+      "match": true
+    },
+    {
+      "figure": "nacional 1º turno: votos de Lula (13)",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/br/br-c0001-e006257-u.jws | data/manifest.json national_reference 2026-1 .candidates.13 | soma de data/votes.csv",
+      "expected": "53879538",
+      "live": "53879538",
+      "match": true
+    },
+    {
+      "figure": "nacional 1º turno: votos de Flavio Bolsonaro (22)",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/br/br-c0001-e006257-u.jws | data/manifest.json national_reference 2026-1 .candidates.22 | soma de data/votes.csv",
+      "expected": "56104503",
+      "live": "56104503",
+      "match": true
+    },
+    {
+      "figure": "nacional 2º turno: votos válidos",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/br/br-c0001-e006258-u.jws | data/manifest.json national_reference 2026-2 .validos | soma de data/turnout.csv",
+      "expected": "124082273",
+      "live": "124082273",
+      "match": true
+    },
+    {
+      "figure": "nacional 2º turno: comparecimento",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/br/br-c0001-e006258-u.jws | data/manifest.json national_reference 2026-2 .comparecimento | soma de data/turnout.csv",
+      "expected": "128236074",
+      "live": "128236074",
+      "match": true
+    },
+    {
+      "figure": "nacional 2º turno: votos de Lula (13)",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/br/br-c0001-e006258-u.jws | data/manifest.json national_reference 2026-2 .candidates.13 | soma de data/votes.csv",
+      "expected": "64256232",
+      "live": "64256232",
+      "match": true
+    },
+    {
+      "figure": "nacional 2º turno: votos de Flavio Bolsonaro (22)",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/br/br-c0001-e006258-u.jws | data/manifest.json national_reference 2026-2 .candidates.22 | soma de data/votes.csv",
+      "expected": "59826041",
+      "live": "59826041",
+      "match": true
+    },
+    {
+      "figure": "SALVADOR/ba 2º turno: votos válidos",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/ba/ba38490-c0001-e006258-u.jws | data/turnout.csv (turno 2, 38490)",
+      "expected": "1575824",
+      "live": "1575824",
+      "match": true
+    },
+    {
+      "figure": "SALVADOR/ba 2º turno: comparecimento",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/ba/ba38490-c0001-e006258-u.jws | data/turnout.csv (turno 2, 38490)",
+      "expected": "1647069",
+      "live": "1647069",
+      "match": true
+    },
+    {
+      "figure": "SALVADOR/ba 2º turno: votos de Lula",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/ba/ba38490-c0001-e006258-u.jws | data/votes.csv (turno 2, 38490, candidato 13)",
+      "expected": "1154072",
+      "live": "1154072",
+      "match": true
+    },
+    {
+      "figure": "SALVADOR/ba 2º turno: votos de Flavio Bolsonaro",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/ba/ba38490-c0001-e006258-u.jws | data/votes.csv (turno 2, 38490, candidato 22)",
+      "expected": "421752",
+      "live": "421752",
+      "match": true
+    },
+    {
+      "figure": "BRASÍLIA/df 2º turno: votos válidos",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/df/df97012-c0001-e006258-u.jws | data/turnout.csv (turno 2, 97012)",
+      "expected": "1804766",
+      "live": "1804766",
+      "match": true
+    },
+    {
+      "figure": "BRASÍLIA/df 2º turno: comparecimento",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/df/df97012-c0001-e006258-u.jws | data/turnout.csv (turno 2, 97012)",
+      "expected": "1868280",
+      "live": "1868280",
+      "match": true
+    },
+    {
+      "figure": "BRASÍLIA/df 2º turno: votos de Lula",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/df/df97012-c0001-e006258-u.jws | data/votes.csv (turno 2, 97012, candidato 13)",
+      "expected": "825224",
+      "live": "825224",
+      "match": true
+    },
+    {
+      "figure": "BRASÍLIA/df 2º turno: votos de Flavio Bolsonaro",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/df/df97012-c0001-e006258-u.jws | data/votes.csv (turno 2, 97012, candidato 22)",
+      "expected": "979542",
+      "live": "979542",
+      "match": true
+    },
+    {
+      "figure": "ITABIRITO/mg 2º turno: votos válidos",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/mg/mg46370-c0001-e006258-u.jws | data/turnout.csv (turno 2, 46370)",
+      "expected": "34159",
+      "live": "34159",
+      "match": true
+    },
+    {
+      "figure": "ITABIRITO/mg 2º turno: comparecimento",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/mg/mg46370-c0001-e006258-u.jws | data/turnout.csv (turno 2, 46370)",
+      "expected": "35891",
+      "live": "35891",
+      "match": true
+    },
+    {
+      "figure": "ITABIRITO/mg 2º turno: votos de Lula",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/mg/mg46370-c0001-e006258-u.jws | data/votes.csv (turno 2, 46370, candidato 13)",
+      "expected": "17929",
+      "live": "17929",
+      "match": true
+    },
+    {
+      "figure": "ITABIRITO/mg 2º turno: votos de Flavio Bolsonaro",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/mg/mg46370-c0001-e006258-u.jws | data/votes.csv (turno 2, 46370, candidato 22)",
+      "expected": "16230",
+      "live": "16230",
+      "match": true
+    },
+    {
+      "figure": "MARQUINHO/pr 1º turno: votos válidos",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/pr/pr75485-c0001-e006257-u.jws | data/turnout.csv (turno 1, 75485)",
+      "expected": "2970",
+      "live": "2970",
+      "match": true
+    },
+    {
+      "figure": "MARQUINHO/pr 1º turno: comparecimento",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/pr/pr75485-c0001-e006257-u.jws | data/turnout.csv (turno 1, 75485)",
+      "expected": "3071",
+      "live": "3071",
+      "match": true
+    },
+    {
+      "figure": "MARQUINHO/pr 1º turno: votos de Lula",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/pr/pr75485-c0001-e006257-u.jws | data/votes.csv (turno 1, 75485, candidato 13)",
+      "expected": "1337",
+      "live": "1337",
+      "match": true
+    },
+    {
+      "figure": "MARQUINHO/pr 1º turno: votos de Flavio Bolsonaro",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/pr/pr75485-c0001-e006257-u.jws | data/votes.csv (turno 1, 75485, candidato 22)",
+      "expected": "1473",
+      "live": "1473",
+      "match": true
+    },
+    {
+      "figure": "MARQUINHO/pr 2º turno: votos válidos",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/pr/pr75485-c0001-e006258-u.jws | data/turnout.csv (turno 2, 75485)",
+      "expected": "3060",
+      "live": "3060",
+      "match": true
+    },
+    {
+      "figure": "MARQUINHO/pr 2º turno: comparecimento",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/pr/pr75485-c0001-e006258-u.jws | data/turnout.csv (turno 2, 75485)",
+      "expected": "3127",
+      "live": "3127",
+      "match": true
+    },
+    {
+      "figure": "MARQUINHO/pr 2º turno: votos de Lula",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/pr/pr75485-c0001-e006258-u.jws | data/votes.csv (turno 2, 75485, candidato 13)",
+      "expected": "1530",
+      "live": "1530",
+      "match": true
+    },
+    {
+      "figure": "MARQUINHO/pr 2º turno: votos de Flavio Bolsonaro",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/pr/pr75485-c0001-e006258-u.jws | data/votes.csv (turno 2, 75485, candidato 22)",
+      "expected": "1530",
+      "live": "1530",
+      "match": true
+    },
+    {
+      "figure": "CAMPOS DOS GOYTACAZES/rj 2º turno: votos válidos",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/rj/rj58190-c0001-e006258-u.jws | data/turnout.csv (turno 2, 58190)",
+      "expected": "275397",
+      "live": "275397",
+      "match": true
+    },
+    {
+      "figure": "CAMPOS DOS GOYTACAZES/rj 2º turno: comparecimento",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/rj/rj58190-c0001-e006258-u.jws | data/turnout.csv (turno 2, 58190)",
+      "expected": "286560",
+      "live": "286560",
+      "match": true
+    },
+    {
+      "figure": "CAMPOS DOS GOYTACAZES/rj 2º turno: votos de Lula",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/rj/rj58190-c0001-e006258-u.jws | data/votes.csv (turno 2, 58190, candidato 13)",
+      "expected": "115927",
+      "live": "115927",
+      "match": true
+    },
+    {
+      "figure": "CAMPOS DOS GOYTACAZES/rj 2º turno: votos de Flavio Bolsonaro",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/rj/rj58190-c0001-e006258-u.jws | data/votes.csv (turno 2, 58190, candidato 22)",
+      "expected": "159470",
+      "live": "159470",
+      "match": true
+    },
+    {
+      "figure": "RIO DE JANEIRO/rj 2º turno: votos válidos",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/rj/rj60011-c0001-e006258-u.jws | data/turnout.csv (turno 2, 60011)",
+      "expected": "3683589",
+      "live": "3683589",
+      "match": true
+    },
+    {
+      "figure": "RIO DE JANEIRO/rj 2º turno: comparecimento",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/rj/rj60011-c0001-e006258-u.jws | data/turnout.csv (turno 2, 60011)",
+      "expected": "3814870",
+      "live": "3814870",
+      "match": true
+    },
+    {
+      "figure": "RIO DE JANEIRO/rj 2º turno: votos de Lula",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/rj/rj60011-c0001-e006258-u.jws | data/votes.csv (turno 2, 60011, candidato 13)",
+      "expected": "1898391",
+      "live": "1898391",
+      "match": true
+    },
+    {
+      "figure": "RIO DE JANEIRO/rj 2º turno: votos de Flavio Bolsonaro",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/rj/rj60011-c0001-e006258-u.jws | data/votes.csv (turno 2, 60011, candidato 22)",
+      "expected": "1785198",
+      "live": "1785198",
+      "match": true
+    },
+    {
+      "figure": "SÃO PAULO/sp 1º turno: votos válidos",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/sp/sp71072-c0001-e006257-u.jws | data/turnout.csv (turno 1, 71072)",
+      "expected": "6552820",
+      "live": "6552820",
+      "match": true
+    },
+    {
+      "figure": "SÃO PAULO/sp 1º turno: comparecimento",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/sp/sp71072-c0001-e006257-u.jws | data/turnout.csv (turno 1, 71072)",
+      "expected": "7006411",
+      "live": "7006411",
+      "match": true
+    },
+    {
+      "figure": "SÃO PAULO/sp 1º turno: votos de Lula",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/sp/sp71072-c0001-e006257-u.jws | data/votes.csv (turno 1, 71072, candidato 13)",
+      "expected": "3052349",
+      "live": "3052349",
+      "match": true
+    },
+    {
+      "figure": "SÃO PAULO/sp 1º turno: votos de Flavio Bolsonaro",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6257/dados/sp/sp71072-c0001-e006257-u.jws | data/votes.csv (turno 1, 71072, candidato 22)",
+      "expected": "2760747",
+      "live": "2760747",
+      "match": true
+    },
+    {
+      "figure": "SÃO PAULO/sp 2º turno: votos válidos",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/sp/sp71072-c0001-e006258-u.jws | data/turnout.csv (turno 2, 71072)",
+      "expected": "6962277",
+      "live": "6962277",
+      "match": true
+    },
+    {
+      "figure": "SÃO PAULO/sp 2º turno: comparecimento",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/sp/sp71072-c0001-e006258-u.jws | data/turnout.csv (turno 2, 71072)",
+      "expected": "7284071",
+      "live": "7284071",
+      "match": true
+    },
+    {
+      "figure": "SÃO PAULO/sp 2º turno: votos de Lula",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/sp/sp71072-c0001-e006258-u.jws | data/votes.csv (turno 2, 71072, candidato 13)",
+      "expected": "3864354",
+      "live": "3864354",
+      "match": true
+    },
+    {
+      "figure": "SÃO PAULO/sp 2º turno: votos de Flavio Bolsonaro",
+      "source": "https://resultados.tse.jus.br/oficial/ele2026/6258/dados/sp/sp71072-c0001-e006258-u.jws | data/votes.csv (turno 2, 71072, candidato 22)",
+      "expected": "3097923",
+      "live": "3097923",
+      "match": true
+    }
+  ]
+}
