@@ -38,6 +38,8 @@ test.describe('mapa on the real dataset', () => {
   test('the map view renders all 27 shapes and honours ?vista=mapa on a plain load', async ({ page }) => {
     await page.goto(`${base}mapa/?vista=mapa`)
     const svg = page.getByRole('img', { name: /^Mapa do Brasil por estado/ })
+    // the state mesh arrives by fetch: wait for the first shape before the anchor harvest
+    await expect(svg.locator('a[data-uf]').first()).toBeVisible({ timeout: 15_000 })
     const anchors = await svg.locator('a[data-uf]').evaluateAll((els) => els.map((e) => e.getAttribute('data-uf')!))
     // the small states' side value boxes are more anchors: the pin is the DISTINCT uf, 27 (stale
     // before #17: the locator counted the side boxes too and failed on the base tip as well)
