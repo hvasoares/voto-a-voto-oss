@@ -8,7 +8,7 @@
  * check re-derives everything from the dataset instead of trusting the builder. Key order inside the shards is not
  * checked here — the byte-determinism tests cover it.
  */
-import { createStore } from '@site/data/store'
+import { createStore } from '@/data/store'
 import { TURNOUT_FIELDS, type BuiltShards, type ShardSources } from './shards'
 
 const OVERSEAS_UF = 'zz'

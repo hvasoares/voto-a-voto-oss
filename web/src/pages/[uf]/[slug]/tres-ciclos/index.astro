@@ -1,0 +1,65 @@
+---
+/**
+ * Three cycles of a city (the approved Sketch frame "9 Três ciclos (cidade)", ported from
+ * site/src/slots/city-cycles/slot.ts by #50). Pre-rendered with BOTH rounds of all three cycles in the HTML —
+ * nothing depends on scripts; without JavaScript they show stacked and the switch link is hidden. The
+ * script shows one round and switches without a request.
+ */
+import Base from '@/layouts/Base.astro'
+import { normalizeBase, withBase } from '@/paths'
+import { loadCityRoutes } from '@/lib/city-routes'
+import { datasetFixture, loadCityShard } from '@/lib/shard-files'
+import { cityShardResult } from '@/lib/city-shard'
+import { displayName } from '@/shared/city-search'
+import { CYCLES } from '@/shared/city-model'
+import { DEFAULT_TURNO, buildCycleBlock } from '@/slots/city-cycles/cycles-model'
+import { roundPanel } from '@/slots/city-cycles/cycles-view'
+
+export async function getStaticPaths() {
+  return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug } }))
+}
+
+const { uf, slug } = Astro.params
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const here = href(`/${uf}/${slug}/tres-ciclos/`)
+const shard = (await loadCityShard(uf!, slug!))!
+const city = shard.city
+const name = displayName(city.nome)
+const fixture = await datasetFixture()
+
+const panels = []
+for (const turno of [1, 2] as const) {
+  const blocks = []
+  for (const ano of CYCLES) blocks.push(buildCycleBlock({ ano, turno, city, result: cityShardResult(shard, ano, turno) }))
+  panels.push(roundPanel({ turno, subtitle: `Presidente 2018, 2022 e 2026 · ${name} (${turno}º turno)`, blocks, hidden: turno !== DEFAULT_TURNO }))
+}
+const banner = fixture ? 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS'.replace(' · ', '  ·  ') : undefined
+const other = DEFAULT_TURNO === 2 ? 1 : 2
+---
+<Base title={`Três ciclos · ${name} · Voto a Voto`}>
+  <div class="screen cycles-page">
+    <header class="app-header">
+      <a class="brand" href={href('/')}>Voto a Voto</a>
+      <span class="app-header__sep" aria-hidden="true"></span>
+      <span class="app-header__context">Presidente 2026</span>
+    </header>
+    {banner && <div class="banner" role="note">{banner}</div>}
+    <main class="page__main" id="main">
+      <a class="back" href={href('/')}>‹ Início</a>
+      <h1 class="page__title">Três ciclos</h1>
+      <div class="cycles" data-cycles data-turno={DEFAULT_TURNO} data-path={here} data-uf={city.uf} data-slug={city.slug}>
+        {panels.map((p) => <Fragment set:html={p} />)}
+      </div>
+      <p class="cycles__legend">Br = brancos · Nu = nulos. O candidato de menor número na urna fica à esquerda, com a base escura, em todos os ciclos.</p>
+      <a class="cycles-switch" href={`${here}?turno=${other}`} data-switch data-base={here} data-turno={other}>Ver o {other}º turno ›</a>
+      <nav class="cycles-links" aria-label="Mais sobre a cidade"><a href={href(`/${uf}/${slug}/`)}>Cartão da cidade</a></nav>
+    </main>
+    <footer class="source-footer" data-component="source-footer">
+      Fonte: TSE, dados finais<a class="source-footer__about" href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+    </footer>
+  </div>
+  <script>
+    import '@/scripts/city-cycles'
+  </script>
+</Base>

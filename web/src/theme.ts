@@ -4,7 +4,7 @@
  * src/styles/global.css only declares which Tailwind utilities read those variables (`@theme inline`).
  * Change a colour in tokens.ts and every shadcn component follows.
  */
-import { colors, fonts, layout, radius, type } from '@site/shared/tokens'
+import { colors, fonts, layout, radius, type } from '@/shared/tokens'
 
 const DIV_COLOR_PREFIX = 'div-' as const
 

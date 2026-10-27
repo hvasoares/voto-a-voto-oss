@@ -1,25 +1,27 @@
 ---
+/**
+ * City card route (the approved Sketch frame "2 Cartão da cidade"; this route was the shard-contract page of #49,
+ * the card replaced it in #50). The body is the shared CityCard component; the script switches panels client-side.
+ * Pre-rendered with all six cycle/round panels in the HTML (no scripts needed to have every cycle) straight from the
+ * city's own shard; the page as a whole loads nothing — no /data/ request at all.
+ */
 import Base from '@/layouts/Base.astro'
-import { displayName, ufLabel } from '@site/shared/city-search'
-import { normalizeBase, withBase } from '@site/paths'
+import CityCard from '@/components/CityCard.astro'
 import { loadCityRoutes } from '@/lib/city-routes'
+import { displayName, ufLabel } from '@/shared/city-search'
 
 export async function getStaticPaths() {
-  return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug }, props: { city } }))
+  return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug }, props: { nome: city.nome } }))
 }
 
-const { city } = Astro.props
-const base = normalizeBase(import.meta.env.BASE_URL)
-const href = (path: string) => withBase(base, path)
+const { uf, slug } = Astro.params
+const { nome } = Astro.props as { nome: string }
+const name = displayName(nome)
 ---
-<Base title={`${displayName(city.nome)} · Voto a Voto`}>
-  <main class="min-w-0 flex-1 px-5 pt-6" id="main">
-    <p class="text-small leading-[14px] text-muted-foreground"><a href={href('/')} class="font-bold">‹ Início</a></p>
-    <h1 class="mt-3 font-serif text-title font-normal leading-[30px] wrap-anywhere">{displayName(city.nome)}</h1>
-    <p class="mt-0.5 text-small leading-[14px] text-muted-foreground">{ufLabel(city.uf)}</p>
-    <p class="mt-3 text-lead leading-[22px] text-muted-foreground">O cartão da cidade com os números de cada eleição chega na próxima versão deste site.</p>
-    {city.uf !== 'zz' && (
-      <p class="mt-4"><a href={href(`/${city.uf}/`)} class="font-bold">Ver o estado ›</a></p>
-    )}
-  </main>
+<Base title={`${name} · ${ufLabel(uf!)} · Voto a Voto`}>
+  <CityCard uf={uf!} slug={slug!}>
+    <script>
+      import '@/scripts/city-card'
+    </script>
+  </CityCard>
 </Base>

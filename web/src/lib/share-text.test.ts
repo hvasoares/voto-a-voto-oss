@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { Candidate, Turnout, Vote } from '@site/data'
-import { buildCityResult, type CityResult } from '@site/shared/city-model'
+import type { Candidate, Turnout, Vote } from '@/data'
+import { buildCityResult, type CityResult } from '@/shared/city-model'
 import { shareText, shortAddress } from './share-text'
 
 const turnout = (o: Partial<Turnout> = {}): Turnout => ({ ano: 2026, turno: 2, uf: 'rj', cdMunicipio: '1', aptos: 1000, comparecimento: 800, abstencoes: 200, brancos: 20, nulos: 30, anuladosApuSep: 0, validos: 750, ...o })
@@ -54,12 +54,8 @@ describe('shareText', () => {
   })
 
   it('over the fixture city: the sentence matches the numbers of the city card', async () => {
-    const { createNodeStore } = await import('@site/data/node')
-    const { loadCityResult } = await import('@site/shared/city-figures')
-    const { dataDir } = await import('./data-dir')
-    const data = createNodeStore(dataDir())
-    const city = (await data.city('rj', 'cidade-exemplo'))!
-    const r = (await loadCityResult(data, city, 2026, 1))!
+    const { loadCityResult } = await import('./shard-files')
+    const r = (await loadCityResult('rj', 'cidade-exemplo', 2026, 1))!
     expect(shareText(r, { cityName: 'Cidade Exemplo', ufLabel: 'RJ', url: 'https://votoavoto.exemplo.br/rj/cidade-exemplo/' })).toBe(
       'Resultado de Cidade Exemplo/RJ, 2026, 1º turno: Candidato A 52% · Candidato B 48% dos votos válidos; 30% do eleitorado não votou. https://votoavoto.exemplo.br/rj/cidade-exemplo/',
     )

@@ -5,8 +5,8 @@ import { base } from './helpers'
 
 /*
  * Gate 2 of each page checkpoint: captures the fixture-state render at 390x844, scroll 0, next to
- * site/reference/01-home.png. The review itself is done by a fresh-context reviewer following
- * site/docs/screenshot-review-protocol.md. Output: web/.captures/ (not committed, no baselines).
+ * web/reference/01-home.png. The review itself is done by a fresh-context reviewer following
+ * web/docs/screenshot-review-protocol.md. Output: web/.captures/ (not committed, no baselines).
  */
 test('capture home / default', async ({ page }) => {
   await page.goto(base)
@@ -18,11 +18,11 @@ test('capture home / default', async ({ page }) => {
   await page.screenshot({ path: file, animations: 'disabled' })
   writeFileSync(
     resolve(dir, 'default.json'),
-    JSON.stringify({ slot: 'home', state: 'default', route: base, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'site/reference/01-home.png', capture: file }, null, 2) + '\n',
+    JSON.stringify({ slot: 'home', state: 'default', route: base, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'web/reference/01-home.png', capture: file }, null, 2) + '\n',
   )
 })
 
-/* Ticket #7: the share sheet demo route (fixture city, 2026 · 1º turno), next to site/reference/03-compartilhamento.png. */
+/* Ticket #7: the share sheet demo route (fixture city, 2026 · 1º turno), next to web/reference/03-compartilhamento.png. */
 test('capture share / default', async ({ page }) => {
   await page.goto(`${base}compartilhar/`)
   await page.evaluate(() => document.fonts.ready)
@@ -35,22 +35,71 @@ test('capture share / default', async ({ page }) => {
   await page.screenshot({ path: file, animations: 'disabled' })
   writeFileSync(
     resolve(dir, 'default.json'),
-    JSON.stringify({ slot: 'share', state: 'default', route: `${base}compartilhar/`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'site/reference/03-compartilhamento.png', capture: file }, null, 2) + '\n',
+    JSON.stringify({ slot: 'share', state: 'default', route: `${base}compartilhar/`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'web/reference/03-compartilhamento.png', capture: file }, null, 2) + '\n',
   )
 })
 
-/* The shard-contract city page of ticket #49 (the card is #50): the review folder is .captures/city/. */
-test('capture city / contract page', async ({ page }) => {
-  await page.goto(`${base}rj/cidade-exemplo/`)
+/* State page (#50, the ported Sketch frame "5 Estado"), next to web/reference/05-estado.png. */
+test('capture state / default', async ({ page }) => {
+  await page.goto(`${base}rj/`)
   await page.evaluate(() => document.fonts.ready)
+  await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
   await page.evaluate(() => window.scrollTo(0, 0))
-  const dir = resolve('.captures', 'city')
+  const dir = resolve('.captures', 'state')
   mkdirSync(dir, { recursive: true })
   const file = resolve(dir, 'default.png')
   await page.screenshot({ path: file, animations: 'disabled' })
   writeFileSync(
     resolve(dir, 'default.json'),
-    JSON.stringify({ slot: 'city', state: 'contract-page', route: `${base}rj/cidade-exemplo/`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'site/reference/01-home.png (city card arrives in #50)', capture: file }, null, 2) + '\n',
+    JSON.stringify({ slot: 'state', state: 'default', route: `${base}rj/`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'web/reference/05-estado.png', capture: file }, null, 2) + '\n',
+  )
+})
+
+/* The sketch fixture state (?fixture=sketch) draws the frame's own illustrative figures, for the comparison with web/reference/05-estado.png. */
+test('capture state / sketch', async ({ page }) => {
+  await page.goto(`${base}rj/?fixture=sketch`)
+  await page.evaluate(() => document.fonts.ready)
+  await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
+  await page.evaluate(() => window.scrollTo(0, 0))
+  const dir = resolve('.captures', 'state')
+  mkdirSync(dir, { recursive: true })
+  const file = resolve(dir, 'sketch.png')
+  await page.screenshot({ path: file, animations: 'disabled' })
+  writeFileSync(
+    resolve(dir, 'sketch.json'),
+    JSON.stringify({ slot: 'state', state: 'sketch', route: `${base}rj/?fixture=sketch`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'web/reference/05-estado.png', capture: file }, null, 2) + '\n',
+  )
+})
+
+/* City card (#50, the ported Sketch frame "2 Cartão da cidade"; ?turno=1 is the frame's round), next to web/reference/02-cartao-da-cidade.png. */
+test('capture city / card, 1º turno', async ({ page }) => {
+  await page.goto(`${base}rj/cidade-exemplo/?turno=1`)
+  await page.evaluate(() => document.fonts.ready)
+  await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
+  await page.evaluate(() => window.scrollTo(0, 0))
+  const dir = resolve('.captures', 'city')
+  mkdirSync(dir, { recursive: true })
+  const file = resolve(dir, 'card-turno-1.png')
+  await page.screenshot({ path: file, animations: 'disabled' })
+  writeFileSync(
+    resolve(dir, 'card-turno-1.json'),
+    JSON.stringify({ slot: 'city', state: 'card, 1º turno', route: `${base}rj/cidade-exemplo/?turno=1`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'web/reference/02-cartao-da-cidade.png', capture: file }, null, 2) + '\n',
+  )
+})
+
+/* Three cycles of a city (#50, the ported Sketch frame "9 Três ciclos (cidade)", ?turno=1 again the frame's round), next to web/reference/09-tres-ciclos-cidade.png. */
+test('capture city cycles / 1º turno', async ({ page }) => {
+  await page.goto(`${base}rj/cidade-exemplo/tres-ciclos/?turno=1`)
+  await page.evaluate(() => document.fonts.ready)
+  await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
+  await page.evaluate(() => window.scrollTo(0, 0))
+  const dir = resolve('.captures', 'city-cycles')
+  mkdirSync(dir, { recursive: true })
+  const file = resolve(dir, 'turno-1.png')
+  await page.screenshot({ path: file, animations: 'disabled' })
+  writeFileSync(
+    resolve(dir, 'turno-1.json'),
+    JSON.stringify({ slot: 'city-cycles', state: '1º turno', route: `${base}rj/cidade-exemplo/tres-ciclos/?turno=1`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'web/reference/09-tres-ciclos-cidade.png', capture: file }, null, 2) + '\n',
   )
 })
 

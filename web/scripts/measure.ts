@@ -7,7 +7,7 @@ import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import { chromium } from '@playwright/test'
-import { startServer } from '../../site/scripts/serve'
+import { startServer } from './serve'
 
 const [target, ...flags] = process.argv.slice(2)
 if (!target) throw new Error('usage: measure.ts <url|dist-dir> [--search]')

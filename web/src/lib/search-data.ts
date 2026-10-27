@@ -1,5 +1,5 @@
-import type { City } from '@site/data'
-import { withBase } from '@site/paths'
+import type { City } from '@/data'
+import { withBase } from '@/paths'
 import { SHARD_VERSION } from 'virtual:data-shards'
 
 /**

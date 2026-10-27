@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Page } from '@playwright/test'
-import { normalizeBase } from '../../site/src/paths'
+import { normalizeBase } from '../src/paths'
 
 export const base = normalizeBase(process.env.SITE_BASE)
 export const mode: 'local' | 'production' = process.env.E2E_MODE === 'production' ? 'production' : 'local'
@@ -43,8 +43,13 @@ export function violations(requests: Seen[], allowed: string[]): string[] {
     .map((r) => `${r.method} ${r.type} ${r.url}`)
 }
 
-/** The search is a React island that hydrates on first interaction: focus it and wait until React took over. */
-export async function activateSearch(page: Page) {
+/** Waits until the deferred module script of a page took over (the enhancement is wired); each screen script
+ * sets `documentElement.dataset.ready`. Same wait as the vanilla app's. */
+export async function waitReady(page: Page): Promise<void> {
+  await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
+}
+
+ export async function activateSearch(page: Page) {
   const box = page.getByRole('combobox', { name: 'Busque sua cidade' })
   await box.click()
   await page.waitForFunction(() => document.querySelector('astro-island') && !document.querySelector('astro-island')!.hasAttribute('ssr'))
