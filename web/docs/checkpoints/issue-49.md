@@ -1,7 +1,7 @@
 # Issue #49 (pre-rendered JSON data shards) : checkpoints
 
 Each checkpoint: behaviour tests first, implement, keep green, vitest + typecheck, screenshot review
-(do it when the render changes) and one commit. Convention as in `site/docs/checkpoints/issue-06.md`.
+(do it when the render changes) and one commit. Convention as in `web/docs/checkpoints/issue-06.md`.
 
 1. **Pure shard builder, fingerprint, layout note.** `integrations/shards.ts`: builds every shard of the dataset
    deterministically (`v<fingerprint>/search.json`, `v<fingerprint>/city/<uf>/<slug>.json`,

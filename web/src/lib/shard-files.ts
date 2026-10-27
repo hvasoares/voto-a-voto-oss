@@ -90,8 +90,8 @@ export async function loadStateCities(uf: string): Promise<{ nome: string; slug:
 }
 
 /** `manifest.fixture` of the configured dataset (build time only): the EXEMPLO banner and footer wording depend on it. */
-export async function datasetFixture(): Promise<boolean> {
-  const manifest = JSON.parse(readFileSync(resolve(dataDir(), 'manifest.json'), 'utf8')) as { fixture?: boolean }
+export async function datasetFixture(env: Record<string, string | undefined> = process.env): Promise<boolean> {
+  const manifest = JSON.parse(readFileSync(resolve(dataDir(env), 'manifest.json'), 'utf8')) as { fixture?: boolean }
   return !!manifest.fixture
 }
 
@@ -102,6 +102,6 @@ export async function datasetFixture(): Promise<boolean> {
 export async function fixtureCityShards(): Promise<CityShard[]> {
   const built = await datasetShards({ DATA_DIR: undefined }, process.cwd())
   return built.files
-    .filter((f) => /^city\/[^/]+\/[^/]+\.json$/.test(f.path))
+    .filter((f) => /^v[0-9a-f]+\/city\/[^/]+\/[^/]+\.json$/.test(f.path)) // paths carry the version directory
     .map((f) => JSON.parse(f.json) as CityShard)
 }

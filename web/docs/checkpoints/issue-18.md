@@ -1,7 +1,7 @@
 # Issue #18 (sources, method and limits) : checkpoints
 
 Each checkpoint: failing/behaviour tests first, implement, green, commit. Review protocol for
-screenshots: `../site/docs/screenshot-review-protocol.md`. Every figure on the page is pinned to a
+screenshots: `../../docs/screenshot-review-protocol.md`. Every figure on the page is pinned to a
 committed source by `src/lib/about-data.test.ts` (reads `data/manifest.json` raw) — numbers copied
 into prose live in `src/lib/about-data.ts` with the source comment next to each constant.
 

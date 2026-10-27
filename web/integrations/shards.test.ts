@@ -20,8 +20,7 @@ function sourcesOf(env: Record<string, string | undefined> = {}): ShardSources {
 }
 
 function dataDirOf(env: Record<string, string | undefined>): string {
-  const cwd = process.cwd() // web/ (tests run from the package directory)
-  return env.DATA_DIR ? resolve(cwd, env.DATA_DIR) : resolve(cwd, '../site/fixtures/data')
+  return dataDir(env)
 }
 
 const buildFixture = () => buildShards(sourcesOf())
