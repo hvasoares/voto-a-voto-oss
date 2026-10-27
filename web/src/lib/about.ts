@@ -2,7 +2,7 @@
  * Pure formatting helpers of the "Sobre os dados" page. The numbers themselves live in
  * `about-data.ts`; this file only turns them into the strings the page shows.
  */
-import { formatInt } from '@site/shared/city-model'
+import { formatInt } from '@/shared/city-model'
 import type { SourceLine } from './about-data'
 
 /** "395389280" -> "395.389.280" (pt-BR thousands separator, like the site's other numbers). */

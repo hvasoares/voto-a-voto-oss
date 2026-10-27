@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { getAnalytics } from '@site/analytics'
+import { getAnalytics } from '@/analytics'
 import { Button } from '@/components/ui/button'
 import { performShare, type ShareNavigator } from '@/lib/share-flow'
 import { saveBlob, svgToPng } from '@/lib/share-raster'

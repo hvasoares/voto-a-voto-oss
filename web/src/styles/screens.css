@@ -1,0 +1,199 @@
+/* The screens of the ported slots (state #50, city card #50, three cycles #50), ported from site/src/shared/base.css
+   so the markup contracts of the vanilla app (class names, e2e selectors, screenshots) carry over unchanged. The
+   tokens come from src/theme.ts via the --sketch-* variables; the aliases below keep the old site names verbatim. */
+:root {
+  --c-paper: var(--sketch-color-paper);
+  --c-paper-2: var(--sketch-color-paper-2);
+  --c-ink: var(--sketch-color-ink);
+  --c-rule: var(--sketch-color-rule);
+  --c-muted: var(--sketch-color-muted);
+  --c-ring: var(--sketch-color-ring);
+  --c-accent: var(--sketch-color-accent);
+  --c-accent-fg: var(--sketch-color-accent-fg);
+  --c-flag: var(--sketch-color-flag);
+  --c-cand-a: var(--sketch-color-cand-a);
+  --c-cand-b: var(--sketch-color-cand-b);
+  --c-cand-outros: var(--sketch-color-cand-outros);
+  --c-abstencao: var(--sketch-color-abstencao);
+  --c-brancos: var(--sketch-color-brancos);
+  --c-nulos: var(--sketch-color-nulos);
+  --font-serif: var(--sketch-font-serif);
+  --font-sans: var(--sketch-font-sans);
+  --fs-brand: var(--sketch-text-brand);
+  --fs-title: var(--sketch-text-title);
+  --fs-section: var(--sketch-text-section);
+  --fs-lead: var(--sketch-text-lead);
+  --fs-body: var(--sketch-text-body);
+  --fs-small: var(--sketch-text-small);
+  --fs-tiny: var(--sketch-text-tiny);
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px; --sp-6: 24px; --sp-8: 32px;
+}
+
+.screen { min-height: 100vh; display: flex; flex-direction: column; min-width: 0; }
+.screen img, .screen svg, .screen canvas, .screen table { max-width: 100%; }
+.screen h1, .screen h2, .screen h3, .screen p, .screen ul { margin: 0; padding: 0; }
+.screen ul { list-style: none; }
+.app-header {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-4) var(--gutter) var(--sp-3);
+  border-bottom: 1px solid var(--c-rule);
+}
+.brand { font: 400 var(--fs-brand) var(--font-serif); color: var(--c-ink); }
+.app-header__sep { width: 1px; height: 18px; background: var(--c-rule); }
+.app-header__context { font-size: var(--fs-small); color: var(--c-muted); }
+
+.banner {
+  background: var(--c-flag); color: var(--c-ink);
+  font: 700 var(--fs-small)/1.2 var(--font-sans); letter-spacing: 0.02em;
+  text-align: center; padding: var(--sp-2) var(--gutter);
+}
+
+.page__main { flex: 1; padding: var(--sp-4) var(--gutter) var(--sp-6); min-width: 0; }
+.back {
+  display: inline-flex; align-items: center; min-height: var(--min-tap); padding: 0 var(--sp-4);
+  border: 1px solid var(--c-rule); border-radius: var(--radius);
+  background: var(--c-paper); color: var(--c-ink); font-size: var(--fs-lead);
+  margin-bottom: var(--sp-4);
+}
+.page__title { font: 400 var(--fs-title)/1.1 var(--font-serif); overflow-wrap: anywhere; }
+.page__subtitle { color: var(--c-muted); font-size: var(--fs-lead); margin-top: var(--sp-1); }
+
+.source-footer {
+  padding: var(--sp-4) var(--gutter) var(--sp-6);
+  text-align: center; font-size: var(--fs-small); color: var(--c-accent);
+}
+
+.source-footer__about {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+.source-footer__about:focus-visible { position: static; width: auto; height: auto; clip-path: none; display: block; margin-top: 4px; color: var(--c-accent); }
+
+h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
+
+/* ---- state (#4 ported by #50): classes prefixed state- are owned by the state slot; `.state-page` scopes its frame to the Sketch frame "5 Estado" ---- */
+.state-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 11px; }
+.state-page .app-header__context { font-size: 12px; }
+.state-page .banner { font-size: 11px; font-weight: 600; letter-spacing: 0; line-height: 14px; padding: 5px var(--gutter); height: 24px; white-space: pre; overflow: hidden; }
+.state-page .page__main { padding: 8px var(--gutter) var(--sp-4); }
+.state-page .back { min-width: 84px; margin: 0 0 8px -8px; font-size: 15px; padding: 0 12px; }
+.state-page .page__title { font-size: 26px; line-height: 36px; }
+.state-page .page__subtitle { font-size: 14px; line-height: 16px; margin-top: -4px; }
+.state-map {
+  display: flex; align-items: center; justify-content: center; height: 220px; margin-top: 4px;
+  border: 1px dashed var(--c-ring); border-radius: var(--radius); background: var(--c-paper-2);
+  font-size: var(--fs-small); color: var(--c-muted); text-align: center;
+}
+.state-search { margin-top: 6px; }
+.state-search__input {
+  display: block; width: 100%; height: 44px; padding: 0 16px; border: 1px solid var(--c-rule); border-radius: var(--radius);
+  background: var(--c-paper); color: var(--c-ink); font: 400 var(--fs-body)/17px var(--font-sans); appearance: none; -webkit-appearance: none;
+}
+.state-search__input::placeholder { color: var(--c-muted); opacity: 1; }
+.state-search__input:focus { outline: 2px solid var(--c-accent); outline-offset: 1px; }
+.state-search__input::-webkit-search-cancel-button { appearance: none; }
+.state-note { font-size: var(--fs-small); line-height: 16px; color: var(--c-muted); margin-top: var(--sp-2); }
+.state-list, .state-results ul { margin-top: 12px; }
+.state-row { position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 3px; min-height: 56px; padding: 0 32px 6px 0; border-bottom: 1px solid var(--c-rule); color: var(--c-ink); }
+.state-list li, .state-results li { content-visibility: auto; contain-intrinsic-size: auto 56px; }
+.state-row > span { font: 400 var(--fs-body)/17px var(--font-sans); overflow-wrap: anywhere; }
+.state-row > small { font-size: var(--fs-small); line-height: 14px; color: var(--c-muted); }
+.state-row::after {
+  content: ""; position: absolute; right: 2px; top: 50%; width: 4px; height: 4px; margin-top: -3px;
+  border-top: 1.6px solid var(--c-muted); border-right: 1.6px solid var(--c-muted); transform: rotate(45deg);
+}
+.state-row:focus-visible, .state-links a:focus-visible { outline: 2px solid var(--c-accent); outline-offset: -2px; }
+.state-links { display: flex; justify-content: space-between; align-items: flex-start; border-top: 1px solid var(--c-rule); margin-top: 5px; padding-top: 10px; }
+.state-links a { font: 700 13px/16px var(--font-sans); color: var(--c-accent); }
+.state-links a:first-child { flex: 0 0 160px; }
+.state-links a:last-child { flex: 0 0 150px; text-align: right; }
+
+/* ---- city card (#5 ported by #50): shared bars (.turnout, .bar, .legend) are owned by #5 and reused by the cycles and share views; `.city-*` and `.city-page` belong to the city slot ---- */
+.turnout__title { font: 600 13px/16px var(--font-sans); }
+.turnout__sep { margin: 0 3.5px; }
+.bar { display: flex; gap: 2px; height: 38px; margin-top: 9px; }
+.bar__seg {
+  flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;
+  padding-bottom: 2px; font: 600 12px/15px var(--font-sans); white-space: pre; color: var(--c-ink);
+}
+.bar__seg--a, .bar__seg--b, .bar__seg--outros { font-size: 11px; }
+.bar__seg--a { background: var(--c-cand-a); color: var(--c-accent-fg); }
+.bar__seg--b { background: var(--c-cand-b); color: var(--c-accent-fg); }
+.bar__seg--outros { background: var(--c-cand-outros); color: var(--c-ink); }
+.bar__seg--abstencao { background: var(--c-abstencao); }
+.bar__seg--brancos { background: var(--c-brancos); }
+.bar__seg--nulos { background: var(--c-nulos); }
+.legend { display: flex; flex-direction: column; }
+.legend__row { display: flex; align-items: center; gap: 10px; height: 24px; }
+.legend__swatch { flex: none; width: 12px; height: 12px; border-radius: 2px; border: 1px solid var(--c-rule); }
+.legend__swatch--a { background: var(--c-cand-a); border-color: var(--c-cand-a); }
+.legend__swatch--b { background: var(--c-cand-b); border-color: var(--c-cand-b); }
+.legend__swatch--outros { background: var(--c-cand-outros); border-color: var(--c-cand-outros); }
+.legend__swatch--abstencao { background: var(--c-abstencao); }
+.legend__swatch--brancos { background: var(--c-brancos); }
+.legend__swatch--nulos { background: var(--c-nulos); }
+.legend__label { flex: 1; min-width: 0; font: 400 13px/15px var(--font-sans); overflow-wrap: anywhere; }
+.legend__value { flex: none; font-size: 11px; line-height: 14px; color: var(--c-muted); }
+
+.city-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
+.city-page .app-header__context { font-size: 12px; }
+.city-page .banner { font-size: 11px; font-weight: 600; letter-spacing: 0; line-height: 14px; padding: 6px var(--gutter) 0; height: 28px; white-space: pre; overflow: hidden; }
+.city-page .page__main { padding: 4px var(--gutter) var(--sp-4); }
+.city-page .back { min-width: 84px; margin: 0 0 8px -8px; font-size: 15px; padding: 0 12px; }
+.city-page .page__title { font-size: 26px; line-height: 36px; }
+.city-page .page__subtitle { font-size: 14px; line-height: 16px; margin-top: -4px; }
+.city-page .tabs, .tabs { display: flex; background: var(--c-paper-2); border-radius: var(--radius); padding: var(--sp-1); gap: var(--sp-1); }
+.city-page .tabs { margin-top: 14px; padding: 2px 4px; }
+.city-page .tabs + .tabs { margin-top: 6px; }
+.city-page .tabs__tab { min-height: 44px; font-size: 14px; }
+.tabs__tab {
+  flex: 1; display: flex; align-items: center; justify-content: center; min-height: 40px;
+  color: var(--c-muted); border-radius: var(--radius);
+}
+.tabs__tab[aria-current="true"] { background: var(--c-accent); color: var(--c-accent-fg); font-weight: 700; }
+.city-card { margin-top: 8px; padding: 0 16px; border-top: 1px solid var(--c-rule); }
+.city-card .turnout__title:first-child { margin-top: 15px; }
+.city-card .bar + .turnout__title { margin-top: 17px; }
+.city-card .legend { margin-top: 12px; }
+.city-takeaway { font: 400 15px/21px var(--font-serif); margin: 35px -16px 0; }
+.city-nodata { margin: 24px 0; font-size: var(--fs-lead); color: var(--c-muted); }
+.city-share {
+  display: flex; align-items: center; justify-content: center; height: 48px; margin-top: 13px;
+  background: var(--c-accent); color: var(--c-accent-fg); border-radius: var(--radius); font-size: 15px; padding-bottom: 1px;
+}
+.city-links { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 7px; padding-top: 15px; border-top: 1px solid var(--c-rule); }
+.city-links a { text-align: center; font: 600 11px/16px var(--font-sans); color: var(--c-accent); }
+.city-page .page__main { padding-bottom: 0; }
+.city-page .source-footer { padding: 19px var(--gutter) 24px; color: var(--c-muted); font-size: 11px; line-height: 14px; }
+
+/* ---- three cycles of a city (#9, ported by #50): `.cycles-*` and `.cycle*` belong to the city-cycles slot; the bars reuse the shared .bar / .bar__seg ---- */
+.cycles-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
+.cycles-page .app-header__context { font-size: 12px; }
+.cycles-page .banner { font-size: 11px; font-weight: 600; letter-spacing: 0; line-height: 14px; padding: 6px var(--gutter) 0; height: 28px; white-space: pre; overflow: hidden; }
+.cycles-page .page__main { padding: 4px var(--gutter) 0; }
+.cycles-page .back { min-width: 84px; margin: 0 0 8px -8px; font-size: 15px; padding: 0 12px; }
+.cycles-page .page__title { font-size: 26px; line-height: 36px; }
+.cycles-page .page__subtitle { font-size: 12px; line-height: 14px; margin-top: -4px; margin-bottom: 18px; }
+.cycles__round + .cycles__round { margin-top: 24px; }
+.cycle { box-sizing: border-box; height: 150px; margin: 0 0 0; padding: 9px 16px 0; border-top: 1px solid var(--c-rule); }
+.cycle__year { font: 700 15px/18px var(--font-sans); margin: 0; }
+.cycle__label { margin: 6px 0 0; font: 400 10px/12px var(--font-sans); color: var(--c-muted); }
+.cycle__label--second { margin-top: 12px; }
+.cycle .bar { height: 24px; margin: 4px 1px 0; gap: 0; }
+.cycle .bar__seg { padding-bottom: 0; font-size: 10px; line-height: 13px; background-clip: padding-box; }
+.cycle .bar__seg + .bar__seg { border-left: 2px solid var(--c-paper); }
+.bar__seg--empty { background: var(--c-paper-2); color: var(--c-muted); font-weight: 400; }
+.cycle--nodata .cycle__nodata { margin: 24px 0 0; font: 600 14px/18px var(--font-sans); color: var(--c-muted); }
+.cycle--nodata .cycle__reason { margin: 4px 0 0; font: 400 12px/16px var(--font-sans); color: var(--c-muted); }
+.cycles__legend { margin: 4px 0 0; font: 400 11px/12px var(--font-sans); color: var(--c-muted); }
+.cycles-switch {
+  display: flex; align-items: center; justify-content: center; min-height: 44px; margin-top: 19px; border: 1px solid var(--c-rule);
+  border-radius: var(--radius); background: var(--c-paper-2); font: 400 13px/16px var(--font-sans); color: var(--c-ink);
+}
+.cycles-links { margin-top: 12px; text-align: center; }
+.cycles-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; font: 600 13px/16px var(--font-sans); color: var(--c-accent); }
+.cycles-page .source-footer { padding: 19px var(--gutter) 24px; color: var(--c-muted); font-size: 11px; line-height: 14px; }
+/* Without JavaScript both rounds are shown stacked and the (useless) switch link is hidden. */
+@media (scripting: none) {
+  .cycles__round[hidden] { display: block; }
+  .cycles-switch { display: none; }
+}

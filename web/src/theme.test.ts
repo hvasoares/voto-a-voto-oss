@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { colors, fonts, layout, radius } from '@site/shared/tokens'
+import { colors, fonts, layout, radius } from '@/shared/tokens'
 import { shadcnVariables, themeCss } from './theme'
 
 describe('Sketch tokens mapped onto the shadcn theme variables', () => {

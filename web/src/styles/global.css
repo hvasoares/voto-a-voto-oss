@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "./screens.css";
 
 /* Values of every variable below come from src/theme.ts (Sketch tokens); this file only wires them to Tailwind utilities. */
 @theme inline {

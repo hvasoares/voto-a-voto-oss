@@ -8,26 +8,23 @@
  * Data: build-time Node reading the dataset through the existing store (never the browser's CSV). The picture and the
  * text come pre-rendered; the island (client:idle) adds the Compartilhar / Baixar imagem / Copiar actions.
  */
-import { createNodeStore } from '@site/data/node'
-import { displayName } from '@site/shared/city-search'
-import { loadCityResult } from '@site/shared/city-figures'
-import { CYCLES } from '@site/shared/city-model'
-import { normalizeBase, withBase } from '@site/paths'
+import { displayName } from '@/shared/city-search'
+import { CYCLES } from '@/shared/city-model'
+import { normalizeBase, withBase } from '@/paths'
 import Base from '@/layouts/Base.astro'
 import ShareActions from '@/components/ShareActions'
-import { dataDir } from '@/lib/data-dir'
+import { datasetFixture, loadCityResult, loadCityShard } from '@/lib/shard-files'
 import { shareContent } from '@/lib/share-model'
 import { siteOrigin } from '@/lib/share-url'
 
 const base = normalizeBase(import.meta.env.BASE_URL)
 const href = (path: string) => withBase(base, path)
 
-// --- fixture state (ticket #50 replaces from here down with the real route) ---------------------------------------
-const data = createNodeStore(dataDir())
-const city = (await data.city('rj', 'cidade-exemplo'))!
+// --- fixture state (ticket #50 replaces this with the real route) --------------------------------------------------
+const city = (await loadCityShard('rj', 'cidade-exemplo'))!.city
 const view = { ano: 2026, turno: 1 as const } // the frame's round
-const result = (await loadCityResult(data, city, view.ano, view.turno))!
-const fixture = !!(await data.manifest()).fixture
+const result = await loadCityResult(city.uf, city.slug, view.ano, view.turno)
+const fixture = await datasetFixture()
 const content = result ? shareContent(result, city, { origin: siteOrigin(), base, fixture }) : undefined
 const cityName = displayName(city.nome)
 // "Fechar" goes back to the city card; until #50 ports it, the demo points at the home page.
