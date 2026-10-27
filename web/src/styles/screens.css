@@ -193,7 +193,16 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .cycles-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; font: 600 13px/16px var(--font-sans); color: var(--c-accent); }
 .cycles-page .source-footer { padding: 19px var(--gutter) 24px; color: var(--c-muted); font-size: 11px; line-height: 14px; }
 /* Without JavaScript both rounds are shown stacked and the (useless) switch link is hidden. */
+/* Without JavaScript both rounds are shown stacked and the (useless) switch link is hidden.
+ * The [hidden] override needs !important (Tailwind's preflight sets it) and must sit in @layer base
+ * as well: for !important declarations the layer order reverses, so unlayered would LOSE to the
+ * preflight's layered rule. The switch link needs no layer: its !important beats the normal
+ * unlayered .cycles-switch rule above. */
+@layer base {
+  @media (scripting: none) {
+    .cycles__round[hidden] { display: block !important; }
+  }
+}
 @media (scripting: none) {
-  .cycles__round[hidden] { display: block; }
-  .cycles-switch { display: none; }
+  .cycles-switch { display: none !important; }
 }
