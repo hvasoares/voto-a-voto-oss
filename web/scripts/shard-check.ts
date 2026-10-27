@@ -11,6 +11,8 @@ import { verifyShards } from '../integrations/shards-verify'
 import { buildShards, type ShardSources } from '../integrations/shards'
 import { FINGERPRINT_FILES } from '../integrations/shards-fingerprint'
 import { dataDir } from '../src/lib/data-dir'
+import { ARC_KINDS, cityArc, type ArcsFile } from '../src/lib/arcs'
+import type { CityShard } from '../src/lib/city-shard'
 
 const dir = dataDir()
 const sources = {} as ShardSources
@@ -24,6 +26,17 @@ if (problems.length > 0) {
   process.exit(1)
 }
 console.log(`check:shards: the shards of ${dir} cover the dataset exactly (${built.files.length} files, fingerprint ${built.fingerprint}).`)
+
+// Arcs (#41): every city has exactly one arc, and the published counts add up to the cities (overseas posts apart).
+const arcsFile = JSON.parse(built.files.find((f) => f.path.endsWith('/arcs.json'))!.json) as ArcsFile
+const cityShards = built.files.filter((f) => /\/city\/[^/]+\/[^/]+\.json$/.test(f.path)).map((f) => JSON.parse(f.json) as CityShard)
+const perCity = cityShards.map((s) => cityArc(s).kind)
+const sum = (c: Record<string, number>) => Object.values(c).reduce((a, b) => a + b, 0)
+if (perCity.some((k) => !ARC_KINDS.includes(k)) || sum(arcsFile.counts) + sum(arcsFile.overseas) !== cityShards.length) {
+  console.error(`check:shards FAILED: arcs.json does not give every city exactly one arc (${sum(arcsFile.counts)} + ${sum(arcsFile.overseas)} overseas for ${cityShards.length} cities)`)
+  process.exit(1)
+}
+console.log(`arcs.json: ${JSON.stringify(arcsFile.counts)}; overseas posts ${JSON.stringify(arcsFile.overseas)}`)
 
 const kb = (n: number): string => `${(n / 1024).toFixed(1)} kB`
 interface FileSize {

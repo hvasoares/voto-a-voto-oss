@@ -1,6 +1,8 @@
 import type { CityResult } from '../../shared/city-model'
 import { DEFAULT_LOCALE, REGISTERS, message, type Register } from '../../lib/sentences/catalog'
 import { headline, type Place } from '../../lib/sentences/headline'
+import { arcLabel } from '../../lib/sentences/arc'
+import type { Arc } from '../../lib/arcs'
 import { marginLine } from '../../lib/sentences/margin'
 import { toLegendRows, toTurnoutBarProps } from '../../shared/city-figures'
 import { candidateRow, turnoutBar } from '../../shared/components'
@@ -40,6 +42,15 @@ export function viewSentence(result: CityResult | undefined, place: Place, view:
     (v) => html`<div data-register="${v.register}"><p class="city-headline" data-headline>${headline(result, v.place)}</p><p class="city-headline__note">${message({ locale, register: v.register }, 'headline.note')}</p></div>`,
   )
   return html`${registerSwitch(locale)}<div class="city-sentence" id="${headlineId(view)}" aria-live="polite">${sentence}</div>`
+}
+
+/**
+ * The arc label of the city (#41) and the line that says it describes the sequence, not the cause, in both registers.
+ * It belongs to the city, not to a view: the same under every cycle and round tab.
+ */
+export function viewArc(arc: Arc, place: Place): Raw {
+  const lines = voices(place).map((v) => ({ register: v.register, ...arcLabel(arc, { locale: place.locale, register: v.register }) }))
+  return html`<div class="city-arc" data-arc="${arc.kind}">${lines.map((l) => html`<p class="city-arc__pill" data-register="${l.register}">${l.label}</p>`)}${lines.map((l) => html`<p class="city-arc__note" data-register="${l.register}">${l.note}</p>`)}</div>`
 }
 
 /**

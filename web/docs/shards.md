@@ -16,6 +16,7 @@ The version directory changes whenever the dataset changes, so a stale copy is n
 | State | `state/<uf>.json` | State list pages |
 | Totals | `totals.json` | National and region totals |
 | Centroids | `centroids.json` | The IBGE centre of every city that has one, by state (#40); fetched only when "Usar minha localização" is tapped |
+| Arcs | `arcs.json` | How many cities have each arc (#41): `{ counts, overseas }`, each with the seven kinds of `src/lib/arcs.ts`; read by tests and `check:shards`, no screen fetches it (the city page computes its own arc from its shard) |
 | Peers | `peers.json` | The closest peer cities of every city (#23; method in `peer-similarity.md`; no screen reads it yet) |
 
 `<fingerprint>` is 16 hex characters of sha256 over the six committed dataset files

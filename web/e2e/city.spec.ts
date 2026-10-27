@@ -12,6 +12,9 @@ const card = (page: Page) => page.locator('[data-city-card] [data-view]:not([hid
 const figures = (page: Page) => page.locator('[data-city-card] [data-view]:not([hidden])')
 const cardText = async (page: Page) => (await card(page).allInnerTexts()).join(' ').replace(/\s+/g, ' ')
 
+/** The arc of Cidade Exemplo in the fixture (round-2 winners of 2018, 2022 and 2026). */
+const ARC_LABEL = 'Mudou de lado em 2022'
+
 test.describe('city card: fixture route is the frame', () => {
   test('?turno=1 shows round 1 with the numbers of the Sketch frame', async ({ page }) => {
     await page.goto(`${city}?turno=1`)
@@ -31,6 +34,23 @@ test.describe('city card: fixture route is the frame', () => {
     await waitReady(page)
     await expect(page.getByRole('link', { name: '2º turno' })).toHaveAttribute('aria-current', 'true')
     expect(await cardText(page)).toContain('no 2º turno de 2026')
+  })
+  test('the arc label (#41) and its note are on the card, the same under every tab, and need no request', async ({ page, baseURL }) => {
+    const seen = collectRequests(page)
+    await page.goto(`${city}?turno=1`)
+    await waitReady(page)
+    await page.waitForLoadState('networkidle')
+    await expect(page.locator('.city-arc__pill:visible')).toHaveText(ARC_LABEL)
+    await page.getByRole('link', { name: '2018', exact: true }).click()
+    await expect(page.locator('.city-arc__pill:visible')).toHaveText(ARC_LABEL)
+    await page.getByRole('button', { name: 'Linguagem simples' }).click()
+    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Em 2022, o lado com mais votos no 2º turno mudou')
+    expect(seen.filter((r) => /\/data\//.test(r.url))).toEqual([])
+    expect(violations(seen, [new URL(baseURL!).origin])).toEqual([])
+  })
+  test('a city with no earlier cycle says which cycles are missing', async ({ page }) => {
+    await page.goto(`${base}mt/boa-esperanca-do-norte/`)
+    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Sem dados do 2º turno de 2018 e 2022')
   })
   test('the fixture banner is shown for fixture data', async ({ page }) => {
     await page.goto(`${city}?turno=1`)
@@ -156,6 +176,9 @@ test.describe('city card without JavaScript', () => {
     await expect(page.getByRole('link', { name: 'Compartilhar' })).toBeVisible()
     // The margin line (#26) is in the page too: the default view is round 2 of 2026: 640 votes, which fit 49 times in 31.566 people.
     await expect(page.locator('[data-margin]:visible')).toHaveText('Faltaram 640 votos para virar: cabem 49 vezes nos 31.566 que não votaram.')
+    // The arc label (#41) and its not-the-cause line are in the page too, readable without scripts.
+    await expect(page.locator('.city-arc__pill:visible')).toHaveText(ARC_LABEL)
+    await expect(page.locator('.city-arc__note:visible')).toHaveText('Descreve a sequência, não a causa.')
     await expect(page.locator('[data-view][hidden]')).toHaveCount(15) // five other views, in each of the three columns
   })
 })

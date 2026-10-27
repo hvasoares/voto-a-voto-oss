@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { buildCityResult } from '../../shared/city-model'
 import { headline } from '../../lib/sentences/headline'
-import { headlineId, viewMargin, viewPanel } from './card'
+import { headlineId, viewArc, viewMargin, viewPanel } from './card'
 
 const result = buildCityResult({
   turnout: { ano: 2026, turno: 1, uf: 'rj', cdMunicipio: '1', aptos: 100000, comparecimento: 76600, abstencoes: 23400, brancos: 3000, nulos: 3600, anuladosApuSep: 0, validos: 70000 },
@@ -43,5 +43,16 @@ describe('margin line of a view', () => {
   })
   it('is empty when the round has nothing to turn or no data', () => {
     expect(viewMargin(undefined, place).toString()).toBe('')
+  })
+})
+
+describe('arc of the city', () => {
+  it('is the label and the not-the-cause line in both registers, the standard one first, in the page text', () => {
+    const html = viewArc({ kind: 'switched2022' }, place).toString()
+    expect(html).toContain('data-arc="switched2022"')
+    expect(html).toContain('Mudou de lado em 2022')
+    expect(html).toContain('Descreve a sequência, não a causa.')
+    expect(html).toContain('Em 2022, o lado com mais votos no 2º turno mudou')
+    expect(html.indexOf('data-register="standard"')).toBeLessThan(html.indexOf('data-register="plain"'))
   })
 })

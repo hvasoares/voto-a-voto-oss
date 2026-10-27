@@ -7,6 +7,7 @@
  *   v<fingerprint>/state/<uf>.json        one state: its cities with the fields a list needs (name and slug)
  *   v<fingerprint>/totals.json            national and per-region sums of turnout and votes, per cycle and round
  *   v<fingerprint>/peers.json             the closest peer cities of every city (ticket #23, src/lib/peers.ts)
+ *   v<fingerprint>/arcs.json              how many cities have each arc (the sequence of 2nd-round winners, ticket #41, src/lib/arcs.ts)
  *   v<fingerprint>/centroids.json         the IBGE centre of every city that has one, by state (ticket #40, src/lib/nearest-city.ts)
  *
  * The fingerprint is a sha256 over the six dataset files, so the paths change whenever the dataset changes and
@@ -27,11 +28,13 @@ import {
 import { parseCandidates, parseCentroids, parseCities, parseTurnout, parseVotes } from '@/data/csv'
 import { encodeCentroids } from './centroids'
 import { dataDir } from '../src/lib/data-dir'
+import { countArcs } from '../src/lib/arcs'
+import type { CityShard } from '../src/lib/city-shard'
 import { computePeers, encodePeers } from '../src/lib/peers'
 import { datasetFingerprint, FINGERPRINT_FILES, type ShardSources } from './shards-fingerprint'
 
 /** Bumped when the shard layout changes: a cached version directory is rebuilt when this does not match. */
-export const SHARD_GENERATOR = 'voto-shards/3'
+export const SHARD_GENERATOR = 'voto-shards/4'
 
 export const TURNOUT_FIELDS = ['aptos', 'comparecimento', 'abstencoes', 'brancos', 'nulos', 'anuladosApuSep', 'validos'] as const
 type TurnoutFields = Pick<Turnout, (typeof TURNOUT_FIELDS)[number]>
@@ -241,6 +244,7 @@ function composeShards(
   // One shard per city: identity, every cycle and round it has data for, and the candidate names and parties
   // (keyed by cycle and number; a number is not the same person in another year).
   const candidateJson = candidatesJson(candidatesByRound)
+  const cityShards: CityShard[] = []
   for (const { city, cycles } of [...byCity.values()].sort((a, b) => byText(a.city.uf, b.city.uf) || byText(a.city.slug, b.city.slug))) {
     const shard = {
       city: { uf: city.uf, slug: city.slug, nome: city.nome, regiao: city.regiao, cdMunicipio: city.cdMunicipio, cdIbge: city.cdIbge, ciclos: city.ciclos },
@@ -248,7 +252,10 @@ function composeShards(
       candidates: candidateJson,
     }
     files.push({ path: dir(`city/${city.uf}/${city.slug}.json`), json: JSON.stringify(shard) })
+    cityShards.push(shard)
   }
+  // How many cities have each arc (#41): a small file that must match the cohort table (see arcs.test.ts).
+  files.push({ path: dir('arcs.json'), json: JSON.stringify(countArcs(cityShards)) })
 
   // National and regional sums, per cycle and round. National includes overseas posts; the regions are every
   // `regiao` value of the dataset (the pseudo-region "exterior" included).

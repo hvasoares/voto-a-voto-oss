@@ -287,6 +287,26 @@ describe('peers.json (#23)', () => {
   })
 })
 
+describe('arcs.json (#41)', () => {
+  const built = buildFixture()
+  const arcs = jsonOf(built, 'arcs.json') as { counts: Record<string, number>; overseas: Record<string, number> }
+
+  it('counts every city once, per arc of the closed list; the overseas post is counted apart', () => {
+    const kinds = ['same', 'switched2022', 'switched2026', 'returned', 'switchedTwice', 'tie', 'missing']
+    expect(Object.keys(arcs.counts)).toEqual(kinds)
+    expect(Object.keys(arcs.overseas)).toEqual(kinds)
+    const search = jsonOf(built, 'search.json') as [string, string, string][]
+    expect(Object.values(arcs.counts).reduce((a, b) => a + b, 0)).toBe(search.filter(([, , uf]) => uf !== 'zz').length)
+    expect(Object.values(arcs.overseas).reduce((a, b) => a + b, 0)).toBe(search.filter(([, , uf]) => uf === 'zz').length)
+  })
+  it('Boa Esperança do Norte, with only 2026, is the one city with a missing cycle', () => {
+    expect(arcs.counts.missing).toBe(1)
+  })
+  it('regenerating gives the same bytes', () => {
+    expect(fileOf(buildFixture(), 'arcs.json')).toBe(fileOf(built, 'arcs.json'))
+  })
+})
+
 describe('centroids.json (#40)', () => {
   const built = buildFixture()
   const shard = jsonOf(built, 'centroids.json') as Record<string, [string, number, number][]>

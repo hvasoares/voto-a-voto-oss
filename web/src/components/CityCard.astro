@@ -12,10 +12,11 @@ import { SHARD_VERSION } from 'virtual:data-shards'
 import { REGISTER_KEY } from '@/lib/sentences/register-store'
 import { loadCityShard, datasetFixture } from '@/lib/shard-files'
 import { cityShardResult } from '@/lib/city-shard'
+import { cityArc } from '@/lib/arcs'
 import { displayName, ufLabel } from '@/shared/city-search'
 import { CYCLES, type CityResult } from '@/shared/city-model'
 import { cycleTabs, roundTabs } from '@/shared/components'
-import { viewFigures, viewSentence, viewMargin, headlineId } from '@/slots/city/card'
+import { viewFigures, viewSentence, viewMargin, viewArc, headlineId } from '@/slots/city/card'
 import { defaultView, viewHref, viewId, type View } from '@/slots/city/city-view'
 
 interface Props {
@@ -38,6 +39,7 @@ const city = shard.city
 const name = displayName(city.nome)
 const fixture = await datasetFixture()
 const overseas = city.uf === 'zz'
+const arc = cityArc(shard)
 
 // Every cycle and round the city has data in, pre-rendered; nothing here can be zeros.
 const results = new Map<string, CityResult | undefined>()
@@ -83,6 +85,7 @@ const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: T
         <div class="city-words" data-city-words>
           {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} set:html={viewSentence(r, { cityName: name, overseas }, id)} />)}
         </div>
+        <Fragment set:html={viewArc(arc, { cityName: name, overseas })} />
         <div class="city-margin-lines" data-city-words>
           {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} set:html={viewMargin(r, { cityName: name, overseas })} />)}
         </div>
