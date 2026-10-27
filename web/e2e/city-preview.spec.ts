@@ -12,7 +12,7 @@ import { base, collectRequests, violations } from './helpers'
 const city = `${base}rj/cidade-exemplo/`
 
 async function meta(page: import('@playwright/test').Page, selector: string): Promise<string> {
-  return page.locator(selector).getAttribute('content') ?? ''
+  return (await page.locator(selector).getAttribute('content')) ?? ''
 }
 
 test.describe('city page head: the preview tags', () => {
