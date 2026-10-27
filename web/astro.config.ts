@@ -17,6 +17,10 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   build: { format: 'directory' },
+  // Astro 7.4: render the static pages across CPU cores with worker threads (docs
+  // /reference/experimental-flags/parallel-prerender/) — the 23k-page real-dataset build is
+  // component-render bound (72%), and single-process rendering was 2m40s of it.
+  experimental: { parallelPrerender: true },
   integrations: [dataset(), previewImages(), interaction(), cdn(), react()],
   vite: {
     plugins: [shardsModule(), themePlugin(), tailwindcss()],
