@@ -91,7 +91,7 @@ const deltaLine = (delta: number): string => `${formatSignedInt(delta)} ${Math.a
                   <span class={badge}>{j + 1}</span>
                 </td>
                 <td class="py-2.5 align-middle">
-                  <a class="block min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
+                  <a class="block min-h-11 min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
                     <span class="block text-body font-bold leading-[18px] text-foreground">{r.nome}/{r.uf.toUpperCase()}</span>
                     <span class="mt-[4px] block text-small leading-[15px] text-muted-foreground">{deltaLine(r.delta)} · {formatInt(r.votos2026)} em 2026</span>
                   </a>
@@ -112,7 +112,7 @@ const deltaLine = (delta: number): string => `${formatSignedInt(delta)} ${Math.a
                   <span class={badge}>{j + 1}</span>
                 </td>
                 <td class="py-2.5 align-middle">
-                  <a class="block min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
+                  <a class="block min-h-11 min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
                     <span class="block text-body font-bold leading-[18px] text-foreground">{r.nome}/{r.uf.toUpperCase()}</span>
                     <span class="mt-[4px] block text-small leading-[15px] text-muted-foreground">{deltaLine(r.delta)} · {formatInt(r.votos2026)} em 2026</span>
                   </a>

@@ -41,14 +41,14 @@ afterEach(() => {
 })
 
 describe('StateMapMap island (mosaico)', () => {
-  it('renders one tile link per row under the base, value and UF written on the tile', () => {
+  it('renders one tile link per row under the base, named from content (state name + value, not a bare code)', () => {
     setup('margin')
-    const rj = screen.getByRole('link', { name: /RJ: -6/ })
+    // The accessible name is the content: visible bits plus the sr-only sentence (issue #19).
+    const rj = screen.getByRole('link', { name: /Rio de Janeiro: -6,2 pp, João à frente; 120 votos válidos/ })
     expect(rj.getAttribute('href')).toBe('/s/rj/')
-    expect(rj.textContent).toContain('-6,2')
     expect(rj.textContent).toContain('RJ')
-    expect(rj.getAttribute('aria-label')).toContain('João à frente')
-    expect(rj.getAttribute('aria-label')).toContain('120 votos válidos')
+    expect(rj.textContent).toContain('-6,2')
+    expect(rj.getAttribute('aria-label')).toBeNull()
   })
 
   it('selects the state with most valid votes by default and shows its details', () => {
@@ -61,7 +61,7 @@ describe('StateMapMap island (mosaico)', () => {
 
   it('a hydrated tap selects the state and fires map_state_tap, staying on the page', async () => {
     const { user } = setup('margin')
-    await user.click(screen.getByRole('link', { name: /RJ: -6/ }))
+    await user.click(screen.getByRole('link', { name: /Rio de Janeiro: -6,2 pp, João à frente; 120 votos válidos/ }))
     expect(screen.getAllByText(/RJ · selecionado/)[0]).toBeTruthy()
     expect(events).toContainEqual(['map_state_tap', { uf: 'rj' }])
     expect(screen.getByRole('link', { name: 'Abrir estado' }).getAttribute('href')).toBe('/s/rj/')
@@ -85,14 +85,14 @@ describe('StateMapMap island (mosaico)', () => {
     expect(window.location.search).toContain('vista=mapa')
     await user.click(screen.getByRole('link', { name: 'Mosaico' }))
     expect(window.location.search).not.toContain('vista=mapa')
-    expect(screen.getByRole('link', { name: /RJ: -6/ })).toBeTruthy()
+    expect(screen.getByRole('link', { name: /Rio de Janeiro: -6,2 pp, João à frente; 120 votos válidos/ })).toBeTruthy()
   })
 })
 
 describe('StateMapMap island (virada)', () => {
   it('labels tiles with the swing and its direction', () => {
     setup('swing')
-    const mg = screen.getByRole('link', { name: /MG: \+5,8 pp, variação para Maria/ })
+    const mg = screen.getByRole('link', { name: /Minas Gerais: \+5,8 pp, variação para Maria/ })
     expect(mg.getAttribute('href')).toBe('/s/mg/')
   })
 

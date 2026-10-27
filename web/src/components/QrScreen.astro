@@ -21,8 +21,8 @@ const { cityName, url, qr, fixture, closeHref, backHref } = Astro.props
 const address = shortAddress(url)
 ---
 <Base title={`Mostrar QR · ${cityName}`}>
-  <main class="min-w-0 flex-1">
-    <section data-qr-screen class="print:hidden">
+  <main class="min-w-0 flex-1" id="main">
+    <section data-qr-screen class="print:hidden" aria-label="Mostrar QR">
       {/* Header metrics match the frame exactly (brand band y14-29; divider a 1px rule at x132 spanning it). */}
       <header class="flex items-baseline px-5 pt-2" data-header>
         <span class="font-serif text-[20px] font-bold leading-[28px] tracking-[-0.8px]">Voto a Voto</span>

@@ -44,6 +44,8 @@ const { title, description, preview } = Astro.props
     )}
   </head>
   <body>
+    {/* Skip link (issue #19): keyboard/screen-reader users reach the content without the tabs/grid. */}
+    <a class="sr-only focus:not-sr-only focus:z-50 focus:fixed focus:top-2 focus:left-2 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-body font-bold focus:text-foreground focus:outline-2 focus:outline-primary" href="#main">Pular para o conteúdo</a>
     <div class="flex min-h-screen min-w-0 flex-col">
       <slot />
       <div id="consent-slot" data-placeholder="consent-banner" data-ticket="20" hidden></div>

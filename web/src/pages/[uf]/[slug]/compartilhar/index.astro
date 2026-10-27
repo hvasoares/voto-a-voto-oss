@@ -42,11 +42,12 @@ const closeHref = href(`/${uf}/${slug}/`)
     {/* The sheet floats OVER the real city card: the card is the dimmed backdrop, the sheet is pinned to the
       * bottom of the viewport and scrolls inside when the picture and the text do not fit (a bottom sheet). */}
     <div data-share-backdrop aria-hidden="true" inert class="pointer-events-none select-none opacity-35">
-      <CityCard uf={uf!} slug={slug!} />
+      <CityCard uf={uf!} slug={slug!} backdrop />
     </div>
 
     <section
       data-share-sheet
+      id="main"
       data-uf={city.uf}
       data-slug={city.slug}
       data-view={`${view.ano}-${view.turno}`}

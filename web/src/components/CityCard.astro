@@ -19,9 +19,11 @@ interface Props {
   slug: string
   /** The view to open; the card's own default (latest round of the latest cycle) when omitted. */
   view?: View
+  /** Inert backdrop of the share sheet (#50): duplicates the card's landmarks, so it drops the shared #main id. */
+  backdrop?: boolean
 }
 
-const { uf, slug, view: asked } = Astro.props
+const { uf, slug, view: asked, backdrop = false } = Astro.props
 const base = normalizeBase(import.meta.env.BASE_URL)
 const href = (path: string) => withBase(base, path)
 const here = href(`/${uf}/${slug}/`)
@@ -50,7 +52,7 @@ const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: T
     <span class="app-header__context">Presidente 2026</span>
   </header>
   {banner && <div class="banner" role="note">{banner}</div>}
-  <main class="page__main" id="main">
+  <main class="page__main" id={backdrop ? undefined : 'main'}>
     <a class="back" href={href('/')}>‹ Início</a>
     <h1 class="page__title">{name}</h1>
     <p class="page__subtitle">{sub}</p>
