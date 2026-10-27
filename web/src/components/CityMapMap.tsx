@@ -426,12 +426,11 @@ function MapView({
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
       >
+        {/* First pass: every shape (fill + border + the selection outline), in file order. */}
         {shapes.map((shape) => {
           const row = byIbge.get(shape.codarea)
           const bin = binOf(row)
-          const name = row ? displayName(row.nome) : ''
           const isSel = !!row && selected === row.cdMunicipio
-          const lab = labels.get(shape.codarea)
           const label = row
             ? `${displayName(row.nome)}: ${valueText(row, ladoANome, ladoBNome)}; ${fmtInt(row.validos2)} votos válidos`
             : `Código IBGE ${shape.codarea}: município da malha sem dados neste dataset`
@@ -445,25 +444,26 @@ function MapView({
                 strokeWidth={Math.max(0.4, current.w / full.w)}
               />
               {isSel && <path d={toPath(shape.pts)} fill="none" stroke="var(--foreground)" strokeWidth={2.5} pointerEvents="none" />}
-              {lab?.value && (
-                <text
-                  fill={bin ? fgOf(bin) : 'var(--foreground)'}
-                  fontSize={11}
-                  fontWeight={700}
-                  textAnchor="middle"
-                  x={shape.cx}
-                  y={shape.cy - 2}
-                  pointerEvents="none"
-                >
+            </a>
+          )
+        })}
+        {/* Second pass: every admitted label ABOVE every fill, so a neighbour never overprints a
+            value or a name (the collision pass already keeps the labels off each other). */}
+        {shapes.map((shape) => {
+          const lab = labels.get(shape.codarea)
+          if (!lab || (!lab.value && !lab.nome)) return null
+          const row = byIbge.get(shape.codarea)
+          const bin = binOf(row)
+          const ink = bin ? fgOf(bin) : 'var(--foreground)'
+          return (
+            <g key={shape.codarea} data-cd-ibge={shape.codarea} pointerEvents="none">
+              {lab.value && (
+                <text fill={ink} fontSize={11} fontWeight={700} textAnchor="middle" x={shape.cx} y={shape.cy - 2}>
                   {fmt(row!.margin2!)}
                 </text>
               )}
-              {lab?.nome && (
-                <text fill={bin ? fgOf(bin) : 'var(--foreground)'} fontSize={10} textAnchor="middle" x={shape.cx} y={shape.cy + 10} pointerEvents="none">
-                  {name}
-                </text>
-              )}
-            </a>
+              {lab.nome && <text fill={ink} fontSize={10} textAnchor="middle" x={shape.cx} y={shape.cy + 10}>{displayName(row!.nome)}</text>}
+            </g>
           )
         })}
       </svg>

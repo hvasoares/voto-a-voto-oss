@@ -54,8 +54,9 @@ test.describe('mapa/rj on the real dataset', () => {
     expect(cds.every((cd) => cd!.startsWith('33'))).toBe(true)
     await expect(map.locator('[data-slot="malha-sem-dados"]')).toHaveCount(0)
     await expect(page.locator('[data-slot="escala-sem-dados"]')).toHaveCount(0)
-    // the biggest municipality (Rio) shows its inline value at the default zoom
-    await expect(map.locator('a[data-cd-ibge="3304557"]')).toContainText('+3,1')
+    // the biggest municipality (Rio) shows its inline value at the default zoom (labels are the
+    // second SVG pass, groups above every fill, so a neighbour's fill never overprints a value)
+    await expect(map.locator('g[data-cd-ibge="3304557"]')).toContainText('+3,1')
     console.log(`mapa/rj: mesh joined and SVG rendered in ${ms}ms (92 shapes, phone viewport)`)
     expect(ms).toBeLessThan(20_000)
   })
