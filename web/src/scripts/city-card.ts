@@ -33,8 +33,8 @@ if (card) {
   // The pre-rendered page shows the default view; the address may ask for another.
   const asked = parseView(new URLSearchParams(location.search), has)
   if (viewId(asked) !== viewId(current)) show(asked)
-  // A view event when the page opens — emitted when the consent boot settles (#20, see report-analytics.ts);
-  // the tracker holds the late-bound analytics, so the flush of a remembered consent reaches it.
+  // A view event when the page opens — emitted when the boot settles (see report-analytics.ts);
+  // the tracker holds the late-bound analytics, so the boot's install reaches it.
   onAnalyticsReady(() => tracker.viewed(current))
   // Mark for the e2e specs: the deferred module script took over the page.
   document.documentElement.dataset.ready = 'city-card'

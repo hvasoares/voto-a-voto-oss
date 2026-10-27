@@ -1,15 +1,17 @@
 /**
- * LGPD consent of ticket #20: a visitor chooses once — "Aceitar" or "Recusar" on the banner — and the
- * choice is remembered (localStorage) so analytics only ever runs after an explicit "granted".
- * Unknown = no choice yet: NOTHING may request Google (see src/analytics), and the banner shows.
+ * The metrics notice of the site (formerly the LGPD consent gate of ticket #20, changed 2026-10-27 to
+ * the Globo/g1-style notice-only model): measurement is implied by the use of the site — the boot
+ * script installs analytics on every page — and the banner (components/ConsentBanner.astro) is
+ * informational, with a single "Prosseguir" button that only records the acknowledgment so it does not
+ * reappear. Nothing is refused here; a visitor who does not want the measurement blocks the Google
+ * origins in the browser (disclosed in the privacy section).
  *
  * The storage access sits behind try/catch: a private window (or a cleaned/blocked site data) must leave
- * the site fully working; the choice is then just not remembered and the banner asks again.
+ * the site fully working; the acknowledgment is then just not remembered and the banner asks again.
  * Unit tests run in plain node and inject the storage, so the store itself never touches jsdom.
  */
 
-export type ConsentDecision = 'granted' | 'refused'
-export type ConsentState = 'unknown' | ConsentDecision
+export type NoticeState = 'unknown' | 'acknowledged'
 
 export interface StorageLike {
   getItem(key: string): string | null
@@ -17,35 +19,35 @@ export interface StorageLike {
   removeItem(key: string): void
 }
 
-export const CONSENT_STORAGE_KEY = 'voto-a-voto:consent'
+export const NOTICE_STORAGE_KEY = 'voto-a-voto:notice'
 
-export interface ConsentStore {
-  /** The current state; `'unknown'` until the visitor makes a choice (or after `reset()`). */
-  state(): ConsentState
-  /** Records the visitor's choice, persists it and notifies the subscribers. */
-  choose(decision: ConsentDecision): void
-  /** Back to `'unknown'`: the banner shows again and the previous choice is forgotten. */
-  reset(): void
+export interface NoticeStore {
+  /** The current state; `'unknown'` until the visitor advances the banner (or after `forget()`). */
+  state(): NoticeState
+  /** Records the acknowledgment ("Prosseguir"), persists it and notifies the subscribers. */
+  acknowledge(): void
+  /** Back to `'unknown'`: the banner shows again (the privacy section uses it). */
+  forget(): void
   /** Subscribes to state changes; returns the unsubscribe function. */
-  onChange(callback: (state: ConsentState) => void): () => void
+  onChange(callback: (state: NoticeState) => void): () => void
 }
 
-const DECISIONS: ConsentState[] = ['granted', 'refused']
+const STATES: NoticeState[] = ['acknowledged']
 
-function load(storage: () => StorageLike | undefined): ConsentState {
+function load(storage: () => StorageLike | undefined): NoticeState {
   const st = storage()
   if (!st) return 'unknown'
   try {
-    const raw = st.getItem(CONSENT_STORAGE_KEY)
-    return DECISIONS.includes(raw as ConsentState) ? (raw as ConsentState) : 'unknown'
+    const raw = st.getItem(NOTICE_STORAGE_KEY)
+    return STATES.includes(raw as NoticeState) ? (raw as NoticeState) : 'unknown'
   } catch {
     return 'unknown'
   }
 }
 
-export function createConsentStore(overlay?: { storage?: StorageLike | undefined }): ConsentStore {
+export function createNoticeStore(overlay?: { storage?: StorageLike | undefined }): NoticeStore {
   // The browser storage is looked up lazily: unit tests run in node (no window) and a page whose
-  // localStorage is unavailable (try/catch below) must keep working, just not remembering the choice.
+  // localStorage is unavailable (try/catch below) must keep working, just not remembering the banner.
   let remembered: (() => StorageLike | undefined) | undefined
   if (overlay && 'storage' in overlay) remembered = () => overlay.storage
   else
@@ -57,8 +59,8 @@ export function createConsentStore(overlay?: { storage?: StorageLike | undefined
       }
     }
 
-  let current: ConsentState = load(remembered)
-  const listeners = new Set<(state: ConsentState) => void>()
+  let current: NoticeState = load(remembered)
+  const listeners = new Set<(state: NoticeState) => void>()
 
   const notify = () => {
     for (const cb of listeners) cb(current)
@@ -66,19 +68,19 @@ export function createConsentStore(overlay?: { storage?: StorageLike | undefined
 
   return {
     state: () => current,
-    choose(decision) {
-      current = decision
+    acknowledge() {
+      current = 'acknowledged'
       try {
-        remembered?.()?.setItem(CONSENT_STORAGE_KEY, decision)
+        remembered?.()?.setItem(NOTICE_STORAGE_KEY, 'acknowledged')
       } catch {
         // Not remembered (browser without storage): the banner shows again on the next visit.
       }
       notify()
     },
-    reset() {
+    forget() {
       current = 'unknown'
       try {
-        remembered?.()?.removeItem(CONSENT_STORAGE_KEY)
+        remembered?.()?.removeItem(NOTICE_STORAGE_KEY)
       } catch {
         // Nothing persisted to forget.
       }
@@ -92,12 +94,12 @@ export function createConsentStore(overlay?: { storage?: StorageLike | undefined
 }
 
 /**
- * Shared browser instance used by the boot script and the banner (and by anything else that needs the
- * visitor's choice, e.g. the consent-change affordance). Plain node unit tests never import this lazy
- * path by default; they build stores with `createConsentStore({ storage })`.
+ * Shared browser instance used by the boot script and anything else that needs the acknowledgment.
+ * Plain node unit tests never import this lazy path by default; they build stores with
+ * `createNoticeStore({ storage })`.
  */
-let shared: ConsentStore | undefined
-export function consent(): ConsentStore {
-  shared ??= createConsentStore()
+let shared: NoticeStore | undefined
+export function notice(): NoticeStore {
+  shared ??= createNoticeStore()
   return shared
 }

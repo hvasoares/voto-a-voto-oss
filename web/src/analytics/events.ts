@@ -3,12 +3,11 @@
  * it carries is here — screens call `getAnalytics().event('<name>'[, props])` with nothing outside this
  * table, and src/analytics/ga4.ts drops anything that is not table-compliant before it reaches Google.
  * Properties are coarse only: UF, city slug, report name, election cycle, counts. NEVER the text a
- * visitor typed, never anything personal, never an identifier beyond what GA itself sets after consent.
+ * visitor typed, never anything personal, never an identifier beyond what GA itself sets.
  *
  * Naming note: the events below are the vocabulary the site already wires (src/analytics/index.ts
  * interface). "city_viewed" is `city_view`, "search_used" is `search` (counts only), "share_copied" is
- * `share_completed{method:'clipboard'…}` — see each row. Nothing emits today without the visitor's
- * consent ("Aceitar" on the banner; src/lib/consent.ts).
+ * `share_completed{method:'clipboard'…}` — see each row.
  */
 
 export interface EventDoc {
@@ -26,7 +25,7 @@ export const EVENTS: EventDoc[] = [
     name: 'page_view',
     description: 'One per page load, on every route of the static site (no SPA transitions).',
     props: {
-      page_path: 'URL path of the page (includes the base path when deployed under /voto-a-voto/), relative form',
+      page_path: 'URL path of the page (includes the base path, e.g. /voto-a-voto-oss/ on the project pages), relative form',
       page_title: 'The document title (page name · Voto a Voto)',
     },
     emitted: ['src/scripts/analytics-boot.ts'],

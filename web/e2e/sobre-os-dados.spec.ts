@@ -73,12 +73,13 @@ test.describe('sobre os dados page', () => {
     await expect(section).toContainText('não entra nesta versão')
   })
 
-  test('keeps the privacy section free of promises the site cannot keep yet: no data sent, consent needed', async ({ page }) => {
+  test('keeps the privacy section an honest description of the notice-only measurement', async ({ page }) => {
     await page.goto(path)
     const section = page.locator('section[aria-labelledby="privacidade"]')
     await expect(section).toContainText('não é enviado')
-    await expect(section).toContainText('consentimento')
-    await expect(section).toContainText('recusar')
+    await expect(section).toContainText('nada pessoal')
+    await expect(section).toContainText('Google Analytics')
+    await expect(section).toContainText('você está ciente')
   })
 
   test('is reachable from the home footer and only asks the site itself', async ({ page, baseURL }) => {

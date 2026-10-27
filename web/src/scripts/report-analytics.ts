@@ -7,8 +7,9 @@ import { getAnalytics, onAnalyticsReady } from '@/analytics'
  *   the clipboard (method "clipboard"), both with event report_shared {report, method};
  * - clipboard copying answers with "Link copiado!" in an aria-live status, so the visitor sees it worked.
  * A visitor who cancels the native sheet (or denies clipboard permission) shares nothing and gets no event.
- * The load emission goes through onAnalyticsReady (#20): page scripts run before the consent boot, so a
- * remembered consent flushes it to the provider and an undecided/refused visitor drops it — never replayed.
+ * The load emission goes through onAnalyticsReady: page scripts run before the boot, which installs the
+ * provider in an id-configured build — the emission flushes; in a no-op build it is absorbed.
+
  */
 const main = document.querySelector<HTMLElement>('[data-report]')
 onAnalyticsReady((a) => a.event('report_opened', { report: main?.dataset.report ?? '' }))

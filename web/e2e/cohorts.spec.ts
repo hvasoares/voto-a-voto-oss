@@ -60,7 +60,7 @@ test.describe('cohort report page', () => {
     expect(sw).toBeLessThanOrEqual(iw)
     expect(violations(seen, await allowedOrigins(new URL(baseURL!).origin))).toEqual([])
     // Static page, no island: the report itself needs no JavaScript. The only script the layout ships
-    // is #20's site-wide consent boot (every page must answer the banner; consent.spec pins it), in one
+    // is #20's site-wide metrics boot (every page carries it; consent.spec pins it), in one
     // module chunk plus its own import — the page hydrates zero astro-islands, and the no-JS describe
     // below proves the report renders complete without JavaScript at all.
     expect(await page.locator('astro-island').count()).toBe(0)

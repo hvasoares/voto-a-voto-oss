@@ -3,8 +3,8 @@
  * Real Mostrar QR route (ticket #9; ported to the real city route by the parent glue, next to the shared
  * demo /qr/): pre-rendered static markup over components/QrScreen.astro — no island, no hydration. The QR is a
  * build-time glyph of this city's canonical link (src/lib/qr-code.ts), the poster is CSS (@media print /
- * @page A4). The only scripts are the site-wide consent boot (Base, #20) and the tiny qr-analytics script
- * the template imports (qr_screen_shown / poster_printed, #20 — consent-gated like everywhere else).
+ * @page A4). The only scripts are the site-wide metrics boot (Base, #20) and the tiny qr-analytics script
+ * the template imports (qr_screen_shown / poster_printed, #20 — absorbed by the no-op build without an id).
  */
 import QrScreen from '@/components/QrScreen.astro'
 import { loadCityRoutes } from '@/lib/city-routes'

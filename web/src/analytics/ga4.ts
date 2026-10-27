@@ -1,12 +1,12 @@
 /**
- * The GA4 provider of ticket #20: the `Analytics` implementation plugged in by the boot script ONLY
- * after the visitor granted consent (src/lib/consent.ts) and only when a measurement ID is configured
- * (src/analytics/id.ts). No call before consent, no request before consent, ever — by construction the
- * provider only comes to exist when the boot script installs it, on a granted consent.
+ * The GA4 provider of the NOTICE model (2026-10-27, g1/Globo-style): the `Analytics` implementation
+ * plugged in by the boot script on EVERY page — measurement is implied by the use of the site — and
+ * only when a measurement ID is configured (src/analytics/id.ts). The banner is informational; the
+ * only gate left is the presence of an id.
  *
- * After consent, in the browser, this module:
+ * In the browser, this module:
  * - injects `https://www.googletagmanager.com/gtag/js?id=<ID>` as a script tag, exactly once per page;
- *   the browser fetches Google only here — never at build time and never before the consent;
+ *   the browser fetches Google only here — never at build time;
  * - queues commands in window.dataLayer through the standard `gtag` stub (so a blocked load — an ad
  *   blocker — is safe: commands pile up locally, no error, the screens are untouched);
  * - calls `gtag('config', <ID>, { send_page_view: false })`: page views are explicit events (the boot
@@ -78,7 +78,7 @@ export function ga4Provider(id: string): Analytics {
   }
 }
 
-/** The boot glue in one testable function: a GA4 analytics only for a granted consent WITH an id. */
-export function analyticsFor(state: 'unknown' | 'granted' | 'refused', id: string): Analytics {
-  return state === 'granted' && id.trim() !== '' ? ga4Provider(id) : noopAnalytics
+/** The boot glue in one testable function: a GA4 analytics whenever an id is configured. */
+export function analyticsFor(id: string): Analytics {
+  return id.trim() !== '' ? ga4Provider(id) : noopAnalytics
 }

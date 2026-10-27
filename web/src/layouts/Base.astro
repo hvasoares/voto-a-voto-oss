@@ -16,7 +16,7 @@ interface Props {
 const { title, description, preview } = Astro.props
 const base = normalizeBase(import.meta.env.BASE_URL)
 // The footer's "Privacidade" link (and the in-banner detail link) open the privacy section of /sobre-os-dados/,
-// where the visitor can also change the consent choice of ticket #20.
+// which discloses the metrics notice (the notice-only model of 2026-10-27) and the browser-level opt-out.
 const privacyHref = withBase(base, 'sobre-os-dados/#privacidade')
 ---
 <!doctype html>
@@ -61,7 +61,7 @@ const privacyHref = withBase(base, 'sobre-os-dados/#privacidade')
       </div>
       <ConsentBanner privacyHref={privacyHref} />
     </div>
-    {/* Consent + GA4 boot (ticket #20): before consent NOTHING is loaded and NO request goes to Google. */}
+    {/* Metrics boot (the notice model): with an id configured the GA4 provider installs on every page; the informational banner is handled by the same script. */}
     <script>
       import '@/scripts/analytics-boot'
     </script>

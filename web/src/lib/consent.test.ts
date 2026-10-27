@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { CONSENT_STORAGE_KEY, createConsentStore, type StorageLike } from './consent'
+import { createNoticeStore, NOTICE_STORAGE_KEY, type StorageLike } from './consent'
 
 function fakeStorage(): StorageLike & { clear(): void } {
   const map = new Map<string, string>()
@@ -16,51 +16,44 @@ afterEach(() => {
   storage = fakeStorage()
 })
 
-describe('consent store', () => {
+describe('notice store (the metrics banner acknowledgment)', () => {
   it('starts unknown with nothing stored', () => {
-    expect(createConsentStore({ storage }).state()).toBe('unknown')
-    expect(createConsentStore({ storage: undefined }).state()).toBe('unknown')
+    expect(createNoticeStore({ storage }).state()).toBe('unknown')
+    expect(createNoticeStore({ storage: undefined }).state()).toBe('unknown')
   })
 
-  it('a grant persists and survives a reload (a new store reads the same storage)', () => {
-    const first = createConsentStore({ storage })
+  it('an acknowledgment persists and survives a reload (a new store reads the same storage)', () => {
+    const first = createNoticeStore({ storage })
     const seen: string[] = []
     first.onChange((s) => seen.push(s))
-    first.choose('granted')
-    expect(seen).toEqual(['granted'])
-    expect(storage.getItem(CONSENT_STORAGE_KEY)).toBe('granted')
-    expect(createConsentStore({ storage }).state()).toBe('granted')
+    first.acknowledge()
+    expect(seen).toEqual(['acknowledged'])
+    expect(storage.getItem(NOTICE_STORAGE_KEY)).toBe('acknowledged')
+    expect(createNoticeStore({ storage }).state()).toBe('acknowledged')
   })
 
-  it('a refusal persists the same way', () => {
-    createConsentStore({ storage }).choose('refused')
-    expect(storage.getItem(CONSENT_STORAGE_KEY)).toBe('refused')
-    expect(createConsentStore({ storage }).state()).toBe('refused')
-  })
-
-  it('notifies the subscribers on every choice and on reset', () => {
-    const store = createConsentStore({ storage })
+  it('notifies the subscribers on acknowledge and on forget (the privacy section re-shows the banner)', () => {
+    const store = createNoticeStore({ storage })
     const seen: string[] = []
     const stop = store.onChange((s) => seen.push(s))
-    store.choose('refused')
-    // The consent-change flow: back to unknown, the banner would show again.
-    store.reset()
-    expect(seen).toEqual(['refused', 'unknown'])
+    store.acknowledge()
+    store.forget()
+    expect(seen).toEqual(['acknowledged', 'unknown'])
     stop()
-    store.choose('granted')
-    expect(seen).toEqual(['refused', 'unknown'])
+    store.acknowledge()
+    expect(seen).toEqual(['acknowledged', 'unknown'])
   })
 
-  it('reset forgets what was stored', () => {
-    const store = createConsentStore({ storage })
-    store.choose('granted')
-    store.reset()
+  it('forget clears what was stored', () => {
+    const store = createNoticeStore({ storage })
+    store.acknowledge()
+    store.forget()
     expect(store.state()).toBe('unknown')
-    expect(storage.getItem(CONSENT_STORAGE_KEY)).toBeNull()
-    expect(createConsentStore({ storage }).state()).toBe('unknown')
+    expect(storage.getItem(NOTICE_STORAGE_KEY)).toBeNull()
+    expect(createNoticeStore({ storage }).state()).toBe('unknown')
   })
 
-  it('a storage that throws leaves the site working: state unknown, choice not remembered', () => {
+  it('a storage that throws leaves the site working: state unknown, acknowledgment not remembered', () => {
     const broken: StorageLike = {
       getItem: () => {
         throw new Error('private window')
@@ -72,25 +65,25 @@ describe('consent store', () => {
         throw new Error('private window')
       },
     }
-    const store = createConsentStore({ storage: broken })
+    const store = createNoticeStore({ storage: broken })
     expect(store.state()).toBe('unknown')
-    expect(() => store.choose('granted')).not.toThrow()
-    expect(store.state()).toBe('granted') // still in memory, just not remembered
-    expect(createConsentStore({ storage: broken }).state()).toBe('unknown')
+    expect(() => store.acknowledge()).not.toThrow()
+    expect(store.state()).toBe('acknowledged') // still in memory, just not remembered
+    expect(createNoticeStore({ storage: broken }).state()).toBe('unknown')
   })
 
-  it('anything else in storage reads as unknown', () => {
-    storage.setItem(CONSENT_STORAGE_KEY, 'sim')
-    expect(createConsentStore({ storage }).state()).toBe('unknown')
+  it('anything else in storage reads as unknown (an old consent-grant value shows the banner once more)', () => {
+    storage.setItem(NOTICE_STORAGE_KEY, 'granted')
+    expect(createNoticeStore({ storage }).state()).toBe('unknown')
   })
 
-  it('choose is observable with vi.fn subscribers unsubscribable', () => {
-    const store = createConsentStore({ storage })
+  it('acknowledge is observable with vi.fn subscribers unsubscribable', () => {
+    const store = createNoticeStore({ storage })
     const cb = vi.fn()
     const stop = store.onChange(cb)
-    store.choose('refused')
+    store.acknowledge()
     stop()
-    expect(cb).toHaveBeenCalledWith('refused')
+    expect(cb).toHaveBeenCalledWith('acknowledged')
     expect(cb).toHaveBeenCalledTimes(1)
   })
 })

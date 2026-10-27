@@ -24,7 +24,7 @@ if (host) {
     }
   }
   show(parseTurno(new URLSearchParams(location.search)))
-  // A view event when the page opens (the consent boot settles first, see report-analytics.ts).
+  // A view event when the page opens (the boot settles first, see report-analytics.ts).
   onAnalyticsReady(() => tracker.viewed(current))
   // Mark for the e2e specs: the deferred module script took over the page.
   document.documentElement.dataset.ready = 'city-cycles'

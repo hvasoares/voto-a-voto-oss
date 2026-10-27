@@ -1,13 +1,13 @@
 ---
 /**
- * The LGPD consent banner of ticket #20 (Base.astro, every page): a fixed, quiet bottom bar, following
- * the screen tokens (text-small, border-border, min-h-11 tap targets). Server-rendered `hidden`; the
- * boot script (src/scripts/analytics-boot.ts) reveals it only while the visitor has NOT decided, wires
- * Aceitar/Recusar and, on both answers, remembers the choice — until then NOTHING is loaded and no
- * request goes to Google. A previous choice shows the small status line when the visitor re-opens the
- * banner through the consent-change affordance. It sits at z-40, BELOW the page's own bottom overlays
- * (the share sheet and dialogs are z-50): a first visit can still use those screens — the banner
- * reappears once the overlay closes, and the consent-first guarantee is in the boot script, not the paint.
+ * The metrics banner (Base.astro, every page): a fixed, quiet bottom bar, following the screen tokens
+ * (text-small, border-border, min-h-11 tap targets). The Notice model, 2026-10-27 — g1/Globo style:
+ * the text is informational ("ao utilizar nossos serviços, você está ciente dessa funcionalidade") and
+ * the single "Prosseguir" button only records the acknowledgment (localStorage) so it does not
+ * reappear; the boot script (src/scripts/analytics-boot.ts) reveals it to fresh visitors only.
+ * Measurement itself does not wait for the banner — it is implied by the use of the site (see the
+ * privacy section). It sits at z-40, BELOW the page's own bottom overlays (the share sheet and dialogs
+ * are z-50): a first visit can still use those screens — the banner reappears once the overlay closes.
  */
 interface Props {
   /** Absolute base path of the site (the "Privacidade" detail link points at /sobre-os-dados/#privacidade). */
@@ -19,28 +19,22 @@ const { privacyHref } = Astro.props
   id="consent-banner"
   data-consent-banner
   role="region"
-  aria-label="Consentimento para métricas de uso"
+  aria-label="Aviso sobre métricas de uso"
   class="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background"
   hidden
 >
   <div class="mx-auto flex w-full max-w-[430px] flex-col gap-2 px-5 py-3">
-    <p data-consent-status class="text-small leading-[16px] text-muted-foreground" hidden></p>
     <p class="text-small leading-[16px]">
-      Para saber como o site é usado, este site pode usar o Google Analytics — páginas vistas, buscas e
-      compartilhamentos, com dados gerais apenas, nada pessoal, sempre depois do seu consentimento.
-      <a href={privacyHref}>Detalhes em Sobre os dados</a>.
+      Para saber como o site é usado, este site usa o Google Analytics — páginas vistas, buscas e
+      compartilhamentos, com dados gerais apenas, nada pessoal. Ao utilizar nossos serviços, você está
+      ciente dessa funcionalidade. <a href={privacyHref}>Detalhes em Sobre os dados</a>.
     </p>
-    <div class="flex gap-2">
+    <div class="flex">
       <button
         type="button"
-        data-consent-refuse
-        class="flex-1 rounded-md border border-border bg-background px-4 text-body text-foreground min-h-11"
-      >Recusar</button>
-      <button
-        type="button"
-        data-consent-accept
+        data-consent-continue
         class="flex-1 rounded-md bg-primary px-4 text-body text-primary-foreground min-h-11"
-      >Aceitar</button>
+      >Prosseguir</button>
     </div>
   </div>
 </div>

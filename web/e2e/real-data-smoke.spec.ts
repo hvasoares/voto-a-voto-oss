@@ -92,7 +92,7 @@ test.describe.serial('launch gate: smoke over the built real site (issue #21)', 
     expect(state.routes.length).toBeGreaterThanOrEqual(100)
     const allowed = await allowedOrigins(new URL(baseURL!).origin)
     // criterion 3, tightened: the trace may contain NOTHING but the site's own origin (the analytics
-    // allow-list is empty before consent and no id is configured in this build; the CDN list is empty)
+    // allow-list is empty (no id is configured in this build; the CDN list is empty)
     expect(allowed).toEqual([new URL(baseURL!).origin])
     page.on('pageerror', (e) => state.pageErrors.push(String(e)))
     page.on('console', (m) => {

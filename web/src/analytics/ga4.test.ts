@@ -79,28 +79,16 @@ describe('ga4 provider (the analytics a granted consent installs)', () => {
   })
 })
 
-describe('analyticsFor — the boot glue: consent × configured id', () => {
-  it('unknown consent: a strict no-op whatever the id', () => {
-    expect(sentEventNames(analyticsFor('unknown', id))).toEqual([])
+describe('analyticsFor — the boot glue: the notice model installs whenever an id is configured', () => {
+  it('without a configured id: analytics is a no-op and no script tag appears', () => {
+    expect(analyticsFor('')).toBe(noopAnalytics)
+    expect(analyticsFor('   ')).toBe(noopAnalytics)
+    expect(sentEventNames(analyticsFor(''))).toEqual([])
     expect(document.querySelectorAll('script[data-vv-ga4]').length).toBe(0)
   })
 
-  it('refused consent: a strict no-op whatever the id', () => {
-    const a = analyticsFor('refused', id)
-    a.event('search', { results: 1, query_length: 2 })
-    expect(sentEventNames(a)).toEqual([])
-    expect(document.querySelectorAll('script[data-vv-ga4]').length).toBe(0)
-  })
-
-  it('granted WITHOUT a configured id: analytics is a no-op and no script tag appears', () => {
-    expect(analyticsFor('granted', '')).toBe(noopAnalytics)
-    expect(analyticsFor('granted', '   ')).toBe(noopAnalytics)
-    expect(sentEventNames(analyticsFor('granted', ''))).toEqual([])
-    expect(document.querySelectorAll('script[data-vv-ga4]').length).toBe(0)
-  })
-
-  it('granted WITH a configured id: the real queueing provider', () => {
-    expect(sentEventNames(analyticsFor('granted', id))).toEqual(['search', 'page_view'])
+  it('with a configured id: the real queueing provider (no consent gate — implied by use)', () => {
+    expect(sentEventNames(analyticsFor(id))).toEqual(['search', 'page_view'])
     expect(document.querySelectorAll('script[data-vv-ga4]').length).toBe(1)
   })
 })

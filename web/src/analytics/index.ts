@@ -1,12 +1,12 @@
 /**
- * The single analytics interface. Screens call THIS and nothing else; the consent-gated GA4 provider
- * (ticket #20) is plugged in behind it without a screen changing.
+ * The single analytics interface. Screens call THIS and nothing else; the GA4 provider of the notice
+ * model is plugged in behind it without a screen changing.
  *
  * Rules for event properties: simple values only; never personal data and never raw
  * user-typed text (e.g. search: send result count and query length, not the query).
  * The names and properties are documented in src/analytics/events.ts and enforced there by the
- * GA4 provider: nothing reaches Google before the visitor's consent, and with no measurement id
- * configured the interface stays exactly this no-op.
+ * GA4 provider: nothing reaches Google without a measurement id configured — in that case the
+ * interface stays exactly this no-op.
  */
 export type EventProps = Record<string, string | number | boolean>
 
