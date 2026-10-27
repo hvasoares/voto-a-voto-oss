@@ -65,6 +65,8 @@ Imported, not copied: the alias `@site/*` points to `../site/src/*` (Vite alias 
 | `npm run dev` | Astro dev server (everything bundled locally) |
 | `npm run build` | static build into `dist/` (local bundle, no CDN) |
 | `npm run build:production` | production build into `dist-production/` (CDN only if `cdn.config.json` lists libraries) |
+| `npm run test:e2e:production` | the phone suite against the production build (approved CDN origins allowed; none today) |
+| `npm run test:cdn` | CDN mechanism tests against a fake CDN (test double) and a production build that uses it |
 | `PORT=4175 npm run serve` | serve `dist/` like GitHub Pages (301 to trailing slash, 404.html for misses, honours SITE_BASE) |
 | `npm test` | vitest: pure logic, theme mapping, island behaviour in jsdom |
 | `npm run typecheck` | `tsc --noEmit` |
@@ -99,3 +101,30 @@ default `../site/fixtures/data` (committed fixtures), real data `DATA_DIR=../dat
 - **Tests**: vitest for logic and the island (jsdom); Playwright projects `phone` (fixture, includes `network.spec.ts` allow-list, `fallback.spec.ts`, no-JS case), `real`
   (real data, paths only for tiles since state pages are not ported), `capture` (screenshot for review). Baselines are not stored. Screenshot review: `../site/docs/screenshot-review-protocol.md`, reviewer in a fresh context.
 - **Network rule**: every request must be a GET to the site origin; allowed extra origins are in `e2e/helpers.ts` (`ANALYTICS_ORIGINS`, and the approved CDN origins in production mode only).
+
+## CDN (production build only)
+
+**Status: mechanism built and tested; no provider chosen, so nothing is served from a CDN today.** The provider is the user's decision.
+
+How it works (`integrations/cdn.ts`, config `cdn.config.json`):
+
+- `cdn.config.json` = `approvedOrigins` (list, EMPTY) and `libraries` (empty): per import specifier a pinned `version`, the exact `url` and an `integrity` hash.
+- With the empty default, the production build bundles everything locally (same output as the local build, tested with `npm run test:e2e:production`).
+- Development, test and screenshot builds (`BUILD_TARGET` not `production`) ignore the file and bundle from `node_modules`. The build itself never contacts a CDN: it only marks the specifiers external and writes an import map.
+- With libraries configured and `BUILD_TARGET=production` (`npm run build:production`): the browser build treats the specifiers as external and every page gets
+  `<script type="importmap">` with `imports` and `integrity` (browsers verify the hash; import-map integrity needs a current browser, older ones load without verification). Because
+  the map is per document, the island and the CDN files all resolve `react` to one URL: one copy of React.
+- The config is validated at build time (unit tests): origin in `approvedOrigins`, https (http only for loopback test doubles), integrity present, `version` equal to the installed one (server render and browser must match) and present in the URL (pinned), `react` and `react-dom` only together.
+- If the CDN is unreachable or a hash does not match, the island's code does not load: the pre-rendered page stays (title, state grid, links, footer, the search box as HTML) and a note "A busca não está disponível agora. Escolha um estado abaixo." appears (`client:interaction` directive). Tested with the origin blocked and with a tampered file (`e2e/cdn.spec.ts`).
+- One copy of React: the import map plus tests: each CDN library fetched once, no ReactDOM in local files, exactly one script on the page contains ReactDOM (also asserted for the local build in `home.spec.ts`), and the island's hooks work (two Reacts throw "invalid hook call").
+- Network allow-list (`e2e/network.spec.ts`, helpers): `E2E_MODE=local` allows the site origin and analytics origins only; `E2E_MODE=production` also allows `approvedOrigins` of the config in use. Both fail on anything else (canary tests).
+- `scripts/fake-cdn.ts` is a test double (ES builds of React served on localhost:4179 with its own hashes). It is not a provider.
+
+Candidates for the CDN: `react`, `react-dom`, `react-dom/client`, `react/jsx-runtime` (only together). Everything else stays bundled: shadcn components are copied code, Tailwind is CSS at build, `cmdk`, `radix-ui` and `lucide-react` are small, tree-shaken and tied to the components.
+
+Measured (gzip, home page after the search is used, fixture data): local bundle 102 KB of JS (`client.js` 65.0 including react-dom, `react-dom.js` 4.3, `CitySearch.js` 32.0, glue 1.1);
+with React from the CDN 34 KB served by the site (`client.js` 0.9, `CitySearch.js` 31.8, glue 1.1). About 69 KB gzip moves to the CDN (the test double's ES builds weigh 80 KB gzip for the same four modules, so a real provider's figure will differ).
+Gain only exists for visitors with a warm CDN cache; cost: one more origin (DNS, TLS), a failure mode (handled above) and a pinned-version maintenance task.
+
+To switch it on, the user decides the provider; then fill `cdn.config.json` and verify (`npm run build:production`, `npm run test:e2e:production`). To compute integrity hashes we need, per specifier, the exact pinned URL of an ES module build served with CORS
+(`curl -sL <url> | openssl dgst -sha384 -binary | openssl base64 -A`, prefixed `sha384-`). The provider's `react-dom` files must import `react` as the bare specifier or exactly our `react` URL; if they import their own copy, two Reacts would run and the one-copy test fails.

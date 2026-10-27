@@ -6,3 +6,4 @@ playwright-report/
 .captures/
 public/data/
 dist-production/
+dist-cdn-test/

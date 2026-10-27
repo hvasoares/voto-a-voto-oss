@@ -21,6 +21,7 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
     <p class="font-serif text-lead leading-[22px]">Eleição presidencial 2026, cidade por cidade.</p>
     <p class="mt-0.5 text-small leading-[14px] text-muted-foreground">Compare com 2018 e 2022.</p>
     <CitySearch client:interaction base={base} />
+    <p class="mt-1.5 text-small leading-[14px]" data-island-failed hidden>A busca não está disponível agora. Escolha um estado abaixo.</p>
     <noscript><p class="mt-1.5 text-small leading-[14px]">A busca precisa de JavaScript. Escolha um estado abaixo.</p></noscript>
     <p class="mt-1.5 text-small leading-[14px]">Ou escolha um estado. Toque para ver os municípios.</p>
     <nav class="mt-1 grid justify-center gap-px [grid-auto-rows:44px] [grid-template-columns:repeat(7,44px)]" aria-label="Estados" data-uf-grid>
