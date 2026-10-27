@@ -12,6 +12,7 @@ export const KNOWN_ROUTES = [
   '/brasil/:regiao/',
   '/mapa/',
   '/mapa/virada/',
+  '/mapa/:uf/',
   '/comparar/2022/',
   '/comparar/2018/',
   '/relatorios/',

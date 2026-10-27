@@ -54,7 +54,9 @@ export function parseMunicipalityMesh(json: unknown): MunicipalityMesh {
     if (!/^\d{7}$/.test(cdIbge) || !cdIbge.startsWith(out.cdUf)) throw new Error(`malha: codigo IBGE invalido "${cdIbge}"`)
     const s = raw as Unknown
     const p = s.p
-    if (!Array.isArray(p) || p.length < 7 || !isPt(p[0]) || !isPt(p[p.length - 1]!)) {
+    // 5+ positions = a closed ring of at least 4 distinct vertices (the coarsest municipality the
+    // 27 IBGE meshes ship at qualidade=intermediaria is exactly that; smaller would not draw).
+    if (!Array.isArray(p) || p.length < 5 || !isPt(p[0]) || !isPt(p[p.length - 1]!)) {
       throw new Error(`malha: municipio ${cdIbge} com anel invalido`)
     }
     if (p[0]!.join(',') !== (p[p.length - 1] as Pt).join(',')) throw new Error(`malha: municipio ${cdIbge} com anel aberto`)

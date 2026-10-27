@@ -38,9 +38,10 @@ test.describe('mapa on the real dataset', () => {
   test('the map view renders all 27 shapes and honours ?vista=mapa on a plain load', async ({ page }) => {
     await page.goto(`${base}mapa/?vista=mapa`)
     const svg = page.getByRole('img', { name: /^Mapa do Brasil por estado/ })
-    // The map is island-rendered after hydration; small NE states carry both a shape and a
-    // callout anchor, so wait for the shapes and assert on the DISTINCT ufs.
-    await expect(svg.locator('a[data-uf]').first()).toBeVisible()
+    // The map is island-rendered after hydration and the state mesh arrives by fetch: wait for the
+    // first shape before the anchor harvest. Small NE states carry a shape plus a callout anchor
+    // (the side value boxes are anchors too), so the pin is the DISTINCT uf count, 27.
+    await expect(svg.locator('a[data-uf]').first()).toBeVisible({ timeout: 15_000 })
     const anchors = await svg.locator('a[data-uf]').evaluateAll((els) => els.map((e) => e.getAttribute('data-uf')!))
     expect(new Set(anchors).size).toBe(27)
     await expect(svg).toContainText('SP')

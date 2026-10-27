@@ -5,6 +5,8 @@
  * `public/geo/municipios-<uf>.json`. Everything else is pure (`margins-city.ts`, `margins.ts`,
  * `scale.ts`); no election number is hard-coded here. #17 (the other UFs) reuses this loader as is.
  */
+import { existsSync, readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { createStore } from '@/data/store'
 import { diskSource } from '@/data/node'
 import { displayName } from '@/shared/city-search'
@@ -13,6 +15,7 @@ import { computeMargins, type Margins } from './margins'
 import { computeCityMargins, type CityMarginRow } from './margins-city'
 import { dataDir } from './data-dir'
 import { shortName } from './state-map-data'
+import type { MunicipalityMesh } from './municipality-geo'
 
 export interface CityMapData {
   ano: number
@@ -56,4 +59,16 @@ export function cityMapData(turnout: readonly Turnout[], votes: readonly Vote[],
     ladoBNomeCompleto: displayName(m.ladoB.nome),
     rows: cityRowsFor(m, uf, citiesOfUf, turnout, votes, ano),
   }
+}
+
+/**
+ * #17: how many of the state's dataset rows the committed mesh does not carry (e.g. Boa Esperança
+ * do Norte/MT, created after the IBGE mesh's year): those rows stay in the list with the "sem
+ * contorno" note next to the legend. Build time only (reads the committed file, never the network).
+ */
+export function semContornoOf(uf: string, rows: readonly CityMarginRow[]): number {
+  const file = resolve(process.cwd(), 'public', 'geo', `municipios-${uf}.json`)
+  if (!existsSync(file)) return rows.length
+  const mesh = JSON.parse(readFileSync(file, 'utf8')) as MunicipalityMesh
+  return rows.filter((r) => r.cdIbge !== '' && !(r.cdIbge in mesh.formas)).length
 }
