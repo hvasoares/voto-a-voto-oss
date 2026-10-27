@@ -1,0 +1,93 @@
+---
+/**
+ * The page of the calculation (#61, the Sketch frame "Fato (página do cálculo)"): the fact records of one city, cycle and round (or of
+ * its curiosities), each with its sentence, its inputs, its formula, its source and the edition. Readable without scripts: the card's
+ * "ver cálculo" link lands on the record of the figure (`#<medida>`, lit by :target). The records are the ones the card was drawn
+ * from (`lib/facts/load.ts`), so the page and the figure cannot disagree.
+ */
+import Base from '@/layouts/Base.astro'
+import '@/styles/fact.css'
+import { normalizeBase, withBase } from '@/paths'
+import { loadCityRoutes } from '@/lib/city-routes'
+import { loadCityFacts } from '@/lib/facts/load'
+import { CURIOSITIES_PAGE, type Fact } from '@/lib/facts/model'
+import { currentEdition } from '@/lib/editions-load'
+import { editionLabel, editionPath, releasePath } from '@/lib/editions'
+import { registerBootScript } from '@/lib/sentences/register-store'
+import { message } from '@/lib/sentences/catalog'
+import { CYCLES } from '@/shared/city-model'
+
+export async function getStaticPaths() {
+  const out = []
+  for (const city of await loadCityRoutes()) {
+    const found = await loadCityFacts(city.uf, city.slug)
+    if (found) for (const [page, facts] of found.pages) out.push({ params: { uf: city.uf, slug: city.slug, page }, props: { place: found.place, facts } })
+  }
+  return out
+}
+
+const { uf, slug, page } = Astro.params
+const { place, facts } = Astro.props as { place: { name: string; fixture?: boolean }; facts: Fact[] }
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const std = (key: Parameters<typeof message>[1], params?: Record<string, string | number>) => message({ locale: 'pt-BR', register: 'standard' }, key, params)
+const curiosities = page === CURIOSITIES_PAGE
+const [ano, turno] = curiosities ? [0, 0] : page!.split('-').map(Number)
+const edition = await currentEdition()
+const sub = curiosities ? std('fact.sub.curio', { city: place.name }) : std('fact.sub', { city: place.name, turno: turno!, ano: ano! })
+const back = curiosities || !CYCLES.includes(ano!) ? href(`/${uf}/${slug}/`) : `${href(`/${uf}/${slug}/`)}?ciclo=${ano}&turno=${turno}`
+const banner = place.fixture ? 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS'.replace(' · ', '  ·  ') : undefined
+const sources = [...new Map(facts.map((f) => [f.source!.url + f.source!.name, f.source!])).values()]
+const methods = [...new Map(facts.flatMap((f) => (f.method ? [[f.method.href, f.method] as const] : []))).values()]
+const title = `${std('fact.title')} · ${place.name} · Voto a Voto`
+---
+<Base title={title}>
+  <div class="screen fact-page">
+    <script is:inline set:html={registerBootScript} />
+    <header class="app-header">
+      <a class="brand" href={href('/')}>Voto a Voto</a>
+      <span class="app-header__sep" aria-hidden="true"></span>
+      <span class="app-header__context">Presidente 2026</span>
+    </header>
+    {banner && <div class="banner" role="note">{banner}</div>}
+    <main class="page__main" id="main">
+      <a class="back" href={back}>{std('fact.back')}</a>
+      <h1 class="page__title">{std('fact.title')}</h1>
+      <p class="page__subtitle">{sub}</p>
+      <div class="facts">
+        {facts.map((f) => (
+          <section class="fact" id={f.anchor} aria-labelledby={`${f.anchor}-t`} data-fact={f.id}>
+            <h2 class="fact__title" id={`${f.anchor}-t`}>{f.title}</h2>
+            {(['standard', 'plain'] as const).map((register) => <p class="fact__sentence" data-register={register}>{f.sentences[register]}</p>)}
+            <h3 class="fact__label">{std('fact.inputs')}</h3>
+            <dl class="fact__inputs">
+              {f.inputs.map((i) => (
+                <div>
+                  <dt>{i.label}{i.field && <small>{i.field}</small>}</dt>
+                  <dd>{i.value}</dd>
+                </div>
+              ))}
+            </dl>
+            <h3 class="fact__label">{std('fact.formula')}</h3>
+            <p class="fact__formula">{f.calculation!.formula}</p>
+            <ol class="fact__worked">{f.calculation!.worked.map((w) => <li>{w}</li>)}</ol>
+            {f.shown && f.shown !== f.title && <p class="fact__shown">{std('fact.shown', { value: f.shown })}</p>}
+            <p class="fact__id">{std('fact.id')}: <code>{f.id}</code></p>
+          </section>
+        ))}
+      </div>
+      <p class="fact__rounding">{std('fact.rounding')}</p>
+      <p class="fact__neutral">{std('fact.neutral')}</p>
+      <h2 class="fact__block">{std('fact.source')}</h2>
+      <ul class="fact__links">
+        {sources.map((s) => <li><a href={s.url}>{s.name} ›</a></li>)}
+        <li><a href={href(editionPath(edition.id))} data-edition-link>{std('fact.edition', { date: editionLabel(edition) })} ›</a></li>
+        <li><a href={href(`${releasePath(edition.id)}dicionario.csv`)}>dicionario.csv ›</a></li>
+        {methods.map((m) => <li><a href={m.href}>{m.name} ›</a></li>)}
+      </ul>
+    </main>
+    <footer class="source-footer" data-component="source-footer">
+      {place.fixture ? std('fact.source.fixture') : std('fact.source.tse')}<a class="source-footer__about" href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+    </footer>
+  </div>
+</Base>

@@ -74,6 +74,7 @@ store), `analytics`, `paths`, `routes`, `slots/home/uf-grid` + `search-ui`, `slo
 | `npm test` | vitest: shards (builder + data check), pure logic, theme mapping, island behaviour in jsdom |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run check:shards` | shard data check + sizes (fixture dataset); `check:shards:real` for the real `../data` |
+| `npm run check:facts` | the fact-record gate (#61) over the dataset: every record has a source and a calculation, ids are unique; `check:facts:real` for `../data`. The built site is checked by `integrations/facts-gate.ts`; see `docs/facts.md` |
 | `npm run test:e2e` | builds, serves on E2E_PORT (default 4176) and runs Playwright: project `phone` (390x844) and project `desktop` (1440x900, each spec resizes for its 390/768 checks) |
 | `npm run test:real` | same against the real dataset (`DATA_DIR=../data`); skipped when missing |
 | `npm run capture` | writes `.captures/home/default.png` (fixture state, 390x844) for the screenshot review |

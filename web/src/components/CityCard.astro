@@ -20,6 +20,9 @@ import { CYCLES, type CityResult } from '@/shared/city-model'
 import { cycleTabs, roundTabs } from '@/shared/components'
 import { viewFigures, viewSentence, viewMargin, viewArc, viewTwin, headlineId } from '@/slots/city/card'
 import { curiosityCard } from '@/slots/city/curiosities'
+import { loadCityFacts } from '@/lib/facts/load'
+import { factLinks } from '@/lib/facts/gate'
+import { CURIOSITIES_PAGE } from '@/lib/facts/model'
 import { defaultView, viewHref, viewId, type View } from '@/slots/city/city-view'
 
 interface Props {
@@ -56,6 +59,11 @@ for (const ano of CYCLES) for (const turno of [1, 2] as const) results.set(viewI
 const has = (ano: number, turno: 1 | 2) => !!results.get(viewId({ ano, turno }))
 const view = asked ?? defaultView(has)
 
+// The fact records (#61): every figure below links to its record ("ver cálculo"); factLinks fails the build for a figure with no record
+// or a record with no source or no calculation, so no number of the card is published unexplained.
+const cityFacts = (await loadCityFacts(uf, slug))!
+const linksOf = (page: string) => factLinks(cityFacts.pages.get(page) ?? [], `the city card /${uf}/${slug}/ (${page})`, base)
+
 const banner = fixture ? 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS'.replace(' · ', '  ·  ') : undefined
 const title = `${name} · ${ufLabel(city.uf)}`
 const sub = overseas ? 'Voto no exterior' : `${fixture ? 'Município fictício' : 'Município'} · ${ufLabel(city.uf)}`
@@ -87,18 +95,18 @@ const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: T
           data-uf={city.uf}
           data-slug={city.slug}
         >
-          {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} role={r ? 'group' : undefined} aria-describedby={r ? headlineId(id) : undefined} set:html={viewFigures(r, { cityName: name, overseas })} />)}
+          {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} role={r ? 'group' : undefined} aria-describedby={r ? headlineId(id) : undefined} set:html={viewFigures(r, { cityName: name, overseas }, linksOf(id))} />)}
         </div>
         {/* Under the figures from 1024 px; on a phone the CSS orders it after the twin line, before Compartilhar. A city with no fact has no card. */}
-        {facts.length > 0 && <div class="city-curio" set:html={curiosityCard(facts, 'card')} />}
+        {facts.length > 0 && <div class="city-curio" set:html={curiosityCard(facts, 'card', linksOf(CURIOSITIES_PAGE))} />}
       </div>
       <div class="city-right">
         <div class="city-words" data-city-words>
-          {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} set:html={viewSentence(r, { cityName: name, overseas }, id)} />)}
+          {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} set:html={viewSentence(r, { cityName: name, overseas }, id, linksOf(id))} />)}
         </div>
         <Fragment set:html={viewArc(arc, { cityName: name, overseas })} />
         <div class="city-margin-lines" data-city-words>
-          {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} set:html={viewMargin(r, { cityName: name, overseas })} />)}
+          {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} set:html={viewMargin(r, { cityName: name, overseas }, linksOf(id))} />)}
         </div>
         <Fragment set:html={viewTwin(twin, { cityName: name, overseas })} />
         <a class="city-share" href={`${shareBase}?ciclo=${view.ano}&turno=${view.turno}`} data-share data-base={shareBase}>Compartilhar</a>

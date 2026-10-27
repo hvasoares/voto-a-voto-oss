@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { cdn } from './integrations/cdn'
 import { desktopShell } from './integrations/desktop-shell'
 import { dataset, shardsModule } from './integrations/dataset'
+import { factsGate } from './integrations/facts-gate'
 import { interaction } from './integrations/interaction'
 import { previewImages } from './integrations/preview-images'
 import { themePlugin } from './integrations/theme'
@@ -22,7 +23,7 @@ export default defineConfig({
   // /reference/experimental-flags/parallel-prerender/) — the 23k-page real-dataset build is
   // component-render bound (72%), and single-process rendering was 2m40s of it.
   experimental: { parallelPrerender: true },
-  integrations: [dataset(), previewImages(), interaction(), cdn(), react()],
+  integrations: [dataset(), previewImages(), interaction(), cdn(), react(), factsGate()],
   vite: {
     plugins: [desktopShell(), shardsModule(), themePlugin(), tailwindcss()],
     resolve: {

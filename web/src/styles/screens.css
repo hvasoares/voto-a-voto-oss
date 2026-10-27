@@ -139,6 +139,12 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .legend__swatch--nulos { background: var(--c-nulos); }
 .legend__label { flex: 1; min-width: 0; font: 400 13px/15px var(--font-sans); overflow-wrap: anywhere; }
 .legend__value { flex: none; font-size: 11px; line-height: 14px; color: var(--c-muted); }
+/* "ver cálculo" (#61): under the legend label and after the bar titles; the accent colour passes 4.5:1 on the paper. */
+.calc { color: var(--c-accent); font: 600 10px/12px var(--font-sans); text-decoration: underline; }
+.legend__label .calc { display: block; }
+.turnout__title .calc { float: right; font-size: 11px; line-height: 16px; }
+.city-sentence + .calc, .city-margin ~ .calc { display: block; margin-top: 6px; }
+.curio__fact .calc { display: block; margin-top: 8px; }
 
 .city-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
 .city-page .app-header__context { font-size: 12px; }
@@ -160,6 +166,7 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .city-card .city-figures > .turnout__title:first-child { margin-top: 15px; }
 .city-card .bar + .turnout__title { margin-top: 17px; }
 .city-card .legend { margin-top: 12px; }
+.city-card .legend__row { height: 34px; }
 .city-page .city-headline { font: 400 18px/24px var(--font-serif); margin: 26px 0 0; }
 /* The register (linguagem simples): both sentences are pre-rendered; the choice is an attribute of <html> (set by the card's inline script before paint). */
 html[data-register="plain"] [data-register="standard"], html:not([data-register="plain"]) [data-register="plain"] { display: none; }
@@ -252,6 +259,7 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
   .city-card .legend { margin-top: 20px; }
   .city-card .legend__row { height: 34px; }
   .city-card .legend__label { flex: none; width: 228px; font-size: 15px; }
+  .legend__label .calc { display: inline; margin-left: 10px; font-size: 11px; }
   .city-card .legend__value { font-size: 13px; }
   .city-page .city-words { margin-top: 12px; }
   .city-page .city-headline { font-size: 26px; line-height: 33px; margin: 0; }

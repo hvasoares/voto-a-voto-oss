@@ -26,7 +26,7 @@ O que o script soma por rota:
 | Rota | html | css | eagerJs | islandJs | total medido |
 |---|---|---|---|---|---|
 | `/` (home) | 12 KB | 16 KB | 4.2 KB (#35/#40: era 3 KB) | 120 KB | **101.0K** |
-| `/rj/cidade-exemplo/` (cartão) | 6.2 KB (G2: +1 KB, ver abaixo; #58: a frase pronta nos dois registros; #51: a barra superior de desktop, pré-renderizada em todas as páginas; #52: a segunda coluna do cartão) | 16 KB | 3 KB | 3 KB | **15.2K** |
+| `/rj/cidade-exemplo/` (cartão) | 6.4 KB (G6: +0.2 KB, ver abaixo; G2: +1 KB, ver abaixo; #58: a frase pronta nos dois registros; #51: a barra superior de desktop, pré-renderizada em todas as páginas; #52: a segunda coluna do cartão) | 16 KB | 3 KB | 3 KB | **15.2K** |
 | `/mapa/` (tile map por estado) | 12 KB | 16 KB | 3 KB | 85 KB | **92.9K** |
 | `/relatorios/cidades-que-viraram/` (relatório) | 12 KB | 16 KB | 3 KB | 3 KB | **14.1K** |
 
@@ -41,6 +41,12 @@ da página (medido: embutir o código custou mais, 5.4 KB contra 4.9 KB de JS na
 pré-renderizado, nos dois registros, sem script e sem requisição nova: o html do cartão (`rj/cidade-exemplo/`, fixture) foi de 5179 para 6138 bytes gzip
 (+959 B): cartão de curiosidades 383 B (no celular e no desktop: o mesmo bloco; a página própria e o link de 23 B foram removidos depois, o html da cidade com cartão caiu ~22 B), linha da margem 266 B (seis vistas,
 dois registros), cidade gêmea 153 B, arco 132 B. O mínimo que cobre o medido com folga de ~0.2 KB; o resto do cartão (css, js) não mudou de orçamento.
+
+**Mudança de orçamento (G6, #61):** o `html` do cartão passou de 6.2 KB para 6.4 KB. Cada número do cartão ganhou o link "ver cálculo" (as duas barras, as cinco
+linhas da legenda, a frase e a linha da margem, nas seis vistas pré-renderizadas; o cartão de curiosidades, um por fato): o html da cidade (`rj/cidade-exemplo/`, fixture, 390x844,
+`measure.ts`) foi de 6106 para 6475 bytes gzip (+369 B; 6.32 KB, folga de 0.08 KB). Nada mais mudou na primeira carga do celular: JS 5064 B gzip (10155 raw), antes e depois;
+dados 0 B, antes e depois; CSS 15605 -> 15697 B gzip (+92 B, as regras `.calc`, no mesmo arquivo, abaixo do orçamento de 16 KB). A página do cálculo (`/fato/...`) tem o CSS dela
+(`fact.css`, só nessa página) e não tem script próprio.
 
 **G3 (#25 a #29), nenhum orçamento mudou:** as dez novas linhas da tabela de eventos (`analytics/events.ts`, com prosa) fariam o script que toda
 página carrega passar de 3.1 KB (gzip) e estourar o `eagerJs` de home, mapa e relatório. A tabela foi dividida: `analytics/event-props.ts` traz só o

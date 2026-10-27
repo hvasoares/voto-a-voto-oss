@@ -54,7 +54,9 @@ export const BUDGETS: Record<RouteId, Budget> = {
   // its second column's wrappers and the links' one-line descriptions (~0.5 KB); no script, no new request.
   // City html 5.2 -> 6.2 KB (G2, #26 #41 #31 #33): the margin line, the arc, the twin and the curiosities card are all pre-rendered text
   // in the page, in both registers (~0.95 KB gzip: curiosities 0.4, margin 0.27, twin 0.15, arc 0.13); no script, no new request.
-  city: { html: 6.2, css: 16, eagerJs: 3, islandJs: 3 },
+  // City html 6.2 -> 6.4 KB (G6, #61): the "ver cálculo" links, 54 of them in the six pre-rendered views (1 per figure, the sentence and the margin line), +369 B gzip (6106 -> 6475 B);
+  // no script, no new request, and the css grew by 92 B gzip (the .calc rules), still under its 16 KB budget (docs/perf-budgets.md).
+  city: { html: 6.4, css: 16, eagerJs: 3, islandJs: 3 },
   mapa: { html: 12, css: 16, eagerJs: 3, islandJs: 85 },
   report: { html: 12, css: 16, eagerJs: 3, islandJs: 3 },
 }

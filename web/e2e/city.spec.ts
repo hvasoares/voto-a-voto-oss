@@ -25,8 +25,8 @@ test.describe('city card: fixture route is the frame', () => {
     const t = await cardText(page)
     expect(t).toContain('Votaram · 70% do eleitorado')
     expect(t).toContain('Não votaram · 30% do eleitorado')
-    expect(t).toContain('Candidato A 36.400 · 52% dos votos')
-    expect(t).toContain('Nulos 3.600 · 12% dos que não votaram')
+    expect(t).toContain('Candidato A ver cálculo 36.400 · 52% dos votos')
+    expect(t).toContain('Nulos ver cálculo 3.600 · 12% dos que não votaram')
     expect(t).toContain('Em Cidade Exemplo, no 1º turno de 2026, 30% do eleitorado não votou, quase tanto quanto o Candidato B recebeu (33,6%).')
   })
   test('without a query the latest round of the latest cycle is shown', async ({ page }) => {
