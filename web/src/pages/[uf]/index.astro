@@ -8,6 +8,9 @@
 import { countLabel, rowMarkup, stateRows } from '@/slots/state/state-list'
 import { normalizeBase, withBase } from '@/paths'
 import Base from '@/layouts/Base.astro'
+import CityMapMap from '@/components/CityMapMap'
+import { loadCityMapData, semContornoOf } from '@/lib/city-map-data'
+import { UF_NOME } from '@/lib/uf-names'
 import { datasetFixture, loadSearchShard, loadStateShard, loadStateUfs } from '@/lib/shard-files'
 
 export async function getStaticPaths() {
@@ -25,6 +28,13 @@ const pageTitle = `Estado selecionado: ${label}`
 const banner = fixture ? 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS' : undefined
 const sub = `${fixture ? 'Município fictício' : 'Município'} · ${label}`
 const rows = stateRows(state.cities)
+// The municipality map of this state (tickets #16+#17): the same island the focused page
+// /mapa/<uf>/ hosts, filling the placeholder #4/#50 reserved. The list view comes pre-rendered;
+// the map view fetches the committed mesh (public/geo/municipios-<uf>.json) only when asked for.
+const cityMap = await loadCityMapData(uf!)
+// Defensive (no dataset today leaves a state without municipality rows): the placeholder only
+// comes out if the build really has margins for this state's municipalities.
+const showMap = cityMap.rows.length > 0
 ---
 <Base title={`${pageTitle} · Voto a Voto`}>
   <div class="screen state-page">
@@ -38,7 +48,13 @@ const rows = stateRows(state.cities)
       <a class="back" href={href('/')}>‹ Início</a>
       <h1 class="page__title">{pageTitle}</h1>
       <p class="page__subtitle">{countLabel(rows.length)}</p>
-      <div class="state-map" data-placeholder="state-map" data-ticket="16 17" data-uf={uf} data-map-area><span>Espaço do mapa de municípios</span></div>
+      <div class:list={['state-map', showMap && 'state-map--island']} data-placeholder="state-map" data-ticket="16 17" data-uf={uf} data-map-area>
+        {showMap ? (
+          <CityMapMap client:interaction base={base} data={cityMap} geoUrl={href(`/geo/municipios-${uf}.json`)} ufNome={UF_NOME[uf!] ?? label} semContorno={semContornoOf(uf!, cityMap.rows)} />
+        ) : (
+          <span>Espaço do mapa de municípios</span>
+        )}
+      </div>
       <div class="state-search" data-state-search data-uf={uf}>
         <input class="state-search__input" type="search" name="q" placeholder={`Busque sua cidade em ${label}`} aria-label={`Busque sua cidade em ${label}`} autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" />
       </div>
@@ -49,6 +65,7 @@ const rows = stateRows(state.cities)
       </ul>
       <nav class="state-links" aria-label="Mais sobre o estado">
         <a data-link="map" href={href('/mapa/')}>Ver mapa por estado ›</a>
+        <a data-link="map-municipio" href={href(`/mapa/${uf}/`)}>Ver mapa por município ›</a>
         <a data-link="cycles" href={href(`/tres-ciclos/${uf}/`)}>Ver os três ciclos do estado ›</a>
       </nav>
     </main>
@@ -56,5 +73,7 @@ const rows = stateRows(state.cities)
   </div>
   <script>
     import '@/scripts/state-search'
+    // The municipality-map island: same never-lost-tap handling as on /mapa/ and /mapa/<uf>/.
+    import '@/scripts/map-pending'
   </script>
 </Base>

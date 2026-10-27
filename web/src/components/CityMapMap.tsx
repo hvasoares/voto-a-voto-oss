@@ -36,6 +36,13 @@ export interface CityMapProps {
   geoUrl: string
   /** Display name of the state ("Rio de Janeiro"): the page's own text, not election data. */
   ufNome: string
+  /**
+   * Dataset municipalities the committed mesh does not carry (ticket #17: e.g. Boa Esperança do
+   * Norte, created after the IBGE mesh): the page counts them at build time from the mesh file, so
+   * the note is already on the pre-rendered LIST view; once the map view has the mesh, the count
+   * is recomputed from the joined shapes.
+   */
+  semContorno: number
 }
 
 type Vista = 'lista' | 'mapa'
@@ -133,7 +140,7 @@ export function placeLabels(shapes: ReturnType<typeof meshShapes>, byIbge: Map<s
 /** Pointer movement (px) under which a drag is still a tap. */
 const TAP_PX = 6
 
-export default function CityMapMap({ data, base, geoUrl, ufNome }: CityMapProps): ReactElement {
+export default function CityMapMap({ data, base, geoUrl, ufNome, semContorno }: CityMapProps): ReactElement {
   const { rows, ladoANome, ladoBNome, ladoANomeCompleto, ladoBNomeCompleto, ano, uf } = data
   const analytics = getAnalytics()
 
@@ -225,7 +232,7 @@ export default function CityMapMap({ data, base, geoUrl, ufNome }: CityMapProps)
         <MapView mesh={mesh} meshError={meshError} byIbge={byIbge} tapCd={tapCd} cityHref={cityHref} selected={selected} ladoANome={ladoANome} ladoBNome={ladoBNome} ufNome={ufNome} />
       ) : null}
 
-      <Escala rows={rows} shapes={vista === 'mapa' && mesh ? meshShapes(mesh) : null} ladoANome={ladoANome} ladoBNome={ladoBNome} />
+      <Escala rows={rows} shapes={vista === 'mapa' && mesh ? meshShapes(mesh) : null} semContorno={semContorno} ladoANome={ladoANome} ladoBNome={ladoBNome} />
       <Selecionado row={byCd.get(selected) ?? null} cityHref={cityHref} ladoANome={ladoANome} ladoBNome={ladoBNome} ladoACompleto={ladoANomeCompleto} ladoBCompleto={ladoBNomeCompleto} ano={ano} />
     </section>
   )
@@ -490,8 +497,13 @@ function MapView({
 }
 
 /** Legend: the same margin scale and numeric edges as ticket #11, plus the without-fill counts. */
-function Escala({ rows, shapes, ladoANome, ladoBNome }: { rows: CityMarginRow[]; shapes: { codarea: string }[] | null; ladoANome: string; ladoBNome: string }): ReactElement {
+function Escala({ rows, shapes, semContorno, ladoANome, ladoBNome }: { rows: CityMarginRow[]; shapes: { codarea: string }[] | null; semContorno: number; ladoANome: string; ladoBNome: string }): ReactElement {
   const semDados = rows.filter((r) => r.margin2 === null)
+  // Dataset municipalities the committed mesh does not carry (ticket #17: e.g. a municipality the
+  // IBGE created after the mesh's year): the row stays in the list; the map simply has no shape.
+  // With the mesh loaded the map view recomputes it; before that the build-time count of the page.
+  const withoutShape = shapes ? rows.filter((r) => r.cdIbge !== '' && !shapes.some((s) => s.codarea === r.cdIbge)) : []
+  const semContornoCount = shapes ? withoutShape.length : semContorno
   const legend = marginLegend()
   return (
     <figure className="mt-2 border-t border-border pt-2" data-slot="mapa-escala">
@@ -512,6 +524,11 @@ function Escala({ rows, shapes, ladoANome, ladoBNome }: { rows: CityMarginRow[];
       {semDados.length > 0 && (
         <p className="mt-1 text-small leading-[14px] text-muted-foreground" data-slot="escala-sem-dados">
           Sem cor: {semDados.length} {semDados.length === 1 ? 'município sem' : 'municípios sem'} dados do 2º turno.
+        </p>
+      )}
+      {semContornoCount > 0 && (
+        <p className="mt-1 text-small leading-[14px] text-muted-foreground" data-slot="escala-sem-contorno">
+          Sem contorno: {semContornoCount} {semContornoCount === 1 ? 'município não tem' : 'municípios não têm'} fronteira no arquivo do IBGE (o município é mais novo que a malha) e só aparece na lista.
         </p>
       )}
       <p className="mt-1 text-small leading-[14px] text-muted-foreground">Toque num município para ver os totais; a lista também repete os valores.</p>
