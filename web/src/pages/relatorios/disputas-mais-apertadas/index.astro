@@ -1,0 +1,88 @@
+---
+// "Disputas mais apertadas" (ticket #13): the closest races of the runoff, ranked by the absolute
+// difference of the two candidates' votes. No minimum-size filter — the tiny cities are the point
+// (with few voters, one vote decides), so this ranking is the exception among the reports and says
+// so. Ties and each side's lead are labelled in every row; the shown slice is a display constant,
+// the total of compared cities is computed.
+import Base from '@/layouts/Base.astro'
+import { closestRaces, computeReports } from '@/lib/reports/compute'
+import { formatInt, formatSignedPp } from '@/lib/reports/format'
+import { loadReportsData } from '@/lib/reports/load'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { displayName, ufLabel } from '@site/shared/city-search'
+import { normalizeBase, withBase } from '@site/paths'
+
+/** Rows shown; the caption states how many cities were compared in total (computed). */
+const SHOWN = 20
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const input = await loadReportsData()
+const { margins, pair } = computeReports(input)
+const lula = displayName(pair.nomePrimeiro)
+const flavio = displayName(pair.nomeSegundo)
+const races = closestRaces(margins)
+const shown = races.slice(0, SHOWN)
+const share = cn(buttonVariants({ variant: 'default' }), 'min-h-11 w-full rounded-md text-body font-bold leading-[18px] text-primary-foreground')
+const badge = 'flex size-8 flex-none items-center justify-center rounded-full bg-primary pb-px text-[13px] font-bold leading-none text-primary-foreground'
+/** The row's own words: "Empate, 1.530 a 1.530" or "Diferença de 1 voto — Lula à frente". */
+const raceLine = (r: (typeof races)[number]): string =>
+  r.diff === 0 ? `Empate: ${formatInt(r.votos.primeiro)} a ${formatInt(r.votos.segundo)} votos` : `Diferença de ${formatInt(r.diff)} ${r.diff === 1 ? 'voto' : 'votos'} — ${r.margin > 0 ? lula : flavio} à frente (${formatInt(Math.max(r.votos.primeiro, r.votos.segundo))} a ${formatInt(Math.min(r.votos.primeiro, r.votos.segundo))})`
+---
+
+<Base title="Disputas mais apertadas · Voto a Voto">
+  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pb-2 pt-16" id="main" data-page="relatorios" data-report="disputas-mais-apertadas">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px]" href={href('/relatorios/')}>‹ Relatórios</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">Disputas mais apertadas</h1>
+    <p class="mt-2 text-body leading-[21px]">
+      As menores diferenças de votos entre {lula} e {flavio} no 2º turno de 2026. Sem filtro de tamanho: em cidades
+      pequenas um punhado de votos decide, e aqui estar perto do empate é o que vale.
+    </p>
+    <p class="mt-1 text-small leading-[15px] text-muted-foreground" data-sized>
+      As {formatInt(shown.length)} menores diferenças de {formatInt(races.length)} cidades (sem os postos do exterior) · margem em pp dos votos válidos.
+    </p>
+
+    <section class="mt-2" aria-label="Disputas mais apertadas">
+      <table class="w-full border-collapse text-left" data-race-table>
+        <caption class="sr-only">A diferença de votos, os votos de cada candidato e a margem em pp de cada cidade</caption>
+        <tbody>
+          {shown.map((r, i) => (
+            <tr class="border-t border-border" data-race={`${r.nome.toLowerCase()}-${r.uf}`}>
+              <td class="w-12 py-3.5 align-middle">
+                <span class={badge}>{i + 1}</span>
+              </td>
+              <td class="py-3.5 align-middle">
+                <a class="block min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
+                  <span class="block text-body font-bold leading-[18px] text-foreground">{displayName(r.nome)}/{ufLabel(r.uf)}</span>
+                  <span class="mt-[6px] block text-small leading-[15px] text-muted-foreground">
+                    {raceLine(r)} · margem {formatSignedPp(r.margin)} · {formatInt(r.validos2)} votos válidos
+                  </span>
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+
+    <p class="mt-2 rounded-lg bg-secondary px-3 py-3 text-center text-small font-medium leading-[15px] text-secondary-foreground" data-notice>
+      <svg class="mr-1 inline-block -translate-y-px" viewBox="0 0 12 13" width="10" height="11" aria-hidden="true" focusable="false">
+        <circle cx="6" cy="6.5" r="5.8" fill="none" stroke="currentColor" stroke-width="1.4" />
+        <text x="6" y="10.4" text-anchor="middle" font-size="9.5" fill="currentColor" font-family="Georgia, serif">i</text>
+      </svg>
+      Empate = o mesmo número de votos; quem está à frente aparece em cada linha
+    </p>
+
+    <div class="mt-6 flex min-h-11 flex-col gap-2" data-share>
+      <button class={share} type="button" data-share-report>Compartilhar</button>
+      <span class="text-center text-small text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
+    </div>
+  </main>
+  <footer class="mx-auto mt-2 w-full max-w-[430px] border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+    Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+  </footer>
+  <script>
+    import '@/scripts/report-analytics'
+  </script>
+</Base>

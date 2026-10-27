@@ -4,14 +4,18 @@ import { test } from '@playwright/test'
 import { base } from './helpers'
 
 /*
- * Screenshot source for the review of the reports screens (ticket #12): 390x844, fullPage and the
- * open viewport. Output: web/.captures/reports/ (not committed, no baselines); review follows
- * site/docs/screenshot-review-protocol.md against site/reference/06-relatorios.png and
+ * Screenshot source for the review of the reports screens (tickets #12 and #13): 390x844, fullPage
+ * and the open viewport. Output: web/.captures/reports/ (not committed, no baselines); review
+ * follows site/docs/screenshot-review-protocol.md against site/reference/06-relatorios.png and
  * 07-cidades-que-viraram.png. The real-data state is captured by reports-real-data.spec.ts.
  */
 const SHOTS = [
   { slot: 'reports-hub', route: 'relatorios/', reference: 'site/reference/06-relatorios.png' },
   { slot: 'cidades-que-viraram', route: 'relatorios/cidades-que-viraram/', reference: 'site/reference/07-cidades-que-viraram.png' },
+  { slot: 'maiores-viradas', route: 'relatorios/maiores-viradas/', reference: 'site/reference/07-cidades-que-viraram.png' },
+  { slot: 'votos-ganhos-e-perdidos', route: 'relatorios/votos-ganhos-e-perdidos/', reference: 'site/reference/07-cidades-que-viraram.png' },
+  { slot: 'disputas-mais-apertadas', route: 'relatorios/disputas-mais-apertadas/', reference: 'site/reference/07-cidades-que-viraram.png' },
+  { slot: 'comparecimento', route: 'relatorios/comparecimento/', reference: 'site/reference/07-cidades-que-viraram.png' },
 ]
 
 for (const { slot, route, reference } of SHOTS) {
