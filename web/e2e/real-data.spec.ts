@@ -74,7 +74,7 @@ test.describe('home search on the real dataset', () => {
     await page.waitForLoadState('networkidle')
     expect(violations(seen, await allowedOrigins(new URL(baseURL!).origin))).toEqual([])
     const files = seen.map((r) => new URL(r.url).pathname).filter((p) => p.includes('/data/'))
-    expect(files.every((p) => p.endsWith('/cities.csv'))).toBe(true)
+    expect(files.every((p) => p.endsWith('/search.json'))).toBe(true)
   })
 
   test('works without horizontal scroll with results open', async ({ page }) => {
