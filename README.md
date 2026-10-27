@@ -11,6 +11,7 @@ Covers the 2018, 2022 and 2026 presidential elections at municipality level, wit
 - `src/voto_a_voto/munzona.py`, `cities.py` are pure parsers (open-data CSVs; city index, slugs, regions).
 - `src/voto_a_voto/dataset.py`, `reconcile.py`, `manifest.py`, `reference.py` assemble the tables, check them against the TSE's own totals and describe where they came from.
 - `src/voto_a_voto/cli.py` is the `voto-data` command (`build`, `check`).
+- `src/voto_a_voto/nonvoters.py` is the measure of ticket #24 (`make nonvoters`, note in `docs/nonvoters-vs-margin.md`): in what share of cities the people who did not vote outnumber the winning margin.
 - `scripts/munzona_to_municipios.py` is the old 2018/2022 aggregation script, kept until the new pipeline replaces it.
 
 ## Deploy

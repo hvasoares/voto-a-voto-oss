@@ -14,7 +14,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from voto_a_voto import reconcile
+from voto_a_voto import nonvoters, reconcile
 from voto_a_voto.cities import City, parse_cities
 from voto_a_voto.dataset import CycleData, Dataset, assemble, cycle_from_munzona, cycle_from_results, read_dataset, write_dataset, write_manifest
 from voto_a_voto.manifest import build_manifest, check_manifest, summarize_results_files, turnout_identity
@@ -221,7 +221,13 @@ def main(argv=None, services: Services | None = None) -> int:
     build_parser.add_argument("--cache-dir", default=".cache")
     check_parser = commands.add_parser("check", help="valida data/ sem rede")
     check_parser.add_argument("--data-dir", default="data")
+    nonvoters_parser = commands.add_parser("nonvoters", help="imprime a medida do ticket #24: não-votantes maiores que a margem, por ciclo, turno e estado")
+    nonvoters_parser.add_argument("--data-dir", default="data")
     args = parser.parse_args(argv)
+
+    if args.command == "nonvoters":
+        print(nonvoters.render(nonvoters.measure(read_dataset(args.data_dir))), end="")
+        return 0
 
     if args.command == "check":
         findings = check(Path(args.data_dir), services)

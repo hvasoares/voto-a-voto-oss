@@ -1,4 +1,4 @@
-.PHONY: test tse-scrape data data-2018 data-2022 data-2026 data-check deploy
+.PHONY: test tse-scrape data data-2018 data-2022 data-2026 data-check nonvoters deploy
 
 test:
 	uv run pytest
@@ -18,6 +18,10 @@ data-2026 data-2022 data-2018:
 # Valida data/ sem rede: hashes do manifest, contagens, identidades e totais nacionais do TSE.
 data-check:
 	uv run voto-data check
+
+# Reproduz as tabelas de docs/nonvoters-vs-margin.md (não-votantes maiores que a margem, por ciclo, turno e estado) a partir de data/.
+nonvoters:
+	uv run voto-data nonvoters
 
 # Publica: empurra main para origin (voto-a-voto-oss); o GitHub Actions constrói e publica o site no Pages.
 deploy:
