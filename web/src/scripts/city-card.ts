@@ -7,8 +7,10 @@ import { createCityTracker, parseView, viewHref, viewId, type View } from '@/slo
 
 const card = document.querySelector<HTMLElement>('[data-city-card]')
 if (card) {
-  const panels = [...card.querySelectorAll<HTMLElement>('[data-view]')]
-  const has = (ano: number, turno: number) => panels.some((p) => p.dataset.view === `${ano}-${turno}` && !p.querySelector('[data-nodata]'))
+  // Two lists of panels, one per column of the desktop layout: the figures (inside the card) and the sentences (beside it).
+  const figures = [...card.querySelectorAll<HTMLElement>('[data-view]')]
+  const panels = [...figures, ...document.querySelectorAll<HTMLElement>('[data-city-words] [data-view]')]
+  const has = (ano: number, turno: number) => figures.some((p) => p.dataset.view === `${ano}-${turno}` && !p.querySelector('[data-nodata]'))
   const path = card.dataset.path ?? location.pathname
   const tracker = createCityTracker(card.dataset.uf ?? '', card.dataset.slug ?? '', getAnalytics())
   const [ano, turno] = (card.dataset.view ?? '').split('-').map(Number) as [number, 1 | 2]

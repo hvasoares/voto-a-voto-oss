@@ -12,6 +12,7 @@ const SCREENS: Record<string, string> = {
   home: '',
   cidade: 'rj/cidade-exemplo/',
   compartilhar: 'rj/cidade-exemplo/compartilhar/?ciclo=2026&turno=1',
+  'compartilhar-sem-share': 'rj/cidade-exemplo/compartilhar/?ciclo=2026&turno=1',
   qr: 'rj/cidade-exemplo/qr/',
   estado: 'rj/',
   relatorios: 'relatorios/',
@@ -34,6 +35,9 @@ for (const [name, path] of Object.entries(SCREENS)) {
   for (const width of WIDTHS) {
     test(`capture desktop ${name} ${width}`, async ({ page }) => {
       await page.setViewportSize({ width, height: width === 390 ? 844 : 900 })
+      // The frames are the first-visit-free state and a browser without the Web Share API ("3 Compartilhar (desktop)").
+      await page.addInitScript(() => localStorage.setItem('voto-a-voto:notice', 'acknowledged'))
+      if (name === 'compartilhar-sem-share') await page.addInitScript(() => Object.defineProperty(navigator, 'share', { value: undefined, configurable: true }))
       await page.goto(base + path)
       await page.evaluate(() => document.fonts.ready)
       await page.waitForTimeout(300)

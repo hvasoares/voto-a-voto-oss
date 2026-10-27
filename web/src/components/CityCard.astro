@@ -15,7 +15,7 @@ import { cityShardResult } from '@/lib/city-shard'
 import { displayName, ufLabel } from '@/shared/city-search'
 import { CYCLES, type CityResult } from '@/shared/city-model'
 import { cycleTabs, roundTabs } from '@/shared/components'
-import { viewPanel, headlineId } from '@/slots/city/card'
+import { viewFigures, viewSentence, headlineId } from '@/slots/city/card'
 import { defaultView, viewHref, viewId, type View } from '@/slots/city/city-view'
 
 interface Props {
@@ -58,29 +58,39 @@ const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: T
     <span class="app-header__sep" aria-hidden="true"></span>
     <span class="app-header__context">Presidente 2026</span>
   </header>
-  {banner && <div class="banner" role="note">{banner}</div>}
   <main class="page__main" id={backdrop ? undefined : 'main'}>
-    <a class="back" href={href('/')}>‹ Início</a>
-    <h1 class="page__title">{name}</h1>
-    <p class="page__subtitle">{sub}</p>
-    <Fragment set:html={cycleTabs({ cycles: [...CYCLES], active: view.ano, hrefFor: (c) => viewHref(here, { ano: c, turno: view.turno }) })} />
-    <Fragment set:html={roundTabs({ active: view.turno, hrefFor: (t) => viewHref(here, { ano: view.ano, turno: t }) })} />
-    <div
-      class="city-card"
-      data-city-card
-      data-view={viewId(view)}
-      data-path={here}
-      data-uf={city.uf}
-      data-slug={city.slug}
-    >
-      {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} role={r ? 'group' : undefined} aria-describedby={r ? headlineId(id) : undefined} set:html={viewPanel(r, { cityName: name, overseas }, id)} />)}
+    {/* One column on a phone; from 1024 px two (#52): the card on the left, the sentence, Compartilhar and the links on the right. */}
+    <div class="city-body">
+      {banner && <div class="banner" role="note">{banner}</div>}
+      <div class="city-left">
+        <a class="back" href={href('/')}>‹ Início</a>
+        <h1 class="page__title">{name}</h1>
+        <p class="page__subtitle">{sub}</p>
+        <Fragment set:html={cycleTabs({ cycles: [...CYCLES], active: view.ano, hrefFor: (c) => viewHref(here, { ano: c, turno: view.turno }) })} />
+        <Fragment set:html={roundTabs({ active: view.turno, hrefFor: (t) => viewHref(here, { ano: view.ano, turno: t }) })} />
+        <div
+          class="city-card"
+          data-city-card
+          data-view={viewId(view)}
+          data-path={here}
+          data-uf={city.uf}
+          data-slug={city.slug}
+        >
+          {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} role={r ? 'group' : undefined} aria-describedby={r ? headlineId(id) : undefined} set:html={viewFigures(r, { cityName: name, overseas })} />)}
+        </div>
+      </div>
+      <div class="city-right">
+        <div class="city-words" data-city-words>
+          {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} set:html={viewSentence(r, { cityName: name, overseas }, id)} />)}
+        </div>
+        <a class="city-share" href={`${shareBase}?ciclo=${view.ano}&turno=${view.turno}`} data-share data-base={shareBase}>Compartilhar</a>
+        <nav class="city-links" aria-label="Mais sobre a cidade">
+          <a href={href('/comparar/2022/')}>Comparar com 2022 ›<span class="city-links__sub">Margem e virada desde 2022</span></a>
+          <a href={here + 'tres-ciclos/'}>Ver os três ciclos ›<span class="city-links__sub">2018, 2022 e 2026 lado a lado</span></a>
+          {overseas ? '' : <a href={href(`/${uf}/`)}>Ver o estado ›<span class="city-links__sub">Municípios do estado e mapa</span></a>}
+        </nav>
+      </div>
     </div>
-    <a class="city-share" href={`${shareBase}?ciclo=${view.ano}&turno=${view.turno}`} data-share data-base={shareBase}>Compartilhar</a>
-    <nav class="city-links" aria-label="Mais sobre a cidade">
-      <a href={href('/comparar/2022/')}>Comparar com 2022 ›</a>
-      <a href={here + 'tres-ciclos/'}>Ver os três ciclos ›</a>
-      {overseas ? '' : <a href={href(`/${uf}/`)}>Ver o estado ›</a>}
-    </nav>
   </main>
   {!backdrop && <PageDataDownload href={href(cityDataPath(SHARD_VERSION, uf, slug))} filename={`${uf}-${slug}.json`} />}
   <footer class="source-footer" data-component="source-footer">

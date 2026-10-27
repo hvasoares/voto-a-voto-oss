@@ -20,6 +20,8 @@ export interface ShareActionsProps {
   svg: string
   /** `voto-a-voto-rj-cidade-exemplo-2026-turno-1.png` (ASCII). */
   filename: string
+  /** The city's address (scheme included): what "Copiar link" copies where the browser has no system share sheet. */
+  link: string
 }
 
 const MESSAGES = {
@@ -28,14 +30,20 @@ const MESSAGES = {
   failed: 'Não foi possível compartilhar agora. Tente "Baixar imagem".',
   downloadFailed: 'Não foi possível baixar a imagem.',
   copied: 'Texto copiado.',
+  linkCopied: 'Link copiado.',
+  linkCopyFailed: 'Não foi possível copiar. Selecione o endereço e copie.',
   copyFailed: 'Não foi possível copiar. Selecione o texto e copie.',
 } as const
 
 const BTN = 'min-h-11 w-full rounded-md text-body font-bold'
+const BTN_PRIMARY = `${BTN} text-primary-foreground`
 const BTN_OUTLINE = `${BTN} border border-border bg-background text-foreground`
 
-export default function ShareActions({ text, svg, filename }: ShareActionsProps) {
+export default function ShareActions({ text, svg, filename, link }: ShareActionsProps) {
   const [mounted, setMounted] = useState(false)
+  // Feature-detected after hydration (the server cannot know): where the browser has no Web Share API (most desktop
+  // browsers) the native share button is hidden and "Copiar link" takes its place (#52).
+  const [canShare, setCanShare] = useState(true)
   const [status, setStatus] = useState('')
   const [file, setFile] = useState<File>()
   const [pngState, setPngState] = useState<'pending' | 'ready' | 'failed'>('pending')
@@ -43,6 +51,7 @@ export default function ShareActions({ text, svg, filename }: ShareActionsProps)
 
   useEffect(() => {
     setMounted(true)
+    setCanShare(typeof navigator.share === 'function')
     getAnalytics().event('share_opened', { has_picture: true })
     const ready = svgToPng(svg, filename)
     readyRef.current = ready
@@ -88,6 +97,13 @@ export default function ShareActions({ text, svg, filename }: ShareActionsProps)
     )
   }
 
+  const onCopyLink = () => {
+    void navigator.clipboard.writeText(link).then(
+      () => setStatus(MESSAGES.linkCopied),
+      () => setStatus(MESSAGES.linkCopyFailed),
+    )
+  }
+
   const onCopy = () => {
     const write = async () => {
       await navigator.clipboard.writeText(text)
@@ -101,8 +117,16 @@ export default function ShareActions({ text, svg, filename }: ShareActionsProps)
   return (
     <>
       <div className="mt-3 grid gap-2" data-share-actions data-png={pngState}>
-        <Button className={BTN} {...show(mounted)} onClick={onShare} data-act="share">
+        {!canShare && (
+          <p className="text-small leading-[17px] text-muted-foreground" data-no-share>
+            Este navegador não oferece o compartilhamento do sistema. Copie o link ou baixe a imagem.
+          </p>
+        )}
+        <Button className={BTN_PRIMARY} {...show(mounted && canShare)} onClick={onShare} data-act="share">
           Compartilhar
+        </Button>
+        <Button className={BTN_PRIMARY} {...show(mounted && !canShare && !!navigator.clipboard)} onClick={onCopyLink} data-act="copy-link">
+          Copiar link
         </Button>
         <Button variant="outline" className={BTN_OUTLINE} {...show(mounted)} onClick={onDownload} data-act="download">
           Baixar imagem
@@ -111,7 +135,8 @@ export default function ShareActions({ text, svg, filename }: ShareActionsProps)
           {status}
         </p>
       </div>
-      <div className="mt-1 border-t border-border pt-2" data-share-text data-text={text}>
+      {/* Without a system share sheet the desktop dialog is just the three actions of the frame; a narrow screen keeps the message text. */}
+      <div className={`mt-1 border-t border-border pt-2 ${canShare ? '' : 'lg:hidden'}`} data-share-text data-text={text}>
         <h2 className="text-small font-bold leading-[17px]">Texto da mensagem</h2>
         <p className="mt-1 text-body leading-[18px] wrap-anywhere" data-text-body>
           {text}

@@ -7,8 +7,10 @@ import { base, collectRequests, violations, waitReady } from './helpers'
  * the script only shows them — so switching makes no request, and the page as a whole never fetches /data/.
  */
 const city = `${base}rj/cidade-exemplo/`
-const card = (page: Page) => page.locator('[data-city-card] [data-view]:not([hidden])')
-const cardText = async (page: Page) => (await card(page).innerText()).replace(/\s+/g, ' ')
+// The card is two columns from 1024 px (#52): the figures in [data-city-card], the sentence beside it in [data-city-words].
+const card = (page: Page) => page.locator('[data-city-card] [data-view]:not([hidden]), [data-city-words] [data-view]:not([hidden])')
+const figures = (page: Page) => page.locator('[data-city-card] [data-view]:not([hidden])')
+const cardText = async (page: Page) => (await card(page).allInnerTexts()).join(' ').replace(/\s+/g, ' ')
 
 test.describe('city card: fixture route is the frame', () => {
   test('?turno=1 shows round 1 with the numbers of the Sketch frame', async ({ page }) => {
@@ -152,7 +154,7 @@ test.describe('city card without JavaScript', () => {
     await expect(card(page).locator('.legend__row')).toHaveCount(5)
     await expect(card(page).locator('.city-headline:visible')).toContainText('no 2º turno de 2026')
     await expect(page.getByRole('link', { name: 'Compartilhar' })).toBeVisible()
-    await expect(page.locator('[data-view][hidden]')).toHaveCount(5)
+    await expect(page.locator('[data-view][hidden]')).toHaveCount(10) // five other views, in both columns
   })
 })
 
@@ -164,9 +166,9 @@ test.describe('city card: the headline sentence', () => {
     const sentence = 'Em Cidade Exemplo, no 1º turno de 2026, 30% do eleitorado não votou, quase tanto quanto o Candidato B recebeu (33,6%).'
     await expect(headline(page)).toHaveText(sentence)
     await expect(card(page).locator('.city-headline__note:visible')).toHaveText('Frase gerada dos números · também o texto alternativo')
-    const panel = card(page)
+    const panel = figures(page)
     await expect(panel).toHaveAttribute('role', 'group')
-    const id = await panel.locator('.city-sentence').getAttribute('id')
+    const id = await card(page).locator('.city-sentence').getAttribute('id')
     await expect(panel).toHaveAttribute('aria-describedby', id!)
     // the legend comes before the sentence
     const [legendY, headlineY] = await Promise.all([card(page).locator('.legend').boundingBox(), headline(page).boundingBox()])
@@ -215,7 +217,7 @@ test.describe('city card: linguagem simples', () => {
     await expect(card(page).locator('.city-headline__note:visible')).toHaveText('Frase feita com os números desta página · também é a descrição do gráfico')
     // the sentence stays the card's text alternative
     const id = await card(page).locator('.city-sentence').getAttribute('id')
-    await expect(card(page)).toHaveAttribute('aria-describedby', id!)
+    await expect(figures(page)).toHaveAttribute('aria-describedby', id!)
     await expect(card(page).locator('.city-sentence')).toContainText(PLAIN)
     await expect(sentence(page)).not.toContainText('eleitorado')
   })

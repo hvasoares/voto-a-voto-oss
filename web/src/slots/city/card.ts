@@ -22,14 +22,26 @@ export function registerSwitch(locale = DEFAULT_LOCALE): Raw {
 }
 
 /**
- * What the card shows for one view: bars, legend, the register switch and the headline sentence in both registers
- * (CSS shows the one the reader chose; no script is needed for the standard one), or the neutral no-data notice.
+ * What the card shows for one view, in two parts so the desktop layout can put them in two columns (#52): the figures
+ * (bars and legend, or the neutral no-data notice) and the words (the register switch and the headline sentence in both
+ * registers; CSS shows the one the reader chose and no script is needed for the standard one). On a phone they stack
+ * in the old order: bars, legend, switch, sentence.
  */
-export function viewPanel(result: CityResult | undefined, place: Place, view: string): Raw {
-  const locale = place.locale ?? DEFAULT_LOCALE
+export function viewFigures(result: CityResult | undefined, place: Place): Raw {
   if (!result) return html`${voices(place).map((v) => html`<p class="city-nodata" data-nodata data-register="${v.register}">${headline(undefined, v.place)}</p>`)}`
+  return html`<div class="city-figures">${turnoutBar(toTurnoutBarProps(result))}<ul class="legend" aria-label="Legenda">${toLegendRows(result).map(candidateRow)}</ul></div>`
+}
+
+export function viewSentence(result: CityResult | undefined, place: Place, view: string): Raw {
+  if (!result) return html``
+  const locale = place.locale ?? DEFAULT_LOCALE
   const sentence = voices(place).map(
     (v) => html`<div data-register="${v.register}"><p class="city-headline" data-headline>${headline(result, v.place)}</p><p class="city-headline__note">${message({ locale, register: v.register }, 'headline.note')}</p></div>`,
   )
-  return html`${turnoutBar(toTurnoutBarProps(result))}<ul class="legend" aria-label="Legenda">${toLegendRows(result).map(candidateRow)}</ul>${registerSwitch(locale)}<div class="city-sentence" id="${headlineId(view)}" aria-live="polite">${sentence}</div>`
+  return html`${registerSwitch(locale)}<div class="city-sentence" id="${headlineId(view)}" aria-live="polite">${sentence}</div>`
+}
+
+/** Both parts in one string: what the card showed before the two columns (the phone order). */
+export function viewPanel(result: CityResult | undefined, place: Place, view: string): Raw {
+  return html`${viewFigures(result, place)}${viewSentence(result, place, view)}`
 }

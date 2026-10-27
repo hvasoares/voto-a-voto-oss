@@ -9,6 +9,7 @@ import { saveBlob } from '@/lib/share-raster'
 
 const SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1070"><rect width="1080" height="1070"/></svg>'
 const TEXT = 'Resultado de Cidade Exemplo/RJ, 2026, 1º turno: Candidato A 52% · Candidato B 48% dos votos válidos; 30% do eleitorado não votou. https://votoavoto.exemplo.br/rj/cidade-exemplo/'
+const LINK = 'https://votoavoto.exemplo.br/rj/cidade-exemplo/'
 const FILENAME = 'voto-a-voto-rj-cidade-exemplo-2026-turno-1.png'
 
 vi.mock('@/lib/share-raster', async (importOriginal) => {
@@ -32,13 +33,13 @@ function setup(nav: Record<string, unknown> = {}, withUser = true) {
   const recorder: Analytics = { pageView() {}, event: (n, p) => void events.push([n, p]) }
   setAnalytics(recorder)
   vi.stubGlobal('navigator', { ...nav })
-  render(<ShareActions text={TEXT} svg={SVG} filename={FILENAME} />)
+  render(<ShareActions text={TEXT} svg={SVG} filename={FILENAME} link={LINK} />)
   return withUser ? userEvent.setup() : undefined
 }
 
 describe('the ShareActions island (ticket #7)', () => {
   it('the pre-rendered (server) HTML has the buttons hidden: without JavaScript they are not offered', () => {
-    const html = renderToStaticMarkup(<ShareActions text={TEXT} svg={SVG} filename={FILENAME} />)
+    const html = renderToStaticMarkup(<ShareActions text={TEXT} svg={SVG} filename={FILENAME} link={LINK} />)
     expect(html).toMatch(/hidden[^>]*data-act="share"|data-act="share"[^>]*hidden/)
     expect(html).toMatch(/Compartilhar/)
     expect(html).toMatch(/data-text-body/)
@@ -92,12 +93,44 @@ describe('the ShareActions island (ticket #7)', () => {
     expect(events.filter(([n]) => n !== 'share_opened')).toEqual([['image_downloaded', { how: 'share_fallback' }]])
   })
 
-  it('with no share API at all, Compartilhar is the plain download fallback', async () => {
-    const user = setup()
-    await user.click(screen.getByRole('button', { name: 'Compartilhar' }))
-    await vi.waitFor(() => expect(screen.getByText(/Imagem baixada/)).toBeTruthy())
-    expect(saveBlob).toHaveBeenCalledWith(expect.any(File), FILENAME)
-    expect(events).toEqual([['share_opened', { has_picture: true }], ['image_downloaded', { how: 'no_share_api' }]])
+  describe('without the Web Share API (most desktop browsers, #52)', () => {
+    it('hides the native share button and offers Copiar link, Baixar imagem and the explanation instead', async () => {
+      setup({ clipboard: { writeText: () => Promise.resolve() } as unknown as Clipboard }, false)
+      await vi.waitFor(() => expect(screen.getByRole('button', { name: 'Copiar link' })).toBeTruthy())
+      expect(screen.queryByRole('button', { name: 'Compartilhar' })).toBeNull()
+      expect(screen.getByRole('button', { name: 'Baixar imagem' })).toBeTruthy()
+      expect(document.querySelector('[data-no-share]')?.textContent).toContain('Este navegador não oferece o compartilhamento do sistema')
+    })
+
+    it('"Copiar link" copies the city address (not the message) and says so', async () => {
+      const written: string[] = []
+      setup({ clipboard: { writeText: (t: string) => (written.push(t), Promise.resolve()) } as unknown as Clipboard }, false)
+      fireEvent.click(await screen.findByRole('button', { name: 'Copiar link' }))
+      await vi.waitFor(() => expect(screen.getByText('Link copiado.')).toBeTruthy())
+      expect(written).toEqual([LINK])
+    })
+
+    it('"Baixar imagem" still downloads the PNG, and the message text stays for narrow screens', async () => {
+      const user = setup({ clipboard: { writeText: () => Promise.resolve() } as unknown as Clipboard })
+      await user.click(await screen.findByRole('button', { name: 'Baixar imagem' }))
+      await vi.waitFor(() => expect(screen.getByText(/Imagem baixada/)).toBeTruthy())
+      expect(saveBlob).toHaveBeenCalledWith(expect.any(File), FILENAME)
+      expect(events).toEqual([['share_opened', { has_picture: true }], ['image_downloaded', { how: 'download_button' }]])
+      expect(document.querySelector('[data-share-text]')?.className).toContain('lg:hidden')
+    })
+
+    it('a failed copy says so', async () => {
+      setup({ clipboard: { writeText: () => Promise.reject(new Error('no')) } as unknown as Clipboard }, false)
+      fireEvent.click(await screen.findByRole('button', { name: 'Copiar link' }))
+      await vi.waitFor(() => expect(screen.getByText(/Não foi possível copiar/)).toBeTruthy())
+    })
+  })
+
+  it('with the Web Share API the native button shows and Copiar link does not', async () => {
+    setup({ canShare: () => true, share: async () => {}, clipboard: { writeText: () => Promise.resolve() } as unknown as Clipboard }, false)
+    expect(screen.getByRole('button', { name: 'Compartilhar' }).getAttribute('hidden')).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Copiar link' })).toBeNull()
+    expect(document.querySelector('[data-no-share]')).toBeNull()
   })
 
   it('"Baixar imagem" downloads the PNG, says so and emits image_downloaded', async () => {

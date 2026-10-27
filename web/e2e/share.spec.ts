@@ -124,11 +124,13 @@ test.describe('share: the system share sheet', () => {
 })
 
 test.describe('share: download fallback', () => {
-  test('without a share API, "Compartilhar" downloads the PNG and the text stays on the page with a copy button', async ({ page }) => {
+  test('without a share API the native button is hidden; "Baixar imagem" downloads the PNG and the message text stays on a narrow screen with a copy button', async ({ page }) => {
     const errors = watch(page)
     await open(page, 'none')
+    await expect(page.getByRole('button', { name: 'Compartilhar' })).toBeHidden()
+    await expect(page.locator('[data-no-share]')).toContainText('Este navegador não oferece o compartilhamento do sistema')
     const dl = page.waitForEvent('download')
-    await page.getByRole('button', { name: 'Compartilhar' }).click()
+    await page.getByRole('button', { name: 'Baixar imagem' }).click()
     const d = await dl
     expect(d.suggestedFilename()).toBe(FILENAME)
     const fs = await import('node:fs/promises')
@@ -138,6 +140,14 @@ test.describe('share: download fallback', () => {
     await expect(page.locator('[data-text-body]')).toContainText(`${URL_TEXT}rj/cidade-exemplo/`)
     await expect(page.getByRole('button', { name: 'Copiar texto' })).toBeAttached()
     expect(errors).toEqual([])
+  })
+
+  test('without a share API "Copiar link" copies the city address', async ({ page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+    await open(page, 'none')
+    await page.getByRole('button', { name: 'Copiar link' }).click()
+    await expect(page.locator('[data-status]')).toHaveText('Link copiado.')
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(`${URL_TEXT}rj/cidade-exemplo/`)
   })
 
   test('"Baixar imagem" downloads the PNG even when sharing works', async ({ page }) => {

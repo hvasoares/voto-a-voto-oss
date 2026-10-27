@@ -72,7 +72,7 @@ export default function ShareSheet({ uf, slug, view, initial, origin, base, fixt
     <>
       {content ? (
         <div
-          className="mx-auto mt-2 flex-none [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
+          className="mx-auto mt-2 flex-none md:max-w-[240px] [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
           data-share-picture
           dangerouslySetInnerHTML={{ __html: pictureSvg(content, register) }}
         />
@@ -82,7 +82,7 @@ export default function ShareSheet({ uf, slug, view, initial, origin, base, fixt
         </p>
       )}
       {content && <p className="mt-3 text-small leading-[17px] text-muted-foreground" data-note>{NOTE}</p>}
-      {content && <ShareActions text={content.variants[register].text} svg={pictureSvg(content, register)} filename={content.filename} />}
+      {content && <ShareActions text={content.variants[register].text} svg={pictureSvg(content, register)} filename={content.filename} link={content.url} />}
     </>
   )
 }

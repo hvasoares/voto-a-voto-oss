@@ -14,12 +14,12 @@ if (host) {
   const events = ['focusin', 'pointerdown', 'keydown']
   const mount = async (): Promise<void> => {
     for (const e of events) host.removeEventListener(e, mount)
-    const typed = host.querySelector('input')?.value ?? ''
     try {
       // A sibling entry the build emits (integrations/desktop-shell.ts), addressed by file name so this module needs no bundler preload helper.
       const file = import.meta.env.DEV ? 'topbar-search.ts' : 'topbar-search.js'
       const { mount } = (await import(/* @vite-ignore */ new URL(file, import.meta.url).href)) as typeof import('./topbar-search')
-      mount(host, typed)
+      // Read what was typed only now: keys pressed while the module loaded are still in the plain field.
+      mount(host, host.querySelector('input')?.value ?? '')
     } catch (error) {
       // The pre-rendered field stays; say so where Home says it (the page's own search shows the same note).
       console.error('top bar search failed to load', error)

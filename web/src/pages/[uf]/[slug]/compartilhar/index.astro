@@ -45,6 +45,9 @@ const closeHref = href(`/${uf}/${slug}/`)
       <CityCard uf={uf!} slug={slug!} backdrop />
     </div>
 
+    {/* From 768 px the sheet is a centered dialog over a dimmed page (from 1024 px the top bar stays above the dimming). */}
+    <div class="fixed inset-0 z-40 hidden bg-[rgba(28,27,24,0.45)] md:block lg:top-16" aria-hidden="true" data-share-dim></div>
+
     <section
       data-share-sheet
       id="main"
@@ -52,17 +55,17 @@ const closeHref = href(`/${uf}/${slug}/`)
       data-slug={city.slug}
       data-view={`${view.ano}-${view.turno}`}
       data-filename={content?.filename}
-      class="fixed inset-x-0 bottom-0 z-50 max-h-[100dvh] overflow-y-auto rounded-t-2xl border border-border bg-background px-5 pt-2 pb-6 shadow-[0_-4px_16px_rgba(28,27,24,0.25)]"
+      class="fixed inset-x-0 bottom-0 z-50 max-h-[100dvh] overflow-y-auto rounded-t-2xl border border-border bg-background px-5 pt-2 pb-6 shadow-[0_-4px_16px_rgba(28,27,24,0.25)] md:inset-x-auto md:bottom-auto md:left-1/2 md:top-[110px] md:max-h-[calc(100dvh-140px)] md:w-[480px] md:-translate-x-1/2 md:rounded-2xl md:px-7 md:pb-7 md:pt-6"
     >
-    <span class="mx-auto block h-1.5 w-16 rounded-full bg-muted" aria-hidden="true"></span>
+    <span class="mx-auto block h-1.5 w-16 rounded-full bg-muted md:hidden" aria-hidden="true"></span>
     <div class="flex items-baseline justify-between">
       <h1 class="font-serif text-title font-normal leading-[30px]">Compartilhar resultado</h1>
-      <a class="min-h-11 px-1 pt-1 text-body font-bold" href={closeHref} data-close>Fechar</a>
+      <a class="min-h-11 px-1 pt-1 text-body font-bold" href={closeHref} data-close>Fechar<span class="hidden md:inline" aria-hidden="true"> ×</span></a>
     </div>
     <ShareSheet client:idle uf={city.uf} slug={city.slug} view={view} initial={content} origin={siteOrigin()} base={base} fixture={fixture} />
     {/* Mostrar QR floats this city's canonical link scannably (route /:uf/:slug/qr/); it does not depend on
       * the round, so it renders even when the view has no result. */}
-    <a class="mt-2 flex min-h-11 w-full items-center justify-center rounded-md border border-border bg-background text-body font-bold" href={href(`/${uf}/${slug}/qr/`)} data-qr-link>
+    <a class="mt-2 flex min-h-11 w-full items-center justify-center rounded-md border border-border bg-background text-body font-bold text-foreground" href={href(`/${uf}/${slug}/qr/`)} data-qr-link>
       Mostrar QR
     </a>
     <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
