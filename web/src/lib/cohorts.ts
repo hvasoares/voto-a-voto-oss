@@ -64,10 +64,12 @@ export function outcomeOf(runoff: RunoffCityVotes | undefined, pair: readonly [n
   return { kind: 'tie' }
 }
 
-/** Labels of one candidate: the group word of the cards ("PT", "Bolsonaro") and the person of the bars ("Lula"). */
+/** Labels of one candidate: the group word of the cards ("PT", "Bolsonaro"), the person of the bars ("Lula") and the camp a collapse looks at. */
 export interface PersonLabel {
   group: string
   person: string
+  /** The political camp the candidate stands for, across cycles ("PT" camps Haddad and Lula; "Bolsonaro" camps number 17 and 22). */
+  camp: string
 }
 
 /** One candidate of the 2026 bars of a group: decided cities and the one-decimal share of the group's cities. */
@@ -88,7 +90,7 @@ export interface CohortGroup {
   validos2026: number
   /** Cities of the group that tied in 2026: counted here, outside the bars. */
   ties2026: number
-  /** The decided cities by candidate, most votes first; percentages of the group's cities. */
+  /** The decided cities by candidate, in election order; percentages of the group's decided cities. */
   parts: OutcomePart[]
 }
 
@@ -134,13 +136,13 @@ export interface CohortReport {
  * Anything not listed falls back to the candidates.csv fields (party as the group word, ballot name
  * as the person), which is what the fixture dataset renders (Candidato A/B, parties PA/PB).
  */
-const DISPLAY: Record<string, { group: string; person: string }> = {
-  '2018|13': { group: 'PT', person: 'Haddad' },
-  '2018|17': { group: 'Bolsonaro', person: 'Bolsonaro' },
-  '2022|13': { group: 'Lula', person: 'Lula' },
-  '2022|22': { group: 'Bolsonaro', person: 'Bolsonaro' },
-  '2026|13': { group: 'Lula', person: 'Lula' },
-  '2026|22': { group: 'Flavio', person: 'Flavio' },
+const DISPLAY: Record<string, { group: string; person: string; camp: string }> = {
+  '2018|13': { group: 'PT', person: 'Haddad', camp: 'PT' },
+  '2018|17': { group: 'Bolsonaro', person: 'Bolsonaro', camp: 'Bolsonaro' },
+  '2022|13': { group: 'Lula', person: 'Lula', camp: 'PT' },
+  '2022|22': { group: 'Bolsonaro', person: 'Bolsonaro', camp: 'Bolsonaro' },
+  '2026|13': { group: 'Lula', person: 'Lula', camp: 'PT' },
+  '2026|22': { group: 'Flavio', person: 'Flavio', camp: 'Bolsonaro' },
 }
 
 const titleCase = (name: string): string =>
@@ -160,7 +162,7 @@ export function candidateLabels(candidates: readonly CandidateRowLike[]): Record
   for (const c of candidates) {
     if (c.turno !== 2) continue
     const key = `${c.ano}|${c.candidatoNumero}`
-    out[key] = DISPLAY[key] ?? { group: c.partido || titleCase(c.nomeUrna), person: titleCase(c.nomeUrna) }
+    out[key] = DISPLAY[key] ?? { group: c.partido || titleCase(c.nomeUrna), person: titleCase(c.nomeUrna), camp: c.partido || titleCase(c.nomeUrna) }
   }
   return out
 }
@@ -183,8 +185,8 @@ export function sharesOneDecimal(cities: readonly number[]): number[] {
   return largestRemainder(cities, 1000).map((tenths) => tenths / 10)
 }
 
-const groupTitle = (l18: string, l22: string): string =>
-  l18 === l22 ? `Venceu em 2018 e 2022: ${l18}` : `Venceu em 2018: ${l18}. Em 2022: ${l22}`
+const groupTitle = (same: boolean, l18: string, l22: string): string =>
+  same ? `Venceu em 2018 e 2022: ${l18}` : `Venceu em 2018: ${l18}. Em 2022: ${l22}`
 
 export function buildCohorts(input: CohortInput, labels: Record<string, PersonLabel>): CohortReport {
   const [c2018, c2022, c2026] = [input.runoffCandidates[2018], input.runoffCandidates[2022], input.runoffCandidates[2026]]
@@ -200,6 +202,11 @@ export function buildCohorts(input: CohortInput, labels: Record<string, PersonLa
     const l = labels[`${ano}|${candidate}`]
     if (!l) throw new Error(`cohorts: no label for candidate ${candidate} of ${ano} at TSE code ${code}`)
     return l.group
+  }
+  const campOf = (ano: Cycle, candidate: number, code: number): string => {
+    const l = labels[`${ano}|${candidate}`]
+    if (!l) throw new Error(`cohorts: no label for candidate ${candidate} of ${ano} at TSE code ${code}`)
+    return l.camp
   }
 
   interface Bucket {
@@ -262,20 +269,22 @@ export function buildCohorts(input: CohortInput, labels: Record<string, PersonLa
   const groups: CohortGroup[] = [...buckets.values()]
     .sort((a, b) => b.cities - a.cities || a.winner2018 - b.winner2018 || a.winner2022 - b.winner2022)
     .map((g) => {
-      // Sort candidates by decided cities (most first) so the bar reads winner-first like the
-      // frame; the pair index keeps the election order on ties.
-      const candidates = rc[2026]
-        .map((candidate, pairIndex) => ({ candidate, pairIndex, cities: g.decided.get(candidate) ?? 0 }))
-      candidates.sort((a, b) => b.cities - a.cities || a.pairIndex - b.pairIndex)
-      const shares = sharesOneDecimal(candidates.map((p) => p.cities))
-      const parts: OutcomePart[] = candidates.map((p, i) => ({
-        candidate: p.candidate,
-        label: person2026(p.candidate),
-        cities: p.cities,
-        pct: shares[i]!,
+      // Segments in ELECTION order, as the frame draws them (13 first, then 22): the swatch of a
+      // candidate keeps its side of the bar and the legend keeps its order winner or not.
+      const parts: OutcomePart[] = rc[2026].map((candidate) => ({
+        candidate,
+        label: person2026(candidate),
+        cities: g.decided.get(candidate) ?? 0,
+        pct: 0,
       }))
+      const shares = sharesOneDecimal(parts.map((p) => p.cities))
+      parts.forEach((p, i) => (p.pct = shares[i]!))
       return {
-        title: groupTitle(groupLabel(2018, g.winner2018, 0), groupLabel(2022, g.winner2022, 0)),
+        // Collapse on the camp, not the number: the frame says "Venceu em 2018 e 2022: PT" for the
+        // 2018-Haddad cohort (13 then 13, though 2018's name is Haddad) and "Venceu em 2018 e 2022:
+        // Bolsonaro" for 17 then 22; the crossed cohorts keep each cycle's own name ("Venceu em
+        // 2018: PT. Em 2022: Lula", "Venceu em 2018: Bolsonaro. Em 2022: Lula").
+        title: groupTitle(campOf(2018, g.winner2018, 0) === campOf(2022, g.winner2022, 0), groupLabel(2018, g.winner2018, 0), groupLabel(2022, g.winner2022, 0)),
         winner2018: g.winner2018,
         winner2022: g.winner2022,
         cities: g.cities,

@@ -44,7 +44,7 @@ function input(spec: CitySpec, parties?: Record<number, string>): { input: Cohor
   const labels: Record<string, PersonLabel> = {}
   for (const ano of [2018, 2022, 2026] as const)
     for (const [i, n] of RUNOFF_CANDIDATES[ano].entries())
-      labels[`${ano}|${n}`] = { group: parties?.[n] ?? `Partido ${i}`, person: `Candidato ${n}` }
+      labels[`${ano}|${n}`] = { group: parties?.[n] ?? `Partido ${i}`, person: `Candidato ${n}`, camp: parties?.[n] ?? `Camp ${i}` }
   return { input: { votes, runoffCandidates: RUNOFF_CANDIDATES, cities }, labels }
 }
 
@@ -80,7 +80,7 @@ describe('pure model: groups, ties and totals', () => {
     const g = r.groups[0]!
     expect(g.cities).toBe(2)
     expect(g.ties2026).toBe(1)
-    expect(rows(g)).toEqual([[22, 1, 100], [13, 0, 0]])
+    expect(rows(g)).toEqual([[13, 0, 0], [22, 1, 100]])
     expect(g.cities).toBe(g.parts.reduce((n, p) => n + p.cities, 0) + g.ties2026) // os totais fecham
   })
 
@@ -167,17 +167,17 @@ describe('rounding and labels', () => {
       { ano: 2026, turno: 2, candidatoNumero: 13, nomeUrna: 'LULA', partido: 'PT' },
       { ano: 2026, turno: 2, candidatoNumero: 22, nomeUrna: 'FLAVIO BOLSONARO', partido: 'PL' },
     ])
-    expect(fixed['2018|13']).toEqual({ group: 'PT', person: 'Haddad' })
-    expect(fixed['2018|17']).toEqual({ group: 'Bolsonaro', person: 'Bolsonaro' })
-    expect(fixed['2022|13']).toEqual({ group: 'Lula', person: 'Lula' })
-    expect(fixed['2022|22']).toEqual({ group: 'Bolsonaro', person: 'Bolsonaro' })
-    expect(fixed['2026|13']).toEqual({ group: 'Lula', person: 'Lula' })
-    expect(fixed['2026|22']).toEqual({ group: 'Flavio', person: 'Flavio' })
+    expect(fixed['2018|13']).toEqual({ group: 'PT', person: 'Haddad', camp: 'PT' })
+    expect(fixed['2018|17']).toEqual({ group: 'Bolsonaro', person: 'Bolsonaro', camp: 'Bolsonaro' })
+    expect(fixed['2022|13']).toEqual({ group: 'Lula', person: 'Lula', camp: 'PT' })
+    expect(fixed['2022|22']).toEqual({ group: 'Bolsonaro', person: 'Bolsonaro', camp: 'Bolsonaro' })
+    expect(fixed['2026|13']).toEqual({ group: 'Lula', person: 'Lula', camp: 'PT' })
+    expect(fixed['2026|22']).toEqual({ group: 'Flavio', person: 'Flavio', camp: 'Bolsonaro' })
     const fixture = candidateLabels([
       { ano: 2026, turno: 2, candidatoNumero: 91, nomeUrna: 'Candidato A', partido: 'PA' },
       { ano: 2026, turno: 1, candidatoNumero: 91, nomeUrna: 'Candidato A (1º turno, nunca usado aqui)', partido: 'PA' },
     ])
-    expect(fixture['2026|91']).toEqual({ group: 'PA', person: 'Candidato A' })
+    expect(fixture['2026|91']).toEqual({ group: 'PA', person: 'Candidato A', camp: 'PA' })
     expect(fixture['2026|93']).toBeUndefined() // not a runoff candidate
   })
 
@@ -208,19 +208,19 @@ describe('real data (data/, committed): the reference cohort table', () => {
     expect(rows(await byKey(13, 13))).toEqual([[13, 2613, 94.9], [22, 141, 5.1]])
     expect((await byKey(13, 13)).ties2026).toBe(1)
     expect([(await byKey(17, 22)).cities, (await byKey(17, 22)).validos2026]).toEqual([2391, 64886493])
-    expect(rows(await byKey(17, 22))).toEqual([[22, 2364, 98.9], [13, 27, 1.1]])
+    expect(rows(await byKey(17, 22))).toEqual([[13, 27, 1.1], [22, 2364, 98.9]])
     expect([(await byKey(17, 13)).cities, (await byKey(17, 13)).validos2026]).toEqual([368, 17479900])
     expect(rows(await byKey(17, 13))).toEqual([[13, 231, 62.8], [22, 137, 37.2]])
     expect([(await byKey(13, 22)).cities, (await byKey(13, 22)).validos2026]).toEqual([54, 372409])
-    expect(rows(await byKey(13, 22))).toEqual([[22, 50, 92.6], [13, 4, 7.4]])
+    expect(rows(await byKey(13, 22))).toEqual([[13, 4, 7.4], [22, 50, 92.6]])
   })
 
   it('names the groups the way the frame does, with the labels of the 2026 runoff in the bars', async () => {
     const r = await report
-    // The reference table (PT→Lula): 2018's runoff was Haddad (named by party), later ones by name;
-    // equal labels collapse to "Venceu em 2018 e 2022" (Bolsonaro/Bolsonaro).
+    // The frame collapses equal labels (17 then 22 are the same person: "Bolsonaro"), but keeps
+    // different ones apart (2018's "13" was Haddad: "Venceu em 2018: PT. Em 2022: Lula").
     expect(r.groups.map((g) => g.title)).toEqual([
-      'Venceu em 2018: PT. Em 2022: Lula',
+      'Venceu em 2018 e 2022: PT',
       'Venceu em 2018 e 2022: Bolsonaro',
       'Venceu em 2018: Bolsonaro. Em 2022: Lula',
       'Venceu em 2018: PT. Em 2022: Bolsonaro',
