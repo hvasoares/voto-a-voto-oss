@@ -32,6 +32,7 @@ test.describe('home: content', () => {
       ['Mapa por estado', 'mapa/'],
       ['Relatórios', 'relatorios/'],
       ['Três ciclos por estado', 'tres-ciclos/mt/'],
+      ['Meu Brasil', 'meu-brasil/'],
     ] as const) {
       await expect(page.getByRole('link', { name: new RegExp(label) })).toHaveAttribute('href', base + href)
     }

@@ -63,9 +63,9 @@ export default function PlacePicker({ base, label, value, onPick, onClear, place
 
   return (
     <div className="relative" data-place-picker>
-      <Command shouldFilter={false} label={label} className={`h-auto overflow-visible rounded-none bg-transparent p-0 ${FIELD}`} onKeyDown={(e) => e.key === 'Escape' && (setText(undefined), setOpen(false))}>
+      <Command shouldFilter={false} label={label} className={`h-auto overflow-visible rounded-none bg-transparent p-0 ${FIELD} ${inside ? 'lg:[&_[data-slot=input-group]]:h-14!' : ''}`} onKeyDown={(e) => e.key === 'Escape' && (setText(undefined), setOpen(false))}>
         {inside ? (
-          <span className="pointer-events-none absolute left-3 top-[6px] z-10 text-[10px] uppercase leading-3 tracking-[0.04em] text-muted-foreground">{label}</span>
+          <span className="pointer-events-none absolute left-3 top-[6px] z-10 lg:top-2 text-[10px] uppercase leading-3 tracking-[0.04em] text-muted-foreground">{label}</span>
         ) : (
           <span className="mb-1 block text-[10px] uppercase leading-3 tracking-[0.04em] text-muted-foreground" aria-hidden="true">{label}</span>
         )}
@@ -83,10 +83,10 @@ export default function PlacePicker({ base, label, value, onPick, onClear, place
             autoCapitalize="off"
             spellCheck={false}
             enterKeyHint="search"
-            className={inside ? "h-full px-3 pt-[14px] pb-0 text-body! font-bold leading-[18px]" : "h-full px-3 text-body! leading-[18px]"}
+            className={inside ? "h-full px-3 pt-[14px] pb-0 text-body! font-bold leading-[18px] lg:pt-5" : "h-full px-3 text-body! leading-[18px]"}
           />
           {onClear && value && (
-            <button type="button" className="absolute right-0 top-0 flex h-12 w-12 items-center justify-center text-muted-foreground" aria-label={`Remover ${label.toLowerCase()}`} onClick={onClear}>
+            <button type="button" className="absolute right-0 top-0 flex h-11 w-12 lg:h-14 items-center justify-center text-muted-foreground" aria-label={`Remover ${label.toLowerCase()}`} onClick={onClear}>
               <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false"><path d="M1 1 11 11M11 1 1 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
             </button>
           )}

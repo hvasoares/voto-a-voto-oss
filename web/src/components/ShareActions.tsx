@@ -55,12 +55,17 @@ export default function ShareActions({ text, svg, filename, link, primaryLabel =
   const [file, setFile] = useState<File>()
   const [pngState, setPngState] = useState<'pending' | 'ready' | 'failed'>('pending')
   const readyRef = useRef<Promise<File | undefined>>(Promise.resolve(undefined))
+  // The picture can change under the actions (Meu Brasil redraws it for every place): the opening is counted once.
+  const opened = useRef(false)
 
   useEffect(() => {
     setMounted(true)
     setCanShare(typeof navigator.share === 'function')
-    getAnalytics().event('share_opened', { has_picture: true })
-    onOpened?.()
+    if (!opened.current) {
+      opened.current = true
+      getAnalytics().event('share_opened', { has_picture: true })
+      onOpened?.()
+    }
     const ready = svgToPng(svg, filename)
     readyRef.current = ready
     void ready.then(

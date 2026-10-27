@@ -173,6 +173,18 @@ export const EVENTS: EventDoc[] = [
     emitted: ['src/components/RecapShare.tsx'],
   },
   {
+    name: 'meu_brasil_place_added',
+    description: 'A place was chosen in Meu Brasil (never its name: the role and how many places the card has now).',
+    props: { role: 'mora | vota | nasceu', places: 'How many places the card has' },
+    emitted: ['src/components/MeuBrasil.tsx'],
+  },
+  {
+    name: 'meu_brasil_shared',
+    description: 'The Meu Brasil card was shared (the native sheet reported "shared").',
+    props: { places: 'How many places the card had' },
+    emitted: ['src/components/MeuBrasil.tsx'],
+  },
+  {
     name: 'card_generator_opened',
     description: 'The card generator (/gerador/) was opened.',
     props: { has_city: 'Whether the address already named a city (the link from the share dialog does)' },

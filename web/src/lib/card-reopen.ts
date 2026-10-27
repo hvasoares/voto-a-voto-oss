@@ -21,6 +21,8 @@ import { MEASURES } from './sentences/stat'
 import { QUERY_MEASURE, choiceQuery } from './generator-model'
 import { statContent } from './stat-content'
 import type { StatSize } from './stat-card'
+import { buildPlaceCard, placesFromCodes, placesQuery } from './meu-brasil'
+import { meuBrasilContent } from './meu-brasil-content'
 import { viewHref } from '@/slots/city/city-view'
 
 /** A dropped file larger than this is not read: a card is a few KB. */
@@ -75,6 +77,15 @@ const kinds: Record<string, (keys: CardKeys, ctx: ReopenContext) => Promise<Reco
       if (c.svg) out.push({ svg: c.svg, alt: c.stat.alt, href: `${ctx.base}gerador/${choiceQuery({ city: { uf, slug }, measure, size })}` })
     }
     return out.length ? out : undefined
+  },
+  async 'meu-brasil'(keys, ctx) {
+    const refs = placesFromCodes(keys.places)
+    if (!refs.length || refs.length !== keys.places.length) return undefined
+    const shards = await Promise.all(refs.map((r) => ctx.loadShard(r.uf, r.slug)))
+    if (shards.some((sh) => !sh)) return undefined
+    const cards = refs.map((r, i) => buildPlaceCard(r, shards[i]!))
+    const c = meuBrasilContent(cards, { origin: ctx.origin, base: ctx.base, fixture: ctx.fixture, edition: keys.edition, locale: keys.lang })
+    return [{ svg: c.svg, alt: c.variants.standard.alt, href: `${ctx.base}meu-brasil/${placesQuery(refs)}` }]
   },
 }
 
