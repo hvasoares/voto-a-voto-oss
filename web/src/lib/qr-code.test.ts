@@ -142,6 +142,12 @@ describe('glyphSvg: the drawing the page and the poster embed', () => {
     expect(svg).not.toContain('opacity')
   })
 
+  it('takes an overridden light fill (the /qr/ card draws #ffffff, the white card of the frame)', () => {
+    const svg = glyphSvg(qrGlyph(URL), { paper: '#ffffff' })
+    expect(svg).toContain('fill="#ffffff"')
+    expect(svg).not.toContain('fill="#faf7f0"')
+  })
+
   it('names the glyph for screen readers (the address it opens, not just "QR")', () => {
     const svg = glyphSvg(qrGlyph(URL))
     expect(svg).toContain('aria-label="QR de https://votoavoto.exemplo.br/rj/cidade-exemplo/"')
