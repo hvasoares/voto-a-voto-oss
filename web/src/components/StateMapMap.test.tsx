@@ -10,6 +10,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { noopAnalytics, setAnalytics, type Analytics } from '@/analytics'
 import StateMapMap, { type StateMapProps } from './StateMapMap'
 import type { StateMapData } from '@/lib/state-map-data'
+import { UF_SHAPES } from '@/lib/uf-polygons'
 
 const DATA: StateMapData = {
   ano: 2026,
@@ -127,5 +128,59 @@ describe('island respects ?vista=mapa on hydration', () => {
     window.history.replaceState(null, '', '/s/mapa/?vista=mapa')
     setup('margin')
     expect(screen.getByRole('img', { name: /^Mapa do Brasil por estado/ })).toBeTruthy()
+  })
+})
+
+describe('state map touch targets (#88)', () => {
+  /** All 27 states, so the callouts and every hit path are drawn (the fixture has three). */
+  const full: StateMapData = {
+    ...DATA,
+    rows: UF_SHAPES.map((s, i) => ({ uf: s.uf, validos1: 100 + i, validos2: 200 + i, margin1: i - 13, margin2: 13 - i, swing: 2 * (i - 13) })),
+  }
+  const mapView = () => {
+    window.history.replaceState(null, '', '/s/mapa/?vista=mapa')
+    const analytics: Analytics = { pageView() {}, event: (n, p) => void events.push([n, p]) }
+    setAnalytics(analytics)
+    const view = render(<StateMapMap kind="margin" data={full} base="/s/" />)
+    return { user: userEvent.setup(), svg: screen.getByRole('img', { name: /^Mapa do Brasil por estado/ }) as unknown as SVGSVGElement, ...view }
+  }
+
+  it('the invisible hit paths come BEFORE every drawn shape and callout, so they never take a neighbour\'s drawn area', () => {
+    const { svg } = mapView()
+    const all = [...svg.querySelectorAll('path[data-hit], a[data-uf]')]
+    const lastHit = all.map((e) => e.matches('path[data-hit]')).lastIndexOf(true)
+    const firstDrawn = all.findIndex((e) => e.matches('a[data-uf]'))
+    expect(lastHit).toBeGreaterThanOrEqual(0)
+    expect(lastHit).toBeLessThan(firstDrawn)
+  })
+
+  it('the hit paths are transparent and not reachable by keyboard or screen reader; the anchors stay the only links', () => {
+    const { svg } = mapView()
+    for (const p of svg.querySelectorAll('path[data-hit]')) {
+      expect(p.getAttribute('aria-hidden')).toBe('true')
+      expect(p.getAttribute('stroke')).toBe('transparent')
+      expect(p.closest('a')).toBeNull()
+      expect(p.hasAttribute('tabindex') || p.hasAttribute('href')).toBe(false)
+    }
+    expect(svg.querySelectorAll('a[data-uf]').length).toBe(27 + 11) // shapes plus the callout rows
+  })
+
+  it('every state outside the 44 px size has a hit path with a stroke, and the callout rows are 62 units (44 px) tall', () => {
+    const { svg } = mapView()
+    const withHit = [...svg.querySelectorAll('path[data-hit]')].map((p) => p.getAttribute('data-hit')!)
+    expect(withHit).toContain('df')
+    expect(withHit).toContain('rj')
+    expect(withHit).not.toContain('mt')
+    expect(withHit).not.toContain('pa')
+    for (const r of svg.querySelectorAll('rect[data-hit]')) expect(Number(r.getAttribute('height'))).toBeGreaterThanOrEqual(62)
+  })
+
+  it('a tap on a hit path selects its state (hydrated: no navigation); a tap on a callout row margin does too', async () => {
+    const { user, svg } = mapView()
+    await user.click(svg.querySelector('path[data-hit="al"]')!)
+    expect(screen.getAllByText(/AL · selecionado/)[0]).toBeTruthy()
+    await user.click(svg.querySelector('rect[data-hit="se"]')!)
+    expect(screen.getAllByText(/SE · selecionado/)[0]).toBeTruthy()
+    expect(events.filter(([n]) => n === 'map_state_tap').map(([, p]) => (p as { uf: string }).uf)).toEqual(['al', 'se'])
   })
 })

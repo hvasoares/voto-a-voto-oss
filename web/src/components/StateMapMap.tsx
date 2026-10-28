@@ -23,6 +23,7 @@ import { ufFullLabel, UF_NAMES } from '@/lib/uf-names'
 import type { StateMapData, StateMapRow } from '@/lib/state-map-data'
 import { BIN_COLOR, fgOf, marginBin, marginLegend, swingBin, swingLegend, tileEdge, type DivBin } from '@/lib/scale'
 import { CALLOUT_LEFT, CALLOUT_RIGHT, UF_SHAPES } from '@/lib/uf-polygons'
+import { hitStroke, hitUnits, MAP_PX } from '@/lib/map-hit'
 
 export type MapKind = 'margin' | 'swing'
 export type MapPresentation = 'mosaico' | 'mapa'
@@ -38,10 +39,16 @@ export interface StateMapProps {
 const VB_WIDTH = 486
 const CALL_X = 392
 const CALL_W = 88
-const CALL_H = 48
-const CALL_PITCH = 55
-const CALL_TOP = 6
-const VB_HEIGHT = CALL_TOP + 9 * CALL_PITCH + CALL_H
+const CALL_H = 54
+/** One callout row is a 44 CSS px tap target (#88): the hit rectangle of a box spans its whole row, rows touch. */
+const CALL_PITCH = 62
+const CALL_TOP = (CALL_PITCH - CALL_H) / 2
+const VB_HEIGHT = CALL_TOP + 9 * CALL_PITCH + CALL_H + (CALL_PITCH - CALL_H) / 2
+/** A finger-sized target in viewBox units, and the shapes that need a bigger invisible hit path to reach it. */
+const HIT = hitUnits(VB_WIDTH)
+const HIT_SHAPES = UF_SHAPES.map((shape) => ({ shape, stroke: hitStroke(shape.w, shape.h, HIT) }))
+  .filter((h) => h.stroke > 0)
+  .sort((a, b) => a.stroke - b.stroke) // the smallest shapes last: where hit paths overlap in the sea, the tiniest state wins
 
 const valueOf = (row: StateMapRow, kind: MapKind): number => (kind === 'margin' ? row.margin2 : row.swing)
 
@@ -326,17 +333,37 @@ function MapView(props: {
   for (const uf of CALLOUT_LEFT) {
     if (!rows.some((r) => r.uf === uf)) continue
     const shape = UF_SHAPES.find((s) => s.uf === uf)
-    callouts.push({ uf, y: shape ? Math.round(shape.cy - CALL_H / 2) : CALL_TOP, left: true })
+    // Below the shape, in the empty corner (#88): its 44 px hit row must not sit over Amazonas and Rondonia, whose drawn area it would take.
+    callouts.push({ uf, y: shape ? Math.round(shape.cy + shape.h / 2 + 26) : CALL_TOP, left: true })
   }
 
   return (
     <svg
       className="mx-auto mt-1 block"
       role="img"
-      style={{ width: 350, maxHeight: 420 }}
+      style={{ width: MAP_PX }}
       viewBox={`0 0 ${VB_WIDTH} ${VB_HEIGHT}`}
       aria-label={`Mapa do Brasil por estado, ${kind === 'margin' ? `margem de ${ladoANome} sobre ${ladoBNome} no 2º turno` : `variação da margem de ${ladoANome} sobre ${ladoBNome} entre os turnos`}: cada estado está pintado pela escala e os valores menores aparecem nas caixas ao lado.`}
     >
+      {/* Invisible hit paths (#88), BELOW every visible shape and callout: they only claim empty space and the shapes' own area, never a
+          neighbour's drawn area. Not focusable (the anchors below are the keyboard and screen-reader targets); a tap selects like the anchor's. */}
+      {HIT_SHAPES.map(({ shape, stroke }) =>
+        rows.some((r) => r.uf === shape.uf) ? (
+          <path
+            key={shape.uf}
+            aria-hidden="true"
+            className="cursor-pointer"
+            d={toPath(shape.pts)}
+            data-hit={shape.uf}
+            fill="transparent"
+            pointerEvents="all"
+            stroke="transparent"
+            strokeLinejoin="round"
+            strokeWidth={stroke}
+            onClick={() => tapState(shape.uf)}
+          />
+        ) : null,
+      )}
       {UF_SHAPES.map((shape) => {
         const row: StateMapRow | undefined = rows.find((r) => r.uf === shape.uf)
         if (!row) return null
@@ -378,7 +405,7 @@ function MapView(props: {
         const x = left ? 4 : CALL_X
         return (
           <g key={uf}>
-            <line stroke="var(--border)" strokeWidth={1} x1={left ? shape.cx + 6 : shape.cx} y1={shape.cy} x2={left ? x + CALL_W : x} y2={y + CALL_H / 2} />
+            <line pointerEvents="none" stroke="var(--border)" strokeWidth={1} x1={shape.cx} y1={shape.cy} x2={left ? x + CALL_W / 2 : x} y2={left ? y : y + CALL_H / 2} />
             <a
               className="cursor-pointer"
               aria-label={`${ufFullLabel(uf)}: ${fmt(valueOf(row, kind))} pp, ${valueText(rows, uf, kind, ladoANome, ladoBNome)}; ${fmtInt(row.validos2)} votos válidos`}
@@ -389,6 +416,7 @@ function MapView(props: {
                 tapState(uf)
               }}
             >
+              <rect data-hit={uf} fill="transparent" height={CALL_PITCH} width={CALL_W} x={x} y={y - (CALL_PITCH - CALL_H) / 2} />
               <rect fill="var(--background)" height={CALL_H} rx={4} stroke={selected === uf ? 'var(--foreground)' : 'var(--border)'} strokeWidth={selected === uf ? 2 : 1} width={CALL_W} x={x} y={y} />
               <rect fill={BIN_COLOR[binOf(rows, uf, kind)]} height={16} stroke="var(--border)" strokeWidth={0.5} width={16} x={x + 6} y={y + 16} />
               <text dominantBaseline="middle" fill="var(--foreground)" fontSize={13} fontWeight={700} x={x + 27} y={y + CALL_H / 2}>

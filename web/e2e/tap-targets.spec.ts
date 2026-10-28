@@ -1,5 +1,7 @@
+import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 import { activateSearch, base, waitReady } from './helpers'
+import { measureMap } from './map-touch'
 
 /*
  * #88: nothing a fingertip has to hit is smaller than 44 CSS px, on the Home, in the metrics notice, in the footer lines and on
@@ -112,4 +114,75 @@ test.describe('tap targets (390x844)', () => {
       expect(small(await hitAreas(page))).toEqual([])
     })
   }
+
+  test('axe, target-size included: no violations on the Home with the notice open and on the hydrated map view', async ({ page }) => {
+    for (const path of ['', 'mapa/?vista=mapa']) {
+      await page.goto(`${base}${path}`)
+      if (path) await expect(page.getByRole('img', { name: /^Mapa do Brasil por estado/ })).toBeVisible()
+      else await expect(page.locator('#consent-banner')).toBeVisible()
+      // The map view's two older findings (full aria-labels on the state links, links inside the role=img drawing) were there before #88 and are
+      // outside it; this test pins that the hit paths and the bigger callout rows add nothing to them.
+      const known = path ? ['label-content-name-mismatch', 'nested-interactive'] : []
+      const { violations } = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).disableRules(known).analyze()
+      expect(violations.map((v) => `${v.id} [${v.nodes.slice(0, 3).map((n) => n.target.join(' ')).join(', ')}]`), path || 'home').toEqual([])
+    }
+  })
+
+  test.describe('state map shapes (vista=mapa, fixture: RJ, SP, MT)', () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto(`${base}mapa/?vista=mapa`)
+      await page.locator('[data-consent-continue]').click()
+      await expect(page.getByRole('img', { name: /^Mapa do Brasil por estado/ })).toBeVisible()
+    })
+
+    test('every shape has a 44 px hit area (an invisible hit path where the drawing is smaller), the callout row is 44 px tall', async ({ page }) => {
+      const shapes = await measureMap(page)
+      expect(shapes.map((s) => s.uf).sort()).toEqual(['mt', 'rj', 'sp'])
+      for (const s of shapes) {
+        expect(s.hit.w, `${s.uf} hit width`).toBeGreaterThanOrEqual(MIN)
+        expect(s.hit.h, `${s.uf} hit height`).toBeGreaterThanOrEqual(MIN)
+      }
+      const rj = shapes.find((s) => s.uf === 'rj')!
+      expect(rj.shape.h).toBeLessThan(MIN) // RJ is drawn smaller than a fingertip: that is why it has a hit path
+      expect(rj.hit.invisible).toBe(true)
+      expect(rj.callout!.h).toBeGreaterThanOrEqual(MIN)
+      expect(rj.callout!.w).toBeGreaterThanOrEqual(MIN)
+      expect(rj.ownSquare.callout).toBeGreaterThanOrEqual(MIN)
+    })
+
+    test('a tap on the centre of each state reaches that state; no tap on a visible shape is stolen by a neighbour hit path', async ({ page }) => {
+      for (const s of await measureMap(page)) {
+        expect(s.centre.reaches, `${s.uf} centre`).toBe(s.uf)
+        expect(s.stolen, `${s.uf} visible area taken by another state`).toBe(0)
+      }
+    })
+
+    test('a tap on the big states opens the big state, a tap on the hit-path margin of RJ opens RJ, the callout row too', async ({ page }) => {
+      const panel = page.locator('[data-slot="mapa-selecionado"]')
+      const shapes = await measureMap(page)
+      for (const uf of ['mt', 'sp', 'rj'] as const) {
+        const c = shapes.find((s) => s.uf === uf)!.centre
+        await page.touchscreen.tap(c.x, c.y)
+        await expect(panel).toContainText(`${uf.toUpperCase()} · selecionado`)
+      }
+      // The callout's whole 44 px row, not only its drawn box, selects RJ.
+      await page.touchscreen.tap(...(await rowEdge(page)))
+      await expect(panel).toContainText('RJ · selecionado')
+    })
+
+    test('keyboard: every state is one focusable link (shape and callout) and the hit paths are not', async ({ page }) => {
+      expect(await page.locator('svg[role="img"] a[data-uf]').count()).toBe(4) // rj twice (shape and callout), sp, mt
+      expect(await page.locator('svg[role="img"] path[data-hit]').evaluateAll((els) => els.filter((e) => e.closest('a') || e.hasAttribute('tabindex') || e.hasAttribute('href')).length)).toBe(0)
+      expect(await page.locator('svg[role="img"] path[data-hit]').evaluateAll((els) => els.every((e) => e.getAttribute('aria-hidden') === 'true'))).toBe(true)
+    })
+  })
 })
+
+/** A point on the callout row of RJ that lies outside the drawn box but inside the 44 px hit rectangle. */
+async function rowEdge(page: Page): Promise<[number, number]> {
+  return page.evaluate(() => {
+    const row = document.querySelector('rect[data-hit="rj"]')!.getBoundingClientRect()
+    const drawn = document.querySelector('a[data-uf="rj"] rect:not([data-hit])')!.getBoundingClientRect()
+    return [row.left + row.width / 2, (row.top + drawn.top) / 2 + 0.5] as [number, number]
+  })
+}
