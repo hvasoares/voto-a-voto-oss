@@ -6,7 +6,9 @@ Covers the 2018, 2022 and 2026 presidential elections at municipality level, wit
 
 ## Licence
 
-The code is released under the MIT licence (see `LICENSE`). The open dataset published with each edition (`editions/<id>/release/`) carries its own terms in its `LEIAME.md` and `CITATION.cff`; the licence of the code does not apply to it.
+The code is released under the MIT licence (see `LICENSE`).
+
+The open dataset published with each edition (`editions/<id>/release/`) is released under Creative Commons Attribution 4.0 (CC BY 4.0), with attribution to the source (TSE) and the project. It keeps its own terms in its `LEIAME.md` and `CITATION.cff`; the licence of the code does not apply to it.
 
 ## Layout
 
