@@ -19,7 +19,7 @@ test.describe('reports hub on the real dataset', () => {
     const seen = collectRequests(page)
     await page.goto(base + 'relatorios/')
     await expect(page.getByRole('link', { name: /Cidades que viraram no 2º turno/ })).toContainText('Lula virou 211 cidades; Flavio Bolsonaro virou 1')
-    await expect(page.locator('nav[aria-label="Relatórios"] > ul > li')).toHaveCount(7)
+    await expect(page.locator('nav[aria-label="Relatórios"] > ul > li')).toHaveCount(8)
     expect(violations(seen, await allowedOrigins(baseURL!))).toEqual([])
   })
 
