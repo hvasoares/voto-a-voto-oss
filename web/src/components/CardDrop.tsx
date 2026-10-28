@@ -78,8 +78,8 @@ export default function CardDrop({ base, origin, fixture, edition }: CardDropPro
         }}
         data-drop-zone
       >
-        <p className="text-body leading-[18px]">Solte aqui o SVG ou o PNG de um cartão</p>
-        <Button className="mt-3 min-h-11 rounded-md px-4 text-body font-bold text-primary-foreground" onClick={() => input.current?.click()}>
+        <p className="text-step-2">Solte aqui o SVG ou o PNG de um cartão</p>
+        <Button className="mt-3 min-h-11 rounded-md px-4 text-step-2 font-bold text-primary-foreground" onClick={() => input.current?.click()}>
           Escolher arquivo
         </Button>
         <input ref={input} type="file" accept=".svg,.png,image/svg+xml,image/png" className="sr-only" aria-label="Arquivo do cartão" data-file-input onChange={(e) => void open(e.currentTarget.files?.[0])} />
@@ -87,9 +87,9 @@ export default function CardDrop({ base, origin, fixture, edition }: CardDropPro
       <div role="status" aria-live="polite" data-outcome={outcome?.status ?? 'none'}>
         {outcome && (
           <>
-            <p className="mt-3 text-body leading-[18px]" data-message>{MESSAGE(outcome, edition)}</p>
+            <p className="mt-3 text-step-2" data-message>{MESSAGE(outcome, edition)}</p>
             {outcome.status === 'unsupported' && outcome.href && (
-              <a className="mt-3 flex min-h-11 w-full items-center justify-center rounded-md border border-border text-body font-bold text-primary" href={outcome.href} data-open-view>
+              <a className="mt-3 flex min-h-11 w-full items-center justify-center rounded-md border border-border text-step-2 font-bold text-primary" href={outcome.href} data-open-view>
                 Abrir esta vista ›
               </a>
             )}
@@ -97,7 +97,7 @@ export default function CardDrop({ base, origin, fixture, edition }: CardDropPro
               <>
                 {/* The card the SITE drew again from its own data: safe markup made by our drawing functions, never the dropped file. */}
                 <div className="mx-auto mt-3 max-w-[260px] [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" data-recomputed dangerouslySetInnerHTML={{ __html: outcome.card.svg }} />
-                <a className="mt-3 flex min-h-11 w-full items-center justify-center rounded-md border border-border text-body font-bold text-primary" href={outcome.card.href} data-open-view>
+                <a className="mt-3 flex min-h-11 w-full items-center justify-center rounded-md border border-border text-step-2 font-bold text-primary" href={outcome.card.href} data-open-view>
                   Abrir esta vista ›
                 </a>
               </>

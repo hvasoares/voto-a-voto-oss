@@ -26,10 +26,10 @@ const data = await loadDuelData()
 <Base title={`${duelSay({}, 'duel.title')} · Voto a Voto`} description={duelSay({}, 'duel.sub.cidade', { ano: data.ano })}>
   <PhoneHeader />
   <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:max-w-[1240px] lg:pt-8 duel-main" id="main" data-page="cara-a-cara">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal lg:text-primary" href={href('/')}>‹ Início</a>
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal lg:text-primary" href={href('/')}>‹ Início</a>
     <Duel client:load base={base} origin={siteOrigin()} fixture={fixture} editionDate={editionLabel(edition)} data={data} />
-    <noscript><p class="mt-2 text-small leading-[17px]" data-nojs>O cara a cara monta o cartão no seu navegador e precisa de JavaScript.</p></noscript>
-    <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+    <noscript><p class="mt-2 text-step-1" data-nojs>O cara a cara monta o cartão no seu navegador e precisa de JavaScript.</p></noscript>
+    <footer class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary" data-component="source-footer">
       {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
     </footer>
   </main>

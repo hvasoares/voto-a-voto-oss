@@ -21,12 +21,12 @@ const edition = await currentEdition()
 <Base title={`${message(DEFAULT_VOICE, 'mb.sticker.title')} · Voto a Voto`} description={message(DEFAULT_VOICE, 'mb.sticker.sub')}>
   <PhoneHeader />
   <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:pt-8" id="main" data-page="meu-brasil-adesivo">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal lg:text-primary" href={href('/')}>‹ Início</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">{message(DEFAULT_VOICE, 'mb.sticker.title')}</h1>
-    <p class="mt-1 text-small leading-[14px] text-muted-foreground">{message(DEFAULT_VOICE, 'mb.sticker.sub')}</p>
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal lg:text-primary" href={href('/')}>‹ Início</a>
+    <h1 class="mt-2 font-serif text-step-4 font-normal">{message(DEFAULT_VOICE, 'mb.sticker.title')}</h1>
+    <p class="mt-1 text-step-1 text-muted-foreground">{message(DEFAULT_VOICE, 'mb.sticker.sub')}</p>
     <MeuBrasilSticker client:load base={base} origin={siteOrigin()} fixture={fixture} edition={edition.id} />
-    <noscript><p class="mt-2 text-small leading-[17px]" data-nojs>O adesivo é desenhado no seu navegador e precisa de JavaScript.</p></noscript>
-    <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+    <noscript><p class="mt-2 text-step-1" data-nojs>O adesivo é desenhado no seu navegador e precisa de JavaScript.</p></noscript>
+    <footer class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary" data-component="source-footer">
       {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
     </footer>
   </main>

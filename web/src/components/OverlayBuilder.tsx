@@ -17,14 +17,14 @@ export interface OverlayBuilderProps {
 }
 
 const say = (key: string, params: Record<string, string | number> = {}) => message(DEFAULT_VOICE, key as MessageKey, params)
-const CHIP = 'min-h-11 rounded-full border px-4 text-small'
+const CHIP = 'min-h-11 rounded-full border px-4 text-step-1'
 const on = 'border-primary bg-primary text-primary-foreground font-bold'
 const off = 'border-border bg-background text-foreground'
 
 function Group<T extends string | number>({ label, options, value, name, onChange }: { label: string; options: readonly T[]; value: T; name: (v: T) => string; onChange: (v: T) => void }) {
   return (
     <div className="mt-4" role="group" aria-label={label}>
-      <p className="text-tiny uppercase leading-[14px] text-muted-foreground">{label}</p>
+      <p className="text-step-1 uppercase text-muted-foreground">{label}</p>
       <div className="mt-1 flex flex-wrap gap-2">
         {options.map((o) => (
           <button key={String(o)} type="button" aria-pressed={o === value} className={`${CHIP} ${o === value ? on : off}`} onClick={() => onChange(o)} data-option={`${label}:${o}`}>
@@ -120,36 +120,36 @@ export default function OverlayBuilder({ base, origin }: OverlayBuilderProps) {
         <Group label={say('overlay.size')} options={OVERLAY_SIZES} value={config.size} name={(s) => say(`overlay.size.${s}`)} onChange={(s) => update({ size: s })} />
         <Group label={say('overlay.bg')} options={BACKGROUNDS} value={config.background} name={(b) => say(`overlay.bg.${b}`)} onChange={(background) => update({ background })} />
         <div className="mt-4 rounded-md border border-border bg-[var(--c-paper-2)] p-3" data-seal-note>
-          <p className="text-body font-bold leading-[18px]">{say('overlay.seal.on')}</p>
-          <p className="text-small leading-[17px] text-muted-foreground">{say('overlay.seal.why')}</p>
+          <p className="text-step-2 font-bold">{say('overlay.seal.on')}</p>
+          <p className="text-step-1 text-muted-foreground">{say('overlay.seal.why')}</p>
         </div>
       </div>
       <div className="mt-6 min-w-0 lg:mt-0">
-        <p className="text-tiny uppercase leading-[14px] text-muted-foreground">{say(config.background === 'transparente' ? 'overlay.preview' : 'overlay.preview.other')}</p>
+        <p className="text-step-1 uppercase text-muted-foreground">{say(config.background === 'transparente' ? 'overlay.preview' : 'overlay.preview.other')}</p>
         <div ref={frame} className="mt-1 flex min-h-[200px] items-center justify-center overflow-hidden rounded-md border border-border bg-[length:40px_40px] bg-[linear-gradient(45deg,var(--c-paper-2)_25%,transparent_25%,transparent_75%,var(--c-paper-2)_75%),linear-gradient(45deg,var(--c-paper-2)_25%,#fff_25%,#fff_75%,var(--c-paper-2)_75%)] [background-position:0_0,20px_20px] py-4" data-checker>
           {config.city ? (
             <div style={{ width: size.width * previewScale, height: size.height * previewScale, maxWidth: '100%' }} data-preview-box>
               <iframe title={say('overlay.title')} src={withBase(base, path)} width={size.width} height={size.height} style={{ border: 0, transform: `scale(${previewScale})`, transformOrigin: '0 0', background: 'transparent' }} data-preview />
             </div>
           ) : (
-            <p className="rounded bg-background px-3 py-2 text-small" data-placeholder>{say('overlay.preview.empty')}</p>
+            <p className="rounded bg-background px-3 py-2 text-step-1" data-placeholder>{say('overlay.preview.empty')}</p>
           )}
         </div>
-        <p className="mt-4 text-tiny uppercase leading-[14px] text-muted-foreground">{say('overlay.address')}</p>
+        <p className="mt-4 text-step-1 uppercase text-muted-foreground">{say('overlay.address')}</p>
         <div className="mt-1 flex gap-2">
-          <input readOnly value={config.city ? address : ''} aria-label={say('overlay.address')} className="min-h-11 min-w-0 flex-1 rounded-md border border-border bg-background px-3 font-mono text-small" data-address />
-          <button type="button" className="min-h-11 rounded-md bg-primary px-5 text-body font-bold text-primary-foreground disabled:opacity-50" disabled={!config.city} onClick={copy} data-copy>
+          <input readOnly value={config.city ? address : ''} aria-label={say('overlay.address')} className="min-h-11 min-w-0 flex-1 rounded-md border border-border bg-background px-3 font-mono text-step-1" data-address />
+          <button type="button" className="min-h-11 rounded-md bg-primary px-5 text-step-2 font-bold text-primary-foreground disabled:opacity-50" disabled={!config.city} onClick={copy} data-copy>
             {say('overlay.copy')}
           </button>
         </div>
-        <p className="min-h-6 text-small leading-[17px] text-muted-foreground" role="status" aria-live="polite" data-status>{status}</p>
+        <p className="min-h-6 text-step-1 text-muted-foreground" role="status" aria-live="polite" data-status>{status}</p>
         <div className="mt-2" data-obs-steps>
-          <p className="text-body font-bold leading-[18px]">{say('overlay.steps.title')}</p>
-          <ol className="mt-1 list-decimal pl-5 text-body leading-[21px]">
+          <p className="text-step-2 font-bold">{say('overlay.steps.title')}</p>
+          <ol className="mt-1 list-decimal pl-5 text-step-2">
             {[1, 2, 3, 4].map((n) => <li key={n}>{say(`overlay.steps.${n}`, { w: size.width, h: size.height })}</li>)}
           </ol>
         </div>
-        <p className="mt-4 text-small leading-[17px] text-muted-foreground">{say('overlay.static')}</p>
+        <p className="mt-4 text-step-1 text-muted-foreground">{say('overlay.static')}</p>
       </div>
     </div>
   )

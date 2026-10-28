@@ -33,12 +33,12 @@ const cardHref = withBase(base, `/${uf}/${slug}/?ciclo=${view.ano}&turno=${view.
 ---
 <EmbedDoc title={`Resultado de ${name} · Voto a Voto`}>
   <article class="box-border min-w-0 border border-foreground bg-background p-3 font-sans text-foreground" data-widget data-uf={uf} data-slug={slug} lang="pt-BR">
-    <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-tiny leading-[14px] text-muted-foreground">
+    <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-step-1 text-muted-foreground">
       {fixture && <span class="rounded-sm px-1.5 py-px font-bold" style="background: var(--sketch-color-flag); color: var(--sketch-color-ink)">EXEMPLO</span>}
       <span data-source>{widgetSource(edition)}</span>
     </div>
-    <h1 class="mt-1.5 font-serif text-[20px] font-normal leading-[24px] wrap-anywhere">{name} · {ufLabel(shard.city.uf)}</h1>
-    <p class="mt-1 text-[14px] leading-[18px] wrap-anywhere" data-headline>{sentence}</p>
-    <p class="mt-1.5 text-small font-bold leading-4"><a class="text-primary" href={cardHref} data-back>Ver no Voto a Voto ›</a></p>
+    <h1 class="mt-1.5 font-serif text-step-3 font-normal wrap-anywhere">{name} · {ufLabel(shard.city.uf)}</h1>
+    <p class="mt-1 text-step-1 wrap-anywhere" data-headline>{sentence}</p>
+    <p class="mt-1.5 text-step-1 font-bold"><a class="text-primary" href={cardHref} data-back>Ver no Voto a Voto ›</a></p>
   </article>
 </EmbedDoc>

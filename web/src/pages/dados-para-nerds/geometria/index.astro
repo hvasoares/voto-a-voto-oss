@@ -16,8 +16,8 @@ const map = loadRegionMap()
 ---
 <Base title="Geometria dos dados para nerds · Voto a Voto">
   <main class="mx-auto min-w-0 w-full max-w-[1200px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="nerds-geometria">
-    <h1 class="font-serif text-title font-normal leading-[30px]">Geometria: regiões e estados</h1>
-    <p class="mt-1 text-small text-muted-foreground">As regiões são os contornos dos estados, agrupados; nenhuma outra geometria é desenhada.</p>
+    <h1 class="font-serif text-step-4 font-normal">Geometria: regiões e estados</h1>
+    <p class="mt-1 text-step-1 text-muted-foreground">As regiões são os contornos dos estados, agrupados; nenhuma outra geometria é desenhada.</p>
     <div class="mt-3 grid gap-6 lg:grid-cols-2">
       <RegionMap base={base} />
       <UfMap available={new Set(map.ufs.map((s) => s.uf))} base={base} />

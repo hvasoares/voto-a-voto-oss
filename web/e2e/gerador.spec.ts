@@ -47,7 +47,9 @@ test.describe('card generator', () => {
     await open(page)
     await ready(page)
     const dl = page.waitForEvent('download')
-    await page.getByRole('button', { name: /^Compartilhar/ }).click()
+    // the metrics notice is fixed at the bottom: bring the button to the middle of the screen so the notice never covers it
+    await page.getByRole('button', { name: /^Compartilhar/ }).evaluate((el) => el.scrollIntoView({ block: 'center' }))
+    await page.getByRole('button', { name: /^Compartilhar/ }).click({ force: true })
     expect((await dl).suggestedFilename()).toMatch(/\.png$/)
   })
 

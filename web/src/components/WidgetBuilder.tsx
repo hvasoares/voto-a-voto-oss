@@ -61,14 +61,14 @@ export default function WidgetBuilder({ base, origin }: WidgetBuilderProps) {
     )
   }
 
-  const label = 'mt-3 text-[10px] uppercase leading-3 tracking-[0.04em] text-muted-foreground'
+  const label = 'mt-3 text-step-1 uppercase tracking-[0.04em] text-muted-foreground'
   return (
     <div data-widget-builder data-ready={snippet ? 'yes' : 'no'}>
       <div className="mt-3">
         <PlacePicker base={base} label="Cidade" value={city && name ? { ...city, nome: name } : undefined} onPick={pick} />
       </div>
-      {failed && <p className="mt-2 text-small leading-[17px]" role="status">Não foi possível carregar os dados desta cidade agora.</p>}
-      {!city && <p className="mt-3 text-small leading-[17px] text-muted-foreground" data-placeholder>Escolha uma cidade para ver o widget.</p>}
+      {failed && <p className="mt-2 text-step-1" role="status">Não foi possível carregar os dados desta cidade agora.</p>}
+      {!city && <p className="mt-3 text-step-1 text-muted-foreground" data-placeholder>Escolha uma cidade para ver o widget.</p>}
 
       {src && name && (
         <>
@@ -82,11 +82,11 @@ export default function WidgetBuilder({ base, origin }: WidgetBuilderProps) {
       {snippet && (
         <>
           <p className={label}>Snippet</p>
-          <pre className="mt-1 overflow-x-auto whitespace-pre-wrap break-all rounded-md bg-foreground p-3 font-mono text-[12px] leading-[16px] text-background" data-snippet>{snippet}</pre>
-          <Button className="mt-3 min-h-12 w-full rounded-md text-body font-bold text-primary-foreground" onClick={copy} data-act="copy-snippet">
+          <pre className="mt-1 overflow-x-auto whitespace-pre-wrap break-all rounded-md bg-foreground p-3 font-mono text-step-1 text-background" data-snippet>{snippet}</pre>
+          <Button className="mt-3 min-h-12 w-full rounded-md text-step-2 font-bold text-primary-foreground" onClick={copy} data-act="copy-snippet">
             Copiar snippet
           </Button>
-          <p className="mt-1 min-h-6 text-small leading-[17px] text-muted-foreground" role="status" aria-live="polite" data-status>{status}</p>
+          <p className="mt-1 min-h-6 text-step-1 text-muted-foreground" role="status" aria-live="polite" data-status>{status}</p>
         </>
       )}
     </div>

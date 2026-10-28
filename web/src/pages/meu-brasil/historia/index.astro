@@ -32,12 +32,12 @@ const words = {
 <Base title={`${storySay('mbstory.title')} · Voto a Voto`} description={storySay('mbstory.none')}>
   <PhoneHeader />
   <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:pt-8" id="main" data-page="meu-brasil-historia">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal lg:text-primary" href={href('/meu-brasil/')} data-back-meu-brasil>{storySay('mbstory.back')}</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">{storySay('mbstory.title')}</h1>
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal lg:text-primary" href={href('/meu-brasil/')} data-back-meu-brasil>{storySay('mbstory.back')}</a>
+    <h1 class="mt-2 font-serif text-step-4 font-normal">{storySay('mbstory.title')}</h1>
     <MeuBrasilStory client:load base={base} origin={siteOrigin()} fixture={fixture} words={words} />
-    <noscript><p class="mt-2 text-small leading-[17px]" data-nojs>{storySay('mbstory.nojs')}</p></noscript>
-    <p class="mt-2 text-center text-small leading-[17px] text-muted-foreground">{storySay('mbstory.note')}</p>
-    <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+    <noscript><p class="mt-2 text-step-1" data-nojs>{storySay('mbstory.nojs')}</p></noscript>
+    <p class="mt-2 text-center text-step-1 text-muted-foreground">{storySay('mbstory.note')}</p>
+    <footer class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary" data-component="source-footer">
       {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
     </footer>
   </main>

@@ -24,11 +24,11 @@ const example = first ? `?mora=${first.uf}/${first.slug}` : '?mora=uf/cidade'
 <Base title={`${say('press.sheet.title')} · Voto a Voto`}>
   <main class="mx-auto min-w-0 w-full max-w-[880px] flex-1 px-5 pt-3" id="main" data-page="imprensa-folha">
     <div class="print:hidden">
-      <a class="inline-flex min-h-11 items-center text-body font-bold text-primary" href={href('/imprensa/')}>{say('press.back')}</a>
-      <h1 class="mt-1 font-serif text-title font-normal leading-[30px]">{say('press.sheet.title')}</h1>
+      <a class="inline-flex min-h-11 items-center text-step-2 font-bold text-primary" href={href('/imprensa/')}>{say('press.back')}</a>
+      <h1 class="mt-1 font-serif text-step-4 font-normal">{say('press.sheet.title')}</h1>
     </div>
     <PressSheet client:load base={base} origin={siteOrigin()} fixture={fixture} edition={edition.id} example={example} />
-    <noscript><p class="mt-2 text-small leading-[17px]" data-nojs>{say('press.sheet.nojs')}</p></noscript>
+    <noscript><p class="mt-2 text-step-1" data-nojs>{say('press.sheet.nojs')}</p></noscript>
   </main>
 </Base>
 <style is:global>

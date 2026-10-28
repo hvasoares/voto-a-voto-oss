@@ -28,9 +28,9 @@ const available = new Set(await recapUfs())
 <Base title={`${say('press.kit.title', { state: kit.stateName })} · ${say('press.poster.print')}`}>
   <main class="mx-auto min-w-0 w-full max-w-[880px] flex-1 px-5 pt-3" id="main" data-page="imprensa-cartaz" data-uf={uf}>
     <div class="print:hidden" data-screen>
-      <a class="inline-flex min-h-11 items-center text-body font-bold text-primary" href={href('/imprensa/')}>{say('press.back')}</a>
-      <p class="mt-1 text-small leading-[17px] text-muted-foreground">{say('press.poster.note')}</p>
-      <button type="button" class="mt-2 hidden min-h-11 w-full rounded-md border border-primary bg-primary text-body font-bold text-primary-foreground" data-print hidden>{say('press.poster.print')}</button>
+      <a class="inline-flex min-h-11 items-center text-step-2 font-bold text-primary" href={href('/imprensa/')}>{say('press.back')}</a>
+      <p class="mt-1 text-step-1 text-muted-foreground">{say('press.poster.note')}</p>
+      <button type="button" class="mt-2 hidden min-h-11 w-full rounded-md border border-primary bg-primary text-step-2 font-bold text-primary-foreground" data-print hidden>{say('press.poster.print')}</button>
     </div>
     <section data-poster class="poster mt-3" aria-label={kit.stateName}>
       <h1 class="poster__title font-serif font-normal">{kit.stateName}</h1>
@@ -48,14 +48,14 @@ const available = new Set(await recapUfs())
 </Base>
 <style is:global>
   [data-page='imprensa-cartaz'] .poster { background: #faf7f0; border: 1px solid #d9d3c3; padding: 16px; }
-  [data-page='imprensa-cartaz'] .poster__title { font-size: 40px; line-height: 1.1; }
+  [data-page='imprensa-cartaz'] .poster__title { font-size: var(--step-4); line-height: var(--lh-4); }
   [data-page='imprensa-cartaz'] .poster__map svg { width: 100%; max-width: 320px; margin: 12px auto; display: block; }
   [data-page='imprensa-cartaz'] .poster__map svg [data-map-uf] path { fill: #e3decf; }
   [data-page='imprensa-cartaz'] .poster__map svg [data-selected='true'] path { fill: #14505c; stroke: #1c1b18; stroke-width: 2; }
   [data-page='imprensa-cartaz'] .poster__chart svg { width: 100%; height: auto; display: block; }
   [data-page='imprensa-cartaz'] .poster__foot { display: flex; gap: 16px; align-items: center; margin-top: 12px; }
   [data-page='imprensa-cartaz'] .poster__qr svg { width: 120px; height: 120px; display: block; }
-  [data-page='imprensa-cartaz'] .poster__source { margin-top: 12px; font-size: 13px; color: #6a6558; }
+  [data-page='imprensa-cartaz'] .poster__source { margin-top: 12px; font-size: var(--step-1); color: #6a6558; }
   @page { size: 420mm 594mm; margin: 0; }
   @media print {
     html, body { background: #faf7f0 !important; }

@@ -118,12 +118,12 @@ export default function MeuBrasilStory({ base, origin, fixture, words }: MeuBras
   }, [cards.length, refs.length])
 
   const wordsOf = { region: words.region, dots: words.dots, dot: words.dot, share: words.share, linkNote: words.linkNote, nojs: words.nojs }
-  if (!refs.length) return <p className="mt-4 text-small leading-[17px] text-muted-foreground" data-placeholder role="status" data-ready="empty">{words.none}</p>
-  if (failed) return <p className="mt-4 text-small leading-[17px] text-muted-foreground" data-placeholder role="status" data-ready="failed">{words.failed}</p>
-  if (!cards.length) return <p className="mt-4 text-small leading-[17px] text-muted-foreground" data-placeholder role="status" data-ready="no">{words.loading}</p>
+  if (!refs.length) return <p className="mt-4 text-step-1 text-muted-foreground" data-placeholder role="status" data-ready="empty">{words.none}</p>
+  if (failed) return <p className="mt-4 text-step-1 text-muted-foreground" data-placeholder role="status" data-ready="failed">{words.failed}</p>
+  if (!cards.length) return <p className="mt-4 text-step-1 text-muted-foreground" data-placeholder role="status" data-ready="no">{words.loading}</p>
   return (
     <>
-      <p className="mt-1 text-small leading-[14px] text-muted-foreground" data-subtitle>{storySay('mbstory.sub', {}, { n: cards.length })}</p>
+      <p className="mt-1 text-step-1 text-muted-foreground" data-subtitle>{storySay('mbstory.sub', {}, { n: cards.length })}</p>
       <StorySequence cards={cards} words={wordsOf} onReached={(n) => getAnalytics().event('meu_story_card_reached', { position: n })} onShared={(n) => getAnalytics().event('meu_story_card_shared', { position: n })} onClose={() => location.assign(`${withBase(base, '/meu-brasil/')}${placesQuery(refs)}`)} />
     </>
   )

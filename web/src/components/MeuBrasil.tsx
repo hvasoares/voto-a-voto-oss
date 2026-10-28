@@ -35,12 +35,12 @@ const shortLabel = (label: string) => (/^Candidato [A-Z]$/.test(label) ? label.s
 function PlaceColumn({ card }: { card: PlaceCard }) {
   return (
     <section className="rounded-md border border-foreground p-5" aria-label={`${card.name} · ${card.ufLabel}`} data-place-column={card.ref.role}>
-      <h3 className="text-body font-bold leading-[18px]">{card.name} · {card.ufLabel}</h3>
+      <h3 className="text-step-2 font-bold">{card.name} · {card.ufLabel}</h3>
       {card.cycles.map((b: CycleBlock) => (
         <div key={b.ano} className="mt-3" data-cycle={b.ano}>
           <div className="flex items-baseline justify-between gap-2">
-            <span className="font-serif text-[20px] leading-6">{b.ano}</span>
-            {b.status === 'data' && <span className="text-tiny leading-[12px] text-muted-foreground">{message(DEFAULT_VOICE, 'mb.votedLine', { sides: b.sides.filter((x) => x.key !== 'outros').map((x) => `${shortLabel(x.label)} ${x.pct}%`).join(' · ') })}</span>}
+            <span className="font-serif text-step-3">{b.ano}</span>
+            {b.status === 'data' && <span className="text-step-1 text-muted-foreground">{message(DEFAULT_VOICE, 'mb.votedLine', { sides: b.sides.filter((x) => x.key !== 'outros').map((x) => `${shortLabel(x.label)} ${x.pct}%`).join(' · ') })}</span>}
           </div>
           {b.status === 'data' && b.validos > 0 ? (
             <div className="mt-1 flex h-[26px] w-full overflow-hidden">
@@ -52,10 +52,10 @@ function PlaceColumn({ card }: { card: PlaceCard }) {
           {b.status === 'data' ? (
             <>
               <div className="mt-1.5 h-[18px] bg-[var(--c-abstencao)]" style={{ width: `${Math.max(2, b.notVotedPct)}%` }} />
-              <p className="mt-1 text-tiny leading-[12px] text-muted-foreground">{message(DEFAULT_VOICE, 'mb.notVotedFull', { pct: b.notVotedPct })}</p>
+              <p className="mt-1 text-step-1 text-muted-foreground">{message(DEFAULT_VOICE, 'mb.notVotedFull', { pct: b.notVotedPct })}</p>
             </>
           ) : (
-            <p className="mt-1.5 text-tiny leading-[12px] text-muted-foreground">{say('recap.rowNoData')}</p>
+            <p className="mt-1.5 text-step-1 text-muted-foreground">{say('recap.rowNoData')}</p>
           )}
         </div>
       ))}
@@ -89,7 +89,7 @@ export default function MeuBrasil({ base, origin, fixture, edition }: MeuBrasilP
   return (
     <div data-meu-brasil data-places={refs.length} data-drawn={cards.length} data-ready={content ? 'yes' : 'no'}>
       {/* From 1024 px (the desktop frame) the headline sits over the fields and each place is a column; the picture below is the one that is shared. */}
-      {content && <p className="mt-4 hidden font-serif text-[28px] leading-[36px] lg:block" data-headline>{content.variants.standard.alt}</p>}
+      {content && <p className="mt-4 hidden font-serif text-step-4 lg:block" data-headline>{content.variants.standard.alt}</p>}
       <div className="mt-3 grid gap-2 lg:grid-cols-3 lg:gap-[30px]">
         {ROLES.map((role) => (
           <PlacePicker key={role} base={base} inside label={say(`mb.role.${role}`)} value={nameOf(role)} onPick={(p) => setPlace(role, p)} onClear={() => setPlace(role, undefined)} placeholder="Busque uma cidade" />
@@ -106,7 +106,7 @@ export default function MeuBrasil({ base, origin, fixture, edition }: MeuBrasilP
         {content ? (
           <div className="[&>svg]:block [&>svg]:h-auto [&>svg]:w-full" data-card-picture dangerouslySetInnerHTML={{ __html: content.svg }} />
         ) : (
-          <p className="text-small leading-[17px] text-muted-foreground" data-placeholder role="status">
+          <p className="text-step-1 text-muted-foreground" data-placeholder role="status">
             {failed ? 'Não foi possível carregar os dados de um dos lugares agora.' : refs.length ? 'Carregando…' : say('mb.none')}
           </p>
         )}
@@ -128,22 +128,22 @@ export default function MeuBrasil({ base, origin, fixture, edition }: MeuBrasilP
       {content && (
         <div className="lg:mx-auto lg:max-w-[320px]">
           {/* #97: the one way into the story of these places (the places travel in the address; the story page loads only from here). */}
-          <a className="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-body font-bold text-foreground" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={`${withBase(base, '/meu-brasil/historia/')}${placesQuery(cards.map((c) => c.ref))}`} data-story-link>Ver como história</a>
+          <a className="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-step-2 font-bold text-foreground" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={`${withBase(base, '/meu-brasil/historia/')}${placesQuery(cards.map((c) => c.ref))}`} data-story-link>Ver como história</a>
         </div>
       )}
       {content && (
         <div className="lg:mx-auto lg:max-w-[320px]">
           {/* The sticker of these places (#37): the same places travel in the address; offered only when at least one is drawn. */}
-          <a className="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-body font-bold text-foreground" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={`${withBase(base, '/meu-brasil/adesivo/')}${placesQuery(cards.map((c) => c.ref))}`} data-sticker-link>Baixar adesivo</a>
+          <a className="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-step-2 font-bold text-foreground" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={`${withBase(base, '/meu-brasil/adesivo/')}${placesQuery(cards.map((c) => c.ref))}`} data-sticker-link>Baixar adesivo</a>
         </div>
       )}
       {content && (
         <div className="lg:mx-auto lg:max-w-[320px]">
           {/* #39: the reply. Opens the head-to-head with the first place as the sender's city and the search of the second in focus. */}
-          <a className="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-body font-bold text-foreground" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={`${withBase(base, '/cara-a-cara/')}?nivel=cidade&a=${cards[0]!.ref.uf}/${cards[0]!.ref.slug}&resposta=1`} data-duel-reply>{duelSay({}, 'duel.reply')}</a>
+          <a className="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-step-2 font-bold text-foreground" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={`${withBase(base, '/cara-a-cara/')}?nivel=cidade&a=${cards[0]!.ref.uf}/${cards[0]!.ref.slug}&resposta=1`} data-duel-reply>{duelSay({}, 'duel.reply')}</a>
         </div>
       )}
-      <p className="mt-2 text-center text-[11px] leading-[14px] text-muted-foreground" data-note>{say('mb.addressNote')}</p>
+      <p className="mt-2 text-center text-step-1 text-muted-foreground" data-note>{say('mb.addressNote')}</p>
     </div>
   )
 }

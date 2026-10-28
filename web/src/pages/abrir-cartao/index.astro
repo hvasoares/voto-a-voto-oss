@@ -20,13 +20,13 @@ const edition = await currentEdition()
 <Base title="Abrir um cartão · Voto a Voto" description="Solte o arquivo de um cartão do Voto a Voto para abrir a mesma vista, refeita com os dados do site.">
   <PhoneHeader />
   <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:pt-8" id="main" data-page="abrir-cartao">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal lg:text-primary" href={href('/')}>‹ Início</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">Abrir um cartão</h1>
-    <p class="mt-1 text-small leading-[14px] text-muted-foreground">Solte o arquivo de um cartão. O site refaz a mesma vista com os próprios dados e confere se o arquivo bate.</p>
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal lg:text-primary" href={href('/')}>‹ Início</a>
+    <h1 class="mt-2 font-serif text-step-4 font-normal">Abrir um cartão</h1>
+    <p class="mt-1 text-step-1 text-muted-foreground">Solte o arquivo de um cartão. O site refaz a mesma vista com os próprios dados e confere se o arquivo bate.</p>
     <CardDrop client:load base={base} origin={siteOrigin()} fixture={fixture} edition={edition.id} />
-    <noscript><p class="mt-2 text-small leading-[17px]" data-nojs>Abrir um cartão precisa de JavaScript: o arquivo é lido no seu navegador.</p></noscript>
-    <p class="mt-3 text-center text-[11px] leading-[14px] text-muted-foreground" data-note>O arquivo não sai do seu aparelho e nunca é colocado na página: o cartão mostrado é sempre o refeito pelo site. Imagens de aplicativos de mensagem costumam perder as chaves; o endereço impresso nelas é o caminho de volta.</p>
-    <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+    <noscript><p class="mt-2 text-step-1" data-nojs>Abrir um cartão precisa de JavaScript: o arquivo é lido no seu navegador.</p></noscript>
+    <p class="mt-3 text-center text-step-1 text-muted-foreground" data-note>O arquivo não sai do seu aparelho e nunca é colocado na página: o cartão mostrado é sempre o refeito pelo site. Imagens de aplicativos de mensagem costumam perder as chaves; o endereço impresso nelas é o caminho de volta.</p>
+    <footer class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary" data-component="source-footer">
       {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
     </footer>
   </main>

@@ -65,9 +65,9 @@ export default function PlacePicker({ base, label, value, onPick, onClear, place
     <div className="relative" data-place-picker>
       <Command shouldFilter={false} label={label} className={`h-auto overflow-visible rounded-none bg-transparent p-0 ${FIELD} ${inside ? 'lg:[&_[data-slot=input-group]]:h-14!' : ''}`} onKeyDown={(e) => e.key === 'Escape' && (setText(undefined), setOpen(false))}>
         {inside ? (
-          <span className="pointer-events-none absolute left-3 top-[6px] z-10 lg:top-2 text-[10px] uppercase leading-3 tracking-[0.04em] text-muted-foreground">{label}</span>
+          <span className="pointer-events-none absolute left-3 top-[6px] z-10 lg:top-2 text-step-1 uppercase tracking-[0.04em] text-muted-foreground">{label}</span>
         ) : (
-          <span className="mb-1 block text-[10px] uppercase leading-3 tracking-[0.04em] text-muted-foreground" aria-hidden="true">{label}</span>
+          <span className="mb-1 block text-step-1 uppercase tracking-[0.04em] text-muted-foreground" aria-hidden="true">{label}</span>
         )}
         <div className="relative">
           <CommandInput
@@ -83,7 +83,7 @@ export default function PlacePicker({ base, label, value, onPick, onClear, place
             autoCapitalize="off"
             spellCheck={false}
             enterKeyHint="search"
-            className={inside ? "h-full px-3 pt-[14px] pb-0 text-body! font-bold leading-[18px] lg:pt-5" : "h-full px-3 text-body! leading-[18px]"}
+            className={inside ? "h-full px-3 pt-[14px] pb-0 text-step-2! font-bold lg:pt-5" : "h-full px-3 text-step-2!"}
           />
           {onClear && value && (
             <button type="button" className="absolute right-0 top-0 flex h-11 w-12 lg:h-14 items-center justify-center text-muted-foreground" aria-label={`Remover ${label.toLowerCase()}`} onClick={onClear}>
@@ -96,8 +96,8 @@ export default function PlacePicker({ base, label, value, onPick, onClear, place
             <Card className="mt-1 gap-0 rounded-md border border-border bg-background p-0 py-0 shadow-none ring-0" data-place-results>
               {result.hits.map((h) => (
                 <CommandItem key={`${h.uf}/${h.slug}`} value={`${h.uf}/${h.slug}`} onSelect={() => pick(h)} className="min-h-12 justify-between gap-3 rounded-none px-3 not-first:border-t not-first:border-border [&>svg]:hidden" data-place-option>
-                  <span className="text-body font-bold leading-[18px] wrap-anywhere">{h.nome}</span>
-                  <span className="flex-none text-small text-muted-foreground">{h.ufLabel}</span>
+                  <span className="text-step-2 font-bold wrap-anywhere">{h.nome}</span>
+                  <span className="flex-none text-step-1 text-muted-foreground">{h.ufLabel}</span>
                 </CommandItem>
               ))}
             </Card>
@@ -105,8 +105,8 @@ export default function PlacePicker({ base, label, value, onPick, onClear, place
         </CommandList>
       </Command>
       <div aria-live="polite">
-        {failed && <p className="mt-1 text-small leading-4 text-muted-foreground">A busca não está disponível agora.</p>}
-        {typed && index && result.total === 0 && <p className="mt-1 text-small leading-4 text-muted-foreground">Nenhuma cidade encontrada. Confira a grafia.</p>}
+        {failed && <p className="mt-1 text-step-1 text-muted-foreground">A busca não está disponível agora.</p>}
+        {typed && index && result.total === 0 && <p className="mt-1 text-step-1 text-muted-foreground">Nenhuma cidade encontrada. Confira a grafia.</p>}
       </div>
     </div>
   )

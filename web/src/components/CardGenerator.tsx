@@ -149,14 +149,14 @@ export default function CardGenerator({ base, origin, fixture, edition }: CardGe
   }
 
   const ready = !!card?.svg
-  const BTN = 'min-h-11 w-full rounded-md text-body font-bold'
-  const chip = (on: boolean) => `min-h-11 flex-none whitespace-nowrap rounded-full border px-2 text-[12px] font-bold leading-[15px] ${on ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-background text-foreground'}`
+  const BTN = 'min-h-11 w-full rounded-md text-step-2 font-bold'
+  const chip = (on: boolean) => `min-h-11 flex-none whitespace-nowrap rounded-full border px-2 text-step-1 font-bold ${on ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-background text-foreground'}`
 
   return (
     <div data-card-generator data-ready={ready ? 'yes' : 'no'} data-size={choice.size} data-measure={choice.measure} data-hydrated={mounted ? 'yes' : 'no'}>
       <PlacePicker base={base} label="Cidade" value={place ?? (card ? { uf: card.city.uf, slug: card.city.slug, nome: displayName(card.city.nome) } : undefined)} onPick={pickCity} placeholder="Busque uma cidade" />
 
-      <p className="mt-3 text-[10px] uppercase leading-3 tracking-[0.04em] text-muted-foreground" id="gen-measure">Medida</p>
+      <p className="mt-3 text-step-1 uppercase tracking-[0.04em] text-muted-foreground" id="gen-measure">Medida</p>
       <div className="mt-1 flex gap-1" role="radiogroup" aria-labelledby="gen-measure">
         {MEASURES.map((m: Measure) => (
           <button key={m} type="button" role="radio" aria-checked={choice.measure === m} className={chip(choice.measure === m)} onClick={() => update({ ...choice, measure: m })} data-measure-option={m}>
@@ -165,10 +165,10 @@ export default function CardGenerator({ base, origin, fixture, edition }: CardGe
         ))}
       </div>
 
-      <p className="mt-3 text-[10px] uppercase leading-3 tracking-[0.04em] text-muted-foreground" id="gen-size">Tamanho</p>
+      <p className="mt-3 text-step-1 uppercase tracking-[0.04em] text-muted-foreground" id="gen-size">Tamanho</p>
       <div className="mt-1 flex rounded-md bg-secondary p-0.5" role="radiogroup" aria-labelledby="gen-size">
         {STAT_SIZE_IDS.map((s) => (
-          <button key={s} type="button" role="radio" aria-checked={choice.size === s} className={`min-h-11 flex-1 rounded text-small leading-[15px] ${choice.size === s ? 'bg-primary font-bold text-primary-foreground' : 'text-muted-foreground'}`} onClick={() => pickSize(s)} data-size-option={s}>
+          <button key={s} type="button" role="radio" aria-checked={choice.size === s} className={`min-h-11 flex-1 rounded text-step-1 ${choice.size === s ? 'bg-primary font-bold text-primary-foreground' : 'text-muted-foreground'}`} onClick={() => pickSize(s)} data-size-option={s}>
             {SIZE_LABELS[s]}
           </button>
         ))}
@@ -178,9 +178,9 @@ export default function CardGenerator({ base, origin, fixture, edition }: CardGe
         {card?.svg ? (
           <div className={`w-full ${PREVIEW_WIDTH[choice.size]} [&>svg]:block [&>svg]:h-auto [&>svg]:w-full`} data-preview-picture dangerouslySetInnerHTML={{ __html: card.svg }} />
         ) : loaded.state === 'ready' && card ? (
-          <p className="text-body" data-nodata>{message({ locale: DEFAULT_LOCALE, register: 'standard' }, 'noData')}</p>
+          <p className="text-step-2" data-nodata>{message({ locale: DEFAULT_LOCALE, register: 'standard' }, 'noData')}</p>
         ) : (
-          <p className="text-small leading-[17px] text-muted-foreground" data-placeholder role="status">
+          <p className="text-step-1 text-muted-foreground" data-placeholder role="status">
             {loaded.state === 'loading' ? 'Carregando…' : loaded.state === 'failed' ? MESSAGES.loadFailed : 'Escolha uma cidade para ver o cartão.'}
           </p>
         )}
@@ -193,14 +193,14 @@ export default function CardGenerator({ base, origin, fixture, edition }: CardGe
         <Button variant="outline" className={`${BTN} border border-border bg-background text-primary`} disabled={!ready} onClick={onShare} data-act="share">
           {canShare ? 'Compartilhar' : 'Compartilhar (baixa a imagem)'}
         </Button>
-        <button type="button" className="min-h-11 text-small font-bold text-primary disabled:opacity-50" disabled={!ready} onClick={onCopyAlt} data-act="copy-alt">
+        <button type="button" className="min-h-11 text-step-1 font-bold text-primary disabled:opacity-50" disabled={!ready} onClick={onCopyAlt} data-act="copy-alt">
           Copiar texto alternativo
         </button>
-        <button type="button" className="min-h-11 text-small text-primary underline disabled:opacity-50" disabled={!ready} onClick={onDownloadSvg} data-act="download-svg">
+        <button type="button" className="min-h-11 text-step-1 text-primary underline disabled:opacity-50" disabled={!ready} onClick={onDownloadSvg} data-act="download-svg">
           Baixar em SVG (com texto, para leitores de tela)
         </button>
       </div>
-      <p className="min-h-6 text-small leading-[17px] text-muted-foreground" role="status" aria-live="polite" data-status>
+      <p className="min-h-6 text-step-1 text-muted-foreground" role="status" aria-live="polite" data-status>
         {status}
       </p>
     </div>

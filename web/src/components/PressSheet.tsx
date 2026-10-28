@@ -42,12 +42,12 @@ export default function PressSheet({ base, origin, fixture, edition, example }: 
     <div data-sheet data-ready={sheet ? 'yes' : 'no'}>
       <div className="print:hidden" data-screen>
         {!sheet && (
-          <p className="mt-3 rounded bg-[var(--c-paper-2)] px-3 py-2 text-small leading-[17px]" role="status" data-placeholder>
+          <p className="mt-3 rounded bg-[var(--c-paper-2)] px-3 py-2 text-step-1" role="status" data-placeholder>
             {failed ? say('press.sheet.failed') : refs.length ? say('press.sheet.loading') : say('press.sheet.choose', { example })}
           </p>
         )}
         {sheet && (
-          <button type="button" className="mt-3 min-h-11 w-full rounded-md border border-primary bg-primary text-body font-bold text-primary-foreground" onClick={() => window.print()} data-print>
+          <button type="button" className="mt-3 min-h-11 w-full rounded-md border border-primary bg-primary text-step-2 font-bold text-primary-foreground" onClick={() => window.print()} data-print>
             {say('press.sheet.print')}
           </button>
         )}
@@ -57,9 +57,9 @@ export default function PressSheet({ base, origin, fixture, edition, example }: 
           <div className="sheet__chart [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" dangerouslySetInnerHTML={{ __html: sheet.svg }} />
           <div className="sheet__foot mt-3 flex items-center gap-4">
             <div className="sheet__qr [&>svg]:block [&>svg]:h-[120px] [&>svg]:w-[120px]" dangerouslySetInnerHTML={{ __html: sheet.qr }} />
-            <p className="text-small leading-[17px]">{say('press.sheet.qr')}</p>
+            <p className="text-step-1">{say('press.sheet.qr')}</p>
           </div>
-          <p className="sheet__source mt-2 text-small leading-[17px] text-muted-foreground" data-component="source-footer">
+          <p className="sheet__source mt-2 text-step-1 text-muted-foreground" data-component="source-footer">
             {say(fixture ? 'press.poster.source.fixture' : 'press.poster.source', { edition, address: sheet.address })}
           </p>
         </section>

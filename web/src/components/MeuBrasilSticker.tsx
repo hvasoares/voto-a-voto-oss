@@ -28,7 +28,7 @@ export default function MeuBrasilSticker({ base, origin, fixture, edition }: Meu
         {sticker ? (
           <div className="w-[190px] [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" data-sticker-picture dangerouslySetInnerHTML={{ __html: sticker.svg }} />
         ) : (
-          <p className="my-16 rounded bg-background px-3 py-2 text-small leading-[17px]" data-placeholder role="status">
+          <p className="my-16 rounded bg-background px-3 py-2 text-step-1" data-placeholder role="status">
             {failed ? 'Não foi possível carregar os dados de um dos lugares agora.' : refs.length ? 'Carregando…' : message(DEFAULT_VOICE, 'mb.none')}
           </p>
         )}
@@ -36,10 +36,10 @@ export default function MeuBrasilSticker({ base, origin, fixture, edition }: Meu
       {sticker && (
         <>
           <ShareActions text={`${sticker.headline} ${sticker.url}`} svg={sticker.svg} filename={sticker.filename} link={sticker.url} primaryLabel="Compartilhar" downloadLabel={message(DEFAULT_VOICE, 'mb.sticker.download')} downloadFirst compact />
-          <p className="mt-1 text-center text-[11px] leading-[14px] text-muted-foreground" data-alt>{message(DEFAULT_VOICE, 'mb.sticker.altLabel', { alt: sticker.alt })}</p>
+          <p className="mt-1 text-center text-step-1 text-muted-foreground" data-alt>{message(DEFAULT_VOICE, 'mb.sticker.altLabel', { alt: sticker.alt })}</p>
         </>
       )}
-      <p className="mt-2 text-center text-[11px] leading-[14px] text-muted-foreground" data-note>{message(DEFAULT_VOICE, 'mb.sticker.note')}</p>
+      <p className="mt-2 text-center text-step-1 text-muted-foreground" data-note>{message(DEFAULT_VOICE, 'mb.sticker.note')}</p>
     </div>
   )
 }

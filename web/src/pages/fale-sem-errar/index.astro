@@ -23,20 +23,20 @@ const rules = [1, 2, 3, 4, 5, 6]
 ---
 <QuietDoc title={`${say('guide.title')} · Voto a Voto`} description={say('guide.sub')}>
   <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[720px] lg:pt-8" id="main" data-page="fale-sem-errar">
-    <a class="inline-flex min-h-11 items-center text-body font-bold text-primary" href={href('/')}>‹ Início</a>
-    <h1 class="mt-1 font-serif text-title font-normal leading-[30px] lg:text-[34px] lg:leading-[40px]">{say('guide.title')}</h1>
-    <p class="mt-1 text-body leading-[19px] text-muted-foreground">{say('guide.sub')}</p>
+    <a class="inline-flex min-h-11 items-center text-step-2 font-bold text-primary" href={href('/')}>‹ Início</a>
+    <h1 class="mt-1 font-serif text-step-4 font-normal">{say('guide.title')}</h1>
+    <p class="mt-1 text-step-2 text-muted-foreground">{say('guide.sub')}</p>
     <CreatorGuide client:load base={base} origin={siteOrigin()} edition={label}>
 
     <section class="mt-4 border-t border-border pt-3" aria-labelledby="nao-diga" data-never>
-      <h2 id="nao-diga" class="font-serif text-section font-normal leading-[30px]">{say('guide.never.title')}</h2>
+      <h2 id="nao-diga" class="font-serif text-step-3 font-normal">{say('guide.never.title')}</h2>
       <ul class="mt-2">
         {never.map((n) => (
           <li class="flex gap-3 border-t border-border py-2">
             <span aria-hidden="true" class="font-bold text-destructive">×</span>
             <div>
-              <p class="text-body font-bold leading-[19px]">{say(`guide.never.${n}`)}</p>
-              <p class="text-small leading-[17px] text-muted-foreground">{say(`guide.never.${n}.say`)}</p>
+              <p class="text-step-2 font-bold">{say(`guide.never.${n}`)}</p>
+              <p class="text-step-1 text-muted-foreground">{say(`guide.never.${n}.say`)}</p>
             </div>
           </li>
         ))}
@@ -44,20 +44,20 @@ const rules = [1, 2, 3, 4, 5, 6]
     </section>
 
     <section class="mt-4 border-t border-border pt-3" aria-labelledby="regras" data-rules>
-      <h2 id="regras" class="font-serif text-section font-normal leading-[30px]">{say('guide.rules.title')}</h2>
-      <ul class="mt-2 list-disc pl-5 text-body leading-[21px]">
+      <h2 id="regras" class="font-serif text-step-3 font-normal">{say('guide.rules.title')}</h2>
+      <ul class="mt-2 list-disc pl-5 text-step-2">
         {rules.map((n) => <li>{say(`guide.rules.${n}`)}</li>)}
       </ul>
     </section>
     </CreatorGuide>
 
-    <p class="mt-3 text-small leading-[17px] text-muted-foreground">{say('guide.cite.note')}</p>
-    <p class="mt-3 flex flex-wrap justify-between gap-x-6 text-body font-bold leading-[19px]" data-guide-links>
+    <p class="mt-3 text-step-1 text-muted-foreground">{say('guide.cite.note')}</p>
+    <p class="mt-3 flex flex-wrap justify-between gap-x-6 text-step-2 font-bold" data-guide-links>
       <a class="min-h-11 py-2 text-primary" href={href('/overlay/')} data-link-overlay>{say('guide.link.overlay')}</a>
       <a class="min-h-11 py-2 text-primary" href={href('/adivinhe/')} data-link-game>{say('guide.link.game')}</a>
     </p>
-    <p class="mt-3 text-small leading-[17px] text-muted-foreground" data-noads>{say('guide.noads')}</p>
-    <footer class="mt-3 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+    <p class="mt-3 text-step-1 text-muted-foreground" data-noads>{say('guide.noads')}</p>
+    <footer class="mt-3 border-t border-border pt-2 text-center text-step-1 text-primary" data-component="source-footer">
       Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
     </footer>
   </main>

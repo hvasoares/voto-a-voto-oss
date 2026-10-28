@@ -62,8 +62,8 @@ export default function CreatorGuide({ base, origin, edition, children }: Creato
   return (
     <div data-guide>
       <div className="mt-4 flex items-center justify-between gap-3">
-        <h2 className="font-serif text-section font-normal leading-[30px]">{say('guide.can.title')}</h2>
-        <button type="button" role="switch" aria-checked={register === 'plain'} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-[var(--c-paper-2)] px-3 text-small" onClick={() => setRegister(register === 'plain' ? 'standard' : 'plain')} data-register-toggle>
+        <h2 className="font-serif text-step-3 font-normal">{say('guide.can.title')}</h2>
+        <button type="button" role="switch" aria-checked={register === 'plain'} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-[var(--c-paper-2)] px-3 text-step-1" onClick={() => setRegister(register === 'plain' ? 'standard' : 'plain')} data-register-toggle>
           <span aria-hidden="true" className={`size-4 rounded-full ${register === 'plain' ? 'bg-primary' : 'bg-[#a8a090]'}`} />
           {say('guide.plain.toggle')}
         </button>
@@ -71,29 +71,29 @@ export default function CreatorGuide({ base, origin, edition, children }: Creato
       <div className="mt-2">
         <PlacePicker base={base} label={say('guide.picker')} value={place ? { ...place, nome: loaded ? displayName(loaded.city.nome) : place.nome } : undefined} onPick={pick} />
       </div>
-      {!place && <p className="mt-2 text-body leading-[19px] text-muted-foreground" data-placeholder>{say('guide.choose')}</p>}
-      {place && shard === 'loading' && <p className="mt-2 text-body" role="status">{say('guide.loading')}</p>}
-      {shard === 'failed' && <p className="mt-2 text-body" role="status">{say('guide.failed')}</p>}
-      {out?.noData && <p className="mt-2 text-body leading-[19px]" data-nodata>{out.noData}</p>}
+      {!place && <p className="mt-2 text-step-2 text-muted-foreground" data-placeholder>{say('guide.choose')}</p>}
+      {place && shard === 'loading' && <p className="mt-2 text-step-2" role="status">{say('guide.loading')}</p>}
+      {shard === 'failed' && <p className="mt-2 text-step-2" role="status">{say('guide.failed')}</p>}
+      {out?.noData && <p className="mt-2 text-step-2" data-nodata>{out.noData}</p>}
       <ul className="mt-2 grid gap-2">
         {out?.phrases.map((p) => (
           <li key={p.kind} className="flex items-center justify-between gap-3 rounded-md border border-border bg-[var(--c-paper-2)] p-3" data-phrase={p.kind}>
             <div>
-              <p className="text-tiny uppercase leading-[14px] text-muted-foreground">{say(`guide.kind.${p.kind}`)}</p>
-              <p className="mt-1 font-serif text-[17px] leading-[22px]" data-phrase-text>{p.text}</p>
+              <p className="text-step-1 uppercase text-muted-foreground">{say(`guide.kind.${p.kind}`)}</p>
+              <p className="mt-1 font-serif text-step-2" data-phrase-text>{p.text}</p>
             </div>
-            <button type="button" className="min-h-11 shrink-0 rounded-md bg-primary px-4 text-body font-bold text-primary-foreground" onClick={() => copy(p.text)} data-copy={p.kind}>
+            <button type="button" className="min-h-11 shrink-0 rounded-md bg-primary px-4 text-step-2 font-bold text-primary-foreground" onClick={() => copy(p.text)} data-copy={p.kind}>
               {say('guide.copy')}
             </button>
           </li>
         ))}
       </ul>
-      <p className="min-h-6 text-small leading-[17px] text-muted-foreground" role="status" aria-live="polite" data-status>{status}</p>
+      <p className="min-h-6 text-step-1 text-muted-foreground" role="status" aria-live="polite" data-status>{status}</p>
       {children}
-      <h2 className="mt-4 border-t border-border pt-3 font-serif text-section font-normal leading-[30px]">{say('guide.cite.title')}</h2>
+      <h2 className="mt-4 border-t border-border pt-3 font-serif text-step-3 font-normal">{say('guide.cite.title')}</h2>
       <div className="mt-2 flex items-center justify-between gap-3 rounded-md border border-border bg-[var(--c-paper-2)] p-3">
-        <p className="font-mono text-small leading-[17px] wrap-anywhere" data-citation>{citation}</p>
-        <button type="button" className="min-h-11 shrink-0 rounded-md bg-primary px-4 text-body font-bold text-primary-foreground" onClick={() => copy(citation)} data-copy="citation">
+        <p className="font-mono text-step-1 wrap-anywhere" data-citation>{citation}</p>
+        <button type="button" className="min-h-11 shrink-0 rounded-md bg-primary px-4 text-step-2 font-bold text-primary-foreground" onClick={() => copy(citation)} data-copy="citation">
           {say('guide.copy')}
         </button>
       </div>

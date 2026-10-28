@@ -108,9 +108,9 @@ export default function Game({ base, origin }: GameProps) {
     setStatus(say('game.history.cleared'))
   }
 
-  if (failed) return <p className="mt-4 text-body" role="status" data-status>{say('game.failed')}</p>
-  if (!data || !day) return <p className="mt-4 text-body" role="status" data-status>{say('game.loading')}</p>
-  if (!secret) return <p className="mt-4 text-body" role="status" data-status>{say('game.failed')}</p>
+  if (failed) return <p className="mt-4 text-step-2" role="status" data-status>{say('game.failed')}</p>
+  if (!data || !day) return <p className="mt-4 text-step-2" role="status" data-status>{say('game.loading')}</p>
+  if (!secret) return <p className="mt-4 text-step-2" role="status" data-status>{say('game.failed')}</p>
 
   const shown = unlockedClues(guessed.length)
   const rows = Array.from({ length: MAX_GUESSES }, (_, i) => guessed[i])
@@ -118,37 +118,37 @@ export default function Game({ base, origin }: GameProps) {
   return (
     <div data-game data-n={n} data-finished={result.finished ? 'yes' : 'no'} className="mt-2 lg:grid lg:grid-cols-[1fr_620px] lg:gap-10">
       <div>
-        <p className="text-small leading-[17px] text-muted-foreground" data-sub>{say('game.sub', { n, date: dateLabel(day) })}</p>
-        <p className="mt-4 text-tiny uppercase leading-[14px] text-muted-foreground">{say('game.clues')}</p>
+        <p className="text-step-1 text-muted-foreground" data-sub>{say('game.sub', { n, date: dateLabel(day) })}</p>
+        <p className="mt-4 text-step-1 uppercase text-muted-foreground">{say('game.clues')}</p>
         <ol className="mt-1 grid gap-2" data-clues>
           {CLUE_IDS.map((id, i) => (
             <li key={id} className={`rounded-md border p-3 ${i < shown ? 'border-primary bg-background' : 'border-border bg-[var(--c-paper-2)] text-muted-foreground'}`} data-clue={id} data-unlocked={i < shown ? 'yes' : 'no'}>
-              <p className="text-tiny uppercase leading-[14px]">{say('game.clue.n', { n: i + 1, kind: say(`game.clue.kind.${id}`) })}</p>
-              <p className="mt-1 text-[17px] font-medium leading-[22px]">{i < shown ? clueText(id, secret, data.states) : say('game.clue.locked', { n: i + 1 })}</p>
+              <p className="text-step-1 uppercase">{say('game.clue.n', { n: i + 1, kind: say(`game.clue.kind.${id}`) })}</p>
+              <p className="mt-1 text-step-2 font-bold">{i < shown ? clueText(id, secret, data.states) : say('game.clue.locked', { n: i + 1 })}</p>
             </li>
           ))}
         </ol>
-        <p className="mt-3 rounded-md border border-border bg-[var(--c-paper-2)] p-3 text-small leading-[17px]" data-rules>{say('game.rules')}</p>
-        <p className="mt-3 text-small leading-[17px] text-muted-foreground">{say('game.howto')}</p>
+        <p className="mt-3 rounded-md border border-border bg-[var(--c-paper-2)] p-3 text-step-1" data-rules>{say('game.rules')}</p>
+        <p className="mt-3 text-step-1 text-muted-foreground">{say('game.howto')}</p>
       </div>
 
       <div className="mt-4 min-w-0 lg:mt-0">
-        <p className="text-tiny uppercase leading-[14px] text-muted-foreground">{say('game.guess')}</p>
+        <p className="text-step-1 uppercase text-muted-foreground">{say('game.guess')}</p>
         {!result.finished && (
           <div className="mt-1 flex items-end gap-2" data-guess-form>
             <div className="min-w-0 flex-1">
               <PlacePicker base={base} label={say('game.guess.picker')} value={pick} onPick={(p) => { setPick(p); setNote('') }} placeholder={say('game.guess.placeholder')} />
             </div>
-            <button type="button" className="min-h-11 rounded-md bg-primary px-5 text-body font-bold text-primary-foreground disabled:opacity-50" disabled={!pick} onClick={submit} data-send>
+            <button type="button" className="min-h-11 rounded-md bg-primary px-5 text-step-2 font-bold text-primary-foreground disabled:opacity-50" disabled={!pick} onClick={submit} data-send>
               {say('game.guess.send')}
             </button>
           </div>
         )}
-        <p className="min-h-5 text-small leading-[17px] text-destructive" role="status" data-note>{note}</p>
-        <p className="text-small font-bold leading-[17px]" data-attempt>{say('game.attempt', { n: Math.min(guessed.length + (result.finished ? 0 : 1), MAX_GUESSES) })}</p>
-        <table className="mt-1 w-full border-collapse text-[13px]" data-guesses>
+        <p className="min-h-5 text-step-1 text-destructive" role="status" data-note>{note}</p>
+        <p className="text-step-1 font-bold" data-attempt>{say('game.attempt', { n: Math.min(guessed.length + (result.finished ? 0 : 1), MAX_GUESSES) })}</p>
+        <table className="mt-1 w-full border-collapse text-step-1" data-guesses>
           <thead>
-            <tr className="border-b border-foreground text-left text-tiny uppercase text-muted-foreground">
+            <tr className="border-b border-foreground text-left text-step-1 uppercase text-muted-foreground">
               <th className="py-1 pr-2">{say('game.col.city')}</th>
               <th className="py-1 pr-2">{say('game.col.distance')}</th>
               <th className="py-1 pr-2">{say('game.col.turnout')}</th>
@@ -160,7 +160,7 @@ export default function Game({ base, origin }: GameProps) {
               const f = feedbacks[i]
               return (
                 <tr key={i} className="border-b border-border" data-row={i + 1} data-correct={f?.correct ? 'yes' : 'no'}>
-                  <td className="py-2 pr-2 text-small">{g ? `${i + 1}  ${g[2]} · ${g[0].toUpperCase()}` : <span className="text-muted-foreground">{i + 1}</span>}</td>
+                  <td className="py-2 pr-2 text-step-1">{g ? `${i + 1}  ${g[2]} · ${g[0].toUpperCase()}` : <span className="text-muted-foreground">{i + 1}</span>}</td>
                   <td className="whitespace-nowrap py-2 pr-2 text-primary" data-distance>{f ? (f.correct ? '0 km' : `${new Intl.NumberFormat('pt-BR').format(f.km)} km ${ARROWS[f.dir]}`) : ''}</td>
                   <td className="whitespace-nowrap py-2 pr-2" data-turnout>{f ? `${MARK[f.turnout]} ${say(WORD[f.turnout])}` : ''}</td>
                   <td className="whitespace-nowrap py-2" data-size>{f ? `${MARK[f.size]} ${say(WORD[f.size])}` : ''}</td>
@@ -172,38 +172,38 @@ export default function Game({ base, origin }: GameProps) {
 
         {result.finished && (
           <div className="mt-4 rounded-md border border-border bg-[var(--c-paper-2)] p-3" data-end>
-            <p className="font-serif text-[20px] leading-[26px]" data-answer>
+            <p className="font-serif text-step-3" data-answer>
               {result.won ? say('game.won', { n: result.guesses, city: `${secret[2]} · ${secret[0].toUpperCase()}` }) : say('game.lost', { city: `${secret[2]} · ${secret[0].toUpperCase()}` })}
             </p>
-            <p className="mt-3 text-tiny uppercase leading-[14px] text-muted-foreground">{say('game.share.title')}</p>
-            <pre className="mt-1 whitespace-pre-wrap font-sans text-body leading-[22px]" data-grid>{shareText(n, feedbacks, '').trimEnd()}</pre>
-            <p className="text-tiny leading-[14px] text-muted-foreground">{say('game.share.legend')}</p>
+            <p className="mt-3 text-step-1 uppercase text-muted-foreground">{say('game.share.title')}</p>
+            <pre className="mt-1 whitespace-pre-wrap font-sans text-step-2" data-grid>{shareText(n, feedbacks, '').trimEnd()}</pre>
+            <p className="text-step-1 text-muted-foreground">{say('game.share.legend')}</p>
             <div className="mt-2 flex gap-2">
-              <button type="button" className="min-h-11 flex-1 rounded-md bg-primary px-4 text-body font-bold text-primary-foreground" onClick={share} data-share>{say('game.share.button')}</button>
-              <button type="button" className="min-h-11 flex-1 rounded-md border border-border bg-background px-4 text-body font-bold" onClick={() => void copy().catch(() => setStatus(say('game.share.copy.failed')))} data-copy>{say('game.share.copy')}</button>
+              <button type="button" className="min-h-11 flex-1 rounded-md bg-primary px-4 text-step-2 font-bold text-primary-foreground" onClick={share} data-share>{say('game.share.button')}</button>
+              <button type="button" className="min-h-11 flex-1 rounded-md border border-border bg-background px-4 text-step-2 font-bold" onClick={() => void copy().catch(() => setStatus(say('game.share.copy.failed')))} data-copy>{say('game.share.copy')}</button>
             </div>
-            <p className="min-h-5 text-small leading-[17px] text-muted-foreground" role="status" aria-live="polite" data-share-status>{status}</p>
-            <p className="text-small leading-[17px] text-muted-foreground">{say('game.share.note')}</p>
-            <p className="mt-2 text-body font-bold" data-countdown>{say('game.next', { time: countdown(left) })}</p>
+            <p className="min-h-5 text-step-1 text-muted-foreground" role="status" aria-live="polite" data-share-status>{status}</p>
+            <p className="text-step-1 text-muted-foreground">{say('game.share.note')}</p>
+            <p className="mt-2 text-step-2 font-bold" data-countdown>{say('game.next', { time: countdown(left) })}</p>
           </div>
         )}
 
         <div className="mt-4" data-history>
-          <p className="text-tiny uppercase leading-[14px] text-muted-foreground">{say('game.history.title')}</p>
+          <p className="text-step-1 uppercase text-muted-foreground">{say('game.history.title')}</p>
           {save.history.length === 0 ? (
-            <p className="text-small leading-[17px]" data-history-empty>{say('game.history.empty')}</p>
+            <p className="text-step-1" data-history-empty>{say('game.history.empty')}</p>
           ) : (
-            <ul className="mt-1 flex flex-wrap gap-x-4 text-small leading-[20px]">
+            <ul className="mt-1 flex flex-wrap gap-x-4 text-step-1">
               {[...save.history].reverse().map((h) => (
                 <li key={h.n} data-history-row>{say('game.history.row', { n: h.n, score: h.score ? say('game.history.won', { n: h.score }) : say('game.history.lost') })}</li>
               ))}
             </ul>
           )}
-          <p className="text-small leading-[17px] text-muted-foreground">{say('game.history.note')}</p>
-          {!kept && <p className="text-small leading-[17px] text-muted-foreground" data-blocked>{say('game.storage.blocked')}</p>}
-          {save.history.length > 0 && <button type="button" className="mt-1 min-h-11 rounded-md border border-border bg-background px-4 text-small font-bold" onClick={clear} data-clear>{say('game.history.clear')}</button>}
+          <p className="text-step-1 text-muted-foreground">{say('game.history.note')}</p>
+          {!kept && <p className="text-step-1 text-muted-foreground" data-blocked>{say('game.storage.blocked')}</p>}
+          {save.history.length > 0 && <button type="button" className="mt-1 min-h-11 rounded-md border border-border bg-background px-4 text-step-1 font-bold" onClick={clear} data-clear>{say('game.history.clear')}</button>}
         </div>
-        <p className="mt-2 text-tiny text-muted-foreground" hidden data-region={regionName(secret[8])} />
+        <p className="mt-2 text-step-1 text-muted-foreground" hidden data-region={regionName(secret[8])} />
       </div>
     </div>
   )

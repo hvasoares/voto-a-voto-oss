@@ -17,11 +17,11 @@ const say = (key: string) => message(DEFAULT_VOICE, key as never)
 ---
 <Base title={`${say('game.title')} · Voto a Voto`} description={say('game.rules')}>
   <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[720px] lg:max-w-[1200px] lg:pt-8" id="main" data-page="adivinhe">
-    <a class="inline-flex min-h-11 items-center text-body font-bold text-primary" href={href('/')}>‹ Início</a>
-    <h1 class="mt-1 font-serif text-title font-normal leading-[30px] lg:text-[34px] lg:leading-[40px]">{say('game.title')}</h1>
+    <a class="inline-flex min-h-11 items-center text-step-2 font-bold text-primary" href={href('/')}>‹ Início</a>
+    <h1 class="mt-1 font-serif text-step-4 font-normal">{say('game.title')}</h1>
     <Game client:load base={base} origin={siteOrigin()} />
-    <noscript><p class="mt-2 text-small leading-[17px]" data-nojs>{say('game.nojs')}</p></noscript>
-    <footer class="mt-4 border-t border-border pt-2 text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+    <noscript><p class="mt-2 text-step-1" data-nojs>{say('game.nojs')}</p></noscript>
+    <footer class="mt-4 border-t border-border pt-2 text-step-1 text-primary" data-component="source-footer">
       {say('game.source')} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
     </footer>
   </main>

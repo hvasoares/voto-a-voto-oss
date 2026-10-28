@@ -13,7 +13,9 @@ const GEN = `${base}gerador/?cidade=rj/cidade-exemplo&medida=margem&tamanho=prev
 
 async function download(page: Page, name: string | RegExp): Promise<string> {
   const dl = page.waitForEvent('download')
-  await (typeof name === 'string' ? page.getByRole('button', { name }) : page.getByRole('button', { name })).click()
+  const button = page.getByRole('button', { name })
+  await button.evaluate((el) => el.scrollIntoView({ block: 'center' })) // the fixed metrics notice must not cover it
+  await button.click({ force: true })
   return (await (await dl).path())!
 }
 async function generatorFiles(page: Page) {
