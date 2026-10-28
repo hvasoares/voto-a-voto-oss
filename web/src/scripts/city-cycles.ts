@@ -4,6 +4,7 @@ import type { Turno } from '@/data'
 import { getAnalytics, onAnalyticsReady } from '@/analytics'
 import { parseTurno } from '@/slots/city-cycles/cycles-model'
 import { createCyclesTracker } from '@/slots/city-cycles/cycles-track'
+import { mountReplay, type ReplayHandle } from './city-replay'
 
 const host = document.querySelector<HTMLElement>('[data-cycles]')
 if (host) {
@@ -12,6 +13,7 @@ if (host) {
   const link = document.querySelector<HTMLAnchorElement>('[data-switch]')
   let current: Turno = Number(host.dataset.turno) as Turno
 
+  let replay: ReplayHandle | undefined
   const show = (turno: Turno) => {
     current = turno
     host.dataset.turno = String(turno)
@@ -22,6 +24,10 @@ if (host) {
       link.href = `${path}?turno=${other}`
       link.dataset.turno = String(other)
     }
+    // The replay of the round on show, drawn from that round's own blocks (a switch draws it again, and the old one is gone).
+    replay?.destroy()
+    const panel = host.querySelector<HTMLElement>(`.cycles__round[data-turno="${turno}"]`)
+    replay = panel ? mountReplay(panel, host.dataset.name ?? '', turno) : undefined
   }
   show(parseTurno(new URLSearchParams(location.search)))
   // A view event when the page opens (the boot settles first, see report-analytics.ts).

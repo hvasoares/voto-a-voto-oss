@@ -15,6 +15,7 @@ const ROUTES = [
   { route: 'mapa/', name: 'state tile map' },
   { route: 'relatorios/cidades-que-viraram/', name: 'report' },
   { route: 'mapa/ficaram-em-casa/', name: 'stay-home map' },
+  { route: 'rj/cidade-exemplo/tres-ciclos/', name: 'city three cycles with the replay (#46)' },
 ]
 
 test.describe('a11y: axe on the audited routes', () => {
