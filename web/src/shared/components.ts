@@ -1,6 +1,7 @@
 import { formatInt } from './city-model'
 import { html, Raw } from './html'
 import { calcLink } from '../lib/facts/link'
+import { pickCandidateText } from './fit-candidate'
 
 /*
  * Shared building-block PLACEHOLDERS. Each has a documented props interface that the hydration
@@ -52,9 +53,7 @@ const PAD_PX = 8
  */
 export function candidateText(name: string, pct: number, short?: string): string {
   const room = Math.floor(((pct / 100) * BAR_PX - PAD_PX) / GLYPH_PX)
-  const [first = '', ...rest] = name.split(' ')
-  const tries = [`${name} ${pct}%`, ...(rest.length ? [`${first}\n${rest.join(' ')} ${pct}%`] : []), `${name}\n${pct}%`, `${short ?? first}\n${pct}%`, `${pct}%`]
-  return tries.find((t) => Math.max(...t.split('\n').map((l) => l.length)) <= room) ?? ''
+  return pickCandidateText(name, `${pct}%`, short, (line) => line.length <= room)
 }
 
 /** The text that fits a segment of `pct` percent of its bar ('' when it is too narrow for any). `name` is the candidate's for the two sides. */

@@ -8,7 +8,7 @@
  */
 import { colors } from '@/shared/tokens'
 import type { Recap } from './recap'
-import { esc, fit, rect, text, textWidth, wrap } from './share-card'
+import { candidateLabel, esc, fit, labelText, rect, text, textWidth, wrap } from './share-card'
 import { DEFAULT_LOCALE, message, type Locale, type Register } from './sentences/catalog'
 import { recapBase, recapChange, recapHeadline } from './sentences/recap'
 
@@ -58,14 +58,10 @@ export function recapCardSvg(recap: Recap, o: RecapCardOptions): RecapCard {
     if (row.status === 'data' && row.left && row.rival) {
       const wl = (row.left.tenths / 1000) * INNER
       const wr = INNER - wl
-      const label = (s: { label: string; pct: string }, w: number) => {
-        const full = `${s.label} ${s.pct}%`
-        return textWidth(full, 40, true) <= w - 20 ? full : textWidth(`${s.pct}%`, 40, true) <= w - 12 ? `${s.pct}%` : ''
-      }
       out.push(rect(LEFT, y, wl, BAR_H, colors.lula), rect(LEFT + wl, y, wr, BAR_H, colors.bolsonaro))
       for (const [s, x, w] of [[row.left, LEFT, wl], [row.rival, LEFT + wl, wr]] as const) {
-        const t = label(s, w)
-        if (t) out.push(text(x + w / 2, y + BAR_H / 2 + 14, 40, t, { weight: 600, fill: colors['accent-fg'], anchor: 'middle' }))
+        const t = candidateLabel(s.label, `${s.pct}%`, undefined, w - 20, 40)
+        if (t) out.push(labelText(x + w / 2, y + BAR_H / 2, t.size, t.text, { weight: 600, fill: colors['accent-fg'], anchor: 'middle' }))
       }
     } else out.push(rect(LEFT, y, INNER, BAR_H, colors['paper-2']))
     y += BAR_H + 50

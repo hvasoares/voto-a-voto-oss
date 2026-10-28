@@ -54,6 +54,7 @@ describe('segmentText: the text shrinks with the segment', () => {
     expect(segmentText('b', 26, 'Flavio Bolsonaro')).toBe('Flavio\n26%')
     expect(segmentText('b', 20, 'Flavio Bolsonaro')).toBe('Flavio\n20%')
     expect(segmentText('a', 8, 'Lula')).toBe('8%')
+expect(segmentText('b', 48, 'Veterinário Wilson Grassi')).toBe('Veterinário\nWilson Grassi 48%')
     expect(segmentText('a', 3, 'Lula')).toBe('')
   })
   it('not-voted parts', () => {

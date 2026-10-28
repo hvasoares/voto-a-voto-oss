@@ -23,11 +23,12 @@
  */
 import type { CityResult, Segment, SegmentKey } from '@/shared/city-model'
 import { colors, fonts } from '@/shared/tokens'
+import { pickCandidateText } from '@/shared/fit-candidate'
 import { DEFAULT_LOCALE, message, type Locale, type MessageKey } from './sentences/catalog'
 
 /** The fields of a CityResult the picture and the share text read. A CityResult is one. */
 export interface PictureResult extends Pick<CityResult, 'ano' | 'turno' | 'aptos' | 'validos' | 'votedPct' | 'notVotedPct'> {
-  voted: Pick<Segment, 'key' | 'label' | 'pct' | 'tone'>[]
+  voted: Pick<Segment, 'key' | 'label' | 'pct' | 'tone' | 'short'>[]
   notVoted: Pick<Segment, 'key' | 'label' | 'pct'>[]
 }
 type Seg = PictureResult['voted'][number]
@@ -137,22 +138,41 @@ export const text = (x: number, y: number, size: number, content: string, o: { w
 export const rect = (x: number, y: number, w: number, h: number, fill: string, extra = '') => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"${extra}/>`
 
 const LABEL = 44
-/** Candidate segments: "Name 52%", else a shortened name, else "52%". Other segments: "Abstenção 78%", else "Br". */
-function segmentLabel(s: Seg, width: number, others: string): string {
+/** Two-line labels are set a little smaller so both lines sit inside the bar. */
+const TWO_LINES = 0.9
+
+/**
+ * The text of a candidate (the two sides) in a segment `room` units wide at `size`: "Name 52%", the name wrapped, the short form, the
+ * share alone, else '' (#85). Measured with `textWidth`, never cut with "…". Returns the lines and the size they are set in.
+ */
+export function candidateLabel(name: string, pct: string, short: string | undefined, room: number, size: number): { text: string; size: number } | undefined {
+  const t = pickCandidateText(name, pct, short, (line, lines) => textWidth(line, lines > 1 ? Math.round(size * TWO_LINES) : size, true) <= room)
+  return t ? { text: t, size: t.includes('\n') ? Math.round(size * TWO_LINES) : size } : undefined
+}
+
+/** A label centred on (`x`, `cy`): one line, or two stacked when `content` has a line break. */
+export function labelText(x: number, cy: number, size: number, content: string, o: Parameters<typeof text>[4]): string {
+  const lines = content.split('\n')
+  const gap = size * 1.05
+  return lines.map((line, i) => text(x, Math.round(cy + size * 0.34 + (i - (lines.length - 1) / 2) * gap), size, line, o)).join('')
+}
+
+/** Candidate segments: "Name 52%", else the name wrapped, else the short form, else "52%". Other segments: "Abstenção 78%", else "Br". */
+function segmentLabel(s: Seg, width: number, others: string): { text: string; size: number } | undefined {
   const room = width - 24
   const fits = (t: string) => textWidth(t, LABEL, true) <= room
-  if (s.key === 'a' || s.key === 'b' || s.key === 'outros') {
-    const name = s.key === 'outros' ? others : s.label
-    const full = `${name} ${s.pct}%`
-    if (fits(full)) return full
-    const short = `${fit(name, LABEL, room - textWidth(` ${s.pct}%`, LABEL, true), true)} ${s.pct}%`
-    if (!short.startsWith('…') && short.length > 6 && fits(short)) return short
-    return fits(`${s.pct}%`) ? `${s.pct}%` : ''
+  if (s.key === 'a' || s.key === 'b') return candidateLabel(s.label, `${s.pct}%`, s.short, room, LABEL)
+  if (s.key === 'outros') {
+    const full = `${others} ${s.pct}%`
+    if (fits(full)) return { text: full, size: LABEL }
+    const short = `${fit(others, LABEL, room - textWidth(` ${s.pct}%`, LABEL, true), true)} ${s.pct}%`
+    if (!short.startsWith('…') && short.length > 6 && fits(short)) return { text: short, size: LABEL }
+    return fits(`${s.pct}%`) ? { text: `${s.pct}%`, size: LABEL } : undefined
   }
   const full = `${s.label} ${s.pct}%`
-  if (fits(full)) return full
+  if (fits(full)) return { text: full, size: LABEL }
   const abbr = ABBR[s.key] ?? ''
-  return abbr && fits(abbr) ? abbr : ''
+  return abbr && fits(abbr) ? { text: abbr, size: LABEL } : undefined
 }
 
 /** A bar of `segs`: widths proportional to the integer percents (which add up to 100), 10 px gaps as in the frame. */
@@ -164,7 +184,7 @@ function bar(segs: Seg[], y: number, h: number, others: string): string {
     .map((s) => {
       const w = s.pct * unit
       const label = segmentLabel(s, w, others)
-      const out = rect(x, y, w, h, FILL[s.tone ?? s.key]) + (label ? text(x + w / 2, y + h / 2 + 15, LABEL, label, { weight: 600, fill: TEXT_ON[s.tone ?? s.key], anchor: 'middle' }) : '')
+      const out = rect(x, y, w, h, FILL[s.tone ?? s.key]) + (label ? labelText(x + w / 2, y + h / 2, label.size, label.text, { weight: 600, fill: TEXT_ON[s.tone ?? s.key], anchor: 'middle' }) : '')
       x += w + GAP
       return out
     })

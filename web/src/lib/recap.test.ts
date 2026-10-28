@@ -86,6 +86,11 @@ describe('the recap picture and content', () => {
     expect(svgTexts(svg).filter((x) => x === 'sem dados')).toHaveLength(2)
     expect(svg).not.toMatch(/ 0,0%/)
   })
+  it('a narrow two-digit segment keeps the name over the share instead of the bare share (#85)', () => {
+    const texts = svgTexts(recapCardSvg(buildRecap('sp', blocks(three)), { stateName: 'São Paulo', address: 'votoavoto.exemplo.br/sp/resumo' }).svg)
+    expect(texts).toEqual(expect.arrayContaining(['Haddad', '32,0%']))
+    expect(texts.join(' ')).not.toContain('…')
+  })
   it('keeps every line inside the card, in a state with a long name', () => {
     const long = recapCardSvg(recap, { stateName: 'Estado de Nome Muito Mas Muito Comprido Mesmo', address: 'votoavoto.exemplo.br/sp/resumo' })
     expect(long.height).toBeGreaterThan(900)

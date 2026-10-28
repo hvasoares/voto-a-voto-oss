@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { Candidate, Turnout, Vote } from '@/data'
 import { loadCityResult } from './shard-files'
 import { buildCityResult, type CityResult } from '@/shared/city-model'
-import { shareCardSvg, SHARE_CARD_SIZE, textWidth } from './share-card'
+import { candidateLabel, shareCardSvg, SHARE_CARD_SIZE, textWidth } from './share-card'
 
 const turnout = (o: Partial<Turnout> = {}): Turnout => ({ ano: 2026, turno: 2, uf: 'rj', cdMunicipio: '1', aptos: 1000, comparecimento: 800, abstencoes: 200, brancos: 20, nulos: 30, anuladosApuSep: 0, validos: 750, ...o })
 const cand = (numero: number, nome: string, turno: 1 | 2 = 2): Candidate => ({ ano: 2026, turno, candidatoNumero: numero, nomeUrna: nome, partido: 'X' })
@@ -25,8 +25,8 @@ const frameNameLines = (svg: string) => {
 }
 const nameOf = (svg: string) => frameNameLines(svg).join(' ')
 
-/** A bar label: the name (maybe cut with an ellipsis when the segment is narrow) and the percent. */
-const label = (s: { label: string; pct: number }) => new RegExp(`^${s.label.slice(0, 3).replace(/[()]/g, '.')}.* ${s.pct}%$`, 'm')
+/** A bar label: the name (maybe wrapped over two lines, or its short form when the segment is narrow) and the percent. */
+const label = (s: { label: string; pct: number }) => new RegExp(`^${s.label.slice(0, 3).replace(/[()]/g, '.')}[^]*? ${s.pct}%$`, 'm')
 
 const two = result({}, [[13, 450], [22, 300]])
 
@@ -66,8 +66,8 @@ describe('shareCardSvg: what the picture says', () => {
     const r = result({ turno: 1 }, [[13, 300], [22, 250], [30, 100], [40, 60], [50, 40]])
     const t = all(shareCardSvg(r, opts))
     expect(t).toContain('2026 · 1º turno · RJ')
-    expect(t).toMatch(/^Ana.* \d+%$/m)
-    expect(t).toMatch(/^Bru.* \d+%$/m)
+    expect(t).toMatch(/^Ana[^]*? \d+%$/m)
+    expect(t).toMatch(/^Bru[^]*? \d+%$/m)
     expect(t).toMatch(/^Out.* \d+%$/m)
     expect(t).not.toContain('Dario')
     expect(r.voted.map((s) => s.pct).reduce((a, b) => a + b, 0)).toBe(100)
@@ -107,7 +107,7 @@ describe('shareCardSvg: robustness', () => {
     expect(svg).not.toContain('<Nova>')
     expect(svg).not.toContain('<UF>')
     expect(svg).not.toMatch(/&(?!amp;|lt;|gt;|quot;|#39;)/)
-    expect(all(svg)).toMatch(/^Tom & "Jerry".* \d+%$/m)
+    expect(all(svg)).toMatch(/^Tom[^]*? 60%$/m)
     expect(all(svg)).toContain('x.br/a&b')
     expect(svg).toContain('&lt;Nova&gt;')
   })
@@ -225,5 +225,34 @@ describe('textWidth (conservative estimate used to fit text)', () => {
     expect(textWidth('abc', 20)).toBeLessThan(textWidth('abc', 20, true))
     expect(textWidth('iii', 20)).toBeLessThan(textWidth('WWW', 20))
     expect(textWidth('', 20)).toBe(0)
+  })
+})
+describe('shareCardSvg: candidate names are never cut (#85)', () => {
+  const names = ['Flávio Bolsonaro', 'Veterinário Wilson Grassi', 'Constituinte Eymael', 'Fernando Haddad', 'Jair Bolsonaro']
+  const segWidth = (pct: number) => pct * 8.66 // the bar's unit at 1080 wide, gaps aside
+  it.each(names.flatMap((n) => [48, 52, 30, 70, 12, 88].map((p) => [n, p] as const)))('%s at %i%%: whole words, a whole step, inside the segment, never "…"', (name, pct) => {
+    const lbl = candidateLabel(name, `${pct}%`, undefined, segWidth(pct) - 24, 44)
+    if (!lbl) return expect(segWidth(pct)).toBeLessThan(120) // only a sliver prints nothing
+    expect(lbl.text).not.toContain('…')
+    const lines = lbl.text.split('\n')
+    for (const l of lines) expect(textWidth(l, lbl.size, true)).toBeLessThanOrEqual(segWidth(pct) - 24)
+    // every printed word is a whole word of the name (or the share)
+    for (const w of lbl.text.split(/\s+/)) expect([...name.split(' '), `${pct}%`]).toContain(w)
+  })
+  const poster = (name: string, pct: number) => {
+    const r = result({}, [[13, 1000 - pct * 10], [22, pct * 10]], ['Lula', name])
+    const t = texts(shareCardSvg(r, opts))
+    return { r, t, between: t.slice(t.findIndex((x) => x.startsWith('Votaram')) + 1, t.findIndex((x) => x.startsWith('Não votaram'))) }
+  }
+  it('a runner-up with a two-digit share shows its full name over two lines in the poster', () => {
+    expect(poster('Flávio Bolsonaro', 48).between).toEqual([expect.stringMatching(/^Lula/), 'Flávio', 'Bolsonaro 48%'])
+  })
+  it('a narrow segment gives the short first word over the share, a sliver prints nothing', () => {
+    expect(poster('Flávio Bolsonaro', 30).between).toEqual(expect.arrayContaining(['Flávio', '30%']))
+    expect(poster('Flávio Bolsonaro', 12).between.join(' ')).not.toContain('12%')
+  })
+  it('uses the identity table short form when it is given', () => {
+    expect(candidateLabel('Flávio Bolsonaro', '30%', 'Flávio', 230, 44)?.text).toBe('Flávio\n30%')
+    expect(candidateLabel('Veterinário Wilson Grassi', '30%', 'Wilson', 230, 44)?.text).toBe('Wilson\n30%')
   })
 })

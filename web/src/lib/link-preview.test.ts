@@ -80,6 +80,13 @@ describe('the head of a city with data', () => {
     expect(svg).not.toContain('>EXEMPLO<') // not fictitious: no EXEMPLO tag without the fixture flag
   })
 
+  it('a long runner-up name is wrapped in the preview drawing, never cut (#85)', () => {
+    const long = buildCityResult({ turnout, votes, candidates: candidates.map((c, i) => (i ? { ...c, nomeUrna: 'FLAVIO BOLSONARO' } : c)) })
+    const svg = previewSvg(long, city, opts)
+    expect(svg).not.toContain('…')
+    expect(svg).toContain('>Bolsonaro 47%<')
+  })
+
   it('fixture data says so in the description and in the drawing (the EXEMPLO tag)', () => {
     const fixture = previewHead(city, result, { ...opts, fixture: true })
     expect(fixture.description).toContain('Dados fictícios (EXEMPLO).')
