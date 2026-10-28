@@ -4,8 +4,8 @@ import { normalizeBase, withBase } from '@/paths'
 import CitySearch from '@/components/CitySearch'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { EXPLORE } from '@/lib/explore'
-import { destinationLink } from '@/lib/destinations'
+import { COMPARAR, EXPLORE } from '@/lib/explore'
+import { DESTINATIONS, destinationLink } from '@/lib/destinations'
 import TaskRow from '@/components/TaskRow.astro'
 import { loadStateCodes } from '@/lib/states'
 import { loadUfMap } from '@/lib/uf-map'
@@ -67,12 +67,25 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
     <div class="lg:col-start-1 lg:row-start-2">
     <section class="mt-2 lg:mt-12" aria-labelledby="tarefas" data-tasks>
     <h2 id="tarefas" class="font-serif text-step-3! font-normal lg:text-[22px]! lg:leading-[30px]!">O que você quer fazer?</h2>
-    {/* The entries in the order a visit unfolds (data-task is the stable hook). #101 inserts "Comparar" (id="comparar") right after
-        "compartilhar"; #102 inserts "Usar os dados" and #103 anything else after "entender", before "meu-brasil". A link to a screen
-        that does not exist yet is not shown. */}
+    {/* The entries in the order a visit unfolds (data-task is the stable hook); "comparar" (id="comparar") is the chooser (#101). #102 inserts
+        "Usar os dados" and #103 anything else after "entender". A link to a screen that does not exist yet is not shown. */}
     <ul class="mt-[5px] list-none p-0 lg:mt-3">
       <li data-task="ver-cidade"><TaskRow href="#busca" title="Ver minha cidade" sub="Busque pelo nome ou use a localização" /></li>
       <li data-task="compartilhar"><TaskRow href={href('/') + destinationLink('compartilhar')} title="Compartilhar um resultado" sub="Escolha a cidade e toque em Compartilhar" /></li>
+      <li data-task="comparar" id="comparar" class="border-t border-border pt-3 scroll-mt-4">
+        <strong class="block text-step-2 font-bold lg:text-[19px] lg:leading-[22px]" id="comparar-titulo">Comparar</strong>
+        <span class="block text-step-1 text-muted-foreground lg:text-[14px] lg:leading-[16px]">O que você quer comparar?</span>
+        <ul class="list-none p-0" aria-labelledby="comparar-titulo">
+          {/* A needs-a-city option links to the search with its destination (plain link, no script); home-place.ts points it straight at the city when one is remembered. */}
+          {COMPARAR.map((o) => (
+            <li>
+              {'destination' in o
+                ? <TaskRow href={href('/') + destinationLink(o.destination)} title={o.title} sub={o.sub} data={{ 'place-to': DESTINATIONS[o.destination].to }} />
+                : <TaskRow href={href(o.to.replace(':uf', firstUf))} title={o.title} sub={o.sub} />}
+            </li>
+          ))}
+        </ul>
+      </li>
       <li data-task="conferir"><TaskRow href={href('/sobre-os-dados/#confira-voce-mesmo')} title="Conferir um número" sub="De onde vem cada número e como conferir" /></li>
       <li data-task="entender" class="border-t border-border pt-3">
         <strong class="block text-step-2 font-bold lg:text-[19px] lg:leading-[22px]" id="entender">Entender o país e os estados</strong>
@@ -80,7 +93,6 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
           {EXPLORE.filter((e) => e.task === 'entender').map((e) => <li><TaskRow href={href(e.to.replace(':uf', firstUf))} title={e.title} sub={e.sub} /></li>)}
         </ul>
       </li>
-      {EXPLORE.filter((e) => e.task === 'meu-brasil').map((e) => <li data-task="meu-brasil"><TaskRow href={href(e.to)} title={e.title} sub={e.sub} /></li>)}
     </ul>
     </section>
     </div>

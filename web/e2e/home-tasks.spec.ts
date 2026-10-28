@@ -29,7 +29,7 @@ async function pickBoaEsperanca(page: Page) {
 }
 
 test.describe('the task block', () => {
-  test('replaces "Para explorar": four task entries, in order, with their words', async ({ page }) => {
+  test('replaces "Para explorar": the task entries, in order, with their words', async ({ page }) => {
     await page.goto(base)
     await expect(page.getByText('Para explorar')).toHaveCount(0)
     await expect(page.getByRole('heading', { level: 2 })).toHaveText('O que você quer fazer?')
@@ -38,9 +38,9 @@ test.describe('the task block', () => {
     expect(titles).toEqual([
       ['ver-cidade', 'Ver minha cidade'],
       ['compartilhar', 'Compartilhar um resultado'],
+      ['comparar', 'Comparar'],
       ['conferir', 'Conferir um número'],
       ['entender', 'Entender o país e os estados'],
-      ['meu-brasil', 'Meu Brasil'],
     ])
     const text = (await page.locator('[data-tasks]').innerText()).toLowerCase()
     for (const word of ['vencedor', 'ranking', 'quem ganhou', 'por que']) expect(text).not.toContain(word)
@@ -61,7 +61,7 @@ test.describe('the task block', () => {
     ['Mapa por estado', 'mapa/'],
     ['Relatórios', 'relatorios/'],
     ['Três ciclos por estado', 'tres-ciclos/mt/'],
-    ['Meu Brasil', 'meu-brasil/'],
+    ['Meus lugares ao longo do tempo', 'meu-brasil/'],
   ] as const) {
     test(`${label}: still one tap from Home`, async ({ page }) => {
       await ready(page)
@@ -80,13 +80,13 @@ test.describe('the task block', () => {
   test('keyboard: the entries follow one another in reading order and show a focus ring', async ({ page }) => {
     await ready(page)
     const links = page.locator('[data-tasks] a')
-    await expect(links).toHaveCount(8)
+    await expect(links).toHaveCount(12)
     await links.first().focus()
-    for (let i = 1; i < 8; i++) {
+    for (let i = 1; i < 12; i++) {
       await page.keyboard.press('Tab')
       await expect(links.nth(i)).toBeFocused()
     }
-    const ring = await links.nth(7).evaluate((el) => getComputedStyle(el).outlineStyle)
+    const ring = await links.nth(11).evaluate((el) => getComputedStyle(el).outlineStyle)
     expect(ring).not.toBe('none')
   })
 
@@ -190,7 +190,7 @@ test.describe('without JavaScript', () => {
     await expect(tasks.getByRole('link', { name: /Compartilhar um resultado/ })).toContainText('Escolha a cidade e toque em Compartilhar')
     await expect(tasks.getByRole('link', { name: /Conferir um número/ })).toHaveAttribute('href', `${base}sobre-os-dados/#confira-voce-mesmo`)
     await expect(tasks.getByRole('link', { name: /Brasil e regiões/ })).toHaveAttribute('href', `${base}brasil/`)
-    await expect(tasks.getByRole('link', { name: /Meu Brasil/ })).toHaveAttribute('href', `${base}meu-brasil/`)
+    await expect(tasks.getByRole('link', { name: /Meus lugares ao longo do tempo/ })).toHaveAttribute('href', `${base}meu-brasil/`)
     await expect(page.getByText('Final, não ao vivo.')).toBeVisible()
     await tasks.getByRole('link', { name: /Mapa por estado/ }).click()
     await expect(page).toHaveURL(`${base}mapa/`)

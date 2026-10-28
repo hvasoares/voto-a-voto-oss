@@ -10,6 +10,11 @@ const card = document.querySelector<HTMLElement>('[data-place-shortcut]')
 
 const render = (): void => {
   const place = readPlace()
+  // The "Comparar" options that need a city (#101) go straight to the remembered one; otherwise they are links to the search.
+  for (const a of document.querySelectorAll<HTMLAnchorElement>('[data-place-to]')) {
+    a.dataset.home ??= a.getAttribute('href')!
+    a.setAttribute('href', place?.kind === 'city' ? (card?.dataset.base ?? '/') + a.dataset.placeTo!.replace('{c}', `${place.uf}/${place.slug}`) : a.dataset.home)
+  }
   if (!card) return
   card.hidden = !place
   if (!place) return

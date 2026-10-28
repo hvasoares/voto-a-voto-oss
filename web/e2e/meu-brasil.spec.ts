@@ -85,9 +85,9 @@ test.describe('Meu Brasil', () => {
     expect(s!.text).toContain('a parcela do eleitorado que não votou foi de')
   })
 
-  test('the home lists it under "Para explorar"', async ({ page }) => {
+  test('the home reaches it through the Comparar chooser', async ({ page }) => {
     await page.goto(base)
-    await page.getByRole('link', { name: /Meu Brasil/ }).click()
+    await page.locator('#comparar').getByRole('link', { name: /Meus lugares ao longo do tempo/ }).click()
     await expect(page).toHaveURL(new RegExp(`${route()}$`))
     await expect(page.getByRole('heading', { level: 1, name: 'Meu Brasil' })).toBeVisible()
   })

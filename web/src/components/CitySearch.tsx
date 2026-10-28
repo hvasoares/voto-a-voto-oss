@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Command, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 import { loadSearchCities } from '@/lib/search-data'
 import { savePlace } from '@/lib/place-store'
-import { DESTINATIONS, readDestination, type Destination } from '@/lib/destinations'
+import { DESTINATIONS, cityTarget, readDestination, type Destination } from '@/lib/destinations'
 
 /** One `search` event once typing pauses, not one per keystroke (same as the vanilla home). */
 const DEBOUNCE_MS = 600
@@ -53,7 +53,7 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
     return () => clearTimeout(t)
   }, [controller, text])
 
-  const href = (uf: string, slug: string) => withBase(base, `/${uf}/${slug}/${destination ? DESTINATIONS[destination] : ''}`)
+  const href = (uf: string, slug: string) => withBase(base, cityTarget(uf, slug, destination))
 
   return (
     <div ref={root} className={bar ? 'relative' : 'relative mt-2'} data-city-search={bar ? 'bar' : 'main'} data-ready={cities ? 'search' : undefined} data-destination={destination}>
@@ -108,7 +108,7 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
         </CommandList>
       </Command>
       <div aria-live="polite" className={bar ? BAR_LIST : undefined}>
-        {destination === 'compartilhar' && <p className="mt-2 text-step-1 text-muted-foreground" data-destination-note>Ao escolher a cidade, você vai direto para Compartilhar.</p>}
+        {destination && <p className="mt-2 text-step-1 text-muted-foreground" data-destination-note>Ao escolher a cidade, você vai direto para {DESTINATIONS[destination].goes}.</p>}
         {view.state === 'empty' && <p className="mt-2 text-step-1 text-muted-foreground">Nenhuma cidade encontrada. Confira a grafia ou escolha um estado abaixo.</p>}
         {view.state === 'results' && view.total > view.hits.length && (
           <p className="mt-2 text-step-1 text-muted-foreground">Mostrando {view.hits.length} de {view.total}. Digite mais letras para refinar.</p>
