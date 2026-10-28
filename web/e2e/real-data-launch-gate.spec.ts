@@ -35,8 +35,9 @@ const SCREENS: Array<{ route: string; screen: string; figures: Figure[] }> = [
       // data/manifest.json national_reference["2026-2"]: candidates["13"]=64256232 (LIVE-EQUAL);
       // the 51,79% share of the two-way valid-vote sum is the page's own largest-remainder rounding,
       // derived in e2e/real-data-brasil.spec.ts from the same dataset
-      { text: 'Lula 64.256.232 · 51,79%', citation: 'data/manifest.json national_reference 2026-2 .candidates.13 + ' + LIVE },
-      { text: 'Flávio 59.826.041', citation: 'data/manifest.json national_reference 2026-2 .candidates.22 + ' + LIVE },
+      { text: 'Lula 51,79%', citation: 'the page own two-way valid-vote share of Lula (see above); ' + LIVE },
+      { text: 'Lula 64.256.232 votos', citation: 'data/manifest.json national_reference 2026-2 .candidates.13 + ' + LIVE },
+      { text: 'Flávio Bolsonaro 59.826.041', citation: 'data/manifest.json national_reference 2026-2 .candidates.22 + ' + LIVE },
       // regions: thoughts/team/data-engineering/2026-10-26-runoff-results-highlights.md "What counted the most"
       { text: 'Sudeste 41,1% dos votos válidos do país', citation: 'note Sudeste 41.1% + data/turnout.csv/votes.csv' },
       { text: 'Nordeste 28,5% dos votos válidos do país', citation: 'note Nordeste 28.5%' },

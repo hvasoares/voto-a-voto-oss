@@ -292,7 +292,7 @@ function Lista({ rows, base, uf, ladoANome, ladoBNome }: { rows: CityMarginRow[]
             href={`${baseTrunk}/${uf}/${row.slug}/`}
           >
             <span aria-hidden="true" className="w-4 shrink-0 self-center rounded-sm border border-border" style={{ background: bin ? BIN_COLOR[bin] : 'var(--muted)', height: 18 }} />
-            <span className="min-w-0 flex-1 truncate text-step-2">{displayName(row.nome)}</span>
+            <span className="min-w-0 flex-1 text-step-2 wrap-anywhere">{displayName(row.nome)}</span>
             {/* The row's name is its own text (label in name): the figures are visible, and the words that say who is ahead are read, not seen. */}
             <span className="text-step-1">
               {row.margin2 === null ? 'sem dados' : `${fmt(row.margin2)} pp`}
