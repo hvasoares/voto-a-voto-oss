@@ -11,7 +11,7 @@ describe('quiet pages', () => {
     const shell = read('layouts/QuietDoc.astro').replace(/\/\*[\s\S]*?\*\//g, '')
     expect(shell).not.toMatch(new RegExp(['analytics-boot', 'ConsentBanner', 'Donation' + 'Link'].join('|')))
   })
-  it.each(['pages/fale-sem-errar/index.astro', 'components/CreatorGuide.tsx', 'lib/creator-phrases.ts'])('%s does not import the analytics and has no ad', (file) => {
+  it.each(['pages/fale-sem-errar/index.astro', 'components/CreatorGuide.tsx', 'lib/creator-phrases.ts', 'pages/overlay/index.astro', 'pages/overlay/tela/index.astro', 'components/OverlayView.tsx', 'components/OverlayBuilder.tsx', 'lib/overlay.ts'])('%s does not import the analytics and has no ad', (file) => {
     const code = read(file).replace(/\/\*[\s\S]*?\*\//g, '')
     expect(code).not.toMatch(/@\/analytics|getAnalytics|gtag/)
   })

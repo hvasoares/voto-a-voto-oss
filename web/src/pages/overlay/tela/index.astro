@@ -1,0 +1,21 @@
+---
+/**
+ * The overlay itself (#68), the address of the OBS browser source: one big number, the sentence that reads it and the source seal, over the background the address asks for.
+ * A bare document (no top bar, no banner, no metrics boot): the only script is its island, which reads the city's own shard. Static and final: no refresh, no login, no analytics.
+ */
+import EmbedDoc from '@/layouts/EmbedDoc.astro'
+import OverlayView from '@/components/OverlayView'
+import { normalizeBase } from '@/paths'
+import { datasetFixture } from '@/lib/shard-files'
+import { siteOrigin } from '@/lib/share-url'
+import { currentEdition } from '@/lib/editions-load'
+import { editionLabel } from '@/lib/editions'
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const fixture = await datasetFixture()
+const edition = await currentEdition()
+---
+<EmbedDoc title="Overlay · Voto a Voto">
+  <OverlayView client:load base={base} origin={siteOrigin()} edition={editionLabel(edition)} fixture={fixture} />
+  <noscript><p data-nojs style="font: 16px sans-serif; padding: 16px">O overlay precisa de JavaScript.</p></noscript>
+</EmbedDoc>
