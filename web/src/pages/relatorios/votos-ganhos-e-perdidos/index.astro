@@ -23,8 +23,8 @@ const SHOWN = DELTAS_SHOWN
 
 const base = normalizeBase(import.meta.env.BASE_URL)
 const href = (path: string) => withBase(base, path)
-const share = cn(buttonVariants({ variant: 'default' }), 'min-h-11 w-full rounded-md text-body font-bold leading-[18px] text-primary-foreground')
-const badge = 'flex size-8 flex-none items-center justify-center rounded-full bg-primary pb-px text-[13px] font-bold leading-none text-primary-foreground'
+const share = cn(buttonVariants({ variant: 'default' }), 'min-h-11 w-full rounded-md text-step-2 font-bold text-primary-foreground')
+const badge = 'flex size-8 flex-none items-center justify-center rounded-full bg-primary pb-px text-step-1 font-bold text-primary-foreground'
 const input = await loadReportsData()
 // Fact records (#62): every listed figure links to its record; the seal is written from the build's checks.
 const facts = await getFactPage('relatorios/votos-ganhos-e-perdidos', 'cidades')
@@ -74,23 +74,23 @@ const deltaLine = (delta: number): string => `${formatSignedInt(delta)} ${Math.a
 
 <Base title="Votos ganhos e perdidos vs. 2022 · Voto a Voto">
   <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pb-2 pt-16 lg:pt-8" id="main" data-page="relatorios" data-report="votos-ganhos-e-perdidos">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('/relatorios/')}>‹ Relatórios</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">Votos ganhos e perdidos vs. 2022</h1>
-    <p class="mt-2 text-body leading-[21px]">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('/relatorios/')}>‹ Relatórios</a>
+    <h1 class="mt-2 font-serif text-step-4 font-normal">Votos ganhos e perdidos vs. 2022</h1>
+    <p class="mt-2 text-step-2">
       Quanto {lula} e {flavio} ganharam ou perderam de votos entre o 2º turno de 2022 e o 2º turno de 2026. A comparação é
       pelo número de candidato: cada um dos dois disputou os dois 2º turnos no mesmo número.
     </p>
-    <p class="mt-1 text-small leading-[15px] text-muted-foreground" data-sized>
+    <p class="mt-1 text-step-1 text-muted-foreground" data-sized>
       Listas com o filtro de {minMilhares}+ votos válidos de 2026; sem os postos do exterior e sem as cidades que não tiveram 2º turno em 2022.
     </p>
 
     {sections.map((s, i) => (
       <section class="mt-3 border-t border-border pt-2" data-candidate-section={i === 0 ? 'primeiro' : 'segundo'}>
-        <h2 class="text-body font-bold leading-[18px]">{s.candidate}</h2>
-        <p class="mt-[3px] text-small leading-[15px] text-muted-foreground" data-total>{totalLine(s)}</p>
+        <h2 class="text-step-2 font-bold">{s.candidate}</h2>
+        <p class="mt-[3px] text-step-1 text-muted-foreground" data-total>{totalLine(s)}</p>
         <Fragment set:html={calcLink(links(`${i === 0 ? 'primeiro' : 'segundo'}-total`))} />
 
-        <h3 class="mt-2 text-small font-bold leading-[14px]" data-gains-heading>Maiores altas ({Math.min(SHOWN, s.gains.length)} de {formatInt(s.gained)})</h3>
+        <h3 class="mt-2 text-step-1 font-bold" data-gains-heading>Maiores altas ({Math.min(SHOWN, s.gains.length)} de {formatInt(s.gained)})</h3>
         <table class="mt-1 w-full border-collapse text-left" data-gains-table>
           <caption class="sr-only">As cidades onde o candidato mais ganhou votos em relação a 2022</caption>
           <tbody>
@@ -101,8 +101,8 @@ const deltaLine = (delta: number): string => `${formatSignedInt(delta)} ${Math.a
                 </td>
                 <td class="py-2.5 align-middle">
                   <a class="block min-h-11 min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
-                    <span class="block text-body font-bold leading-[18px] text-foreground">{r.nome}/{r.uf.toUpperCase()}</span>
-                    <span class="mt-[4px] block text-small leading-[15px] text-muted-foreground">{deltaLine(r.delta)} · {formatInt(r.votos2026)} em 2026</span>
+                    <span class="block text-step-2 font-bold text-foreground">{r.nome}/{r.uf.toUpperCase()}</span>
+                    <span class="mt-[4px] block text-step-1 text-muted-foreground">{deltaLine(r.delta)} · {formatInt(r.votos2026)} em 2026</span>
                   </a>
                   <Fragment set:html={calcLink(links(`${i === 0 ? 'primeiro' : 'segundo'}-alta-${r.uf}-${r.slug}`))} />
                 </td>
@@ -110,9 +110,9 @@ const deltaLine = (delta: number): string => `${formatSignedInt(delta)} ${Math.a
             ))}
           </tbody>
         </table>
-        {s.gains.length === 0 && <p class="mt-1 text-small text-muted-foreground" data-no-gains>Entre as cidades do filtro, nenhuma ganhou votos de {s.candidate}.</p>}
+        {s.gains.length === 0 && <p class="mt-1 text-step-1 text-muted-foreground" data-no-gains>Entre as cidades do filtro, nenhuma ganhou votos de {s.candidate}.</p>}
 
-        <h3 class="mt-2 text-small font-bold leading-[14px]" data-losses-heading>Maiores perdas ({Math.min(SHOWN, s.losses.length)} de {formatInt(s.lost)})</h3>
+        <h3 class="mt-2 text-step-1 font-bold" data-losses-heading>Maiores perdas ({Math.min(SHOWN, s.losses.length)} de {formatInt(s.lost)})</h3>
         <table class="mt-1 w-full border-collapse text-left" data-losses-table>
           <caption class="sr-only">As cidades onde o candidato mais perdeu votos em relação a 2022</caption>
           <tbody>
@@ -123,8 +123,8 @@ const deltaLine = (delta: number): string => `${formatSignedInt(delta)} ${Math.a
                 </td>
                 <td class="py-2.5 align-middle">
                   <a class="block min-h-11 min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
-                    <span class="block text-body font-bold leading-[18px] text-foreground">{r.nome}/{r.uf.toUpperCase()}</span>
-                    <span class="mt-[4px] block text-small leading-[15px] text-muted-foreground">{deltaLine(r.delta)} · {formatInt(r.votos2026)} em 2026</span>
+                    <span class="block text-step-2 font-bold text-foreground">{r.nome}/{r.uf.toUpperCase()}</span>
+                    <span class="mt-[4px] block text-step-1 text-muted-foreground">{deltaLine(r.delta)} · {formatInt(r.votos2026)} em 2026</span>
                   </a>
                   <Fragment set:html={calcLink(links(`${i === 0 ? 'primeiro' : 'segundo'}-perda-${r.uf}-${r.slug}`))} />
                 </td>
@@ -132,26 +132,26 @@ const deltaLine = (delta: number): string => `${formatSignedInt(delta)} ${Math.a
             ))}
           </tbody>
         </table>
-        {s.losses.length === 0 && <p class="mt-1 text-small text-muted-foreground" data-no-losses>Entre as cidades do filtro, nenhuma perdeu votos de {s.candidate}.</p>}
+        {s.losses.length === 0 && <p class="mt-1 text-step-1 text-muted-foreground" data-no-losses>Entre as cidades do filtro, nenhuma perdeu votos de {s.candidate}.</p>}
       </section>
     ))}
 
     <Seal lines={seal} />
 
-    <p class="mt-2 rounded-lg bg-secondary px-3 py-3 text-center text-small font-medium leading-[15px] text-secondary-foreground" data-notice>
+    <p class="mt-2 rounded-lg bg-secondary px-3 py-3 text-center text-step-1 font-bold text-secondary-foreground" data-notice>
       <svg class="mr-1 inline-block -translate-y-px" viewBox="0 0 12 13" width="10" height="11" aria-hidden="true" focusable="false">
         <circle cx="6" cy="6.5" r="5.8" fill="none" stroke="currentColor" stroke-width="1.4" />
-        <text x="6" y="10.4" text-anchor="middle" font-size="9.5" fill="currentColor" font-family="Georgia, serif">i</text>
+        <circle cx="6" cy="3.9" r="0.9" fill="currentColor" /><rect x="5.2" y="5.6" width="1.6" height="3.9" fill="currentColor" />
       </svg>
       Votos absolutos favorecem as cidades grandes; veja também as maiores viradas em pp
     </p>
 
     <div class="mt-6 flex min-h-11 flex-col gap-2" data-share>
       <button class={share} type="button" data-share-report>Compartilhar</button>
-      <span class="text-center text-small text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
+      <span class="text-center text-step-1 text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
     </div>
   </main>
-  <footer class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+  <footer class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary" data-component="source-footer">
     Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>
   <script>

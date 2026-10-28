@@ -27,26 +27,26 @@ const facts = await getFactPage('relatorios/comparecimento', 'cidades')
 const links = factLinks(facts.facts, '/relatorios/comparecimento/', base)
 const seal = await sealOf(facts)
 const minMilhares = `${formatInt(MIN_TURNOUT_APTOS / 1000)} mil`
-const share = cn(buttonVariants({ variant: 'default' }), 'min-h-11 w-full rounded-md text-body font-bold leading-[18px] text-primary-foreground')
-const badge = 'flex size-8 flex-none items-center justify-center rounded-full bg-primary pb-px text-[13px] font-bold leading-none text-primary-foreground'
+const share = cn(buttonVariants({ variant: 'default' }), 'min-h-11 w-full rounded-md text-step-2 font-bold text-primary-foreground')
+const badge = 'flex size-8 flex-none items-center justify-center rounded-full bg-primary pb-px text-step-1 font-bold text-primary-foreground'
 const volume = (r: TurnoutExtreme): string => `${formatFixedPct(r.rate)} · ${formatInt(r.comparecimento)} de ${formatInt(r.aptos)} eleitores aptos`
 ---
 
 <Base title="Comparecimento mais alto e mais baixo · Voto a Voto">
   <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pb-2 pt-16 lg:pt-8" id="main" data-page="relatorios" data-report="comparecimento">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('/relatorios/')}>‹ Relatórios</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">Comparecimento mais alto e mais baixo</h1>
-    <p class="mt-2 text-body leading-[21px]">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('/relatorios/')}>‹ Relatórios</a>
+    <h1 class="mt-2 font-serif text-step-4 font-normal">Comparecimento mais alto e mais baixo</h1>
+    <p class="mt-2 text-step-2">
       O comparecimento no 2º turno de 2026, entre as cidades com {minMilhares}+ eleitores aptos: as {formatInt(Math.min(SHOWN, highest.length))} maiores
       e as {formatInt(Math.min(SHOWN, lowest.length))} menores taxas.
     </p>
-    <p class="mt-1 text-small leading-[15px] text-muted-foreground" data-sized>
+    <p class="mt-1 text-step-1 text-muted-foreground" data-sized>
       Comparecimento = quem votou dividido pelo eleitorado apto, em % · {formatInt(compared)} cidades no filtro, de cada uma o volume embaixo da taxa.
     </p>
-    <p class="mt-1 text-small leading-[15px]" data-count-links><Fragment set:html={calcLink(links('filtro'))} /></p>
+    <p class="mt-1 text-step-1" data-count-links><Fragment set:html={calcLink(links('filtro'))} /></p>
 
     <section class="mt-2" aria-label="Comparecimento mais alto">
-      <h2 class="text-body font-bold leading-[18px]">Mais alto</h2>
+      <h2 class="text-step-2 font-bold">Mais alto</h2>
       <table class="mt-1 w-full border-collapse text-left" data-turnout-high>
         <caption class="sr-only">As maiores taxas de comparecimento do 2º turno de 2026</caption>
         <tbody>
@@ -57,8 +57,8 @@ const volume = (r: TurnoutExtreme): string => `${formatFixedPct(r.rate)} · ${fo
               </td>
               <td class="py-3.5 align-middle">
                 <a class="block min-h-11 min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
-                  <span class="block text-body font-bold leading-[18px] text-foreground">{displayName(r.nome)}/{ufLabel(r.uf)}</span>
-                  <span class="mt-[6px] block text-small leading-[15px] text-muted-foreground">{volume(r)}</span>
+                  <span class="block text-step-2 font-bold text-foreground">{displayName(r.nome)}/{ufLabel(r.uf)}</span>
+                  <span class="mt-[6px] block text-step-1 text-muted-foreground">{volume(r)}</span>
                 </a>
                 <Fragment set:html={calcLink(links(`alto-${r.uf}-${r.slug}`))} />
               </td>
@@ -69,7 +69,7 @@ const volume = (r: TurnoutExtreme): string => `${formatFixedPct(r.rate)} · ${fo
     </section>
 
     <section class="mt-3" aria-label="Comparecimento mais baixo">
-      <h2 class="text-body font-bold leading-[18px]">Mais baixo</h2>
+      <h2 class="text-step-2 font-bold">Mais baixo</h2>
       <table class="mt-1 w-full border-collapse text-left" data-turnout-low>
         <caption class="sr-only">As menores taxas de comparecimento do 2º turno de 2026</caption>
         <tbody>
@@ -80,8 +80,8 @@ const volume = (r: TurnoutExtreme): string => `${formatFixedPct(r.rate)} · ${fo
               </td>
               <td class="py-3.5 align-middle">
                 <a class="block min-h-11 min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
-                  <span class="block text-body font-bold leading-[18px] text-foreground">{displayName(r.nome)}/{ufLabel(r.uf)}</span>
-                  <span class="mt-[6px] block text-small leading-[15px] text-muted-foreground">{volume(r)}</span>
+                  <span class="block text-step-2 font-bold text-foreground">{displayName(r.nome)}/{ufLabel(r.uf)}</span>
+                  <span class="mt-[6px] block text-step-1 text-muted-foreground">{volume(r)}</span>
                 </a>
                 <Fragment set:html={calcLink(links(`baixo-${r.uf}-${r.slug}`))} />
               </td>
@@ -89,25 +89,25 @@ const volume = (r: TurnoutExtreme): string => `${formatFixedPct(r.rate)} · ${fo
           ))}
         </tbody>
       </table>
-      {compared === 0 && <p class="mt-2 text-small text-muted-foreground" data-empty>Nenhuma cidade de {minMilhares}+ eleitores aptos.</p>}
+      {compared === 0 && <p class="mt-2 text-step-1 text-muted-foreground" data-empty>Nenhuma cidade de {minMilhares}+ eleitores aptos.</p>}
     </section>
 
     <Seal lines={seal} />
 
-    <p class="mt-2 rounded-lg bg-secondary px-3 py-3 text-center text-small font-medium leading-[15px] text-secondary-foreground" data-notice>
+    <p class="mt-2 rounded-lg bg-secondary px-3 py-3 text-center text-step-1 font-bold text-secondary-foreground" data-notice>
       <svg class="mr-1 inline-block -translate-y-px" viewBox="0 0 12 13" width="10" height="11" aria-hidden="true" focusable="false">
         <circle cx="6" cy="6.5" r="5.8" fill="none" stroke="currentColor" stroke-width="1.4" />
-        <text x="6" y="10.4" text-anchor="middle" font-size="9.5" fill="currentColor" font-family="Georgia, serif">i</text>
+        <circle cx="6" cy="3.9" r="0.9" fill="currentColor" /><rect x="5.2" y="5.6" width="1.6" height="3.9" fill="currentColor" />
       </svg>
       Cada taxa com o seu volume: uma taxa de 90% pode ser 9 de 10 eleitores aptos
     </p>
 
     <div class="mt-6 flex min-h-11 flex-col gap-2" data-share>
       <button class={share} type="button" data-share-report>Compartilhar</button>
-      <span class="text-center text-small text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
+      <span class="text-center text-step-1 text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
     </div>
   </main>
-  <footer class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+  <footer class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary" data-component="source-footer">
     Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>
   <script>

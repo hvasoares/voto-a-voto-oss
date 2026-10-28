@@ -80,15 +80,15 @@ const totalLine = `${fmt(report.totals.cities2026)} cidades do 2º turno de 2026
 ---
 <Base title="Como cada grupo votou · Voto a Voto">
   <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="cohorts">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('/relatorios/')}>‹ Relatórios</a>
-    {banner && <p class="mt-2 border border-border bg-secondary px-3 py-2 text-body font-bold" data-component="fixture-banner">{banner}</p>}
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">Como cada grupo votou</h1>
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('/relatorios/')}>‹ Relatórios</a>
+    {banner && <p class="mt-2 border border-border bg-secondary px-3 py-2 text-step-2 font-bold" data-component="fixture-banner">{banner}</p>}
+    <h1 class="mt-2 font-serif text-step-4 font-normal">Como cada grupo votou</h1>
     <p class="mt-[5px]" data-component="lead">Presidente 2026: cidades agrupadas pelo vencedor do 2º turno em 2018 e 2022, e o resultado de 2026 em cada grupo.</p>
 
     <section class="mt-2 border-t border-border pt-[7px]" data-component="groups">
       {report.groups.map((g) => (
         <article class="mt-2 border-t border-border pb-2 first:border-t-0" data-component="group-card" data-winner2018={g.winner2018} data-winner2022={g.winner2022}>
-          <h2 class="mt-2 text-body font-bold leading-[18px]">{g.title}</h2>
+          <h2 class="mt-2 text-step-2 font-bold">{g.title}</h2>
           <p class="mt-[3px] text-muted-foreground" data-component="group-meta">{fmt(g.cities)} {g.cities === 1 ? 'cidade' : 'cidades'} · {fmt(g.validos2026)} votos válidos (2º turno 2026)</p>
           <p class="mt-[5px]">Vencedor do 2º turno de 2026, % das cidades do grupo</p>
           <div
@@ -100,20 +100,20 @@ const totalLine = `${fmt(report.totals.cities2026)} cidades do 2º turno de 2026
           </div>
           <ul class="mt-[5px] list-none p-0" data-component="group-parts">
             {g.parts.map((p, i) => (
-              <li class="inline-flex items-center gap-[5px] pr-4 text-body" data-component="group-part" data-candidate={p.candidate}>
+              <li class="inline-flex items-center gap-[5px] pr-4 text-step-2" data-component="group-part" data-candidate={p.candidate}>
                 <span aria-hidden="true" class="inline-block h-[10px] w-[10px] rounded-[1px]" style={`background:${color(p.candidate, i)}`} />
                 <span>{p.label} {pct(p.pct)} (<abbr class="no-underline" title="cidades">{fmt(p.cities)}</abbr>)</span>
               </li>
             ))}
           </ul>
-          {g.ties2026 > 0 && <p class="mt-[5px] text-small leading-[14px] text-muted-foreground" data-component="group-tie">{tieNote(g)}</p>}
+          {g.ties2026 > 0 && <p class="mt-[5px] text-step-1 text-muted-foreground" data-component="group-tie">{tieNote(g)}</p>}
           <Fragment set:html={calcLink(links(`${g.winner2018}-${g.winner2022}`))} />
         </article>
       ))}
     </section>
 
     <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="fora-dos-grupos">
-      <h2 class="font-serif text-section font-normal leading-[25px]" id="fora-dos-grupos">Fora dos grupos</h2>
+      <h2 class="font-serif text-step-3 font-normal" id="fora-dos-grupos">Fora dos grupos</h2>
       <p class="mt-[5px]" data-component="total-line">{totalLine}</p>
       <Fragment set:html={calcLink(links('fora'))} />
       {outsideLines.length > 0 && (
@@ -126,7 +126,7 @@ const totalLine = `${fmt(report.totals.cities2026)} cidades do 2º turno de 2026
     </section>
     <Seal lines={seal} />
   </main>
-  <footer class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+  <footer class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary" data-component="source-footer">
     Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados</a>
   </footer>
 </Base>

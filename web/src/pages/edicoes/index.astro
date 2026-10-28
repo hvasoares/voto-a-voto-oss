@@ -16,21 +16,21 @@ const current = await currentEdition()
 
 <Base title="Edições dos dados · Voto a Voto">
   <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="edicoes">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('sobre-os-dados/#edicoes')}>‹ Sobre os dados</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">Edições dos dados</h1>
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('sobre-os-dados/#edicoes')}>‹ Sobre os dados</a>
+    <h1 class="mt-2 font-serif text-step-4 font-normal">Edições dos dados</h1>
     <p class="mt-[5px]">Cada edição é uma cópia datada dos dados, em um endereço que nunca muda depois de publicado. Os números do site vêm da edição mais recente; as anteriores continuam acessíveis.</p>
     <ul class="mt-2 list-none p-0" data-component="edition-list">
       {editions.map((e) => (
         <li class="border-t border-border py-2 first:border-t-0" data-edition={e.id}>
           <a class="font-bold" href={href(editionPath(e.id))}>Edição de {editionLabel(e)}</a>
-          {e.id === current.id && <span class="ml-1 text-small text-muted-foreground">(a que o site mostra)</span>}
-          <span class="block text-small leading-[16px] text-muted-foreground">{formatInt(e.counts.municipalities)} municípios, {formatInt(e.counts.overseas_posts)} postos no exterior</span>
+          {e.id === current.id && <span class="ml-1 text-step-1 text-muted-foreground">(a que o site mostra)</span>}
+          <span class="block text-step-1 text-muted-foreground">{formatInt(e.counts.municipalities)} municípios, {formatInt(e.counts.overseas_posts)} postos no exterior</span>
         </li>
       ))}
     </ul>
     <p class="mt-2"><a href={href(FEED_PATH)} data-feed-link>Feed Atom das edições</a></p>
   </main>
-  <footer class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+  <footer class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary" data-component="source-footer">
     Fonte: TSE, dados finais
   </footer>
 </Base>

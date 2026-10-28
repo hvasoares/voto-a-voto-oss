@@ -24,12 +24,12 @@ const counts = edition.counts
 
 <Base title={`Edição de ${editionLabel(edition)} · Voto a Voto`}>
   <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="edicao" data-edition={edition.id}>
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('edicoes/')}>‹ Edições</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">Edição de {editionLabel(edition)}</h1>
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('edicoes/')}>‹ Edições</a>
+    <h1 class="mt-2 font-serif text-step-4 font-normal">Edição de {editionLabel(edition)}</h1>
     <p class="mt-[5px]">Identificador <strong data-edition-id>{edition.id}</strong>. Esta edição não muda: os arquivos abaixo têm tamanho e SHA-256 registrados em <a href={href(editionPath(edition.id) + 'edition.json')}>edition.json</a>.{edition.id === current.id ? ' É a edição que as páginas do site mostram hoje.' : ' As páginas do site mostram hoje outra edição.'}</p>
 
     <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="conteudo">
-      <h2 class="font-serif text-section font-normal leading-[25px]" id="conteudo">O que tem nesta edição</h2>
+      <h2 class="font-serif text-step-3 font-normal" id="conteudo">O que tem nesta edição</h2>
       <ul class="mt-[5px] list-disc space-y-1 pl-5" data-component="edition-counts">
         <li>{formatInt(counts.municipalities)} municípios e {formatInt(counts.overseas_posts)} {counts.overseas_posts === 1 ? 'posto de votação' : 'postos de votação'} no exterior.</li>
         {Object.entries(counts.municipalities_per_cycle).map(([ano, n]) => <li>{ano}: {formatInt(n)} municípios com dados.</li>)}
@@ -41,27 +41,27 @@ const counts = edition.counts
     </section>
 
     <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="como-citar">
-      <h2 class="font-serif text-section font-normal leading-[25px]" id="como-citar">Como citar</h2>
+      <h2 class="font-serif text-step-3 font-normal" id="como-citar">Como citar</h2>
       <p class="mt-[5px] break-words" data-component="citation">{citation(edition, address)}</p>
-      <p class="mt-1 text-small leading-[16px] text-muted-foreground">Um número citado desta edição continua o mesmo para quem abrir o endereço depois.</p>
+      <p class="mt-1 text-step-1 text-muted-foreground">Um número citado desta edição continua o mesmo para quem abrir o endereço depois.</p>
     </section>
 
     <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="dados-abertos" data-component="release">
-      <h2 class="font-serif text-section font-normal leading-[25px]" id="dados-abertos">Dados abertos desta edição</h2>
+      <h2 class="font-serif text-step-3 font-normal" id="dados-abertos">Dados abertos desta edição</h2>
       <p class="mt-[5px]">Os resultados por município em CSV e NDJSON, com dicionário de dados, LEIAME, arquivo de citação e SHA-256 de cada arquivo. Os endereços pertencem a esta edição e nunca mudam.</p>
       <p class="mt-1" data-release-identifier>Identificador: <strong>{edition.release.identifier}</strong>. Licença: <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">{edition.release.license}</a>, com atribuição ao TSE e ao projeto. Leia o <a href={href(releasePath(edition.id) + 'LEIAME.md')}>LEIAME</a> para os cuidados (empates, exterior, ciclos sem dados).</p>
       <ul class="mt-1 list-none p-0" data-component="release-files">
         {Object.entries(edition.release.files).map(([name, f]) => (
           <li class="border-t border-border py-2 first:border-t-0 first:pt-0" data-release-file={name}>
             <a class="font-bold break-all" href={href(releasePath(edition.id) + name)}>{name}</a>
-            <span class="block text-small leading-[16px]">{formatInt(f.bytes)} bytes · SHA-256 <span title={f.sha256}>{shortHash(f.sha256)}</span></span>
+            <span class="block text-step-1">{formatInt(f.bytes)} bytes · SHA-256 <span title={f.sha256}>{shortHash(f.sha256)}</span></span>
           </li>
         ))}
       </ul>
     </section>
 
     <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="publicacao">
-      <h2 class="font-serif text-section font-normal leading-[25px]" id="publicacao">Como foi publicada</h2>
+      <h2 class="font-serif text-step-3 font-normal" id="publicacao">Como foi publicada</h2>
       <p class="mt-[5px]" data-publication={edition.publication.mode}>{edition.publication.mode === 'automatic' ? 'Publicação automática, depois das verificações abaixo.' : 'Publicação manual, a partir de dados que passaram nas conferências do repositório.'}</p>
       {edition.publication.checks.length > 0 && (
         <ul class="mt-1 list-disc space-y-1 pl-5" data-component="edition-checks">
@@ -71,19 +71,19 @@ const counts = edition.counts
     </section>
 
     <section class="mt-2 border-t border-border pt-[7px] pb-2" aria-labelledby="arquivos">
-      <h2 class="font-serif text-section font-normal leading-[25px]" id="arquivos">Arquivos congelados</h2>
+      <h2 class="font-serif text-step-3 font-normal" id="arquivos">Arquivos congelados</h2>
       <ul class="mt-[5px] list-none p-0" data-component="edition-files">
         {Object.entries(edition.files).map(([name, f]) => (
           <li class="border-t border-border py-2 first:border-t-0 first:pt-0" data-file={name}>
             <span class="font-bold break-all">{name}</span>
-            <span class="block text-small leading-[16px]">{formatInt(f.bytes)} bytes · SHA-256 <span title={f.sha256}>{shortHash(f.sha256)}</span></span>
+            <span class="block text-step-1">{formatInt(f.bytes)} bytes · SHA-256 <span title={f.sha256}>{shortHash(f.sha256)}</span></span>
           </li>
         ))}
       </ul>
-      <p class="mt-1 text-small leading-[14px] text-muted-foreground">Dados de {formatUtc(edition.date)}. Impressão digital dos dados: {edition.fingerprint}.</p>
+      <p class="mt-1 text-step-1 text-muted-foreground">Dados de {formatUtc(edition.date)}. Impressão digital dos dados: {edition.fingerprint}.</p>
     </section>
   </main>
-  <footer class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+  <footer class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary" data-component="source-footer">
     Fonte: TSE, dados finais
   </footer>
 </Base>

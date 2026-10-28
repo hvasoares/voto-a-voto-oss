@@ -28,15 +28,15 @@ const facts = await getFactPage('relatorios/cidades-que-viraram', 'cidades')
 const links = factLinks(facts.facts, '/relatorios/cidades-que-viraram/', base)
 const seal = await sealOf(facts)
 const minMil = `${formatInt(MIN_FLIP_VALIDOS / 1000)} mil`
-const share = cn(buttonVariants({ variant: 'default' }), 'min-h-11 w-full rounded-md text-body font-bold leading-[18px] text-primary-foreground')
-const badge = 'flex size-8 flex-none items-center justify-center rounded-full bg-primary pb-px text-[13px] font-bold leading-none text-primary-foreground'
+const share = cn(buttonVariants({ variant: 'default' }), 'min-h-11 w-full rounded-md text-step-2 font-bold text-primary-foreground')
+const badge = 'flex size-8 flex-none items-center justify-center rounded-full bg-primary pb-px text-step-1 font-bold text-primary-foreground'
 ---
 
 <Base title="Cidades que viraram no 2º turno · Voto a Voto">
   <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pb-2 pt-16 lg:pt-8" id="main" data-page="relatorios" data-report="cidades-que-viraram">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('/relatorios/')}>‹ Relatórios</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">Cidades que viraram no 2º turno</h1>
-    <p class="mt-2 text-body leading-[21px]">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('/relatorios/')}>‹ Relatórios</a>
+    <h1 class="mt-2 font-serif text-step-4 font-normal">Cidades que viraram no 2º turno</h1>
+    <p class="mt-2 text-step-2">
       Maiores viradas para {lula}, cidades com {minMil}+ votos válidos. Margem = % de {lula} menos % de {flavio},
       em pontos percentuais (pp) dos votos válidos.
     </p>
@@ -47,7 +47,7 @@ const badge = 'flex size-8 flex-none items-center justify-center rounded-full bg
         <thead>
           <tr>
             <th class="hidden" scope="col">#</th>
-            <th class="text-small font-normal leading-[13px] text-muted-foreground" scope="col" colspan="2">Margem no 1º turno&nbsp; → &nbsp;margem no 2º turno</th>
+            <th class="text-step-1 font-normal text-muted-foreground" scope="col" colspan="2">Margem no 1º turno&nbsp; → &nbsp;margem no 2º turno</th>
           </tr>
         </thead>
         <tbody>
@@ -58,8 +58,8 @@ const badge = 'flex size-8 flex-none items-center justify-center rounded-full bg
               </td>
               <td class="py-3.5 align-middle">
                 <a class="block min-h-11 min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
-                  <span class="block text-body font-bold leading-[18px] text-foreground">{displayName(r.nome)}/{ufLabel(r.uf)}</span>
-                  <span class="mt-[6px] block text-small leading-[15px] text-muted-foreground">
+                  <span class="block text-step-2 font-bold text-foreground">{displayName(r.nome)}/{ufLabel(r.uf)}</span>
+                  <span class="mt-[6px] block text-step-1 text-muted-foreground">
                     Margem {formatSignedPp(r.margin1)} → {formatSignedPp(r.margin2)} · {formatInt(r.validos2)} votos válidos
                   </span>
                 </a>
@@ -69,25 +69,25 @@ const badge = 'flex size-8 flex-none items-center justify-center rounded-full bg
           ))}
         </tbody>
       </table>
-      {rows.length === 0 && <p class="mt-2 text-small text-muted-foreground">Nenhuma cidade passou do filtro de votos válidos.</p>}
+      {rows.length === 0 && <p class="mt-2 text-step-1 text-muted-foreground">Nenhuma cidade passou do filtro de votos válidos.</p>}
     </section>
 
     <Seal lines={seal} />
 
-    <p class="mt-2 rounded-lg bg-secondary px-3 py-3 text-center text-small font-medium leading-[15px] text-secondary-foreground" data-notice>
+    <p class="mt-2 rounded-lg bg-secondary px-3 py-3 text-center text-step-1 font-bold text-secondary-foreground" data-notice>
       <svg class="mr-1 inline-block -translate-y-px" viewBox="0 0 12 13" width="10" height="11" aria-hidden="true" focusable="false">
         <circle cx="6" cy="6.5" r="5.8" fill="none" stroke="currentColor" stroke-width="1.4" />
-        <text x="6" y="10.4" text-anchor="middle" font-size="9.5" fill="currentColor" font-family="Georgia, serif">i</text>
+        <circle cx="6" cy="3.9" r="0.9" fill="currentColor" /><rect x="5.2" y="5.6" width="1.6" height="3.9" fill="currentColor" />
       </svg>
       Compare por pontos percentuais, não por votos absolutos
     </p>
 
     <div class="mt-6 flex min-h-11 flex-col gap-2" data-share>
       <button class={share} type="button" data-share-report>Compartilhar</button>
-      <span class="text-center text-small text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
+      <span class="text-center text-step-1 text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
     </div>
   </main>
-  <footer class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+  <footer class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary" data-component="source-footer">
     Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>
   <script>
