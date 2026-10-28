@@ -107,6 +107,15 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
     const host = sectionRef.current?.closest('astro-island') as HTMLElement | null
     const pending = host?.dataset.pendingUf
     delete host?.dataset.pendingUf
+    // A tap on the Mosaico | Mapa toggle that landed while React was attaching (kept by the page script) is applied now, URL included.
+    const pendingVista = host?.dataset.pendingVista
+    delete host?.dataset.pendingVista
+    if (pendingVista) {
+      const url = new URL(window.location.href)
+      if (pendingVista === 'mapa') url.searchParams.set('vista', 'mapa')
+      else url.searchParams.delete('vista')
+      window.history.replaceState(null, '', url)
+    }
     const deepLink = new URLSearchParams(window.location.search).get('vista') === 'mapa'
     if (deepLink) setVista('mapa')
     if (pending) tapState(pending)

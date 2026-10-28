@@ -203,6 +203,11 @@ export default function CityMapMap({ data, base, geoUrl, ufNome, semContorno }: 
     delete host?.dataset.pendingCd
     delete host?.dataset.pendingVista
     const deepLink = new URLSearchParams(window.location.search).get('vista') === 'mapa'
+    if (pendingVista === 'mapa' && !deepLink) {
+      const url = new URL(window.location.href)
+      url.searchParams.set('vista', 'mapa')
+      window.history.replaceState(null, '', url)
+    }
     if (deepLink || pendingVista === 'mapa') setVista('mapa')
     if (pending) setSelected(pending)
     // eslint-disable-next-line react-hooks/exhaustive-deps
