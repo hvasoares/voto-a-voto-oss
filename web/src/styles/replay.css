@@ -1,11 +1,11 @@
 /* The city replay (#46): only the three-cycle page of a city loads this file (the shared stylesheet is at its budget). */
 .replay { margin: 12px 0 4px; padding: 12px 12px 10px; border: 1px solid var(--c-rule); border-radius: 12px; background: var(--c-paper-2); }
 .replay__top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.replay__tag { margin: 0; font: 400 11px/14px var(--font-sans); color: var(--c-muted); }
-.replay__btn { min-height: 44px; padding: 0 14px; border: 1px solid var(--c-accent); border-radius: 999px; background: none; color: var(--c-accent); font: 600 14px/18px var(--font-sans); }
-.replay__year { margin: 0; font: 400 28px/34px var(--font-serif); }
+.replay__tag { margin: 0; font: 400 var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); }
+.replay__btn { min-height: 44px; padding: 0 14px; border: 1px solid var(--c-accent); border-radius: 999px; background: none; color: var(--c-accent); font: 700 var(--step-1)/var(--lh-1) var(--font-sans); }
+.replay__year { margin: 0; font: 400 var(--step-4)/var(--lh-4) var(--font-serif); }
 .replay__bar { display: flex; height: 26px; margin-top: 6px; overflow: hidden; border-radius: 4px; }
-.replay__seg { flex: 1 1 0; display: flex; align-items: center; justify-content: center; min-width: 0; overflow: hidden; font: 600 11px/14px var(--font-sans); white-space: nowrap; transition: flex-grow .8s ease; }
+.replay__seg { flex: 1 1 0; display: flex; align-items: center; justify-content: center; min-width: 0; overflow: hidden; font: 700 var(--step-1)/var(--lh-1) var(--font-sans); white-space: nowrap; transition: flex-grow .8s ease; }
 .replay__seg--a { background: var(--c-cand-a); color: var(--c-accent-fg); }
 .replay__seg--b { background: var(--c-cand-b); color: var(--c-accent-fg); }
 .replay__seg--outros { background: var(--c-cand-outros); color: var(--c-ink); }
@@ -14,9 +14,9 @@
 .replay__track circle { fill: var(--c-paper); stroke: var(--c-accent); stroke-width: 2; }
 .replay__track .is-now { fill: var(--c-accent); }
 .replay__track .is-missing { stroke: var(--c-rule); }
-.replay__dot { all: unset; box-sizing: border-box; flex: 1; min-height: 44px; padding-top: 4px; text-align: center; font: 400 11px/14px var(--font-sans); color: var(--c-muted); cursor: pointer; }
+.replay__dot { all: unset; box-sizing: border-box; flex: 1; min-height: 44px; padding-top: 4px; text-align: center; font: 400 var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); cursor: pointer; }
 .replay__dot[aria-current="true"] { color: var(--c-accent); font-weight: 700; }
 .replay__dot:focus-visible, .replay__btn:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 2px; }
 .replay__dots { display: flex; margin-top: -6px; }
-.replay__note, .replay__missing { margin: 6px 0 0; font: 400 11px/14px var(--font-sans); color: var(--c-muted); }
+.replay__note, .replay__missing { margin: 6px 0 0; font: 400 var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); }
 @media (prefers-reduced-motion: reduce) { .replay__seg { transition: none; } }

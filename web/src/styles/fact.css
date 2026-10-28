@@ -1,33 +1,33 @@
 /* The page of the calculation (#61, Sketch frame "Fato (página do cálculo)"). Loaded by that page only: the city card and the phone's first load do not carry it. */
 .fact-page .fact-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
-.fact-page .fact-page .app-header__context { font-size: 12px; }
-.fact-page .fact-page .banner { font-size: 11px; font-weight: 600; letter-spacing: 0; line-height: 14px; padding: 6px var(--gutter) 0; height: 28px; white-space: pre; overflow: hidden; }
+.fact-page .fact-page .app-header__context { font-size: var(--step-1); }
+.fact-page .fact-page .banner { font-size: var(--step-1); font-weight: 700; letter-spacing: 0; line-height: var(--lh-1); padding: 6px var(--gutter) 0; height: 28px; white-space: pre; overflow: hidden; }
 .fact-page .fact-page .page__main { padding: 0 var(--gutter) var(--sp-4); }
-.fact-page .fact-page .back { min-width: 84px; margin: 4px 0 8px -8px; font-size: 15px; padding: 0 12px; }
-.fact-page .fact-page .page__title { font-size: 26px; line-height: 36px; }
-.fact-page .fact-page .page__subtitle { font-size: 14px; line-height: 16px; margin-top: -4px; padding-bottom: 14px; border-bottom: 1px solid var(--c-rule); }
+.fact-page .fact-page .back { min-width: 84px; margin: 4px 0 8px -8px; font-size: var(--step-2); padding: 0 12px; }
+.fact-page .fact-page .page__title { font-size: var(--step-4); line-height: var(--lh-4); }
+.fact-page .fact-page .page__subtitle { font-size: var(--step-1); line-height: var(--lh-1); margin-top: -4px; padding-bottom: 14px; border-bottom: 1px solid var(--c-rule); }
 .fact-page .facts { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
 .fact-page .fact { padding: 14px 16px 16px; border: 1px solid var(--c-rule); border-radius: 12px; scroll-margin-top: 12px; }
 .fact-page .fact:target { background: var(--c-paper-2); border-color: var(--c-accent); }
-.fact-page .fact__title { font: 700 13px/16px var(--font-sans); }
-.fact-page .fact__sentence { font: 400 17px/22px var(--font-serif); margin-top: 8px; }
-.fact-page .fact__label { font: 400 11px/14px var(--font-sans); color: var(--c-muted); margin-top: 14px; }
+.fact-page .fact__title { font: 700 var(--step-1)/var(--lh-1) var(--font-sans); }
+.fact-page .fact__sentence { font: 400 var(--step-2)/var(--lh-2) var(--font-serif); margin-top: 8px; }
+.fact-page .fact__label { font: 400 var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); margin-top: 14px; }
 .fact-page .fact__inputs { margin: 6px 0 0; display: flex; flex-direction: column; gap: 4px; }
-.fact-page .fact__inputs > div { display: flex; justify-content: space-between; gap: 12px; font: 400 13px/18px var(--font-sans); }
-.fact-page .fact__inputs dt small { display: block; font-size: 10px; line-height: 12px; color: var(--c-muted); }
+.fact-page .fact__inputs > div { display: flex; justify-content: space-between; gap: 12px; font: 400 var(--step-1)/var(--lh-1) var(--font-sans); }
+.fact-page .fact__inputs dt small { display: block; font-size: var(--step-1); line-height: var(--lh-1); color: var(--c-muted); }
 .fact-page .fact__inputs dd { margin: 0; flex: none; color: var(--c-muted); }
-.fact-page .fact__formula, .fact__worked li { font: 400 13px/18px var(--font-sans); margin-top: 4px; }
+.fact-page .fact__formula, .fact__worked li { font: 400 var(--step-1)/var(--lh-1) var(--font-sans); margin-top: 4px; }
 .fact-page .fact__worked { list-style: none; margin: 0; padding: 0; }
-.fact-page .fact__shown { font: 400 12px/16px var(--font-sans); color: var(--c-muted); margin-top: 8px; }
-.fact-page .fact__id { font: 400 10px/14px var(--font-sans); color: var(--c-muted); margin-top: 10px; overflow-wrap: anywhere; }
+.fact-page .fact__shown { font: 400 var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); margin-top: 8px; }
+.fact-page .fact__id { font: 400 var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); margin-top: 10px; overflow-wrap: anywhere; }
 .fact-page .fact__id code { font: inherit; }
-.fact-page .fact__rounding, .fact__neutral { font: 400 11px/14px var(--font-sans); color: var(--c-muted); margin-top: 14px; }
+.fact-page .fact__rounding, .fact__neutral { font: 400 var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); margin-top: 14px; }
 .fact-page .fact__neutral { margin-top: 4px; }
-.fact-page .fact__block { font: 400 11px/14px var(--font-sans); color: var(--c-muted); margin-top: 18px; }
+.fact-page .fact__block { font: 400 var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); margin-top: 18px; }
 .fact-page .fact__links { margin-top: 4px; }
-.fact-page .fact__links a { display: flex; align-items: center; min-height: var(--min-tap); font: 700 12px/16px var(--font-sans); color: var(--c-accent); }
+.fact-page .fact__links a { display: flex; align-items: center; min-height: var(--min-tap); font: 700 var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-accent); }
 @media (min-width: 1024px) {
   .fact-page .page__main { width: 100%; max-width: 720px; margin: 0 auto; padding: 32px 0 40px; }
-  .fact-page .page__title { font-size: 46px; line-height: 56px; }
-  .fact-page .back { min-width: 0; margin: 0; padding: 0; border: 0; background: none; font-size: 14px; color: var(--c-accent); }
+  .fact-page .page__title { font-size: var(--step-4); line-height: var(--lh-4); }
+  .fact-page .back { min-width: 0; margin: 0; padding: 0; border: 0; background: none; font-size: var(--step-1); color: var(--c-accent); }
 }

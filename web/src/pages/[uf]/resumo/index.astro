@@ -44,26 +44,26 @@ const calcCycles = recap.rows.filter((r) => r.status === 'data').map((r) => ({ a
 <Base title={`${recapTitle()} · ${stateName} · Voto a Voto`} description={content.variants.standard.alt}>
   <PhoneHeader />
   <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:pt-8" id="main" data-page="resumo" data-uf={uf}>
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal lg:text-primary" href={href('/')}>‹ Início</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">{recapTitle()}</h1>
-    <p class="mt-1 text-small leading-[14px] text-muted-foreground" data-subtitle>{recapSubtitle(recap, { stateName })}</p>
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal lg:text-primary" href={href('/')}>‹ Início</a>
+    <h1 class="mt-2 font-serif text-step-4 font-normal">{recapTitle()}</h1>
+    <p class="mt-1 text-step-1 text-muted-foreground" data-subtitle>{recapSubtitle(recap, { stateName })}</p>
     {hasData ? (
       <>
         <div class="mt-3 [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" data-recap-picture set:html={content.svg} />
-        <noscript><p class="mt-1 text-small leading-[17px]" data-nojs>Compartilhar e baixar a imagem precisam de JavaScript; a frase acima da imagem pode ser copiada.</p></noscript>
+        <noscript><p class="mt-1 text-step-1" data-nojs>Compartilhar e baixar a imagem precisam de JavaScript; a frase acima da imagem pode ser copiada.</p></noscript>
         <RecapShare client:idle uf={uf!} text={content.variants.standard.text} svg={content.svg} filename={content.filename} link={content.url} label={message(DEFAULT_VOICE, 'recap.share')} />
       </>
     ) : (
-      <p class="mt-4 text-body" data-nodata>{content.variants.standard.alt}</p>
+      <p class="mt-4 text-step-2" data-nodata>{content.variants.standard.alt}</p>
     )}
     {hasData && (
-      <ul class="mt-2 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-small leading-[15px]" data-recap-calc>
+      <ul class="mt-2 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-step-1" data-recap-calc>
         {calcCycles.map((c) => <li><span class="text-muted-foreground">{c.ano} </span><Fragment set:html={c.link} /></li>)}
       </ul>
     )}
     <Seal lines={seal} />
-    <a class="mt-1 flex min-h-11 w-full items-center justify-center text-body font-bold text-primary" href={href(`/tres-ciclos/${uf}/`)} data-link="cycles">Ver os três ciclos do estado ›</a>
-    <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+    <a class="mt-1 flex min-h-11 w-full items-center justify-center text-step-2 font-bold text-primary" href={href(`/tres-ciclos/${uf}/`)} data-link="cycles">Ver os três ciclos do estado ›</a>
+    <footer class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary" data-component="source-footer">
       {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
     </footer>
   </main>

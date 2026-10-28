@@ -61,7 +61,7 @@ for (const ano of CYCLES) for (const turno of [1, 2] as const) results.set(viewI
 const has = (ano: number, turno: 1 | 2) => !!results.get(viewId({ ano, turno }))
 const view = asked ?? defaultView(has)
 
-// The fact records (#61): every figure below links to its record ("ver cálculo"); factLinks fails the build for a figure with no record
+// The fact records (#61): every figure below links to its record (the calculation link); factLinks fails the build for a figure with no record
 // or a record with no source or no calculation, so no number of the card is published unexplained.
 const cityFacts = (await loadCityFacts(uf, slug))!
 // The earlier cycles have no fact page per city (it would triple the site): their links open the one page of the rules (`olderCyclesFacts`).

@@ -3,11 +3,11 @@
 .story__card { scroll-margin-top: 12px; }
 .story__pic { border: 1px solid var(--c-rule, #d9d3c3); border-radius: 14px; overflow: hidden; }
 .story__pic > svg { display: block; width: 100%; height: auto; }
-.story__cap { margin: 6px 0 0; font: 400 13px/17px var(--font-sans, sans-serif); color: var(--c-muted, #6a6558); text-align: center; }
+.story__cap { margin: 6px 0 0; font: 400 var(--step-1)/var(--lh-1) var(--font-sans, sans-serif); color: var(--c-muted, #6a6558); text-align: center; }
 .story__calc { margin: 2px 0 0; text-align: center; }
-.story__link { display: block; text-align: center; font: 400 13px/17px var(--font-sans, sans-serif); }
-.story__now, .story__note { margin: 8px 0 0; text-align: center; font: 400 13px/17px var(--font-sans, sans-serif); color: var(--c-muted, #6a6558); }
-.story__now { color: var(--c-ink, #1c1b18); font-weight: 600; }
+.story__link { display: block; text-align: center; font: 400 var(--step-1)/var(--lh-1) var(--font-sans, sans-serif); }
+.story__now, .story__note { margin: 8px 0 0; text-align: center; font: 400 var(--step-1)/var(--lh-1) var(--font-sans, sans-serif); color: var(--c-muted, #6a6558); }
+.story__now { color: var(--c-ink, #1c1b18); font-weight: 700; }
 .story[data-enhanced="true"] .story__track { flex-direction: row; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 12%; margin: 12px -20px 0; scrollbar-width: none; }
 .story[data-enhanced="true"] .story__track::-webkit-scrollbar { display: none; }
 .story[data-enhanced="true"] .story__card { flex: 0 0 64%; max-width: 280px; scroll-snap-align: center; opacity: .55; transition: opacity .2s; }

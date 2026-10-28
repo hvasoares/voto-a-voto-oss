@@ -20,20 +20,20 @@ const blocks = [
 ] as const
 ---
 <section class="mt-3 border-t border-border pt-3" data-city-texts aria-labelledby="textos-prontos">
-  <h2 id="textos-prontos" class="font-serif text-[20px] leading-[26px]">{say('text.section.title')}</h2>
-  <p class="mt-1 text-small leading-[17px] text-muted-foreground">{say('text.section.note')}</p>
+  <h2 id="textos-prontos" class="font-serif text-step-3">{say('text.section.title')}</h2>
+  <p class="mt-1 text-step-1 text-muted-foreground">{say('text.section.note')}</p>
   {blocks.map((b) => (
     <div class="mt-3" data-text-block={b.id}>
-      <h3 class="text-body font-bold leading-[18px]">{b.title}</h3>
-      {b.note && <p class="text-small leading-[17px] text-muted-foreground">{b.note}</p>}
+      <h3 class="text-step-2 font-bold">{b.title}</h3>
+      {b.note && <p class="text-step-1 text-muted-foreground">{b.note}</p>}
       {REGISTERS.map((register) => (
-        <p class="mt-1 whitespace-pre-line rounded-md border border-border bg-[var(--c-paper-2)] p-3 text-body leading-[19px] wrap-anywhere" data-register={register} data-text={b.id}>{b.body[register]}</p>
+        <p class="mt-1 whitespace-pre-line rounded-md border border-border bg-[var(--c-paper-2)] p-3 text-step-2 wrap-anywhere" data-register={register} data-text={b.id}>{b.body[register]}</p>
       ))}
-      <button type="button" class="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-body font-bold text-foreground" data-copy={b.id} data-copied={say('text.copied')} data-failed={say('text.copy.failed')} hidden>{say('text.copy')}</button>
+      <button type="button" class="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-step-2 font-bold text-foreground" data-copy={b.id} data-copied={say('text.copied')} data-failed={say('text.copy.failed')} hidden>{say('text.copy')}</button>
     </div>
   ))}
-  <p class="min-h-6 text-small leading-[17px] text-muted-foreground" role="status" aria-live="polite" data-copy-status></p>
-  <a class="mt-1 flex min-h-11 items-center text-body font-bold text-primary" href={stateHref} data-state-texts>{say('text.state.link')}</a>
+  <p class="min-h-6 text-step-1 text-muted-foreground" role="status" aria-live="polite" data-copy-status></p>
+  <a class="mt-1 flex min-h-11 items-center text-step-2 font-bold text-primary" href={stateHref} data-state-texts>{say('text.state.link')}</a>
 </section>
 <script>
   // Copy buttons: shown only here; the text copied is the one on screen (the page's register).
