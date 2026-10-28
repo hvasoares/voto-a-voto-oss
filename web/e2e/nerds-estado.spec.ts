@@ -13,8 +13,8 @@ const int = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 const pct = (a: number, b: number) => `${(Math.round((a / b) * 1000) / 10).toFixed(1).replace('.', ',')}%`
 // total = [id, nome, eleitorado, comparecimento, abstencao, brancos_nulos, validos, nao_instalados, ...votos]
 const figures = (uf: string, ano: number, turno: number) => {
-  const t = shard(uf, ano, turno).total as number[]
-  const [aptos, comp, abst, bn, val] = [t[2]!, t[3]!, t[4]!, t[5]!, t[6]!]
+  const t = (shard(uf, ano, turno).total as number[]).slice(2)
+  const [aptos, comp, abst, bn, val] = [t[0]!, t[1]!, t[2]!, t[3]!, t[4]!]
   return { eleitorado: int(aptos), comparecimento: pct(comp, aptos), abstencao: pct(abst, aptos), brancos_nulos: pct(bn, comp), validos: pct(val, comp) }
 }
 const url = (uf = 'rj', q = '') => `${base}dados-para-nerds/estado/${uf}/${q}`
