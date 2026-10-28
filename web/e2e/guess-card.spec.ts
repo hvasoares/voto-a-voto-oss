@@ -34,7 +34,8 @@ test.describe('share sheet: the guess card', () => {
     expect(t).toContain('Palpite certo: Sim')
     expect(t).toContain('Cidade Exemplo mudou de lado em 2022?')
     expect(t).toContain('Resposta: Sim · Mudou de lado em 2022')
-    expect(t).toContain('/rj/cidade-exemplo')
+    // the address may break over two lines under a long base path: compare it without the spaces
+    expect(t.replace(/ /g, '')).toContain(`${base}rj/cidade-exemplo`)
     await expect(picture(page).locator('svg title')).toHaveText('Cidade Exemplo mudou de lado em 2022? Palpite: Sim. Resposta: Sim. O palpite estava certo. Mudou de lado em 2022.')
     await expect(page.locator('[data-text-body]')).toContainText('O palpite estava certo.')
     await expect(page.locator('[data-share-sheet]')).toHaveAttribute('data-filename', 'voto-a-voto-rj-cidade-exemplo-palpite.png')

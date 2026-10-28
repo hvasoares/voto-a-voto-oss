@@ -86,3 +86,8 @@ fact page say so in plain words (`fact.cohort.limits`); the records say "cidades
 
 The fact and seal sentences live in `src/lib/sentences/catalog-facts.ts`, which registers them in `CATALOG` when imported (only the fact modules and `Seal.astro` import it). Putting them in `catalog.ts` added 14 KB raw
 (3.3 KB gzip) to the share code (`share-card`) that the recap and share pages load on a phone; measured with `scripts/measure.ts` and fixed here: the JS of those pages is again byte-identical to before G6.
+
+## The state's city counts (#42, #47)
+
+`stateCyclesFacts` (`other.ts`) also holds, per state, four records over the cities with the three cycles and no tie (the arcs of #41, `arcs.json` `byState`; the note of the method is `checkpoints/issue-41.md`): `2026-viradas` (cities whose side with the most votes changed in 2026, the season's pivot, #42), `2022-viradas`,
+`voltaram` (changed in 2022 and came back in 2026) and `sem-mudanca` (the same side in the three cycles), which are the numbers of the state story's cards (#47). The Meu Brasil story (#97) links, for each number, the record of the city's own page (2026) or the page of the rules (earlier cycles), as the city card does.

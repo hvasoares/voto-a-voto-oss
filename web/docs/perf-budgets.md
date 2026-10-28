@@ -114,3 +114,8 @@ cresceu +16 B de JS (as duas linhas de `analytics/event-props.ts`), +260 B de gz
 (o botão de compartilhar lê `data-share-text`). O html do cartão da cidade ficou igual (6481 B): as sete cores da escala do mapa não entram nos tokens, que viram variáveis CSS no `<head>` de toda página.
 A página do mapa não carrega React na primeira carga (a ilha do mapa é `client:interaction`, a do compartilhar `client:visible`); a lista de relatório não tem ilha nem arquivo de dados.
 Números por página em `docs/checkpoints/issue-32.md` e `issue-34.md`.
+
+**G8 (#44, #46, #42, #43, #47, #45, #97), no budget changed.** City card (`/rj/cidade-exemplo/`, fixture, 390x844, `scripts/measure.ts`), #44 only: html 6482 -> 6548 B gzip (budget 6.4 KB = 6553 B: the arc block moved to the top as the answer, so the page grew by the question line alone), css 16223 -> 16320 B
+(budget 16 KB = 16384 B: the old pill rules became the answer box, the desktop overrides they made dead were removed), JS 5130 -> 6087 B (the guess is a static import of `city-card`'s own script: a dynamic import cost 2.3 KB because of Vite's preload helper). The replay (#46) and the season (#42, #43) have their own stylesheets
+(`replay.css`, `season.css`, loaded by those pages only), the story pages (#47, #97) have `story.css`; none touches the shared stylesheet or an audited route. The three-cycle page of a city carries +1967 B of JS gzip for the replay. The Meu Brasil page (#97 button): JS +101 B gzip.
+Per ticket numbers: `docs/checkpoints/issue-44.md`, `issue-46.md`, `issue-97.md`.
