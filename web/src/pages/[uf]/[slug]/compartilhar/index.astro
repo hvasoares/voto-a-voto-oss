@@ -18,6 +18,8 @@ import { defaultView } from '@/slots/city/city-view'
 import { shareContent } from '@/lib/share-model'
 import { siteOrigin } from '@/lib/share-url'
 import { currentEdition } from '@/lib/editions-load'
+import CityTexts from '@/components/CityTexts.astro'
+import { cityTexts } from '@/lib/city-texts-build'
 
 export async function getStaticPaths() {
   return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug }, props: { nome: city.nome } }))
@@ -31,7 +33,9 @@ const shard = (await loadCityShard(uf!, slug!))!
 const city = shard.city
 const name = displayName(nome)
 const fixture = await datasetFixture()
-const edition = (await currentEdition()).id
+const currentEd = await currentEdition()
+const edition = currentEd.id
+const texts = cityTexts(shard, { origin: siteOrigin(), base, fixture, editionDate: currentEd.date })
 
 // The view the page pre-prints is the card's default; ?ciclo/?turno is the ShareSheet island's business.
 const view = defaultView((ano, turno) => !!cityShardResult(shard, ano, turno))
@@ -73,6 +77,7 @@ const closeHref = href(`/${uf}/${slug}/`)
     <a class="mt-1 flex min-h-11 w-full items-center justify-center text-body font-bold text-primary" href={href(`/gerador/?cidade=${uf}/${slug}`)} data-generator-link>
       Criar um cartão com uma medida ›
     </a>
+    <CityTexts texts={texts} stateHref={href(`/textos/${uf}.txt`)} />
     <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
       {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
     </footer>

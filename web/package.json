@@ -48,6 +48,8 @@
     "check:margin": "tsx scripts/margin-check.ts",
     "check:curiosities": "tsx scripts/curiosities-check.ts",
     "check:shards:real": "DATA_DIR=../data tsx scripts/shard-check.ts",
+    "check:texts": "tsx scripts/texts-check.ts",
+    "check:texts:real": "DATA_DIR=../data tsx scripts/texts-check.ts",
     "check:facts": "tsx scripts/facts-check.ts",
     "check:facts:real": "DATA_DIR=../data tsx scripts/facts-check.ts",
     "check:tse-live": "DATA_DIR=../data tsx scripts/verify-tse-live.ts",
