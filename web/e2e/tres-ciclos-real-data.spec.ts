@@ -36,9 +36,9 @@ test('frame 13: "Outros estados" = the five other states of the six largest, in 
   const ufs = await page.locator('[data-component="outros-estados"] > ul > li').evaluateAll((els) => els.map((e) => e.getAttribute('data-uf')))
   expect(ufs).toEqual(['mg', 'rj', 'ba', 'pr', 'rs'])
   const mg = page.locator('[data-component="outros-estados"] > ul > li[data-uf="mg"]')
-  // MG: Lula 41,8% / 50,2% / 50,4% across the three cycles (right column of the frame)
+  // MG: Haddad 41,8% (2018) / Lula 50,2% / Lula 50,4% across the three cycles (right column of the frame)
   const pcts = await mg.locator('[data-mini-pcts] [data-cycle]').allTextContents()
-  expect(pcts).toEqual(['Lula 41,8%', 'Lula 50,2%', 'Lula 50,4%'])
+  expect(pcts).toEqual(['Haddad 41,8%', 'Lula 50,2%', 'Lula 50,4%'])
 })
 
 test('frame 13: links "Ver o estado ›" and "Ver os três ciclos de uma cidade ›"', async ({ page }) => {
