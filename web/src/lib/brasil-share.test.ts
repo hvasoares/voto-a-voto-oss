@@ -1,4 +1,8 @@
+import { existsSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { createStore } from '@/data/store'
+import { diskSource } from '@/data/node'
 import type { Candidate, State, Turnout, Vote } from '@/data'
 import { buildBrasil, type BrasilView } from './brasil'
 import { brasilCardSvg } from './brasil-card'
@@ -127,5 +131,25 @@ describe('the text of a bar segment', () => {
         const t = barText(c, share)
         if (t) expect(width(t), `${c.labelFull} at ${share}%`).toBeLessThanOrEqual((share / 100) * 350 - 2)
       }
+  })
+})
+
+describe('the picture from the REAL national result (../data, 2026 round 2)', () => {
+  const realData = resolve('..', 'data')
+  it.runIf(existsSync(resolve(realData, 'manifest.json')))('draws the real numbers, names both candidates in full or in the table\'s short form, never cut', async () => {
+    const store = createStore(diskSource(realData))
+    const [states, t, v, c] = await Promise.all([store.states(), store.turnout({ ano: 2026, turno: 2 }), store.votes({ ano: 2026, turno: 2 }), store.candidates({ ano: 2026, turno: 2 })])
+    const real = buildBrasil({ ano: 2026, turno: 2, states, turnout: t, votes: v, candidates: c })
+    const content = brasilContent(real, options)
+    const texts = svgTexts(content.svg)
+    const [lula, flavio] = real.nationalCandidates
+    expect(content.variants.standard.text).toBe(`No Brasil, no 2º turno de 2026, os votos válidos foram: Lula ${lula!.pctText}% e Flávio Bolsonaro ${flavio!.pctText}%. https://votoavoto.exemplo.br/brasil/`)
+    // every shown share is in the picture's text and in the alternative; nothing is cut
+    for (const r of real.regions) for (const k of r.candidates) expect(content.variants.standard.alt).toContain(`${k.pctText}%`)
+    expect(texts.join(' ')).not.toContain('…')
+    // the widest real names, at every region's share, always keep the share and either the whole name, a wrapped name or the short form
+    for (const r of real.regions) for (const k of r.candidates) expect(texts.some((x) => x.includes(`${k.pctText}%`)), `${r.label} ${k.labelFull}`).toBe(true)
+    for (const x of texts) expect(textWidth(x, 28), x).toBeLessThan(1080 - 98)
+    expect(content.height).toBeLessThan(1800)
   })
 })
