@@ -84,6 +84,33 @@ export function enhanceTable(root: HTMLElement, options: EnhanceOptions): Enhanc
   bar.className = 'nerds-tools'
   bar.innerHTML = `<label>Filtrar por nome <input type="search" data-filter autocomplete="off"></label><span class="nerds-count" data-count role="status" aria-live="polite"></span>`
   root.insertBefore(bar, root.firstChild)
+  // "Participação | Candidatos": switches the column set (the candidatos table is already in the page, without scripts both are shown)
+  const panel = root.closest<HTMLElement>('[data-panel]')
+  const sets = panel ? [...panel.querySelectorAll<HTMLElement>('.nerds-set')] : []
+  let toggle: HTMLElement | undefined
+  if (sets.length === 2) {
+    toggle = doc.createElement('div')
+    toggle.className = 'nerds-toggle'
+    toggle.setAttribute('role', 'group')
+    toggle.setAttribute('aria-label', 'Colunas')
+    toggle.innerHTML = '<button type="button" data-set-option="participacao" aria-pressed="true">Participação</button><button type="button" data-set-option="candidatos" aria-pressed="false">Candidatos</button>'
+    const choose = (name: string) => {
+      for (const set of sets) set.hidden = set.dataset.set !== name
+      toggle!.querySelectorAll<HTMLElement>('[data-set-option]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.setOption === name)))
+      panel!.dataset.set = name
+    }
+    toggle.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLElement>('[data-set-option]')
+      if (b) choose(b.dataset.setOption!)
+    })
+    sets[0]!.parentElement!.insertBefore(toggle, sets[0]!)
+    choose('participacao')
+    cleanup.push(() => {
+      toggle!.remove()
+      for (const set of sets) set.hidden = false
+      delete panel!.dataset.set
+    })
+  }
   const pager = doc.createElement('div')
   pager.className = 'nerds-pager'
   pager.innerHTML = `<button type="button" data-prev>‹ Anteriores</button><span data-page-label></span><button type="button" data-next>Próximos ›</button>`

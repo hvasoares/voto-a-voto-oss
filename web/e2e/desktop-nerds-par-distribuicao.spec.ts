@@ -15,11 +15,11 @@ test.describe('without scripts', () => {
   for (const [path, rows, unit] of [['', ['Brasil'], 'UFs'], ['regiao/sudeste/', ['Sudeste', 'Brasil'], 'UFs'], ['estado/rj/', ['Rio de Janeiro', 'Sudeste', 'Brasil'], 'municípios']] as const) {
     test(`${path || 'brasil'}: Par is a table of values with the fixed note and no difference; Distribuição is bins plus the five numbers and the rule`, async ({ page }) => {
       await page.goto(url(path))
-      expect(await par(page).locator('thead th').allTextContents()).toEqual(['Lugar', '1º turno', '2º turno'])
-      expect(await par(page).locator('tbody th').allTextContents()).toEqual(rows)
-      for (const cell of await par(page).locator('tbody td').allTextContents()) expect(cell).toMatch(/^\d{1,3},\d%$/)
+      expect(await par(page).locator('table').first().locator('thead th').allTextContents()).toEqual(['Lugar', '1º turno', '2º turno'])
+      expect(await par(page).locator('table').first().locator('tbody th').allTextContents()).toEqual(rows)
+      for (const cell of await par(page).locator('table').first().locator('tbody td').allTextContents()) expect(cell).toMatch(/^\d{1,3},\d%$/)
       await expect(par(page).locator('[data-note]')).toContainText('Quando existe 2º turno?')
-      expect(await par(page).locator('tbody').textContent()).not.toMatch(/diferença|pp\b|[+−]\d/)
+      expect(await par(page).locator('table').first().locator('tbody').textContent()).not.toMatch(/diferença|pp\b|[+−]\d/)
       // Distribuição
       for (const turno of [1, 2]) {
         const section = dist(page).locator(`[data-turno-table="${turno}"]`)

@@ -23,9 +23,9 @@ describe('Escada: the record and the measures', () => {
   })
 
   it('reads its picker options from the record: the participação rates, no eleitorado', () => {
-    expect(spec('brasil', null).options.map((o) => o.id)).toEqual(['comparecimento', 'abstencao', 'brancos_nulos', 'validos'])
+    expect(spec('brasil', null).options.map((o) => o.id)).toEqual(['comparecimento', 'abstencao', 'brancos_nulos', 'validos', 'candidatos'])
     const more = { ...ESCADA, measure: { ...ESCADA.measure, options: ['comparecimento', 'validos'] } }
-    expect(buildEscada(more, { cycle: {}, all: place('brasil', null) }).options.map((o) => o.id)).toEqual(['comparecimento', 'validos'])
+    expect(buildEscada(more, { cycle: {}, all: place('brasil', null) }).options.map((o) => o.id)).toEqual(['comparecimento', 'validos', 'candidatos'])
   })
 })
 
@@ -87,7 +87,7 @@ describe('Escada: the chart, the Ficha and the CSV read one structure', () => {
     s.rows.forEach((row, i) => {
       const printed = printedRow(f, i)
       expect(lines[i + 1]).toEqual(printed)
-      s.options.forEach((o) => {
+      s.options.filter((o) => o.id !== 'candidatos').forEach((o) => {
         for (const turno of [1, 2] as const) {
           const j = f.columns.findIndex((c) => c.measure === o.id && c.turno === turno)
           expect(printed[j]).toBe(row.cells[o.id]![turno - 1]?.text ?? 'sem 2º turno')

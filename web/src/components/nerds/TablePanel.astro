@@ -12,12 +12,14 @@ interface Props {
   base?: string
   /** The path under the base that row hrefs are relative to (the city card links are `<uf>/<slug>/`). */
   hrefBase?: string
+  /** A table with no enhancer (a second set of columns): it carries `data-table-plain`, not `data-table`. */
+  plain?: boolean
 }
-const { spec, base = '/' } = Astro.props
+const { spec, base = '/', plain } = Astro.props
 const link = (href: string) => withBase(base, href.startsWith('dados-para-nerds') ? href : `/${href}`)
 ---
 <div class="nerds-tablewrap" tabindex="0" role="region" aria-label={spec.caption}>
-  <table class="nerds-table" data-table data-ano={spec.ano} data-unit={spec.unit}>
+  <table class="nerds-table" data-table={plain ? undefined : ''} data-table-plain={plain ? '' : undefined} data-ano={spec.ano} data-unit={spec.unit}>
     <caption>{spec.caption}</caption>
     <thead>
       <tr>{spec.columns.map((c) => <th scope="col" class={c.numeric ? 'is-num' : undefined} data-label={c.label} title={c.short ? c.label : undefined}>{c.short ?? c.label}</th>)}</tr>

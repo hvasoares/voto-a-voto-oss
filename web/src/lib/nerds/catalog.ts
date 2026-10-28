@@ -24,14 +24,14 @@ export const ESCADA: PanelRecord = {
   shard: 'ciclos',
   transform: 'escada',
   kind: 'bar',
-  measure: { family: 'participacao', id: 'comparecimento', options: ['comparecimento', 'abstencao', 'brancos_nulos', 'validos'] },
+  measure: { family: 'participacao', id: 'comparecimento', options: ['comparecimento', 'abstencao', 'brancos_nulos', 'validos'], candidatos: true },
   series: 'turno',
   title: 'Como o comparecimento mudou de um ciclo para o outro?',
   footer: {
     definicao: 'A medida escolhida, por ciclo e turno, no total do lugar mostrado.',
     fonte: 'TSE, {edicao}, resultados finais de 2018, 2022 e 2026.',
-    calculo: 'Comparecimento e abstenção = votantes e não votantes ÷ eleitorado; brancos + nulos e votos válidos = parte do comparecimento. As barras começam em 0%.',
-    naoMede: 'O motivo de não votar nem a mudança de opinião de ninguém.',
+    calculo: 'Comparecimento e abstenção = votantes e não votantes ÷ eleitorado; brancos + nulos e votos válidos = parte do comparecimento; candidato = votos do candidato ÷ votos válidos, na ordem do número na urna. As barras começam em 0%.',
+    naoMede: 'O motivo de não votar nem a mudança de opinião de ninguém; não ordena nem compara candidatos.',
   },
 }
 
@@ -92,13 +92,13 @@ export const MAPA: PanelRecord = {
   shard: 'ciclos',
   transform: 'mapa',
   kind: 'map',
-  measure: { family: 'participacao', id: 'comparecimento', options: ['comparecimento', 'abstencao', 'brancos_nulos', 'validos'] },
+  measure: { family: 'participacao', id: 'comparecimento', options: ['comparecimento', 'abstencao', 'brancos_nulos', 'validos'], candidatos: true },
   series: 'turno',
-  title: 'Qual foi o comparecimento em cada lugar?',
+  title: 'Como a medida escolhida se distribui pelos estados?',
   footer: {
     definicao: 'A medida escolhida em cada estado, no turno escolhido; cinco faixas de cor, com a faixa e o valor escritos.',
     fonte: 'TSE, {edicao}; contornos do IBGE.',
-    calculo: 'Comparecimento e abstenção = votantes e não votantes ÷ eleitorado; brancos + nulos e votos válidos = parte do comparecimento. As faixas dividem os valores mostrados em cinco passos iguais.',
+    calculo: 'Comparecimento e abstenção = votantes e não votantes ÷ eleitorado; brancos + nulos e votos válidos = parte do comparecimento; candidato = votos do candidato ÷ votos válidos. As faixas dividem os valores mostrados em cinco passos iguais.',
     naoMede: 'Motivo, perfil de eleitor nem ranking entre lugares; a cor não ordena.',
   },
 }
@@ -126,13 +126,13 @@ export const DISTRIBUICAO: PanelRecord = {
   shard: 'ciclo',
   transform: 'distribuicao',
   kind: 'histogram',
-  measure: { family: 'participacao', id: 'comparecimento', options: ['comparecimento', 'abstencao', 'brancos_nulos', 'validos'] },
+  measure: { family: 'participacao', id: 'comparecimento', options: ['comparecimento', 'abstencao', 'brancos_nulos', 'validos'], candidatos: true },
   series: 'turno',
   title: 'Como os {filhos_plural} se distribuem?',
   footer: {
     definicao: 'A medida escolhida em cada lugar do nível abaixo, contada em faixas de 2 pontos.',
     fonte: 'TSE, {edicao}.',
-    calculo: 'Faixas fixas de 2 pontos; quartis por interpolação entre os valores ordenados; atípico além de 1,5 × a amplitude interquartil.',
+    calculo: 'Faixas fixas de 2 pontos; quartis por interpolação entre os valores ordenados; atípico além de 1,5 × a amplitude interquartil; candidato = votos do candidato ÷ votos válidos.',
     naoMede: 'Motivo nem perfil; não classifica nem nomeia lugares.',
   },
 }

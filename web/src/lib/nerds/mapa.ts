@@ -1,4 +1,4 @@
-import { rateDef, rateOfRow, RATES } from './rates'
+import { measureOptions, rateOfRow, type MeasureOption } from './rates'
 import type { PanelData, PanelRecord } from './panels'
 import { placeName } from './view'
 import type { LevelShard, Row } from './types'
@@ -54,7 +54,7 @@ export interface MapSpec {
   kind: 'map'
   recordId: string
   level: 'brasil' | 'regiao' | 'estado'
-  options: { id: string; label: string }[]
+  options: MeasureOption[]
   /** `${ano}-${turno}-${measure}` -> the view. */
   views: Record<string, MapView>
   /** The view the HTML opens on: latest cycle, 1º turno, the record's measure. */
@@ -70,19 +70,20 @@ export interface MapSpec {
 const key = (ano: number, turno: number, measure: string) => `${ano}-${turno}-${measure}`
 
 export function buildMapa(record: PanelRecord, data: PanelData, level: MapSpec['level'], known: readonly string[]): MapSpec {
-  const ids = record.measure.options ?? RATES.map((r) => r.id)
+  const ids = record.measure.options ?? []
+  const options = measureOptions(ids, data.all.values(), !!record.measure.candidatos)
   const views: Record<string, MapView> = {}
   const shards = [...data.all.values()]
   const cycles = [...new Set(shards.map((s) => s.ano))].sort((a, b) => a - b)
   const rowsOf = (s: LevelShard): Row[] => s.children.ufs ?? []
   for (const shard of shards) {
-    for (const id of ids) {
-      const rates = rowsOf(shard).flatMap((row) => { const r = rateOfRow(row, id); return r && row.id !== 'zz' ? [[row.id, r] as const] : [] })
+    for (const { id } of options) {
+      const rates = rowsOf(shard).flatMap((row) => { const r = rateOfRow(row, id, shard.candidatos); return r && row.id !== 'zz' ? [[row.id, r] as const] : [] })
       if (!rates.length) continue
       const sh = shading(rates.map(([, r]) => r.value))
       const view: MapView = { shading: sh, cells: Object.fromEntries(rates.map(([uf, r]) => [uf, { text: r.text, value: r.value, step: stepOf(r.value, sh) }])) }
       if (level === 'brasil') {
-        view.chips = Object.fromEntries((shard.children.regioes ?? []).filter((r) => r.id !== 'exterior').flatMap((row) => { const r = rateOfRow(row, id); return r ? [[row.id, { text: r.text, value: r.value }] as const] : [] }))
+        view.chips = Object.fromEntries((shard.children.regioes ?? []).filter((r) => r.id !== 'exterior').flatMap((row) => { const r = rateOfRow(row, id, shard.candidatos); return r ? [[row.id, { text: r.text, value: r.value }] as const] : [] }))
       }
       views[key(shard.ano, shard.turno, id)] = view
     }
@@ -91,7 +92,7 @@ export function buildMapa(record: PanelRecord, data: PanelData, level: MapSpec['
   const scope = level === 'estado' ? [] : [...new Set(shards.flatMap(rowsOf).map((r) => r.id).filter((id) => id !== 'zz'))].sort()
   return {
     kind: 'map', recordId: record.id, level,
-    options: ids.map((id) => ({ id, label: rateDef(id).label })),
+    options,
     views,
     initial: { ano: latest, turno: 1, measure: record.measure.id, key: key(latest, 1, record.measure.id) },
     cycles,

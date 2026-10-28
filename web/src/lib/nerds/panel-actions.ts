@@ -49,7 +49,8 @@ export function stateOf(section: HTMLElement, search: string, cycles: number[]):
 }
 
 function tableOf(section: HTMLElement): ExportTable {
-  const live = section.querySelector<HTMLTableElement>('table[data-table]')
+  const plain = section.querySelector<HTMLTableElement>('.nerds-set:not([hidden]) table[data-table-plain]')
+  const live = plain && section.dataset.set === 'candidatos' ? plain : section.querySelector<HTMLTableElement>('table[data-table]')
   if (live) {
     const headers = [...live.tHead!.rows[0]!.cells].map((th) => th.dataset.label || text(th))
     const rows = [...live.tBodies[0]!.rows].filter((r) => !r.dataset.childOf).map((r) => [...r.cells].map((c) => (c.dataset.name ?? text(c)).replace(/^[▸▾]\s*/, '')))
@@ -57,6 +58,8 @@ function tableOf(section: HTMLElement): ExportTable {
   }
   const raw = section.querySelector('script[data-export]')?.textContent
   const exp = (raw ? JSON.parse(raw) : {}) as PanelExport
+  const escada = section.querySelector<HTMLElement>('[data-escada]')
+  if (escada?.dataset.measure === 'candidatos' && exp.variants) return exp.variants[`candidatos-${escada.dataset.turno}`] ?? exp.single!
   if (exp.single) return exp.single
   const drawn = section.dataset.drawn
   const dist = section.querySelector<HTMLElement>('[data-dist]')

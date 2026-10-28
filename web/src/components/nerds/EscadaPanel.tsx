@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ficha, printedRow, QUESTIONS, SEM_2, sortFicha, type BarSpec, type SortDir } from '@/lib/nerds/escada'
+import { candidatosFicha, CANDIDATOS, ficha, printedRow, QUESTIONS, SEM_2, sortFicha, type BarSpec, type SortDir } from '@/lib/nerds/escada'
+import { GROUP_PARTICIPACAO } from '@/lib/nerds/rates'
 
 /**
  * The Escada island (#75). Server-rendered (and with scripts off, or on a phone) it is the FICHA: the cycles x measures table. On a desktop, when scrolled into view
@@ -26,11 +27,13 @@ export default function EscadaPanel({ spec, titleId }: Props) {
   const [enhanced, setEnhanced] = useState(false)
   const [view, setView] = useState<'ficha' | 'chart'>('ficha')
   const [measure, setMeasure] = useState(spec.measure)
+  const [turno, setTurno] = useState<1 | 2>(1)
   const [sort, setSort] = useState<{ column: number; dir: SortDir } | null>(null)
 
   useEffect(() => {
     const wanted = new URLSearchParams(location.search).get('medida')
     if (wanted && spec.options.some((o) => o.id === wanted)) setMeasure(wanted)
+    if (new URLSearchParams(location.search).get('turno') === '2') setTurno(2)
     setEnhanced(true)
     setView('chart')
   }, [spec])
@@ -61,17 +64,33 @@ export default function EscadaPanel({ spec, titleId }: Props) {
   const reference = spec.reference?.byMeasure[measure]
 
   return (
-    <div className="nerds-escada" data-escada data-view={view} data-measure={measure} data-drawn={view === 'chart' ? 'chart' : 'ficha'}>
+    <div className="nerds-escada" data-escada data-view={view} data-measure={measure} data-turno={turno} data-drawn={view === 'chart' ? 'chart' : 'ficha'}>
       {enhanced && (
-        <div className="nerds-picker" role="group" aria-label="Medida" data-picker>
-          {spec.options.map((o) => (
-            <button key={o.id} type="button" aria-pressed={o.id === measure} data-measure-option={o.id} onClick={() => choose(o.id)}>
-              {o.label}
-            </button>
+        <div className="nerds-map-controls" data-picker>
+          {[...new Set(spec.options.map((o) => o.group))].map((group) => (
+            <div key={group} className="nerds-picker" role="group" aria-label={group}>
+              {spec.options.filter((o) => o.group === group).map((o) => (
+                <button key={o.id} type="button" aria-pressed={o.id === measure} data-measure-option={o.id} onClick={() => choose(o.id)}>{o.label}</button>
+              ))}
+            </div>
           ))}
+          {measure === CANDIDATOS && (
+            <div className="nerds-picker" role="group" aria-label="Turno" data-picker-turno>
+              {([1, 2] as const).map((t) => (
+                <button key={t} type="button" aria-pressed={t === turno} data-turno-option={t} onClick={() => setTurno(t)}>{t}º turno</button>
+              ))}
+            </div>
+          )}
         </div>
       )}
-      {view === 'chart' ? (
+      {view === 'chart' && measure === CANDIDATOS && spec.candidatos ? (
+        <div data-chart data-candidatos>
+          <p className="nerds-chartnote">{`Parcela dos votos válidos de cada candidato, ${turno}º turno, na ordem do número na urna.`}</p>
+          <CandidatesChart cycles={spec.candidatos[turno]} turno={turno} />
+          <p><button type="button" className="nerds-link" data-to-ficha onClick={() => setView('ficha')}>Ver como tabela (Ficha) ›</button></p>
+          <p className="nerds-chartnote">As barras começam em 0%; os votos de cada candidato estão na Ficha. Os candidatos aparecem na ordem do número, sem ordenar por resultado.</p>
+        </div>
+      ) : view === 'chart' ? (
         <div data-chart>
           <ul className="nerds-legend" aria-label="Legenda">
             <li><span className="nerds-key nerds-key--1" aria-hidden="true" />1º turno</li>
@@ -160,6 +179,20 @@ export default function EscadaPanel({ spec, titleId }: Props) {
               </tbody>
             </table>
           </div>
+          {spec.candidatos && ([1, 2] as const).map((t) => {
+            const f = candidatosFicha(spec, t)
+            return f.rows.length ? (
+              <section key={t} className="nerds-dist__turno" data-cand-table={t}>
+                <h3>{`Votos por candidato, ${t}º turno`}</h3>
+                <div className="nerds-tablewrap" tabIndex={0} role="region" aria-label={`Votos por candidato, ${t}º turno`}>
+                  <table className="nerds-table" data-cand-ficha>
+                    <thead><tr>{f.headers.map((h, i) => <th key={h} scope="col" className={i > 2 ? 'is-num' : undefined}>{h}</th>)}</tr></thead>
+                    <tbody>{f.rows.map((r, i) => <tr key={i}>{r.map((c, j) => (j === 0 ? <th key={j} scope="row">{c}</th> : <td key={j} className={j > 2 ? 'is-num' : undefined}>{c}</td>))}</tr>)}</tbody>
+                  </table>
+                </div>
+              </section>
+            ) : null
+          })}
           {spec.reference && (
             <p className="nerds-chartnote" data-reference-note>
               {`Referência: ${spec.reference.label}: ${Object.entries(spec.reference.byMeasure).map(([id, r]) => `${spec.options.find((o) => o.id === id)?.label ?? id} ${r.text}`).join(' · ')}.`}
@@ -168,5 +201,42 @@ export default function EscadaPanel({ spec, titleId }: Props) {
         </div>
       )}
     </div>
+  )
+}
+
+function CandidatesChart({ cycles, turno }: { cycles: NonNullable<BarSpec['candidatos']>[1]; turno: 1 | 2 }) {
+  const rows = cycles.reduce((n, c) => n + c.bars.length, 0)
+  const height = TOP + rows * (BAR + GAP) + cycles.length * GROUP + 28
+  let y = TOP
+  return (
+    <svg viewBox={`0 0 ${W} ${height}`} role="img" aria-label="Parcela dos votos válidos de cada candidato, barras a partir de 0%" className="nerds-bars" data-cand-chart>
+      {[0, 50, 100].map((t) => (
+        <g key={t}>
+          <line x1={x(t)} x2={x(t)} y1={TOP - 8} y2={height - 22} className="nerds-grid" />
+          <text x={x(t)} y={height - 8} textAnchor="middle" className="nerds-axis">{t}%</text>
+        </g>
+      ))}
+      {cycles.map((c) => {
+        const top = y
+        const group = c.bars.map((b, i) => {
+          const by = y + i * (BAR + GAP)
+          // Two candidates (a 2º turno): the first (lower ballot number) and the second take the two colours of "Brasil e regiões"; a 1º turno has many, all neutral and named.
+          const tone = turno === 2 && c.bars.length === 2 ? (i === 0 ? 'nerds-cand-a' : 'nerds-cand-b') : 'nerds-cand-n'
+          return (
+            <g key={b.numero} data-cand-bar={`${c.ciclo}-${b.numero}`}>
+              <rect x={X0} y={by} width={Math.max(1, x(b.share) - X0)} height={BAR} className={`nerds-bar ${tone}`}><title>{`${c.ciclo}, nº ${b.numero} ${b.nome} (${b.partido}): ${b.text} dos votos válidos (${b.votos} votos)`}</title></rect>
+              <text x={x(b.share) + 6} y={by + BAR / 2 + 5} className="nerds-value">{`${b.nome} · ${b.text}`}</text>
+            </g>
+          )
+        })
+        y += c.bars.length * (BAR + GAP) + GROUP
+        return (
+          <g key={c.ciclo} data-ciclo={c.ciclo}>
+            <text x={X0 - 10} y={top + 14} textAnchor="end" className="nerds-cycle-label">{c.ciclo}</text>
+            {group}
+          </g>
+        )
+      })}
+    </svg>
   )
 }

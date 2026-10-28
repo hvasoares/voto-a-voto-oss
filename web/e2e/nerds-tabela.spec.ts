@@ -18,7 +18,7 @@ test.describe('Tabela de detalhe, scripts off', () => {
   ] as const) {
     test(`${path || 'brasil'}: header row, aligned numbers, names as links, last row = the sum of the rows`, async ({ page }) => {
       await page.goto(url(path))
-      const table = page.locator('[data-ciclo-block="2026"] [data-panel="detalhe"] table')
+      const table = page.locator('[data-ciclo-block="2026"] [data-panel="detalhe"] table[data-table]')
       expect(await table.locator('thead th').allTextContents()).toEqual(['Nome', 'Eleitorado', 'Compar. 1º', 'Compar. 2º', 'Abst. 1º', 'Abst. 2º', 'Br.+nulos 1º', 'Br.+nulos 2º'])
       expect(await table.locator('tbody td.is-num').count()).toBeGreaterThan(0)
       expect(await table.locator('tbody td:not(.is-num)').count()).toBe(0)
@@ -36,7 +36,7 @@ test.describe('Tabela de detalhe, scripts off', () => {
 
   test('a name opens the child level page with scripts off: Brasil -> região', async ({ page }) => {
     await page.goto(url(''))
-    await page.locator('[data-ciclo-block="2026"] [data-panel="detalhe"] tbody a', { hasText: 'Sudeste' }).click()
+    await page.locator('[data-ciclo-block="2026"] [data-panel="detalhe"] [data-set="participacao"] tbody a', { hasText: 'Sudeste' }).click()
     await expect(page).toHaveURL(new RegExp('dados-para-nerds/regiao/sudeste/$'))
   })
 })
@@ -50,6 +50,6 @@ test.describe('Tabela de detalhe on a phone', () => {
     await page.waitForLoadState('networkidle')
     expect(seen.map((r) => r.url).filter((u) => /DetalheEnhancer|Escada|client\.|react/i.test(u))).toEqual([])
     await expect(page.locator('[data-ciclo-block]:visible [data-panel="detalhe"] [data-filter]')).toHaveCount(0)
-    await expect(page.locator('[data-ciclo-block]:visible [data-panel="detalhe"] tbody tr')).toHaveCount(7)
+    await expect(page.locator('[data-ciclo-block]:visible [data-panel="detalhe"] table[data-table] tbody tr')).toHaveCount(7)
   })
 })

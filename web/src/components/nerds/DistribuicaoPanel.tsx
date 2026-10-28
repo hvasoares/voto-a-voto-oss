@@ -46,11 +46,13 @@ export default function DistribuicaoPanel({ spec, titleId }: Props) {
     <div className="nerds-dist" data-dist data-drawn={view} data-measure={measure} data-turno={turno}>
       {enhanced && (
         <div className="nerds-map-controls">
-          <div className="nerds-picker" role="group" aria-label="Medida" data-picker-measure>
-            {spec.options.map((o) => (
-              <button key={o.id} type="button" aria-pressed={o.id === measure} data-measure-option={o.id} onClick={() => { setMeasure(o.id); remember(o.id, turno) }}>{o.label}</button>
-            ))}
-          </div>
+          {[...new Set(spec.options.map((o) => o.group))].map((group) => (
+            <div key={group} className="nerds-picker" role="group" aria-label={group} data-picker-measure>
+              {spec.options.filter((o) => o.group === group).map((o) => (
+                <button key={o.id} type="button" aria-pressed={o.id === measure} data-measure-option={o.id} onClick={() => { setMeasure(o.id); remember(o.id, turno) }}>{o.label}</button>
+              ))}
+            </div>
+          ))}
           <div className="nerds-picker" role="group" aria-label="Turno" data-picker-turno>
             {spec.turnos.map((t) => (
               <button key={t} type="button" aria-pressed={t === turno} data-turno-option={t} onClick={() => { setTurno(t); remember(measure, t) }}>{t}º turno</button>

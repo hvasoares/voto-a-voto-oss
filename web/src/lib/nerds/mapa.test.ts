@@ -46,6 +46,6 @@ describe('map panel: the step of every UF at each level comes from the shard val
   })
 
   it('reads its picker options from the record', () => {
-    expect(spec('brasil', readPlace('brasil', null, root)).options.map((o) => o.id)).toEqual(['comparecimento', 'abstencao', 'brancos_nulos', 'validos'])
+    expect(spec('brasil', readPlace('brasil', null, root)).options.map((o) => o.id)).toEqual(['comparecimento', 'abstencao', 'brancos_nulos', 'validos', 'cand-91', 'cand-92'])
   })
 })

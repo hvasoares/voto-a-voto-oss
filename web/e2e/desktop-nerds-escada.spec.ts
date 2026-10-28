@@ -53,7 +53,7 @@ test.describe('Escada (1440 px)', () => {
   test('the measure picker redraws the bars, follows the question in the title and keeps the choice in the address; the address reopens it', async ({ page }) => {
     await page.goto(url())
     await drawn(page)
-    await expect(esc(page).locator('[data-measure-option]')).toHaveCount(4)
+    await expect(esc(page).locator('[data-measure-option]')).toHaveCount(5)
     await esc(page).locator('[data-measure-option="abstencao"]').click()
     await expect(escada(page)).toHaveAttribute('data-measure', 'abstencao')
     const m = metricsOf('uf/rj/2022-1.json')

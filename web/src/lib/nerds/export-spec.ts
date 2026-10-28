@@ -1,4 +1,4 @@
-import { ficha, printedRow } from './escada'
+import { candidatosFicha, ficha, printedRow } from './escada'
 import type { ExportTable } from './actions'
 import { printedFive } from './distribuicao'
 import { SEM_SEGUNDO_TURNO, type Spec } from './panels'
@@ -29,7 +29,10 @@ export function exportOf(spec: Spec): PanelExport | undefined {
   if (spec.kind === 'table') return { single: { headers: spec.columns.map((c) => c.label), rows: spec.rows.map((r) => r.cells.map(dash)) } }
   if (spec.kind === 'bar') {
     const f = ficha(spec)
-    return { single: { headers: f.columns.map((c) => c.label), rows: f.rows.map((_, i) => printedRow(f, i)) } }
+    return {
+      single: { headers: f.columns.map((c) => c.label), rows: f.rows.map((_, i) => printedRow(f, i)) },
+      ...(spec.candidatos ? { variants: { 'candidatos-1': candidatosFicha(spec, 1), 'candidatos-2': candidatosFicha(spec, 2) } } : {}),
+    }
   }
   if (spec.kind === 'map') {
     return {

@@ -120,7 +120,25 @@ const title = `Dados para nerds: ${place.name} · Voto a Voto`
                   <DetalheEnhancer client:panel shardsUrl={shardsUrl} base={base} provenance={{ source: `TSE, ${edicao}`, edition: edition.id, date: edition.date, calculo: record.footer.calculo, licence: 'CC BY 4.0 (conjunto de dados), com atribuição ao TSE' }} />
                 )}
                 {spec.kind === 'histogram' && <DistribuicaoPanel client:panel spec={spec} titleId={`${scope}-${record.id}-t`} />}
-                {spec.kind === 'table' && <TablePanel spec={spec} base={base} />}
+                {spec.kind === 'table' && record.transform === 'detalhe' ? (
+                  <>
+                    <div class="nerds-set" data-set="participacao"><TablePanel spec={spec} base={base} /></div>
+                    <div class="nerds-set" data-set="candidatos">
+                      <h3 class="nerds-set__title">Votos por candidato</h3>
+                      <TablePanel plain spec={specFor({ ...record, transform: 'detalhe-candidatos' }, { cycle: shards, all: place.shards, known }) as never} base={base} />
+                    </div>
+                  </>
+                ) : spec.kind === 'table' ? (
+                  <>
+                    <TablePanel spec={spec} base={base} />
+                    {record.transform === 'par' && (
+                      <div class="nerds-set" data-set="candidatos">
+                        <h3 class="nerds-set__title">Votos por candidato</h3>
+                        <TablePanel plain spec={specFor({ ...record, transform: 'par-candidatos' }, { cycle: shards, all: place.shards, reference: place.reference, placeName: place.name }) as never} base={base} />
+                      </div>
+                    )}
+                  </>
+                ) : null}
               </PanelFrame>
             )
           })}

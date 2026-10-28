@@ -7,7 +7,7 @@ import { base } from './helpers'
  * Waits are on `data-ready` of the table wrapper and on each row's `data-state`, never on a timer.
  */
 const url = (path: string, q = '') => `${base}dados-para-nerds/${path}${q}`
-const wrap = (page: Page) => page.locator('[data-ciclo-block]:visible [data-panel="detalhe"] .nerds-tablewrap')
+const wrap = (page: Page) => page.locator('[data-ciclo-block]:visible [data-panel="detalhe"] [data-set="participacao"] .nerds-tablewrap')
 const rowsOf = (page: Page) => wrap(page).locator('tbody tr[data-row]:not([data-total]):not([hidden])')
 const names = (page: Page) => wrap(page).locator('tbody tr:not([hidden]) th[scope="row"]')
 

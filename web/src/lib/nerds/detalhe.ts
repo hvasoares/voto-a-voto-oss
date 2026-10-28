@@ -86,3 +86,32 @@ export function detalhe(record: PanelRecord, shards: Shards, known: { regioes: r
 export function childrenSum(spec: TableSpec): number {
   return spec.rows.filter((r) => !r.total).reduce((sum, r) => sum + (r.values?.[1] ?? 0), 0)
 }
+
+/**
+ * The Tabela de detalhe for the candidatos family (#81): the same rows and total, one column per candidate and turno, in BALLOT-NUMBER order (never sorted by result), each the share of the
+ * place's votos válidos; a candidate who was not on the ballot of a turno reads "—". The set is chosen with the "Participação | Candidatos" toggle; without scripts both tables are in the page.
+ */
+export function detalheCandidatos(record: PanelRecord, shards: Shards, known: { regioes: readonly string[]; ufs: readonly string[] } = { regioes: [], ufs: [] }): TableSpec {
+  const base = detalhe(record, shards, known)
+  const turnos = ([1, 2] as const).filter((t) => shards[t])
+  const any = shards[1] ?? shards[2]!
+  const numbers = [...new Set(turnos.flatMap((t) => shards[t]!.candidatos.map((c) => c.numero)))].sort((a, b) => a - b)
+  const nameOf = (n: number) => turnos.flatMap((t) => shards[t]!.candidatos).find((c) => c.numero === n)!
+  const columns: TableColumn[] = [
+    { key: 'nome', label: 'Nome', numeric: false },
+    ...numbers.flatMap((n) => ([1, 2] as const).map((t): TableColumn => ({ key: `cand-${n}-${t}`, label: `Candidato nº ${n} (${displayName(nameOf(n).nome)}), ${t}º turno`, short: `Nº ${n} ${t}º`, numeric: true }))),
+  ]
+  const share = (row: Row | undefined, shard: LevelShard | undefined, n: number): string | null => {
+    const i = shard?.candidatos.findIndex((c) => c.numero === n) ?? -1
+    return row && i >= 0 ? pct1(row.votos[i]!, row.validos) : null
+  }
+  const find = (t: 1 | 2, id: string): Row | undefined => (id === 'total' ? shards[t]?.total : childRows(shards[t]!).rows.find((r) => r.id === id))
+  const rows = base.rows.map((r): TableRow => ({
+    id: r.id,
+    total: r.total,
+    href: r.href,
+    cells: [r.cells[0]!, ...numbers.flatMap((n) => ([1, 2] as const).map((t) => (shards[t] ? (share(find(t, r.id), shards[t], n) ?? '—') : '—')))],
+    values: [null, ...numbers.flatMap((n) => ([1, 2] as const).map((t) => { const x = shards[t] ? share(find(t, r.id), shards[t], n) : null; return x ? Number(x.replace('%', '').replace(',', '.')) : null }))],
+  }))
+  return { kind: 'table', caption: `Parcela dos votos válidos de cada candidato em cada ${base.unit?.replace(/s$/, '').replace('õe', 'ão')}, na ordem do número na urna`, columns, rows, ano: any.ano, unit: base.unit }
+}

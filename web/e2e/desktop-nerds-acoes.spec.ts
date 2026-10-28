@@ -98,13 +98,13 @@ test.describe('panel actions (1440 px)', () => {
         }
         expect(table.headers.length).toBeGreaterThan(0)
         if (panel === 'detalhe') {
-          const screen = await section.locator('tbody tr[data-row]:not([data-child-of])').evaluateAll((trs) => trs.map((tr) => [...(tr as HTMLTableRowElement).cells].map((c) => ((c as HTMLElement).dataset.name ?? c.textContent ?? '').trim())))
+          const screen = await section.locator('table[data-table] tbody tr[data-row]:not([data-child-of])').evaluateAll((trs) => trs.map((tr) => [...(tr as HTMLTableRowElement).cells].map((c) => ((c as HTMLElement).dataset.name ?? c.textContent ?? '').trim())))
           expect(table.rows).toEqual(screen)
         } else if (panel === 'placar') {
           const cards = await section.locator('[data-stat]').evaluateAll((els) => els.map((e) => (e.querySelector('h3') as HTMLElement).textContent))
           expect(table.rows.map((r) => r[0])).toEqual(cards)
         } else if (panel === 'par' || panel === 'invariantes') {
-          const screen = await section.locator('tbody tr').evaluateAll((trs) => trs.map((tr) => [...(tr as HTMLTableRowElement).cells].map((c) => (c.textContent ?? '').trim())))
+          const screen = await section.locator('table').first().locator('tbody tr').evaluateAll((trs) => trs.map((tr) => [...(tr as HTMLTableRowElement).cells].map((c) => (c.textContent ?? '').trim())))
           expect(table.rows).toEqual(screen)
         } else if (panel === 'escada') {
           const screen = await section.locator('[data-ficha-table] tbody tr').evaluateAll((trs) => trs.map((tr) => [...(tr as HTMLTableRowElement).cells].map((c) => (c.textContent ?? '').trim())))

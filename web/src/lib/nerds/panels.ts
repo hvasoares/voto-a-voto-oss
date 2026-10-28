@@ -2,11 +2,11 @@ import { int, pct1 } from './format'
 import type { Candidate, LevelShard, Metric } from './types'
 import type { Level } from './paths'
 import { buildEscada, type BarSpec } from './escada'
-import { detalhe } from './detalhe'
+import { detalhe, detalheCandidatos } from './detalhe'
 import type { MapSpec } from './mapa'
 import { buildMapa } from './mapa'
 import { buildDistribuicao, type DistribuicaoSpec } from './distribuicao'
-import { par } from './par'
+import { par, parCandidatos } from './par'
 import { claimProblems } from './claims'
 import type { Signals } from './signals'
 import { invariantesTable, sinaisStrip } from './signals-spec'
@@ -51,7 +51,7 @@ export interface PanelRecord {
   transform: string
   kind: PanelKind
   /** `id` is the measure it opens on; `options` is what the panel's own picker offers (read from here, so a family can grow without changing the panel). */
-  measure: { family: Family; id: string; options?: readonly string[] }
+  measure: { family: Family; id: string; options?: readonly string[]; /** The panel's picker also offers the candidatos family (a second group, "Votos por candidato"). */ candidatos?: boolean }
   series: Series
   /** The title is the question the panel answers. */
   title: string
@@ -231,6 +231,8 @@ export const TRANSFORMS: Record<string, Transform> = {
   placar: (d) => placar(d.cycle),
   'candidatos-tabela': (d) => candidatosTabela(d.cycle),
   detalhe: (d, r) => detalhe(r, d.cycle, d.known),
+  'detalhe-candidatos': (d, r) => detalheCandidatos(r, d.cycle, d.known),
+  'par-candidatos': (d) => parCandidatos({ name: d.placeName ?? '', shards: d.cycle }, d.reference && { 1: d.reference.get(`${(d.cycle[1] ?? d.cycle[2])!.ano}-1`), 2: d.reference.get(`${(d.cycle[1] ?? d.cycle[2])!.ano}-2`) }),
   par: (d, r) => par(r, { own: { name: d.placeName ?? '', shards: d.cycle }, parent: d.parent && { name: d.parent.name, shards: d.parent.cycle }, brasil: d.reference && { 1: d.reference.get(`${(d.cycle[1] ?? d.cycle[2])!.ano}-1`), 2: d.reference.get(`${(d.cycle[1] ?? d.cycle[2])!.ano}-2`) } }),
   distribuicao: (d, r) => buildDistribuicao(r, d),
   mapa: (d, r) => buildMapa(r, d, d.level ?? 'brasil', d.known?.ufs ?? []),

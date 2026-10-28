@@ -34,3 +34,17 @@ export function par(record: PanelRecord, input: ParInput): TableSpec {
 }
 
 export { SEM_SEGUNDO_TURNO }
+
+/** Par for the candidatos family: one row per candidate (ballot-number order) with the share of votos válidos of the place and of Brasil in each turno; no difference, no ranking. */
+export function parCandidatos(own: ParInput['own'], brasil?: ParInput['brasil']): TableSpec {
+  const turnos = ([1, 2] as const)
+  const numbers = [...new Set(turnos.flatMap((t) => own.shards[t]?.candidatos.map((c) => c.numero) ?? []))].sort((a, b) => a - b)
+  const share = (shard: LevelShard | undefined, n: number) => rateOf(shard, `cand-${n}`)?.text ?? null
+  const columns = [{ key: 'cand', label: 'Candidato', numeric: false }, ...turnos.map((t) => ({ key: `lugar-${t}`, label: `${own.name} ${t}º turno`, short: `${t}º turno`, numeric: true })), ...(brasil ? turnos.map((t) => ({ key: `brasil-${t}`, label: `Brasil ${t}º turno`, short: `Brasil ${t}º`, numeric: true })) : [])]
+  return {
+    kind: 'table',
+    caption: 'Parcela dos votos válidos de cada candidato, turno a turno: nenhuma diferença é calculada',
+    columns,
+    rows: numbers.map((n): TableRow => ({ id: String(n), cells: [`Nº ${n}`, ...turnos.map((t) => share(own.shards[t], n)), ...(brasil ? turnos.map((t) => share(brasil[t], n)) : [])] })),
+  }
+}

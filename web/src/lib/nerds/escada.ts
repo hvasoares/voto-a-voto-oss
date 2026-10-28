@@ -1,6 +1,9 @@
 import { int } from './format'
-import { rateDef, rateOf, RATES, type Rate } from './rates'
+import { displayName } from '@/shared/city-search'
+import { GROUP_CANDIDATOS, measureOptions, rateOf, type MeasureOption, type Rate } from './rates'
+import { pct1 } from './format'
 import type { PanelData, PanelRecord } from './panels'
+import type { LevelShard } from './types'
 
 /**
  * The Escada and its Ficha (#75): cycles as rows, the 1º and 2º turno as a pair, for one selectable measure; the Ficha is the SAME structure as a table (cycles as rows,
@@ -25,16 +28,49 @@ export interface BarSpec {
   recordId: string
   /** The measure the panel opens on, and what its picker offers (both read from the record). */
   measure: string
-  options: { id: string; label: string }[]
+  options: MeasureOption[]
   rows: EscadaRow[]
+  /** The candidatos family (#81): per turno, the candidates of each cycle in BALLOT-NUMBER order with their share of votos válidos and their votes. */
+  candidatos?: Record<1 | 2, CandidatesByCycle[]>
   /** Printed on região and estado only. */
   reference?: Reference
   /** "Lê N arquivos, X kB": the weight of the shards behind the panel, printed in its footer. */
   weight: { files: number; gzipBytes: number }
 }
 
+export interface CandBar {
+  numero: number
+  nome: string
+  partido: string
+  share: number
+  text: string
+  votos: string
+}
+export interface CandidatesByCycle {
+  ciclo: number
+  bars: CandBar[]
+}
+export const CANDIDATOS = 'candidatos'
+
+function candidatesOf(all: ReadonlyMap<string, LevelShard>): Record<1 | 2, CandidatesByCycle[]> {
+  const out = { 1: [], 2: [] } as Record<1 | 2, CandidatesByCycle[]>
+  for (const turno of [1, 2] as const) {
+    for (const shard of [...all.values()].filter((s) => s.turno === turno).sort((a, b) => a.ano - b.ano)) {
+      out[turno].push({
+        ciclo: shard.ano,
+        // ballot-number order (the shard's own order), never sorted by result
+        bars: shard.candidatos.map((c, i) => {
+          const text = pct1(shard.total.votos[i]!, shard.total.validos) ?? '—'
+          return { numero: c.numero, nome: displayName(c.nome), partido: c.partido, share: Number(text.replace('%', '').replace(',', '.')) || 0, text, votos: int(shard.total.votos[i]!) }
+        }),
+      })
+    }
+  }
+  return out
+}
+
 export function buildEscada(record: PanelRecord, data: PanelData): BarSpec {
-  const ids = record.measure.options ?? RATES.map((r) => r.id)
+  const ids = record.measure.options ?? []
   const cycles = [...new Set([...data.all.values()].map((s) => s.ano))].sort((a, b) => a - b)
   const rows = cycles.map((ciclo): EscadaRow => ({
     ciclo,
@@ -56,8 +92,9 @@ export function buildEscada(record: PanelRecord, data: PanelData): BarSpec {
     kind: 'bar',
     recordId: record.id,
     measure: record.measure.id,
-    options: ids.map((id) => ({ id, label: rateDef(id).label })),
+    options: [...measureOptions(ids, [], false), ...(record.measure.candidatos ? [{ id: CANDIDATOS, label: 'Todos os candidatos', group: GROUP_CANDIDATOS }] : [])],
     rows,
+    candidatos: record.measure.candidatos ? candidatesOf(data.all) : undefined,
     reference,
     weight: { files: read.length, gzipBytes: read.reduce((sum, s) => sum + s.gzipBytes, 0) },
   }
@@ -79,14 +116,16 @@ export interface Ficha {
 }
 
 export function ficha(spec: BarSpec): Ficha {
+  const rated = spec.options.filter((o) => o.id !== CANDIDATOS)
   const columns: FichaColumn[] = [{ key: 'ciclo', label: 'Ciclo' }]
-  for (const o of spec.options) for (const turno of [1, 2] as const) columns.push({ key: `${o.id}-${turno}`, label: `${o.label} ${turno}º turno`, measure: o.id, turno })
+  for (const o of rated) for (const turno of [1, 2] as const) columns.push({ key: `${o.id}-${turno}`, label: `${o.label} ${turno}º turno`, measure: o.id, turno })
   const rows = spec.rows.map((r) => ({ ciclo: r.ciclo, cells: columns.slice(1).map((c) => r.cells[c.measure!]![c.turno! - 1]!) }))
   return { columns, rows }
 }
 
 /** The question each measure answers; the panel's title follows the measure picked (the h2 of the record is the default). */
 export const QUESTIONS: Record<string, string> = {
+  candidatos: 'Como foi a votação de cada candidato em cada ciclo?',
   comparecimento: 'Como o comparecimento mudou de um ciclo para o outro?',
   abstencao: 'Como a abstenção mudou de um ciclo para o outro?',
   brancos_nulos: 'Como os brancos e nulos mudaram de um ciclo para o outro?',
@@ -126,4 +165,12 @@ export function fichaCsv(f: Ficha): string {
 export function weightText(weight: { files: number; gzipBytes: number }): string {
   const kb = (Math.round(weight.gzipBytes / 100) / 10).toFixed(1).replace('.', ',')
   return `Lê ${int(weight.files)} ${weight.files === 1 ? 'arquivo' : 'arquivos'} de dados, ${kb} kB comprimidos`
+}
+
+/** The candidatos Ficha of one turno: a row per candidate of each cycle, in ballot-number order, with the votes and the share of votos válidos (no order by result, no difference). */
+export function candidatosFicha(spec: BarSpec, turno: 1 | 2): { headers: string[]; rows: string[][] } {
+  return {
+    headers: ['Ciclo', 'Nº', 'Candidato', 'Votos', '% dos votos válidos'],
+    rows: (spec.candidatos?.[turno] ?? []).flatMap((c) => c.bars.map((b) => [String(c.ciclo), String(b.numero), `${b.nome} (${b.partido})`, b.votos, b.text])),
+  }
 }

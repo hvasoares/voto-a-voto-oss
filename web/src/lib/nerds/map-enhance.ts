@@ -15,7 +15,7 @@ export interface ViewData {
 }
 export interface MapEnhanceOptions {
   views: Record<string, ViewData>
-  options: { id: string; label: string }[]
+  options: { id: string; label: string; group?: string }[]
   cycles: number[]
   initial: { ano: number; turno: number; measure: string }
   names: Record<string, string>
@@ -38,7 +38,7 @@ export function enhanceMap(panel: HTMLElement, o: MapEnhanceOptions): MapEnhance
   const controls = doc.createElement('div')
   controls.className = 'nerds-map-controls'
   controls.innerHTML =
-    `<div class="nerds-picker" role="group" aria-label="Medida" data-picker-measure>${o.options.map((x) => `<button type="button" data-measure-option="${x.id}">${x.label}</button>`).join('')}</div>` +
+    [...new Set(o.options.map((x) => x.group ?? 'Medida'))].map((g) => `<div class="nerds-picker" role="group" aria-label="${g}" data-picker-measure>${o.options.filter((x) => (x.group ?? 'Medida') === g).map((x) => `<button type="button" data-measure-option="${x.id}">${x.label}</button>`).join('')}</div>`).join('') +
     `<div class="nerds-picker" role="group" aria-label="Turno" data-picker-turno><button type="button" data-turno-option="1">1º turno</button><button type="button" data-turno-option="2">2º turno</button></div>`
   const head = panel.querySelector('.nerds-panel__head')!
   head.after(controls)

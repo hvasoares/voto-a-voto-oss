@@ -1,5 +1,5 @@
 import type { PanelData, PanelRecord } from './panels'
-import { rateDef, RATES } from './rates'
+import { candidateNumber, isCandidateMeasure, measureOptions, rateDef, type MeasureOption } from './rates'
 import type { LevelShard, Row } from './types'
 
 /**
@@ -60,7 +60,7 @@ export interface DistribuicaoSpec {
   recordId: string
   /** "UFs", "municípios". */
   unit: string
-  options: { id: string; label: string }[]
+  options: MeasureOption[]
   initial: { measure: string; turno: 1 | 2 }
   /** `${turno}-${measure}` -> the distribution; absent where that turno did not happen. */
   byKey: Record<string, Distribution>
@@ -74,19 +74,24 @@ const childrenOf = (s: LevelShard): { rows: Row[]; unit: string } =>
   s.level === 'brasil' ? { rows: (s.children.ufs ?? []).filter((r) => r.id !== 'zz'), unit: 'UFs' } : s.level === 'regiao' ? { rows: s.children.ufs ?? [], unit: 'UFs' } : { rows: s.children.municipios ?? [], unit: 'municípios' }
 
 /** The unrounded rate of a row, in percent. */
-export const rawRate = (row: Row, id: string): number | null => {
+export const rawRate = (row: Row, id: string, candidatos: LevelShard['candidatos'] = []): number | null => {
+  if (isCandidateMeasure(id)) {
+    const i = candidatos.findIndex((c) => c.numero === candidateNumber(id))
+    return i < 0 || row.validos === 0 ? null : ((row.votos[i] ?? 0) / row.validos) * 100
+  }
   const def = rateDef(id)
   return row[def.whole] === 0 ? null : (row[def.part] / row[def.whole]) * 100
 }
 
 export function buildDistribuicao(record: PanelRecord, data: PanelData): DistribuicaoSpec {
-  const ids = record.measure.options ?? RATES.map((r) => r.id)
+  const ids = record.measure.options ?? []
+  const options = measureOptions(ids, Object.values(data.cycle).filter(Boolean) as LevelShard[], !!record.measure.candidatos)
   const turnos = ([1, 2] as const).filter((t) => data.cycle[t])
   const any = data.cycle[1] ?? data.cycle[2]!
   const byKey: Record<string, Distribution> = {}
   for (const t of turnos) {
-    for (const id of ids) {
-      const values = childrenOf(data.cycle[t]!).rows.flatMap((r) => { const x = rawRate(r, id); return x === null ? [] : [x] })
+    for (const { id } of options) {
+      const values = childrenOf(data.cycle[t]!).rows.flatMap((r) => { const x = rawRate(r, id, data.cycle[t]!.candidatos); return x === null ? [] : [x] })
       if (!values.length) continue
       const five = fiveNumber(values)
       byKey[`${t}-${id}`] = { n: values.length, bins: bins(values), five, fences: fences(five) }
@@ -96,7 +101,7 @@ export function buildDistribuicao(record: PanelRecord, data: PanelData): Distrib
     kind: 'histogram',
     recordId: record.id,
     unit: childrenOf(any).unit,
-    options: ids.map((id) => ({ id, label: rateDef(id).label })),
+    options,
     initial: { measure: record.measure.id, turno: 1 },
     byKey,
     rule: 'Regra: um valor é atípico se fica além de 1,5 × a amplitude interquartil (Q3 − Q1), acima de Q3 ou abaixo de Q1. Nenhum lugar é nomeado aqui; ordene a tabela de detalhe para ver cada um.',
