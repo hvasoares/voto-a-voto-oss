@@ -115,8 +115,8 @@ test.describe('brasil on the real dataset', () => {
     const bar = page.locator('[data-brasil-bar]')
     const both = [nat.votes.get('13')!, nat.votes.get('22')!]
     // #91: the bar carries each candidate's share (fitted to the segment); the counts are text under the bar and in each segment's title attribute.
-    await expect(bar.getByText(`Lula ${partShare(both[0]!, both, 2)}%`, { exact: true })).toBeVisible()
-    await expect(bar.getByText(`Flávio Bolsonaro ${partShare(both[1]!, both, 2)}%`, { exact: true })).toBeVisible()
+    await expect(bar.locator('span').nth(0)).toHaveText(new RegExp(`^(Lula )?${partShare(both[0]!, both, 2)}%$`))
+    await expect(bar.locator('span').nth(1)).toHaveText(new RegExp(`^(Flávio( Bolsonaro)? )?${partShare(both[1]!, both, 2)}%$`))
     await expect(page.locator('[data-brasil-votos]')).toHaveText(`Lula ${ptNumber.format(both[0]!)} votos · Flávio Bolsonaro ${ptNumber.format(both[1]!)} votos`)
     const titles = await bar.locator('span').evaluateAll((els) => els.map((e) => e.getAttribute('title')))
     expect(titles[0]).toContain(`${ptNumber.format(both[0]!)} votos (${partShare(both[0]!, both, 2)}%)`)

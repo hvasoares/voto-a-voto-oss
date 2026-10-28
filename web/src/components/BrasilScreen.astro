@@ -67,9 +67,12 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
   <p class="mb-3 print:hidden">
     <a class="-ml-2 inline-flex min-h-12 min-w-[116px] items-center rounded-[var(--radius)] border border-border bg-background px-4 text-step-2 text-[var(--c-ink)] lg:ml-0 lg:min-h-8 lg:min-w-0 lg:border-0 lg:px-0 lg:text-[14px] lg:text-primary" href={href('/')}>‹ Início</a>
   </p>
-  <h1 class="font-serif text-step-4 font-normal wrap-anywhere lg:text-[44px] lg:leading-[52px]">Brasil e regiões</h1>
-  <p class="text-step-1 text-muted-foreground">2º turno de {view.ano}</p>
-  <div class="mt-1 flex items-center justify-between gap-3">
+  <div class="brasil-top">
+  <div class="min-w-0">
+    <h1 class="font-serif text-step-4 font-normal wrap-anywhere lg:text-[44px] lg:leading-[52px]">Brasil e regiões</h1>
+    <p class="text-step-1 text-muted-foreground">2º turno de {view.ano}</p>
+  </div>
+  <div class="brasil-top__links">
     <a class="inline-flex min-h-11 items-center text-step-2 font-bold text-primary" data-link="nerds" href={href(`/${nerdsPath({ level: 'brasil' })}`)}>Dados para nerds ›</a>
     {
       !backdrop && (
@@ -79,9 +82,10 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
       )
     }
   </div>
+  </div>
 
   <section class="pt-6" aria-labelledby="brasil-votos-validos" data-brasil-national>
-    <h2 id="brasil-votos-validos" class="font-sans! text-step-1! font-bold!">Brasil, votos válidos</h2>
+    <h2 id="brasil-votos-validos" class="brasil-h2">Brasil, votos válidos</h2>
     <div class="mt-2 flex h-7 gap-[2px]" role="img" aria-label="Votos válidos no Brasil, por candidato" data-brasil-bar>
       {view.nationalCandidates.map((c, i) => (
         <span
@@ -102,7 +106,7 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
   </section>
 
   <section class="pt-6" aria-labelledby="brasil-por-regiao" data-brasil-regioes>
-    <h2 id="brasil-por-regiao" class="font-serif text-step-3! font-normal!">Por região</h2>
+    <h2 id="brasil-por-regiao" class="brasil-h2 brasil-h2--region">Por região</h2>
     <p class="mt-1 text-step-1 text-muted-foreground" data-brasil-legend>{brasilLegend()}</p>
     <ul class="mt-1 list-none p-0">
       {view.regions.map((r) => (
@@ -125,7 +129,7 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
           <p class="mt-1 text-step-1 text-[var(--c-ink)]" data-participacao>{brasilTurnout(r)}</p>
           <p class="text-step-1 text-muted-foreground" data-brancos-nulos>{brasilBlanks(r)}</p>
           <div class="flex items-center justify-between">
-            <span class="[&>a]:inline-flex [&>a]:min-h-11 [&>a]:items-center"><Fragment set:html={calcLink(links(`${r.regiao}-parcela`))} /></span>
+            <span class="brasil-calc"><Fragment set:html={calcLink(links(`${r.regiao}-parcela`))} /></span>
             {nerds.regioes.includes(r.regiao) && <a class="inline-flex min-h-11 items-center text-step-1 font-bold text-primary" data-link="nerds-regiao" href={href(`/${nerdsPath({ level: 'regiao', id: r.regiao })}`)}>Dados da região ›</a>}
           </div>
         </li>
@@ -147,3 +151,15 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
 <footer class="mx-5 mt-2 pb-6 pt-2 text-center text-step-1 md:mx-auto md:max-w-[720px] lg:text-left text-muted-foreground" data-component="source-footer" aria-hidden={backdrop ? 'true' : undefined}>
   Fonte: TSE, dados finais · <a class="inline-flex min-h-11 items-center" href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
 </footer>
+
+<style>
+  /* Only this screen loads these rules (the shared CSS has no room): the heading faces are the unlayered `h2` rule's to beat, so they are classes of their own. */
+  .brasil-h2 { font: 700 var(--step-1) / var(--lh-1) var(--font-sans); }
+  .brasil-h2--region { font: 400 var(--step-3) / var(--lh-3) var(--font-serif); }
+  .brasil-top__links { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; }
+  .brasil-calc :global(a) { display: inline-flex; align-items: center; min-height: 44px; }
+  @media (min-width: 1024px) {
+    .brasil-top { display: flex; align-items: flex-start; justify-content: space-between; }
+    .brasil-top__links { flex: none; justify-content: flex-end; gap: 24px; }
+  }
+</style>

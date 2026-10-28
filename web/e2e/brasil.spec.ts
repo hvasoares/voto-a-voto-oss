@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
 
@@ -94,5 +95,11 @@ test.describe('brasil: type and targets (#91)', () => {
         expect((await link.boundingBox())!.height, sel).toBeGreaterThanOrEqual(44)
       }
     }
+  })
+
+  test('axe finds nothing on /brasil/ (contrast of the bars included)', async ({ page }) => {
+    await page.goto(`${base}brasil/`)
+    const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze()
+    expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`)).toEqual([])
   })
 })
