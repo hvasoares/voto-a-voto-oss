@@ -84,9 +84,11 @@ test.describe('Estado: the municipality map slot', () => {
 test.describe('bars carry their printed values (no meaning by colour alone)', () => {
   test('Três ciclos (cidade): every bar segment prints its percentage', async ({ page }) => {
     await page.goto(SCREENS['três ciclos (cidade)'])
+    // a segment too narrow for its word prints nothing, and the caption under its bar carries the label and the share (#89)
     const segs = await page.locator('.cycle .bar__seg:not(.bar__seg--empty)').allInnerTexts()
     expect(segs.length).toBeGreaterThan(5)
-    for (const text of segs) expect(text).toMatch(/\d|Br|Nu/)
+    for (const text of segs) expect(text).not.toMatch(/^(Ab|Br|Nu|Ou)$/)
+    for (const cap of await page.locator('.cycle [data-bar-caption]').allInnerTexts()) expect(cap).toMatch(/(Brancos|Nulos|Abstenção) \d+%/)
     for (const text of await page.locator('.cycle .bar__seg--a, .cycle .bar__seg--b').allInnerTexts()) expect(text).toMatch(/\d+%/)
   })
 

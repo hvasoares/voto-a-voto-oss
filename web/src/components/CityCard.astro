@@ -118,7 +118,7 @@ const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: T
         <Fragment set:html={viewTwin(twin, { cityName: name, overseas })} />
         <a class="city-share" href={`${shareBase}?ciclo=${view.ano}&turno=${view.turno}`} data-share data-base={shareBase}>Compartilhar</a>
         <nav class="city-links" aria-label="Mais sobre a cidade">
-          <a href={href('/comparar/2022/')}>Comparar com 2022 ›<span class="city-links__sub">Margem e virada desde 2022</span></a>
+          <a href={href('/comparar/2022/')}>Comparar com 2022 e 2018 ›<span class="city-links__sub">Margem e virada, por estado</span></a>
           <a href={here + 'tres-ciclos/'}>Ver os três ciclos ›<span class="city-links__sub">2018, 2022 e 2026 lado a lado</span></a>
           <a href={href(`/cara-a-cara/?nivel=cidade&a=${uf}/${slug}`)} data-link="duel">Comparar com outra cidade ›<span class="city-links__sub">Cara a cara, lado a lado</span></a>
           {overseas ? '' : <a href={href(`/${uf}/`)}>Ver o estado ›<span class="city-links__sub">Municípios do estado e mapa</span></a>}

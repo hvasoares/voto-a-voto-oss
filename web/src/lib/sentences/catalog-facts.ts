@@ -55,6 +55,7 @@ export const FACTS_STANDARD: Record<string, string> = {
   'fact.others': 'Os outros números deste cartão',
   'fact.id': 'Identificador',
   'fact.link': 'ver cálculo',
+  'fact.link.card': 'De onde vem este número?',
   'fact.measure.frase': 'A frase do cartão',
   'fact.measure.votaram': 'Votaram',
   'fact.measure.naoVotaram': 'Não votaram',

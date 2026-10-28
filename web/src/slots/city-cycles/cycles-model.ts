@@ -88,14 +88,11 @@ export function sideText(s: Pick<Side, 'key' | 'label' | 'pct' | 'short'>): stri
 }
 
 type NotVotedKey = 'abstencao' | 'brancos' | 'nulos'
-const NOT_VOTED: Record<NotVotedKey, { word: string; short: string }> = {
-  abstencao: { word: 'Abstenção', short: 'Ab' },
-  brancos: { word: 'Brancos', short: 'Br' },
-  nulos: { word: 'Nulos', short: 'Nu' },
-}
+const NOT_VOTED: Record<NotVotedKey, string> = { abstencao: 'Abstenção', brancos: 'Brancos', nulos: 'Nulos' }
 
-/** Text of a "Não votaram" segment: "Abstenção 82%", "Br", "Nu" (the heading already says the bar is % of the non-voters). */
+/** Text of a "Não votaram" segment: "Abstenção 82%", "Brancos", or nothing when the word does not fit whole (#89: never initials; the list under the bars has the share). */
 export function notVotedText(key: NotVotedKey, pct: number): string {
-  const { word, short } = NOT_VOTED[key]
-  return pct >= 30 ? `${word} ${pct}%` : pct >= 20 ? word : pct >= 6 ? short : ''
+  // 7 px a glyph: the 13 px bold of the type scale (#86), as the card's bars measure it
+  const room = Math.floor(((pct / 100) * BAR_PX - 10) / 7)
+  return [`${NOT_VOTED[key]} ${pct}%`, NOT_VOTED[key]].find((t) => t.length <= room) ?? ''
 }

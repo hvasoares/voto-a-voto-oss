@@ -6,7 +6,7 @@ import { marginLine } from '../../lib/sentences/margin'
 import { toLegendRows, toTurnoutBarProps } from '../../shared/city-figures'
 import { candidateRow, turnoutBar } from '../../shared/components'
 import { html, type Raw } from '../../shared/html'
-import { calcLink } from '../../lib/facts/link'
+import { cardCalcLink } from '../../lib/facts/link'
 import { questionText, yesNo, type Question } from '../../lib/question'
 
 /** The address of the fact that explains the figure at an anchor (`lib/facts/gate.ts` `factLinks`): it throws for a figure with no record, so the card cannot print a number without one. */
@@ -45,7 +45,7 @@ export function viewSentence(result: CityResult | undefined, place: Place, view:
   const sentence = voices(place).map(
     (v) => html`<div data-register="${v.register}"><p class="city-headline" data-headline>${headline(result, v.place)}</p><p class="city-headline__note">${message({ locale, register: v.register }, 'headline.note')}</p></div>`,
   )
-  return html`${registerSwitch(locale)}<div class="city-sentence" id="${headlineId(view)}" aria-live="polite">${sentence}</div>${calcLink(links('frase'), locale)}`
+  return html`${registerSwitch(locale)}<div class="city-sentence" id="${headlineId(view)}" aria-live="polite">${sentence}</div>${cardCalcLink(links('frase'), locale)}`
 }
 
 /**
@@ -86,7 +86,7 @@ export function viewTwin(twin: Twin | undefined, place: Place): Raw {
 export function viewMargin(result: CityResult | undefined, place: Place, links: FactLinks): Raw {
   const lines = voices(place).map((v) => ({ register: v.register, text: marginLine(result, v.place) }))
   if (!lines[0]!.text) return html``
-  return html`${lines.map((l) => html`<p class="city-margin" data-register="${l.register}" data-margin>${l.text}</p>`)}${calcLink(links('margem'), place.locale)}`
+  return html`${lines.map((l) => html`<p class="city-margin" data-register="${l.register}" data-margin>${l.text}</p>`)}${cardCalcLink(links('margem'), place.locale)}`
 }
 
 /** Both parts in one string: what the card showed before the two columns (the phone order). */

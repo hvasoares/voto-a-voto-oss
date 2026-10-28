@@ -11,7 +11,7 @@ const html = curiosityCard(facts, 'x', (anchor) => `/fato/rj/x/comparacoes/#${an
 
 describe('the curiosities card', () => {
   it('has a "ver cálculo" link on every fact, to that fact\'s record', () => {
-    expect(html.match(/<a class="calc" href="\/fato\/rj\/x\/comparacoes\/#(td|ml|bh)">ver cálculo<\/a>/g)).toHaveLength(3)
+    expect(html.match(/<a class="calc" href="\/fato\/rj\/x\/comparacoes\/#(td|ml|bh)">De onde vem este número\?<\/a>/g)).toHaveLength(3)
   })
   it('is the frame: the rank, what it ranks, the group size and the cycles compared', () => {
     expect(html).toContain('3ª')

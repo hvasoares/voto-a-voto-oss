@@ -17,8 +17,8 @@ describe('turnoutBar', () => {
     expect(t).toContain('Candidato B 48%')
     expect(t).not.toContain('dos votos')
     expect(t).toContain('Abstenção 78% dos que não votaram')
-    expect(t).toContain('Br')
-    expect(t).toContain('Nu')
+    expect(t).not.toContain('Br<')
+    expect(t).not.toContain('>Nu')
   })
   it('names the candidates in the picture\'s text alternative, with the shares, in ballot order', () => {
     const out = turnoutBar({ ...props, candidates: { a: { label: 'Lula', pct: 52 }, b: { label: 'Flavio Bolsonaro', pct: 48 } } }).value
@@ -61,8 +61,9 @@ expect(segmentText('b', 48, 'Veterinário Wilson Grassi')).toBe('Veterinário\nW
   it('not-voted parts', () => {
     expect(segmentText('abstencao', 78)).toBe('Abstenção 78% dos que não votaram')
     expect(segmentText('abstencao', 40)).toBe('Abstenção 40%')
-    expect(segmentText('brancos', 10)).toBe('Br')
-    expect(segmentText('nulos', 12)).toBe('Nu')
+    expect(segmentText('brancos', 10)).toBe('')
+    expect(segmentText('nulos', 12)).toBe('')
+    expect(segmentText('brancos', 20)).toBe('Brancos')
     expect(segmentText('nulos', 4)).toBe('')
   })
 })

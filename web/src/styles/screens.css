@@ -92,7 +92,7 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .state-links a:last-child { flex: 0 0 150px; text-align: right; }
 
 /* ---- city card (#5 ported by #50): shared bars (.turnout, .bar, .legend) are owned by #5 and reused by the cycles and share views; `.city-*` and `.city-page` belong to the city slot ---- */
-.turnout__title { font: var(--fw-bold) var(--step-1)/var(--lh-1) var(--font-sans); }
+.turnout__title { display: flow-root; font: var(--fw-bold) var(--step-1)/var(--lh-1) var(--font-sans); }
 .turnout__sep { margin: 0 3.5px; }
 .bar { display: flex; gap: 2px; height: 38px; margin-top: 9px; }
 .bar__seg {
@@ -107,7 +107,7 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .bar__seg--brancos { background: var(--c-brancos); }
 .bar__seg--nulos { background: var(--c-nulos); }
 .legend { display: flex; flex-direction: column; }
-.legend__row { display: flex; align-items: center; gap: 10px; height: 24px; }
+.legend__row { display: flex; flex-wrap: wrap; align-items: center; column-gap: 10px; min-height: 24px; }
 .legend__swatch { flex: none; width: 12px; height: 12px; border-radius: 2px; border: 1px solid var(--c-rule); }
 .legend__swatch--a { background: var(--c-cand-a); border-color: var(--c-cand-a); }
 .legend__swatch--b { background: var(--c-cand-b); border-color: var(--c-cand-b); }
@@ -115,14 +115,14 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .legend__swatch--abstencao { background: var(--c-abstencao); }
 .legend__swatch--brancos { background: var(--c-brancos); }
 .legend__swatch--nulos { background: var(--c-nulos); }
-.legend__label { flex: 1; min-width: 0; font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); overflow-wrap: anywhere; }
-.legend__value { flex: none; font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); }
+.legend__label { display: contents; min-width: 0; font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); overflow-wrap: anywhere; }
+.legend__value { flex: none; margin-left: auto; font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); }
 /* "ver cálculo" (#61): under the legend label and after the bar titles; the accent colour passes 4.5:1 on the paper. */
 .calc { color: var(--c-accent); font: var(--fw-bold) var(--step-1)/var(--lh-1) var(--font-sans); text-decoration: underline; }
-.legend__label .calc { display: block; }
-.turnout__title .calc { float: right; }
+.legend__label .calc { order: 1; flex: 0 0 100%; padding-left: 22px; } /* the link has its own line under the label and the value (#89): the 24-character wording does not fit beside them */
+.turnout__title .calc { float: right; } /* the title holds its float (#89): a link that wraps below the words must not squeeze the bar beside it */
 .city-sentence + .calc, .city-margin ~ .calc { display: block; margin-top: 6px; }
-.curio__fact .calc { display: block; margin-top: 8px; }
+.curio__fact .calc { display: block; grid-column: 1 / -1; margin-top: 8px; }
 
 /* The card's base is the scale's small step (#86); only what is larger or bolder says so. */
 .city-page { font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); }
@@ -143,7 +143,7 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .city-card .city-figures > .turnout__title:first-child { margin-top: 15px; }
 .city-card .bar + .turnout__title { margin-top: 17px; }
 .city-card .legend { margin-top: 12px; }
-.city-card .legend__row { height: 40px; }
+.city-card .legend__row { padding: 4px 0; }
 .city-page .city-headline { font: 400 var(--step-3)/var(--lh-3) var(--font-serif); margin: 26px 0 0; }
 /* The register (linguagem simples): both sentences are pre-rendered; the choice is an attribute of <html> (set by the card's inline script before paint). */
 html[data-register="plain"] [data-register="standard"], html:not([data-register="plain"]) [data-register="plain"] { display: none; }
@@ -238,9 +238,9 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
   .city-card .city-figures > .turnout__title:first-child { margin-top: 20px; }
   .city-card .bar + .turnout__title { margin-top: 26px; }
   .city-card .legend { margin-top: 20px; }
-  .city-card .legend__row { height: 34px; }
-  .city-card .legend__label { flex: none; width: 228px; font-size: 15px; }
-  .legend__label .calc { display: inline; margin-left: 10px; }
+  .city-card .legend__row { padding: 4px 0; }
+  .city-card .legend__label { display: block; flex: none; width: 228px; font-size: 15px; }
+  .legend__label .calc { display: inline; order: 0; margin-left: 10px; padding: 0; }
   .city-page .city-words { margin-top: 12px; }
   .city-page .city-headline { font-size: 26px; line-height: 33px; margin: 0; }
   .city-page .city-headline__note { margin-top: 10px; color: var(--c-muted); }

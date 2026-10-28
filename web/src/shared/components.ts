@@ -1,6 +1,6 @@
 import { formatInt } from './city-model'
 import { html, Raw } from './html'
-import { calcLink } from '../lib/facts/link'
+import { cardCalcLink } from '../lib/facts/link'
 import { pickCandidateText } from './fit-candidate'
 
 /*
@@ -34,12 +34,12 @@ export interface TurnoutBarProps {
   calc?: { voted: string; notVoted: string }
 }
 
-/** Text tiers of a bar segment: the first tier whose `min` (percent of the bar) is reached wins; below every tier the segment has no text. */
-const TIERS: Record<Exclude<CandidateKind, 'a' | 'b'>, { min: number; text: (pct: number) => string }[]> = {
-  outros: [{ min: 46, text: (p) => `Outros  ${p}% dos votos` }, { min: 26, text: (p) => `Outros  ${p}%` }, { min: 15, text: () => 'Outros' }, { min: 8, text: () => 'Ou' }],
-  abstencao: [{ min: 75, text: (p) => `Abstenção ${p}% dos que não votaram` }, { min: 32, text: (p) => `Abstenção ${p}%` }, { min: 22, text: () => 'Abstenção' }, { min: 8, text: () => 'Ab' }],
-  brancos: [{ min: 75, text: (p) => `Brancos ${p}% dos que não votaram` }, { min: 30, text: (p) => `Brancos ${p}%` }, { min: 20, text: () => 'Brancos' }, { min: 8, text: () => 'Br' }],
-  nulos: [{ min: 75, text: (p) => `Nulos ${p}% dos que não votaram` }, { min: 30, text: (p) => `Nulos ${p}%` }, { min: 20, text: () => 'Nulos' }, { min: 8, text: () => 'Nu' }],
+/** Text tiers of a bar segment, longest first: the first one that fits the segment's width wins (see `segmentText`). */
+const TIERS: Record<Exclude<CandidateKind, 'a' | 'b'>, ((pct: number) => string)[]> = {
+  outros: [(p) => `Outros  ${p}% dos votos`, (p) => `Outros  ${p}%`, () => 'Outros'],
+  abstencao: [(p) => `Abstenção ${p}% dos que não votaram`, (p) => `Abstenção ${p}%`, () => 'Abstenção'],
+  brancos: [(p) => `Brancos ${p}% dos que não votaram`, (p) => `Brancos ${p}%`, () => 'Brancos'],
+  nulos: [(p) => `Nulos ${p}% dos que não votaram`, (p) => `Nulos ${p}%`, () => 'Nulos'],
 }
 
 /** Width of the card's bar at 390 px, rough bold 13px glyph width (the type scale's step 1, #86) and the segment's padding: how much text fits a segment. */
@@ -52,14 +52,19 @@ const PAD_PX = 10
  * steps, wrapping before it shortens: "Flavio Bolsonaro 48%", "Flavio" over "Bolsonaro 48%", "Flavio Bolsonaro" over "48%", "Flavio" over "48%", "48%", ''.
  */
 export function candidateText(name: string, pct: number, short?: string): string {
-  const room = Math.floor(((pct / 100) * BAR_PX - PAD_PX) / GLYPH_PX)
-  return pickCandidateText(name, `${pct}%`, short, (line) => line.length <= room)
+  return pickCandidateText(name, `${pct}%`, short, (line) => line.length <= roomOf(pct))
 }
 
-/** The text that fits a segment of `pct` percent of its bar ('' when it is too narrow for any). `name` is the candidate's for the two sides. */
+/** How many characters fit a segment of `pct` percent of the bar. */
+const roomOf = (pct: number) => Math.floor(((pct / 100) * BAR_PX - PAD_PX) / GLYPH_PX)
+
+/**
+ * The text that fits a segment of `pct` percent of its bar, whole or not at all (#89): a segment too narrow for its label prints
+ * nothing, never initials like "Br"; the legend row below the bar carries the label and the share. `name` is the candidate's for the two sides.
+ */
 export function segmentText(kind: CandidateKind, pct: number, name = ''): string {
   if (kind === 'a' || kind === 'b') return candidateText(name, pct)
-  return TIERS[kind].find((t) => pct >= t.min)?.text(pct) ?? ''
+  return TIERS[kind].map((text) => text(pct)).find((t) => t.length <= roomOf(pct)) ?? ''
 }
 
 interface BarSegment {
@@ -79,8 +84,8 @@ const bar = (label: string, segs: BarSegment[]) =>
     .filter((s) => s.pct > 0)
     .map((s) => {
       const text = s.named ? candidateText(s.name!, s.pct, s.short) : segmentText(s.kind, s.pct, s.name)
-      // the title only says more than the text when the text had to give way
-      return html`<span class="bar__seg bar__seg--${s.kind}" style="flex-grow:${s.pct}"${text === `${s.name} ${s.pct}%` ? '' : html` title="${s.title}"`}>${text}</span>`
+      // the title only says more than the text when the text had to give way (it is the hover for a segment with no text at all)
+      return html`<span class="bar__seg bar__seg--${s.kind}" style="flex-grow:${s.pct}"${text === `${s.name} ${s.pct}%` || text === s.title.replace(':', '') ? '' : html` title="${s.title}"`}>${text}</span>`
     })}</div>`
 
 export function turnoutBar(p: TurnoutBarProps): Raw {
@@ -99,9 +104,9 @@ export function turnoutBar(p: TurnoutBarProps): Raw {
   ]
   const notVotedPct = 100 - p.votedPct
   return html`<section class="turnout" data-component="turnout-bar">
-    <h2 class="turnout__title">Votaram <span class="turnout__sep" aria-hidden="true">·</span> ${p.votedPct}% do eleitorado${p.calc && calcLink(p.calc.voted)}</h2>
+    <h2 class="turnout__title">Votaram <span class="turnout__sep" aria-hidden="true">·</span> ${p.votedPct}% do eleitorado${p.calc && cardCalcLink(p.calc.voted)}</h2>
     ${bar(`Votaram, por candidato: ${voted.filter((s) => s.pct > 0).map((s) => `${s.name} ${s.pct}%`).join(', ')} dos votos`, voted)}
-    <h2 class="turnout__title">Não votaram <span class="turnout__sep" aria-hidden="true">·</span> ${notVotedPct}% do eleitorado${p.calc && calcLink(p.calc.notVoted)}</h2>
+    <h2 class="turnout__title">Não votaram <span class="turnout__sep" aria-hidden="true">·</span> ${notVotedPct}% do eleitorado${p.calc && cardCalcLink(p.calc.notVoted)}</h2>
     ${bar('Não votaram, por tipo', notVoted)}
   </section>`
 }
@@ -148,7 +153,7 @@ export interface CandidateRowProps {
   calc?: string
 }
 export function candidateRow(p: CandidateRowProps): Raw {
-  return html`<li class="legend__row" data-kind="${p.kind}"><span class="legend__swatch legend__swatch--${p.kind}" aria-hidden="true"></span><span class="legend__label">${p.label}${p.calc && calcLink(p.calc)}</span><span class="legend__value">${formatInt(p.votes)} · ${p.shareLabel}</span></li>`
+  return html`<li class="legend__row" data-kind="${p.kind}"><span class="legend__swatch legend__swatch--${p.kind}" aria-hidden="true"></span><span class="legend__label">${p.label}${p.calc && cardCalcLink(p.calc)}</span><span class="legend__value">${formatInt(p.votes)} · ${p.shareLabel}</span></li>`
 }
 
 /** Item of the reports hub (frame 6): bold title, one-line headline number, chevron. Real implementation: ticket #12. */

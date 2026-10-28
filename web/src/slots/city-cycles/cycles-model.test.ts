@@ -120,9 +120,10 @@ describe('notVotedText: compact, the heading already says "% dos que não votara
   it.each([
     ['abstencao', 82, 'Abstenção 82%'],
     ['abstencao', 25, 'Abstenção'],
-    ['abstencao', 10, 'Ab'],
-    ['brancos', 6, 'Br'],
-    ['nulos', 9, 'Nu'],
+    ['abstencao', 10, ''],
+    ['brancos', 6, ''],
+    ['nulos', 9, ''],
+    ['nulos', 16, 'Nulos'],
     ['brancos', 40, 'Brancos 40%'],
     ['nulos', 5, ''],
   ] as const)('%s at %s%% -> %j', (key, pct, want) => expect(notVotedText(key, pct)).toBe(want))

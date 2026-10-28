@@ -17,7 +17,7 @@ const links = factLinks(facts, 'the card test')
 
 describe('"ver cálculo" on the figures', () => {
   const html = viewPanel(result, place, '2026-1', links).toString()
-  const hrefs = [...html.matchAll(/<a class="calc" href="([^"]+)">ver cálculo<\/a>/g)].map((m) => m[1])
+  const hrefs = [...html.matchAll(/<a class="calc" href="([^"]+)">De onde vem este número\?<\/a>/g)].map((m) => m[1])
 
   it('sits next to every figure: both bars, the six legend rows and the sentence', () => {
     expect(hrefs.map((h) => h!.split('#')[1])).toEqual(['votaram', 'naoVotaram', 'a', 'b', 'abstencao', 'brancos', 'nulos', 'frase'])
@@ -28,7 +28,7 @@ describe('"ver cálculo" on the figures', () => {
     expect((html.match(/<h2 class="turnout__title">(?:(?!<\/h2>).)*class="calc"/g) ?? []).length).toBe(2)
   })
   it('the margin line has its own link, after both registers', () => {
-    expect(viewMargin(result, place, links).toString()).toMatch(/<\/p><a class="calc" href="\/fato\/rj\/cidade-exemplo\/2026-1\/#margem">ver cálculo<\/a>$/)
+    expect(viewMargin(result, place, links).toString()).toMatch(/<\/p><a class="calc" href="\/fato\/rj\/cidade-exemplo\/2026-1\/#margem">De onde vem este número\?<\/a>$/)
   })
   it('the build gate: a card whose records lack a source cannot be drawn', () => {
     const broken = facts.map((f) => (f.anchor === 'votaram' ? { ...f, source: undefined } : f))
@@ -56,7 +56,7 @@ describe('card panel', () => {
   })
   it('has the switch hidden (it needs scripts), as a labelled group of two toggle buttons, standard pressed', () => {
     expect(html).toMatch(/<div class="register" role="group" aria-label="Estilo da frase" data-register-switch hidden>/)
-    expect(html).toMatch(/data-register-choice="standard" aria-pressed="true">Padrão</)
+    expect(html).toMatch(/data-register-choice="standard" aria-pressed="true">Texto integral</)
     expect(html).toMatch(/data-register-choice="plain" aria-pressed="false">Linguagem simples</)
   })
   it('a cycle without data says so in both registers and has no switch', () => {

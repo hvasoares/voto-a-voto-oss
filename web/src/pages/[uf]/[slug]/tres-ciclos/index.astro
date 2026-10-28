@@ -54,7 +54,7 @@ const other = DEFAULT_TURNO === 2 ? 1 : 2
       <div class="cycles" data-cycles data-turno={DEFAULT_TURNO} data-path={here} data-uf={city.uf} data-slug={city.slug} data-name={name}>
         {panels.map((p) => <Fragment set:html={p} />)}
       </div>
-      <p class="cycles__legend">Br = brancos · Nu = nulos. O candidato de menor número na urna fica à esquerda, em vermelho; o outro, em azul, em todos os ciclos.</p>
+      <p class="cycles__legend">O candidato de menor número na urna fica à esquerda, em vermelho; o outro, em azul, em todos os ciclos.</p>
       <a class="cycles-switch" href={`${here}?turno=${other}`} data-switch data-base={here} data-turno={other}>Ver o {other}º turno ›</a>
       <nav class="cycles-links" aria-label="Mais sobre a cidade"><a href={href(`/${uf}/${slug}/`)}>Cartão da cidade</a></nav>
     </main>
