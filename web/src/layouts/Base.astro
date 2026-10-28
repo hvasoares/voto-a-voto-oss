@@ -67,6 +67,9 @@ const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : withBase(b
       {/* NOT a <footer> element: every page carries its own (<footer data-component="source-footer">) and
           the e2e specs resolve single-footer locators; these lines add the edition link (#59), the privacy/consent link (#20) and, when a donation address is configured, the donation link (#36). */}
       <div class="mx-auto w-full max-w-[430px] px-5 pb-3 text-center text-step-1" data-component="consent-footer">
+        {/* "Final, não ao vivo": the words Home prints under its tagline, here as a chip on every page (plain text, no script). */}
+        <span class="inline-block whitespace-nowrap rounded-md border border-border bg-secondary px-2 py-0.5 align-middle font-bold text-foreground" data-finality-chip>Final, não ao vivo</span>
+        <span aria-hidden="true"> · </span>
         <a class="inline-flex min-h-11 items-center" href={withBase(base, editionPath(edition.id))} data-edition-link>Edição {editionLabel(edition)}</a>
         <span aria-hidden="true"> · </span>
         <a class="inline-flex min-h-11 items-center" href={privacyHref}>Privacidade</a>
