@@ -1,0 +1,32 @@
+---
+/**
+ * The frame every panel of "Dados para nerds" shares (#73): the title is the question, the footer is the provenance block (definição, fonte with edition and date, cálculo,
+ * "não mede") written from the panel RECORD, and the body is a slot. There is no interpretation field. Actions (Citar, CSV, Imagem) arrive in #79.
+ */
+import { fonteText, type PanelRecord } from '@/lib/nerds/panels'
+
+interface Props {
+  record: PanelRecord
+  /** `edição 26/10/2026 (2026-10-26)`. */
+  edicao: string
+  /** Where the cycle block lives, so ids are unique across the three cycle blocks. */
+  scope: string
+}
+const { record, edicao, scope } = Astro.props
+const f = record.footer
+---
+<section class="nerds-panel" data-panel={record.id} data-kind={record.kind} aria-labelledby={`${scope}-${record.id}-t`}>
+  <header class="nerds-panel__head">
+    <h2 id={`${scope}-${record.id}-t`}>{record.title}</h2>
+    <div class="nerds-panel__actions" data-panel-actions><slot name="actions" /></div>
+  </header>
+  <slot />
+  <footer class="nerds-foot" data-panel-footer>
+    <dl>
+      <div><dt>Definição</dt><dd data-field="definicao">{f.definicao}</dd></div>
+      <div><dt>Fonte</dt><dd data-field="fonte">{fonteText(record, edicao)}</dd></div>
+      <div><dt>Cálculo</dt><dd data-field="calculo">{f.calculo}</dd></div>
+      <div><dt>Não mede</dt><dd data-field="naoMede">{f.naoMede}</dd></div>
+    </dl>
+  </footer>
+</section>

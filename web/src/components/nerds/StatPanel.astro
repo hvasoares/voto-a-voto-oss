@@ -1,0 +1,27 @@
+---
+/** The stat kind (#73): printed values, one card per measure, the turnos as a pair; "sem 2º turno" where there was none, never a zero. */
+import { SEM_SEGUNDO_TURNO, type StatSpec } from '@/lib/nerds/panels'
+
+interface Props { spec: StatSpec }
+const { spec } = Astro.props
+---
+<ul class="nerds-stats" data-stats>
+  {spec.cards.map((card) => (
+    <li class="nerds-stat" data-stat={card.key}>
+      <h3>{card.label}</h3>
+      {card.unavailable ? <p class="nerds-stat__none" data-unavailable>{card.unavailable}</p> : (
+        <dl>
+          {card.values.map((v) => (
+            <>
+              <dt>{v.turno}º turno</dt>
+              <dd data-turno={v.turno} data-value={v.text ?? ''}>
+                {v.text ?? <span class="nerds-none">{v.turno === 2 ? SEM_SEGUNDO_TURNO : 'sem dados'}</span>}
+                {v.sub && <span class="nerds-abs"> · {v.sub}</span>}
+              </dd>
+            </>
+          ))}
+        </dl>
+      )}
+    </li>
+  ))}
+</ul>

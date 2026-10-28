@@ -1,0 +1,30 @@
+---
+/** The table kind (#73): a real table with a header row and right-aligned numbers, complete without scripts. #76 enhances it (sort, filter, open rows) in an island. */
+import { SEM_SEGUNDO_TURNO, type TableSpec } from '@/lib/nerds/panels'
+
+interface Props { spec: TableSpec }
+const { spec } = Astro.props
+---
+<div class="nerds-tablewrap" tabindex="0" role="region" aria-label={spec.caption}>
+  <table class="nerds-table" data-table>
+    <caption>{spec.caption}</caption>
+    <thead>
+      <tr>{spec.columns.map((c) => <th scope="col" class={c.numeric ? 'is-num' : undefined}>{c.label}</th>)}</tr>
+    </thead>
+    <tbody>
+      {spec.rows.map((r) => (
+        <tr data-row={r.id} data-total={r.total ? '' : undefined}>
+          {r.cells.map((cell, i) => {
+            const col = spec.columns[i]!
+            const content = cell ?? <span class="nerds-none">{SEM_SEGUNDO_TURNO}</span>
+            return i === 0 ? (
+              <th scope="row">{r.href ? <a href={r.href}>{content}</a> : content}</th>
+            ) : (
+              <td class={col.numeric ? 'is-num' : undefined}>{content}</td>
+            )
+          })}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

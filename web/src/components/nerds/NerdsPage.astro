@@ -1,0 +1,103 @@
+---
+/**
+ * The page of the dashboard "Dados para nerds" - ONE component for all three levels (#74): Brasil, a região, a estado. The level is a parameter; the shards of the level
+ * decide the numbers. Everything is server-rendered (table first, zero JavaScript by default): the three cycles are in the HTML, the latest shown, and the address
+ * (?ciclo=&turno=&cargo=) is the only state - a small script reads it and shows the cycle asked for; without scripts all three cycles are shown, one after the other.
+ * Panels are RECORDS (src/lib/nerds/catalog.ts); each is drawn by the renderer of its kind. Islands upgrade tables to charts from 1024 px, only when visible (later tickets).
+ */
+import Base from '@/layouts/Base.astro'
+import '@/styles/nerds.css'
+import PanelFrame from './PanelFrame.astro'
+import StatPanel from './StatPanel.astro'
+import { CATALOG } from '@/lib/nerds/catalog'
+import { nerdsPath, type Level } from '@/lib/nerds/paths'
+import { specFor } from '@/lib/nerds/panels'
+import { childLinks, loadPlace } from '@/lib/nerds/view'
+import { editionLabel, editionPath } from '@/lib/editions'
+import { currentEdition } from '@/lib/editions-load'
+import { normalizeBase, withBase } from '@/paths'
+
+interface Props {
+  level: Level
+  id?: string
+}
+const { level, id } = Astro.props
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const place = loadPlace(level, id ?? null)
+const edition = await currentEdition()
+const edicao = `edição ${editionLabel(edition)} (${edition.id})`
+// The shards are pinned to the edition the site shows: a shard made from another dataset stops the build.
+for (const shard of place.shards.values()) {
+  if (shard.edition !== edition.id || shard.hash !== edition.fingerprint) {
+    throw new Error(`Dados para nerds: ${place.shardLevel}/${place.id ?? ''} ${shard.ano}-${shard.turno} was made for edition ${shard.edition}/${shard.hash}, the site shows ${edition.id}/${edition.fingerprint}: run \`make data-nerds\``)
+  }
+}
+const latest = Math.max(...place.cycles)
+const down = childLinks(place)
+const panels = CATALOG.filter((r) => r.level === 'todos' || r.level === level)
+const up = place.crumbs.length > 1 ? place.crumbs[place.crumbs.length - 2]! : undefined
+const title = `Dados para nerds: ${place.name} · Voto a Voto`
+---
+<Base title={title} description={`Os números de ${place.name} nas eleições presidenciais de 2018, 2022 e 2026, painel a painel, com a fonte de cada um.`}>
+  <main class="nerds" id="main" data-page="nerds" data-level={level} data-place={place.id ?? 'brasil'} data-cycles={place.cycles.join(',')}>
+    <nav class="nerds-crumbs" aria-label="Onde você está">
+      {up ? <a href={href(up.path!)}>‹ {up.label}</a> : <a href={href('brasil/')}>‹ Brasil e regiões</a>}
+      <ol>
+        {place.crumbs.map((c) => <li>{c.path ? <a href={href(c.path)}>{c.label}</a> : <span aria-current="page">{c.label}</span>}</li>)}
+      </ol>
+    </nav>
+    <header class="nerds-head">
+      <div>
+        <h1>Dados para nerds</h1>
+        <p class="nerds-sub" data-subtitle>{place.name} · Presidente · 1º e 2º turno · Final, não ao vivo</p>
+      </div>
+      <p class="nerds-head__links"><a href={href(editionPath(edition.id))} data-edition-link>Edição {editionLabel(edition)} ›</a></p>
+    </header>
+
+    <details class="nerds-how" data-how>
+      <summary>Como ler</summary>
+      <p>Esta página mostra, para {place.name}, os números oficiais do TSE para Presidente: eleitorado, comparecimento, abstenção, brancos, nulos e votos válidos, em cada ciclo (2018, 2022 e 2026) e turno. O resultado é final, não ao vivo.</p>
+      <p>Não explica por que as pessoas votaram ou deixaram de votar, não descreve grupos de eleitores e não ordena lugares. Cada painel tem a pergunta que responde e, no rodapé, a definição, a fonte, o cálculo e o que não mede.</p>
+      <p>O ciclo vem do endereço da página (<code>?ciclo=2022</code>), e o turno aparece lado a lado quando o painel mostra os dois. Se houve só um turno, o outro aparece como “sem 2º turno”, nunca como zero.</p>
+    </details>
+
+    {down.length > 0 && (
+      <nav class="nerds-down" aria-label="Abrir um lugar de dentro" data-down>
+        {down.map((g) => (
+          <div>
+            <h2>{g.label}</h2>
+            <ul>{g.links.map((l) => <li><a href={href(l.path)}>{l.label}</a></li>)}</ul>
+          </div>
+        ))}
+      </nav>
+    )}
+    <nav class="nerds-cycles" aria-label="Ciclo" data-cycle-nav>
+      {place.cycles.map((c) => <a href={`?ciclo=${c}&turno=1&cargo=presidente`} data-cycle-link={c}>{c}</a>)}
+    </nav>
+    <p class="nerds-note" data-notes role="status" hidden></p>
+
+    {place.cycles.map((ciclo) => {
+      const scope = `c${ciclo}`
+      const shards = { 1: place.shards.get(`${ciclo}-1`), 2: place.shards.get(`${ciclo}-2`) }
+      return (
+        <div class="nerds-cycle" data-ciclo-block={ciclo} data-latest={ciclo === latest ? '' : undefined}>
+          <h2 class="nerds-cycle__title">Presidente {ciclo}</h2>
+          {panels.map((record) => {
+            const spec = specFor(record, shards)
+            return (
+              <PanelFrame record={record} edicao={edicao} scope={scope}>
+                {spec.kind === 'stat' && <StatPanel spec={spec} />}
+              </PanelFrame>
+            )
+          })}
+        </div>
+      )
+    })}
+    <noscript><style is:inline set:html="[data-ciclo-block]{display:block!important}"></style></noscript>
+  </main>
+  <footer class="nerds-source" data-component="source-footer">Fonte: TSE, dados finais · <a href={href('sobre-os-dados/')}>Sobre os dados ›</a></footer>
+  <script>
+    import '@/scripts/nerds-state'
+  </script>
+</Base>

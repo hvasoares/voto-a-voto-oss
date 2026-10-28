@@ -32,9 +32,9 @@ test.describe('Região outlines (1440 px)', () => {
     expect(Object.keys(ufD)).toHaveLength(27)
     const regions = await page.locator('[data-region-map] a').evaluateAll((els) => els.map((e) => e.querySelector('path')!.getAttribute('d')!))
     let rest = regions.join('')
-    for (const d of Object.values(ufD)) {
-      expect(rest.split(d!).length - 1, 'each UF path appears exactly once').toBe(1)
-      rest = rest.replace(d!, '')
+    for (const d of Object.values(ufD) as string[]) {
+      expect(rest.split(d).length - 1, 'each UF path appears exactly once').toBe(1)
+      rest = rest.replace(d, '')
     }
     expect(rest).toBe('')
   })

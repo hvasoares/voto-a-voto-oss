@@ -1,0 +1,10 @@
+---
+import NerdsPage from '@/components/nerds/NerdsPage.astro'
+import { placesWithShards } from '@/lib/nerds/shards'
+
+export function getStaticPaths() {
+  return placesWithShards().regioes.map((regiao) => ({ params: { regiao } }))
+}
+const { regiao } = Astro.params
+---
+<NerdsPage level="regiao" id={regiao} />
