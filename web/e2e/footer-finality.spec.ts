@@ -35,6 +35,13 @@ for (const [w, h] of [[390, 844], [1440, 900]] as const) {
       }
     })
 
+    test('the footer stays on two lines (the chip does not push a third one, with or without the donation link)', async ({ page }) => {
+      for (const [name, url] of Object.entries(PAGES)) {
+        await page.goto(url)
+        expect(await line(page).evaluate((el) => el.getBoundingClientRect().height), name).toBeLessThan(2 * 44 + 24)
+      }
+    })
+
     test('the footer line keeps its 44 px links, fits the width and does not scroll sideways', async ({ page }) => {
       for (const [name, url] of Object.entries(PAGES)) {
         await page.goto(url)
