@@ -72,7 +72,7 @@ test.describe('cidades que viraram page', () => {
     await expect(rows.first()).toContainText('Cidade Exemplo D/RJ')
     await expect(rows.first()).toContainText('Margem -0,6 pp → +5,8 pp · 56.493 votos válidos')
     await expect(rows.last()).toContainText('Boa Esperança do Norte/MT')
-    await expect(rows.first().locator('a')).toHaveAttribute('href', base + 'rj/cidade-exemplo-d/')
+    await expect(rows.first().locator('a').first()).toHaveAttribute('href', base + 'rj/cidade-exemplo-d/')
     await expect(page.locator('[data-notice]')).toContainText('Compare por pontos percentuais, não por votos absolutos')
     await expect(page.locator('footer[data-component="source-footer"]')).toHaveText('Fonte: TSE, dados finais · Sobre os dados ›')
   })
@@ -197,7 +197,7 @@ test.describe('comparecimento page', () => {
     await expect(high.first()).toContainText('78,2% · 53.040 de 67.868 eleitores aptos')
     await expect(low.first()).toContainText('Cidade Exemplo E/RJ')
     await expect(low.first()).toContainText('70,5% · 67.175 de 95.294 eleitores aptos')
-    await expect(low.first().locator('a')).toHaveAttribute('href', base + 'rj/cidade-exemplo-e/')
+    await expect(low.first().locator('a').first()).toHaveAttribute('href', base + 'rj/cidade-exemplo-e/')
     await expect(page.locator('[data-notice]')).toContainText('Cada taxa com o seu volume:')
   })
 
