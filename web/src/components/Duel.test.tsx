@@ -222,3 +222,41 @@ describe('Cara a cara: sharing', () => {
     Reflect.deleteProperty(navigator, 'canShare')
   })
 })
+
+describe('E a sua cidade? (#39): the reply', () => {
+  it('opens with the sender\'s city in A, the search of B in focus, and counts the start once', async () => {
+    const root = open('?nivel=cidade&a=rj/cidade-exemplo&resposta=1')
+    await vi.waitFor(() => expect(duelEvents()).toEqual([['duel_reply_started', undefined]]))
+    expect(screen.getByText('Cidade Exemplo já está preenchida. Escolha a sua.')).toBeTruthy()
+    expect((screen.getByRole('combobox', { name: 'Cidade A' }) as HTMLInputElement).value).toBe('Cidade Exemplo · RJ')
+    expect(document.activeElement).toBe(screen.getByRole('combobox', { name: 'Cidade B' }))
+    expect(screen.getByRole('button', { name: 'E a sua cidade?' })).toBeTruthy()
+    expect(screen.getByText(/Abre o cara a cara com Cidade Exemplo já preenchida/)).toBeTruthy()
+    // the sender's figures are there, the second column is "—"
+    expect(rowText(root, 'comparecimento', 'b')).toContain('—')
+    expect(rowText(root, 'comparecimento', 'a')).toMatch(/^\d+%/)
+  })
+  it('choosing the second city completes it: the card is there, the address is the plain card (no reply flag), and the share can go back', async () => {
+    const root = open('?nivel=cidade&a=rj/cidade-exemplo&resposta=1')
+    await vi.waitFor(() => expect(duelEvents()).toHaveLength(1))
+    const user = userEvent.setup()
+    await user.type(screen.getByRole('combobox', { name: 'Cidade B' }), 'exemplo paulista')
+    await user.click(await screen.findByText('Cidade Exemplo Paulista', { selector: '[data-place-option] span' }))
+    await ready(root)
+    expect(location.search).toBe('?nivel=cidade&a=rj/cidade-exemplo&b=sp/cidade-exemplo-paulista')
+    expect(duelEvents()).toEqual([['duel_reply_started', undefined], ['duel_pair_chosen', { level: 'cidade' }], ['duel_reply_completed', undefined]])
+    expect(root.querySelector('[data-share-actions]')).toBeTruthy()
+    expect(screen.getByText('Pronto: agora você pode compartilhar o cartão de volta.')).toBeTruthy()
+  })
+  it('a plain card has no reply started; its "E a sua cidade?" link points at the reply address with the first city', async () => {
+    const root = open('?nivel=cidade&a=rj/cidade-exemplo&b=sp/cidade-exemplo-paulista')
+    await ready(root)
+    expect(duelEvents()).toEqual([])
+    expect(root.querySelector('[data-duel-reply]')!.getAttribute('href')).toBe('/cara-a-cara/?nivel=cidade&a=rj/cidade-exemplo&resposta=1')
+  })
+  it('the reply button is only for cities: a state card has none', async () => {
+    const root = open('?nivel=estado&a=rj&b=sp')
+    await ready(root)
+    expect(root.querySelector('[data-duel-reply]')).toBeNull()
+  })
+})

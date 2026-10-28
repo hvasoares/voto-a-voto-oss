@@ -186,3 +186,40 @@ test('without JavaScript it says what it needs', async ({ browser }) => {
   await expect(page.locator('[data-nojs]')).toContainText('precisa de JavaScript')
   await ctx.close()
 })
+
+test.describe('E a sua cidade? (#39)', () => {
+  test('from a shared head-to-head the button opens it with the sender\'s city in A and the search of B in focus; the reply shares back', async ({ page }) => {
+    await open(page, CITIES, 'files')
+    await ready(page)
+    await page.getByRole('link', { name: 'E a sua cidade?' }).click()
+    await expect.poll(() => new URL(page.url()).search).toBe('?nivel=cidade&a=rj/cidade-exemplo&resposta=1')
+    await expect(page.getByText('Cidade Exemplo já está preenchida. Escolha a sua.')).toBeVisible()
+    await expect(page.getByRole('combobox', { name: 'Cidade A' })).toHaveValue('Cidade Exemplo · RJ')
+    await expect(page.getByRole('combobox', { name: 'Cidade B' })).toBeFocused()
+    for (const key of ['comparecimento', 'margem', 'virada', 'naoVotaram']) await expect(cell(page, key, 'b')).toContainText('—')
+    await page.keyboard.type('exemplo paulista')
+    await page.locator('[data-place-option]', { hasText: 'Cidade Exemplo Paulista' }).click()
+    await ready(page)
+    expect(new URL(page.url()).search).toBe(CITIES)
+    await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
+    await page.getByRole('button', { name: 'Compartilhar o cara a cara' }).click()
+    await expect.poll(() => page.evaluate(() => (window as unknown as { __shares: unknown[] }).__shares.length)).toBe(1)
+    const [s] = await page.evaluate(() => (window as unknown as { __shares: { text: string }[] }).__shares)
+    expect(s!.text).toContain(`${base}cara-a-cara/${CITIES}`)
+  })
+
+  test('Meu Brasil has the button too, with its first place as the sender\'s city', async ({ page }) => {
+    await page.goto(`${base}meu-brasil/?mora=rj/cidade-exemplo&vota=sp/cidade-exemplo-paulista`)
+    await page.getByRole('link', { name: 'E a sua cidade?' }).click()
+    await expect.poll(() => new URL(page.url()).search).toBe('?nivel=cidade&a=rj/cidade-exemplo&resposta=1')
+    await expect(page.getByRole('combobox', { name: 'Cidade B' })).toBeFocused()
+  })
+
+  test('the button is not on the state or region cards, nor on an empty Meu Brasil', async ({ page }) => {
+    await open(page, STATES)
+    await ready(page)
+    await expect(page.getByRole('link', { name: 'E a sua cidade?' })).toHaveCount(0)
+    await page.goto(`${base}meu-brasil/`)
+    await expect(page.getByRole('link', { name: 'E a sua cidade?' })).toHaveCount(0)
+  })
+})

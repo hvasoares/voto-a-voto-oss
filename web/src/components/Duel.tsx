@@ -248,7 +248,7 @@ export default function Duel({ base, origin, fixture, editionDate, data }: DuelP
     return (
       <div data-duel-field={side}>
         {level === 'cidade' ? (
-          <PlacePicker base={base} inside label={label} value={pickedOf(code, place)} onPick={(p) => pick(side, `${p.uf}/${p.slug}`)} onClear={() => pick(side, undefined)} placeholder={placeholder} />
+          <PlacePicker base={base} inside label={label} value={pickedOf(code, place)} onPick={(p) => pick(side, `${p.uf}/${p.slug}`)} placeholder={placeholder} />
         ) : (
           <OptionField
             label={label}

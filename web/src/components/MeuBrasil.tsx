@@ -8,6 +8,8 @@ import { placesQuery, ROLES, type PlaceCard, type Role } from '@/lib/meu-brasil'
 import { meuBrasilContent } from '@/lib/meu-brasil-content'
 import { DEFAULT_VOICE, message, type MessageKey } from '@/lib/sentences/catalog'
 import { readRegister } from '@/lib/sentences/register-store'
+import { duelSay } from '@/lib/sentences/duel'
+import { withBase } from '@/paths'
 
 /**
  * Meu Brasil (#27): up to three places (where the visitor lives, votes and was born), picked with the same city field as the
@@ -121,6 +123,12 @@ export default function MeuBrasil({ base, origin, fixture, edition }: MeuBrasilP
           compact
           onShared={() => getAnalytics().event('meu_brasil_shared', { places: cards.length })}
         />
+        </div>
+      )}
+      {content && (
+        <div className="lg:mx-auto lg:max-w-[320px]">
+          {/* #39: the reply. Opens the head-to-head with the first place as the sender's city and the search of the second in focus. */}
+          <a className="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-body font-bold text-foreground" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={`${withBase(base, '/cara-a-cara/')}?nivel=cidade&a=${cards[0]!.ref.uf}/${cards[0]!.ref.slug}&resposta=1`} data-duel-reply>{duelSay({}, 'duel.reply')}</a>
         </div>
       )}
       <p className="mt-2 text-center text-[11px] leading-[14px] text-muted-foreground" data-note>{say('mb.addressNote')}</p>
