@@ -9,8 +9,8 @@ const attrs = Object.fromEntries(Object.entries(data).map(([k, v]) => [`data-${k
 ---
 <a class="flex min-h-14 items-center border-t border-border pb-[11px] pt-2 text-foreground lg:min-h-[72px] lg:py-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary" href={href} {...attrs}>
   <span class="flex min-w-0 flex-1 flex-col gap-1">
-    <strong class="text-step-2 font-bold lg:text-[19px] lg:leading-[22px]">{title}</strong>
-    <span class="text-step-1 text-muted-foreground lg:text-[14px] lg:leading-[16px]">{sub}</span>
+    <strong class="text-step-2 font-bold lg:text-step-3">{title}</strong>
+    <span class="text-step-1 text-muted-foreground">{sub}</span>
   </span>
   <svg class="mr-px mt-[7px] flex-none text-primary" viewBox="0 0 6 10" width="5" height="8.5" aria-hidden="true" focusable="false"><path d="M0.7 0.5 4 4.6 0.7 8.7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 </a>

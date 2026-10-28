@@ -4,7 +4,7 @@
  * src/styles/global.css only declares which Tailwind utilities read those variables (`@theme inline`).
  * Change a colour in tokens.ts and every shadcn component follows.
  */
-import { colors, fonts, layout, radius, type } from '@/shared/tokens'
+import { colors, fonts, layout, radius } from '@/shared/tokens'
 
 const DIV_COLOR_PREFIX = 'div-' as const
 
@@ -40,7 +40,6 @@ export function shadcnVariables(): Record<string, string> {
     '--gutter': `${layout.gutter}px`,
     '--min-tap': `${layout.minTap}px`,
     ...Object.fromEntries(Object.entries(colors).map(([k, v]) => [`--sketch-color-${k}`, v])),
-    ...Object.fromEntries(Object.entries(type).map(([k, v]) => [`--sketch-text-${k}`, `${v}px`])),
     // Diverging scale swatches (state map, ticket #11): zero-centred, neg = Flavio side, pos = Lula side.
     ...Object.fromEntries(
       Object.entries(colors)

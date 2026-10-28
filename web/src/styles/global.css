@@ -4,6 +4,7 @@
  * its animate-in classes but is never mounted; reduced motion is handled below). Bring the import
  * back together with the first component that actually animates. */
 @import "shadcn/tailwind.css";
+@import "./scale.css";
 @import "./screens.css";
 
 /* Values of every variable below come from src/theme.ts (Sketch tokens); this file only wires them to Tailwind utilities. */
@@ -34,12 +35,6 @@
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: var(--radius);
-  --text-title: var(--sketch-text-title);
-  --text-section: var(--sketch-text-section);
-  --text-lead: var(--sketch-text-lead);
-  --text-body: var(--sketch-text-body);
-  --text-small: var(--sketch-text-small);
-  --text-tiny: var(--sketch-text-tiny);
   /* The type scale (#86): text-step-1..4 set the size and its line height; weights are Tailwind's font-normal (400) and font-bold (700). */
   --text-step-1: var(--step-1);
   --text-step-1--line-height: var(--lh-1);
@@ -54,7 +49,7 @@
 @layer base {
   * { @apply border-border outline-ring/50; }
   html { -webkit-text-size-adjust: 100%; }
-  body { @apply bg-background text-foreground font-sans; font-size: var(--sketch-text-body); line-height: 1.35; margin: 0; }
+  body { @apply bg-background text-foreground font-sans; font-size: var(--step-2); line-height: var(--lh-2); margin: 0; }
   a { color: var(--primary); text-decoration: none; }
   /* Reduced motion (issue #19): the islands' transitions and any animation stop on
    * prefers-reduced-motion; the components themselves carry motion-safe: on their own transitions. */

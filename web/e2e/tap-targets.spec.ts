@@ -120,7 +120,7 @@ test.describe('tap targets (390x844)', () => {
     await page.goto(`${base}rj/`)
     await waitReady(page)
     await page.locator('[data-consent-continue]').click()
-    // this ticket's own area: the search box and the island (toggle + rows); the page's header, "ver cálculo" and footer lines belong to other tickets
+    // this ticket's own area: the search box and the island (toggle + rows); the page's header, "De onde vem este número?" and footer lines belong to other tickets
     const scope = '[data-state-search], [data-map-area], .state-links'
     const found = await hitAreas(page, scope)
     expect(found.filter((t) => /Lista|Mapa|Cidade Exemplo|Busque/.test(t.what)).length).toBeGreaterThanOrEqual(8)
@@ -216,3 +216,24 @@ async function rowEdge(page: Page): Promise<[number, number]> {
     return [row.left + row.width / 2, (row.top + drawn.top) / 2 + 0.5] as [number, number]
   })
 }
+
+/* #87: the "Sobre os dados ›" link of EVERY page footer is a 44 px target (one shared rule in screens.css, not 30 edits). The pages whose
+   footer link is the keyboard-only `.source-footer__about` (City card, its three-cycle page, the fact pages) and the share sheets (the page behind
+   is inert) are not here: they carry no visible footer link. */
+const FOOTER_PAGES = [
+  'rj/', 'rj/resumo/', 'rj/historia/', 'mapa/', 'mapa/rj/', 'mapa/virada/', 'brasil/', 'relatorios/', 'relatorios/comparecimento/', 'relatorios/maiores-viradas/',
+  'relatorios/cidades-que-viraram/', 'relatorios/disputas-mais-apertadas/', 'relatorios/votos-ganhos-e-perdidos/', 'relatorios/como-cada-grupo-votou/',
+  'comparar/2022/', 'tres-ciclos/rj/', 'cara-a-cara/', 'meu-brasil/', 'meu-brasil/historia/', 'meu-brasil/adesivo/', 'widget/', 'gerador/', 'abrir-cartao/',
+  'compartilhar/', 'fale-sem-errar/', 'adivinhe/', 'overlay/', 'dados-para-nerds/',
+]
+test.describe('tap targets: the footer link on every page (390x844)', () => {
+  for (const path of FOOTER_PAGES) {
+    test(`${path}: "Sobre os dados" in the footer is 44 px high`, async ({ page }) => {
+      await page.goto(`${base}${path}`)
+      const link = page.locator('footer a[href$="sobre-os-dados/"]:not(.source-footer__about)').first()
+      await expect(link).toBeAttached()
+      const box = await link.boundingBox()
+      expect(box!.height).toBeGreaterThanOrEqual(MIN)
+    })
+  }
+})

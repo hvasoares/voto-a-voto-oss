@@ -43,15 +43,15 @@ const NOTE = 'O link vai no texto da mensagem; a imagem leva só o endereço cur
 <Base title={`Compartilhar · ${cityName}`}>
   <main class="min-w-0 flex-1">
     <div data-share-backdrop aria-hidden="true" inert class="pointer-events-none select-none px-5 pt-4 opacity-35" data-ticket="50 to replace">
-      <p class="font-serif text-[20px] font-bold leading-[25px]">Voto a Voto <span class="text-small font-normal text-muted-foreground">Presidente {view.ano}</span></p>
-      {fixture && <p class="mt-2 py-1 text-center text-small font-bold tracking-wide" style="background: var(--sketch-color-flag); color: var(--sketch-color-ink)">EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS</p>}
-      <p class="mt-3 text-small text-muted-foreground">‹ Início</p>
-      <p class="mt-2 font-serif text-title leading-[30px]">{cityName}</p>
-      <p class="mt-0.5 text-small text-muted-foreground" data-subtitle>{sub} · UF</p>
-      <div class="mt-3 flex overflow-hidden rounded-md border border-border text-center text-body" data-cycles>
+      <p class="font-serif text-step-3 font-bold">Voto a Voto <span class="text-step-1 font-normal text-muted-foreground">Presidente {view.ano}</span></p>
+      {fixture && <p class="mt-2 py-1 text-center text-step-1 font-bold tracking-wide" style="background: var(--sketch-color-flag); color: var(--sketch-color-ink)">EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS</p>}
+      <p class="mt-3 text-step-1 text-muted-foreground">‹ Início</p>
+      <p class="mt-2 font-serif text-step-4">{cityName}</p>
+      <p class="mt-0.5 text-step-1 text-muted-foreground" data-subtitle>{sub} · UF</p>
+      <div class="mt-3 flex overflow-hidden rounded-md border border-border text-center text-step-2" data-cycles>
         {CYCLES.map((c, i) => <span class:list={['min-h-11 flex-1 pt-3', i < 2 && 'border-r border-border']}>{c}</span>)}
       </div>
-      <div class="mt-2 flex overflow-hidden rounded-md border border-border text-center text-body">
+      <div class="mt-2 flex overflow-hidden rounded-md border border-border text-center text-step-2">
         <span class="min-h-11 flex-1 bg-secondary pt-3 font-bold">1º turno</span>
         <span class="min-h-11 flex-1 pt-3">2º turno</span>
       </div>
@@ -68,29 +68,29 @@ const NOTE = 'O link vai no texto da mensagem; a imagem leva só o endereço cur
     >
       <span class="mx-auto block h-1.5 w-16 rounded-full bg-muted md:hidden" aria-hidden="true"></span>
       <div class="flex items-baseline justify-between">
-        <h1 class="font-serif text-title font-normal leading-[30px]">Compartilhar resultado</h1>
-        <a class="min-h-11 px-1 pt-1 text-body font-bold" href={closeHref} data-close>Fechar</a>
+        <h1 class="font-serif text-step-4 font-normal">Compartilhar resultado</h1>
+        <a class="min-h-11 px-1 pt-1 text-step-2 font-bold" href={closeHref} data-close>Fechar</a>
       </div>
       {content ? (
         <div class="mx-auto mt-2 flex-none md:max-w-[240px] [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" data-share-picture set:html={content.svg} />
       ) : (
-        <p class="mt-4 text-body" data-nodata>{message(DEFAULT_VOICE, 'noData')}</p>
+        <p class="mt-4 text-step-2" data-nodata>{message(DEFAULT_VOICE, 'noData')}</p>
       )}
-      {content && <p class="mt-3 text-small leading-[17px] text-muted-foreground" data-note>{NOTE}</p>}
-      {content && <noscript><p class="mt-1 text-small leading-[17px]" data-nojs>Compartilhar e baixar a imagem precisam de JavaScript; o texto abaixo pode ser copiado e enviado com o endereço.</p></noscript>}
+      {content && <p class="mt-3 text-step-1 text-muted-foreground" data-note>{NOTE}</p>}
+      {content && <noscript><p class="mt-1 text-step-1" data-nojs>Compartilhar e baixar a imagem precisam de JavaScript; o texto abaixo pode ser copiado e enviado com o endereço.</p></noscript>}
       {content && <ShareActions client:idle text={content.text} svg={content.svg} filename={content.filename} link={content.url} />}
       {/* The demo's Mostrar QR goes to the demo screen /qr/; the real route links its own /:uf/:slug/qr/. */}
       {content && (
-        <a class="mt-2 flex min-h-11 w-full items-center justify-center rounded-md border border-border bg-background text-body font-bold text-foreground" href={href('/qr/')} data-qr-link>
+        <a class="mt-2 flex min-h-11 w-full items-center justify-center rounded-md border border-border bg-background text-step-2 font-bold text-foreground" href={href('/qr/')} data-qr-link>
           Mostrar QR
         </a>
       )}
       {content && (
-        <a class="mt-1 flex min-h-11 w-full items-center justify-center text-body font-bold text-primary" href={href('/gerador/?cidade=rj/cidade-exemplo')} data-generator-link>
+        <a class="mt-1 flex min-h-11 w-full items-center justify-center text-step-2 font-bold text-primary" href={href('/gerador/?cidade=rj/cidade-exemplo')} data-generator-link>
           Criar um cartão com uma medida ›
         </a>
       )}
-      <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+      <footer class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary" data-component="source-footer">
         {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
       </footer>
     </section>

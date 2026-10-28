@@ -93,11 +93,11 @@ export default function ShareSheet({ uf, slug, view, initial, origin, base, fixt
           dangerouslySetInnerHTML={{ __html: pictureSvg(shown, register) }}
         />
       ) : (
-        <p className="mt-4 text-body" data-nodata>
+        <p className="mt-4 text-step-2" data-nodata>
           {message({ locale: DEFAULT_LOCALE, register }, 'noData')}
         </p>
       )}
-      {shown && <p className="mt-3 text-small leading-[17px] text-muted-foreground" data-note>{NOTE}</p>}
+      {shown && <p className="mt-3 text-step-1 text-muted-foreground" data-note>{NOTE}</p>}
       {shown && <ShareActions text={shown.variants[register].text} svg={pictureSvg(shown, register)} filename={shown.filename} link={shown.url} />}
     </>
   )

@@ -27,9 +27,9 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
   <main class="mx-auto w-full min-w-0 max-w-[720px] flex-1 px-5 pt-16 lg:grid lg:max-w-[1240px] lg:grid-cols-[560px_1fr] lg:gap-x-20 lg:gap-y-0 lg:pt-16" id="main">
     <div class="lg:col-start-1 lg:row-start-1">
     <h1 class="font-serif text-step-4 font-normal wrap-anywhere lg:sr-only">Voto a Voto</h1>
-    <p class="font-serif text-step-2 lg:text-[44px] lg:leading-[60px]">Eleição presidencial 2026, cidade por cidade.</p>
-    <p class="mt-0.5 text-step-1 text-muted-foreground lg:mt-2 lg:text-lead lg:leading-[20px]">Compare com 2018 e 2022.</p>
-    <p class="mt-0.5 text-step-1 text-muted-foreground lg:text-lead lg:leading-[20px]" data-finality>Final, não ao vivo.</p>
+    <p class="font-serif text-step-2 lg:text-step-4">Eleição presidencial 2026, cidade por cidade.</p>
+    <p class="mt-0.5 text-step-1 text-muted-foreground lg:mt-2 lg:text-step-2">Compare com 2018 e 2022.</p>
+    <p class="mt-0.5 text-step-1 text-muted-foreground lg:text-step-2" data-finality>Final, não ao vivo.</p>
     <div id="busca" class="scroll-mt-4 lg:mt-4 lg:[&_[data-slot=input-group]]:h-14!"><CitySearch client:interaction base={base} /></div>
     <p class="mt-1.5 text-step-1" data-island-failed hidden>A busca não está disponível agora. Escolha um estado abaixo.</p>
     <noscript><p class="mt-1.5 text-step-1">A busca precisa de JavaScript. Escolha um estado abaixo.</p></noscript>
@@ -50,7 +50,7 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
     </div>
     </div>
     <div class="lg:col-start-2 lg:row-span-2 lg:row-start-1">
-    <p class="mt-1.5 text-step-1 lg:mt-[2px] lg:text-body"><span class="lg:hidden">Ou escolha um estado. Toque para ver os municípios.</span><span class="hidden lg:inline">Ou escolha um estado. Clique para ver os municípios.</span></p>
+    <p class="mt-1.5 text-step-1 lg:mt-[2px] lg:text-step-2"><span class="lg:hidden">Ou escolha um estado. Toque para ver os municípios.</span><span class="hidden lg:inline">Ou escolha um estado. Clique para ver os municípios.</span></p>
     <nav class="mt-1 grid justify-center gap-px [grid-auto-rows:44px] [grid-template-columns:repeat(7,44px)] lg:hidden" aria-label="Estados" data-uf-grid>
       {UF_TILES.map((t) =>
         available.has(t.uf) ? (
@@ -66,15 +66,15 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
     </div>
     <div class="lg:col-start-1 lg:row-start-2">
     <section class="mt-2 lg:mt-12" aria-labelledby="tarefas" data-tasks>
-    <h2 id="tarefas" class="font-serif text-step-3! font-normal lg:text-[22px]! lg:leading-[30px]!">O que você quer fazer?</h2>
+    <h2 id="tarefas" class="font-serif text-step-3! font-normal!!">O que você quer fazer?</h2>
     {/* The entries in the order a visit unfolds (data-task is the stable hook); "comparar" (id="comparar") is the chooser (#101). #102 inserts
         "Usar os dados" (done, after "entender") and #103 anything else after it. A link to a screen that does not exist yet is not shown. */}
     <ul class="mt-[5px] list-none p-0 lg:mt-3">
       <li data-task="ver-cidade"><TaskRow href="#busca" title="Ver minha cidade" sub="Busque pelo nome ou use a localização" /></li>
       <li data-task="compartilhar"><TaskRow href={href('/') + destinationLink('compartilhar')} title="Compartilhar um resultado" sub="Escolha a cidade e toque em Compartilhar" /></li>
       <li data-task="comparar" id="comparar" class="border-t border-border pt-3 scroll-mt-4">
-        <strong class="block text-step-2 font-bold lg:text-[19px] lg:leading-[22px]" id="comparar-titulo">Comparar</strong>
-        <span class="block text-step-1 text-muted-foreground lg:text-[14px] lg:leading-[16px]">O que você quer comparar?</span>
+        <strong class="block text-step-2 font-bold lg:text-step-3" id="comparar-titulo">Comparar</strong>
+        <span class="block text-step-1 text-muted-foreground">O que você quer comparar?</span>
         <ul class="list-none p-0" aria-labelledby="comparar-titulo">
           {/* A needs-a-city option links to the search with its destination (plain link, no script); home-place.ts points it straight at the city when one is remembered. */}
           {COMPARAR.map((o) => (
@@ -88,7 +88,7 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
       </li>
       <li data-task="conferir"><TaskRow href={href('/sobre-os-dados/#confira-voce-mesmo')} title="Conferir um número" sub="De onde vem cada número e como conferir" /></li>
       <li data-task="entender" class="border-t border-border pt-3">
-        <strong class="block text-step-2 font-bold lg:text-[19px] lg:leading-[22px]" id="entender">Entender o país e os estados</strong>
+        <strong class="block text-step-2 font-bold lg:text-step-3" id="entender">Entender o país e os estados</strong>
         <ul class="list-none p-0" aria-labelledby="entender">
           {EXPLORE.filter((e) => e.task === 'entender').map((e) => <li><TaskRow href={href(e.to.replace(':uf', firstUf))} title={e.title} sub={e.sub} /></li>)}
         </ul>

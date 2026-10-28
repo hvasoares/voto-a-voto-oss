@@ -48,7 +48,7 @@ const MESSAGES = {
   copyFailed: 'Não foi possível copiar. Selecione o texto e copie.',
 } as const
 
-const BTN = 'min-h-11 w-full rounded-md text-body font-bold'
+const BTN = 'min-h-11 w-full rounded-md text-step-2 font-bold'
 const BTN_PRIMARY = `${BTN} text-primary-foreground`
 const BTN_OUTLINE = `${BTN} border border-border bg-background text-foreground`
 
@@ -150,7 +150,7 @@ export default function ShareActions({ text, svg, filename, link, primaryLabel =
     <>
       <div className="mt-3 grid gap-2" data-share-actions data-png={pngState}>
         {!canShare && (
-          <p className="text-small leading-[17px] text-muted-foreground" data-no-share>
+          <p className="text-step-1 text-muted-foreground" data-no-share>
             Este navegador não oferece o compartilhamento do sistema. Copie o link ou baixe a imagem.
           </p>
         )}
@@ -163,17 +163,17 @@ export default function ShareActions({ text, svg, filename, link, primaryLabel =
         <Button variant={downloadFirst ? undefined : 'outline'} className={downloadFirst ? `${BTN_PRIMARY} order-first` : BTN_OUTLINE} {...show(mounted && !(compact && canShare && !downloadFirst))} onClick={onDownload} data-act="download">
           {downloadLabel}
         </Button>
-        <p className="min-h-6 text-small leading-[17px] text-muted-foreground" role="status" aria-live="polite" data-status>
+        <p className="min-h-6 text-step-1 text-muted-foreground" role="status" aria-live="polite" data-status>
           {status}
         </p>
       </div>
       {/* Without a system share sheet the desktop dialog is just the three actions of the frame; a narrow screen keeps the message text. */}
       <div className={`mt-1 border-t border-border pt-2 ${canShare ? '' : 'lg:hidden'}`} hidden={compact || textHidden} data-share-text data-text={text}>
-        <h2 className="text-small font-bold leading-[17px]">Texto da mensagem</h2>
-        <p className="mt-1 text-body leading-[18px] wrap-anywhere" data-text-body>
+        <h2 className="text-step-1 font-bold">Texto da mensagem</h2>
+        <p className="mt-1 text-step-2 wrap-anywhere" data-text-body>
           {text}
         </p>
-        <Button variant="outline" className={`${BTN_OUTLINE} mt-2 min-h-11 text-small`} {...show(mounted && !!navigator.clipboard)} onClick={onCopy} data-act="copy">
+        <Button variant="outline" className={`${BTN_OUTLINE} mt-2 min-h-11 text-step-1`} {...show(mounted && !!navigator.clipboard)} onClick={onCopy} data-act="copy">
           Copiar texto
         </Button>
       </div>
