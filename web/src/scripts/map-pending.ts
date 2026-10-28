@@ -26,6 +26,15 @@ document.addEventListener(
   'click',
   (e) => {
     if (e.defaultPrevented) return
+    // The Lista | Mapa toggle of a state's map: a tap that lands while React is hydrating (its root already listens, the tree is not
+    // attached yet) is swallowed, so it is kept here and the island applies it right after hydration (data-pending-vista).
+    const toggle = (e.target as Element | null)?.closest('a[href^="?"]')
+    const host = toggle?.closest('astro-island') as HTMLElement | null
+    if (toggle && host?.hasAttribute('ssr')) {
+      e.preventDefault()
+      host.dataset.pendingVista = toggle.getAttribute('href')!.includes('vista=mapa') ? 'mapa' : 'lista'
+      return
+    }
     const island = islandOf(e)
     if (!island) return
     e.preventDefault()

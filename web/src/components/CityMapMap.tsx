@@ -199,9 +199,11 @@ export default function CityMapMap({ data, base, geoUrl, ufNome, semContorno }: 
   useEffect(() => {
     const host = sectionRef.current?.closest('astro-island') as HTMLElement | null
     const pending = host?.dataset.pendingCd
+    const pendingVista = host?.dataset.pendingVista
     delete host?.dataset.pendingCd
+    delete host?.dataset.pendingVista
     const deepLink = new URLSearchParams(window.location.search).get('vista') === 'mapa'
-    if (deepLink) setVista('mapa')
+    if (deepLink || pendingVista === 'mapa') setVista('mapa')
     if (pending) setSelected(pending)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
