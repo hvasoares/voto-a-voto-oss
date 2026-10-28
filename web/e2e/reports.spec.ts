@@ -14,19 +14,19 @@ import { allowedOrigins, base, collectRequests, violations } from './helpers'
 const STUB_TITLES: string[] = []
 
 test.describe('reports hub page', () => {
-  test('carries the seven rows of the frame with their computed headlines', async ({ page }) => {
+  test('carries the rows of the frame (and Cidades fora da curva, #34) with their computed headlines', async ({ page }) => {
     await page.goto(base + 'relatorios/')
     await expect(page.locator('#main h1')).toHaveText('Relatórios')
     await expect(page.locator('#main > p').first()).toHaveText('2º turno de 2026 e comparação com 2022')
     const rows = page.locator('nav[aria-label="Relatórios"] > ul > li')
-    await expect(rows).toHaveCount(7)
+    await expect(rows).toHaveCount(8)
     await expect(page.getByRole('link', { name: /Cidades que viraram no 2º turno/ })).toHaveText('Cidades que viraram no 2º turnoCandidato A virou 2 cidades; Candidato B virou 1')
     for (const title of STUB_TITLES) await expect(rows.filter({ hasText: title }), title).toHaveCount(0)
     await expect(page.locator('[data-report="cidades-que-viraram"]')).toHaveAttribute('href', base + 'relatorios/cidades-que-viraram/')
     await expect(page.locator('[data-report="comparar"]')).toHaveAttribute('href', base + 'comparar/2022/')
   })
 
-  test('links every one of the seven rows since #14 landed', async ({ page }) => {
+  test('links every row of the hub', async ({ page }) => {
     await page.goto(base + 'relatorios/')
     await expect(page.getByText('Em breve')).toHaveCount(0)
     const hrefs = await page
@@ -38,6 +38,7 @@ test.describe('reports hub page', () => {
       `votos-ganhos-e-perdidos${base}relatorios/votos-ganhos-e-perdidos/`,
       `disputas-mais-apertadas${base}relatorios/disputas-mais-apertadas/`,
       `comparecimento${base}relatorios/comparecimento/`,
+      `cidades-fora-da-curva${base}relatorios/cidades-fora-da-curva/`,
       `comparar${base}comparar/2022/`,
       `como-cada-grupo-votou${base}relatorios/como-cada-grupo-votou/`,
     ])

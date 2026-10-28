@@ -390,6 +390,48 @@ export const KEYS = [
   'stayhome.card.legend',
   'stayhome.failed',
   'stayhome.nojs',
+  /** The fact records of Cidades fora da curva (#34): the sentences live in `catalog-facts.ts`. */
+  'fact.outlier',
+  'fact.count.outliers',
+  'fact.out.where.all',
+  'fact.out.where.uf',
+  'fact.f.outlier',
+  'fact.f.outCount',
+  'fact.w.outTurnout',
+  'fact.w.outSwing',
+  'fact.in.peer',
+  'fact.in.peerValue',
+  'fact.in.peerNone',
+  'fact.method.outliers',
+  /** Cidades fora da curva (#34): the sentences live in `catalog-outliers.ts`, loaded only by that report's own modules. */
+  'outlier.screening',
+  'outlier.legend',
+  'outlier.row.turnout',
+  'outlier.row.swing',
+  'outlier.row.validos',
+  'outlier.col.rank',
+  'outlier.col.city',
+  'outlier.col.turnout',
+  'outlier.col.typical',
+  'outlier.col.gap',
+  'outlier.col.swing',
+  'outlier.col.validos',
+  'outlier.filter.label',
+  'outlier.filter.uf',
+  'outlier.filter.ufAll',
+  'outlier.filter.min',
+  'outlier.min.k',
+  'outlier.min.one',
+  'outlier.count',
+  'outlier.where.all',
+  'outlier.where.uf',
+  'outlier.empty',
+  'outlier.note',
+  'outlier.sign',
+  'outlier.method',
+  'outlier.share',
+  'outlier.share.text',
+  'outlier.calc',
 ] as const
 
 export type Key = (typeof KEYS)[number]
@@ -398,11 +440,11 @@ export const DEFAULT_LOCALE: Locale = 'pt-BR'
 export { DEFAULT_REGISTER, REGISTERS, type Register }
 
 /** Keys that read the same in both registers, so they have no plain version: the register switch's own labels and the page-head description for crawlers. */
-export const STANDARD_ONLY_KEYS = ['card.example', 'card.president', 'card.round', 'card.noElectorate', 'card.voted', 'card.notVoted', 'card.noValid', 'card.others', 'card.brand', 'card.brand.fixture', 'card.desc', 'register.label', 'register.standard', 'register.plain', 'fact.f.race', 'fact.sub.report', 'fact.back.report', 'fact.where.brasil', 'fact.where.regiao', 'fact.where.estado', 'fact.in.comparecimento', 'fact.in.regionValidos', 'fact.in.nationalValidos', 'fact.in.votosAt', 'fact.in.shareAt', 'fact.in.brancos', 'fact.in.nulos', 'fact.f.regionShare', 'fact.f.turnout', 'fact.f.partTurnout', 'fact.f.diffVotes', 'fact.f.changePp', 'fact.w.pp', 'fact.sub.brasil', 'fact.sub.compare', 'fact.sub.state', 'fact.back.brasil', 'fact.back.compare', 'fact.back.state', 'fact.method.cycles', 'seal.title', 'seal.national', 'seal.municipios', 'seal.field.aptos', 'seal.field.comparecimento', 'seal.field.validos', 'seal.note', 'fact.in.aptos', 'fact.in.validos', 'fact.in.naoVotaram', 'fact.in.votos', 'fact.in.first', 'fact.in.second', 'fact.in.part', 'fact.in.rank', 'fact.in.group', 'fact.in.cycles', 'fact.f.votaram', 'fact.f.naoVotaram', 'fact.f.candidate', 'fact.f.notVotedPart', 'fact.f.frase', 'fact.f.margin', 'fact.f.fits', 'fact.f.curio', 'fact.w.share', 'fact.w.none', 'fact.w.diff', 'fact.w.times', 'fact.w.tie', 'fact.w.curio', 'fact.title', 'fact.sub', 'fact.sub.curio', 'fact.back', 'fact.inputs', 'fact.formula', 'fact.shown', 'fact.rounding', 'fact.source', 'fact.source.tse', 'fact.source.fixture', 'fact.edition', 'fact.method', 'fact.method.margin', 'fact.method.curio', 'fact.method.peers', 'fact.others', 'fact.id', 'fact.link', 'fact.measure.frase', 'fact.measure.votaram', 'fact.measure.naoVotaram', 'fact.measure.margem', 'fact.neutral', 'fact.in.old', 'fact.w.old', 'fact.sub.old', 'fact.back.old', 'fact.measure.candidato', 'fact.measure.parte', 'fact.f.flip', 'fact.w.margin', 'fact.w.swing', 'fact.f.delta', 'fact.f.deltaTotal', 'fact.f.count', 'fact.w.count', 'fact.f.flips', 'fact.f.cohort', 'fact.w.cohort', 'fact.f.cohortTotal', 'fact.w.cohortTotal', 'fact.f.stateCount', 'fact.w.stateCount', 'fact.in.cities', 'fact.w.n', 'fact.w.sum', 'fact.in.minimum', 'fact.in.gained', 'fact.in.lost', 'fact.in.tied', 'fact.in.decided', 'fact.in.groupCities', 'fact.in.won', 'fact.in.tiesBefore', 'fact.in.noData', 'fact.in.grouped', 'fact.in.cities2026', 'fact.in.total', 'fact.sub.hub', 'fact.sub.municipios', 'fact.back.estado', 'fact.back.relatorios', 'preview.fixture', 'preview.intro', 'preview.noResult', 'preview.noElectorate', 'preview.noValidVotes', 'preview.default'] as const satisfies readonly Key[]
+export const STANDARD_ONLY_KEYS = ['card.example', 'card.president', 'card.round', 'card.noElectorate', 'card.voted', 'card.notVoted', 'card.noValid', 'card.others', 'card.brand', 'card.brand.fixture', 'card.desc', 'register.label', 'register.standard', 'register.plain', 'fact.f.race', 'fact.sub.report', 'fact.back.report', 'fact.where.brasil', 'fact.where.regiao', 'fact.where.estado', 'fact.in.comparecimento', 'fact.in.regionValidos', 'fact.in.nationalValidos', 'fact.in.votosAt', 'fact.in.shareAt', 'fact.in.brancos', 'fact.in.nulos', 'fact.f.regionShare', 'fact.f.turnout', 'fact.f.partTurnout', 'fact.f.diffVotes', 'fact.f.changePp', 'fact.w.pp', 'fact.sub.brasil', 'fact.sub.compare', 'fact.sub.state', 'fact.back.brasil', 'fact.back.compare', 'fact.back.state', 'fact.method.cycles', 'seal.title', 'seal.national', 'seal.municipios', 'seal.field.aptos', 'seal.field.comparecimento', 'seal.field.validos', 'seal.note', 'fact.in.aptos', 'fact.in.validos', 'fact.in.naoVotaram', 'fact.in.votos', 'fact.in.first', 'fact.in.second', 'fact.in.part', 'fact.in.rank', 'fact.in.group', 'fact.in.cycles', 'fact.f.votaram', 'fact.f.naoVotaram', 'fact.f.candidate', 'fact.f.notVotedPart', 'fact.f.frase', 'fact.f.margin', 'fact.f.fits', 'fact.f.curio', 'fact.w.share', 'fact.w.none', 'fact.w.diff', 'fact.w.times', 'fact.w.tie', 'fact.w.curio', 'fact.title', 'fact.sub', 'fact.sub.curio', 'fact.back', 'fact.inputs', 'fact.formula', 'fact.shown', 'fact.rounding', 'fact.source', 'fact.source.tse', 'fact.source.fixture', 'fact.edition', 'fact.method', 'fact.method.margin', 'fact.method.curio', 'fact.method.peers', 'fact.others', 'fact.id', 'fact.link', 'fact.measure.frase', 'fact.measure.votaram', 'fact.measure.naoVotaram', 'fact.measure.margem', 'fact.neutral', 'fact.in.old', 'fact.w.old', 'fact.sub.old', 'fact.back.old', 'fact.measure.candidato', 'fact.measure.parte', 'fact.f.flip', 'fact.w.margin', 'fact.w.swing', 'fact.f.delta', 'fact.f.deltaTotal', 'fact.f.count', 'fact.w.count', 'fact.f.flips', 'fact.f.cohort', 'fact.w.cohort', 'fact.f.cohortTotal', 'fact.w.cohortTotal', 'fact.f.stateCount', 'fact.w.stateCount', 'fact.in.cities', 'fact.w.n', 'fact.w.sum', 'fact.in.minimum', 'fact.in.gained', 'fact.in.lost', 'fact.in.tied', 'fact.in.decided', 'fact.in.groupCities', 'fact.in.won', 'fact.in.tiesBefore', 'fact.in.noData', 'fact.in.grouped', 'fact.in.cities2026', 'fact.in.total', 'fact.sub.hub', 'fact.sub.municipios', 'fact.back.estado', 'fact.back.relatorios', 'preview.fixture', 'preview.intro', 'preview.noResult', 'preview.noElectorate', 'preview.noValidVotes', 'preview.default', 'fact.f.outlier', 'fact.f.outCount', 'fact.w.outTurnout', 'fact.w.outSwing', 'fact.in.peer', 'fact.in.peerValue', 'fact.in.peerNone', 'fact.method.outliers'] as const satisfies readonly Key[]
 type StandardOnly = (typeof STANDARD_ONLY_KEYS)[number]
 
 /** The fact and seal sentences live in `catalog-facts.ts` (only the build and the fact pages load them; the browser's share code does not carry them). */
-type FactKey = `fact.${string}` | `seal.${string}` | `duel.${string}` | `stayhome.${string}`
+type FactKey = `fact.${string}` | `seal.${string}` | `duel.${string}` | `stayhome.${string}` | `outlier.${string}`
 const ptBR: Record<Exclude<Key, FactKey>, string> = {
   noData: 'Sem dados nesse ciclo.',
   'headline.note': 'Frase gerada dos números · também o texto alternativo',

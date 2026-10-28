@@ -30,6 +30,7 @@ export const METHOD_DOCS = {
   curio: { key: 'fact.method.curio', href: `${REPO}web/docs/curiosities.md` },
   cycles: { key: 'fact.method.cycles', href: `${REPO}web/docs/checkpoints/issue-14.md` },
   peers: { key: 'fact.method.peers', href: `${REPO}web/docs/peer-similarity.md` },
+  outliers: { key: 'fact.method.outliers', href: `${REPO}web/docs/cidades-fora-da-curva.md` },
 } as const
 
 export interface FactInput {

@@ -20,7 +20,13 @@ function countCities(n: number): string {
   return n === 1 ? formatInt(n) : `${formatInt(n)} cidades`
 }
 
-export function hubRows(reports: ComputedReports, input: MarginInput): HubRow[] {
+/** The cities the default list of Cidades fora da curva (#34) compares, and its minimum. */
+export interface OutlierHub {
+  n: number
+  min: number
+}
+
+export function hubRows(reports: ComputedReports, input: MarginInput, outliers?: OutlierHub): HubRow[] {
   const { margins, netVotes, pair } = reports
   const lula = displayName(pair.nomePrimeiro)
   const flavio = displayName(pair.nomeSegundo)
@@ -65,6 +71,16 @@ export function hubRows(reports: ComputedReports, input: MarginInput): HubRow[] 
           : `Nenhuma cidade de ${formatInt(MIN_TURNOUT_APTOS)}+ eleitores`,
       to: '/relatorios/comparecimento/',
     },
+    ...(outliers
+      ? [
+          {
+            id: 'cidades-fora-da-curva',
+            title: 'Cidades fora da curva',
+            headline: `Lista de triagem: ${formatInt(outliers.n)} cidades comparadas com cidades parecidas`,
+            to: '/relatorios/cidades-fora-da-curva/',
+          },
+        ]
+      : []),
     {
       id: 'comparar',
       title: 'Comparar com 2022 e 2018',

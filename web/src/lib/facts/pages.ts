@@ -14,12 +14,14 @@ import { loadChecks } from './checks-load'
 import { assertPublishable } from './gate'
 import { loadCityFacts } from './load'
 import { CURIOSITIES_PAGE, LATEST_CYCLE } from './model'
-import { brasilFacts, cohortFacts, compareFacts, deltaFacts, hubFacts, olderCyclesFacts, raceFacts, stateCountFacts, stateCyclesFacts, swingFacts, turnoutListFacts, type FactPage } from './other'
+import { brasilFacts, cohortFacts, compareFacts, deltaFacts, hubFacts, olderCyclesFacts, outlierFactPages, raceFacts, stateCountFacts, stateCyclesFacts, swingFacts, turnoutListFacts, type FactPage } from './other'
 import { biggestSwing, closestRaces, computeReports, flipsToFlavio, flipsToLula, MIN_BIG_SWING_VALIDOS, MIN_FLIP_VALIDOS, MIN_TURNOUT_APTOS, rankedBigSwings, rankedFlipsToLula, rankedTurnout, rankedVoteDeltas, turnoutExtremes } from '../reports/compute'
 import { loadCohortData } from '../cohorts-load'
 import { stateRows } from '../../slots/state/state-list'
 import { UF_NOME } from '../uf-names'
 import { loadReportsData } from '../reports/load'
+import { DEFAULT_MIN } from '../reports/outliers'
+import { loadOutliers } from '../reports/outliers-load'
 import { displayName } from '@/shared/city-search'
 import { CYCLES } from '@/shared/city-model'
 import { DEFAULT_LOCALE, message } from '../sentences/catalog'
@@ -96,7 +98,10 @@ export function loadFactPages(): Promise<FactPage[]> {
     }
     out.push(deltaFacts([section('primeiro'), section('segundo')], label, fixture))
     out.push(cohortFacts((await loadCohortData()).report, fixture))
-    out.push(hubFacts({ names, flips: { primeiro: flipsToLula(margins).length, segundo: flipsToFlavio(margins).length }, biggest: biggestSwing(margins), net: reports.netVotes, race: closestRaces(margins)[0], turnout: turnoutExtremes(reportsData) }, label, fixture))
+    const outliers = await loadOutliers()
+    const defaultCount = outliers.counts.find((k) => k.uf === undefined && k.min === DEFAULT_MIN)!.n
+    out.push(...outlierFactPages(outliers.listed, outliers.counts, names, label, (uf) => UF_NOME[uf] ?? uf.toUpperCase(), fixture))
+    out.push(hubFacts({ names, outliers: { n: defaultCount, min: DEFAULT_MIN }, flips: { primeiro: flipsToLula(margins).length, segundo: flipsToFlavio(margins).length }, biggest: biggestSwing(margins), net: reports.netVotes, race: closestRaces(margins)[0], turnout: turnoutExtremes(reportsData) }, label, fixture))
     for (const uf of await loadStateUfs()) {
       const state = await loadStateShard(uf)
       if (state) out.push(stateCountFacts(uf, UF_NOME[uf] ?? uf.toUpperCase(), stateRows(state.cities).length, fixture))
@@ -106,6 +111,13 @@ export function loadFactPages(): Promise<FactPage[]> {
     for (const p of out) await sealOf(p)
     return out
   })())
+}
+
+/** The records of every list of "Cidades fora da curva" (#34), from all the pages that hold them: a list links to a city's record in the page of that city's state. */
+export async function getOutlierFacts(): Promise<{ facts: FactPage['facts']; rounds: FactPage['rounds']; scope: string; page: string }> {
+  const pages = (await loadFactPages()).filter((p) => p.scope === 'relatorios/cidades-fora-da-curva')
+  if (pages.length === 0) throw new Error('no fact pages /fato/relatorios/cidades-fora-da-curva/')
+  return { facts: pages.flatMap((p) => p.facts), rounds: pages[0]!.rounds, scope: 'relatorios/cidades-fora-da-curva', page: 'cidades' }
 }
 
 /** One page of records by its scope and page key (what a page of the site links to); throws when the build has none, so a page cannot link to records that do not exist. */

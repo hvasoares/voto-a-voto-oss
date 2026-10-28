@@ -7,6 +7,7 @@
 import type { BrasilCandidate, BrasilView } from '../brasil'
 import type { CompareRow, CycleBlock } from '../compare'
 import type { CityMargin, TurnoutExtreme, VoteDeltaRow, VoteGain } from '../reports/compute'
+import type { OutlierRow } from '../reports/outliers'
 import { formatFixedPct, formatSignedInt, formatSignedPp } from '../reports/format'
 import type { CohortReport } from '../cohorts'
 import { formatInt, formatPct } from '@/shared/city-model'
@@ -343,6 +344,8 @@ export interface HubParts {
   net: { primeiro: VoteGain; segundo: VoteGain }
   race?: Parameters<typeof raceFacts>[0][number]
   turnout: { high?: TurnoutExtreme; low?: TurnoutExtreme }
+  /** Cidades fora da curva (#34): the cities the default list compares, and its minimum. */
+  outliers?: { n: number; min: number }
 }
 /** The hub of Relatórios: the figure each row's headline states, with the same builders as the reports. */
 export function hubFacts(h: HubParts, label: CityLabel, fixture: boolean): FactPage {
@@ -359,6 +362,7 @@ export function hubFacts(h: HubParts, label: CityLabel, fixture: boolean): FactP
   }
   if (h.turnout.high) facts.push(turnoutRecord(c, 'comparecimento', h.turnout.high, label))
   if (h.turnout.low) facts.push(turnoutRecord(c, 'comparecimento-baixo', h.turnout.low, label))
+  if (h.outliers) facts.push(outlierCountRecord(c, 'cidades-fora-da-curva', undefined, h.outliers.min, h.outliers.n))
   return reportPage(c, 'Relatórios', 'relatorios/', facts, R2026)
 }
 
@@ -369,4 +373,88 @@ export function stateCountFacts(uf: string, name: string, n: number, fixture: bo
     rec(c, 'municipios', std('fact.in.cities'), int(n), both('fact.state.count', { name, n: int(n) }), [{ label: std('fact.in.cities'), field: 'cities.csv · cd_municipio', value: int(n) }], std('fact.f.stateCount'), [std('fact.w.stateCount', { n: int(n), uf: uf.toUpperCase() })]),
   ]
   return { scope: c.scope, page: c.page, title: name, subtitle: std('fact.sub.municipios', { name }), back: { path: `${uf}/`, label: std('fact.back.estado') }, fixture, facts, rounds: [{ ano: 2026, turno: 2 }] }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+// Cidades fora da curva (#34): a screening list. One record per listed city (its turnout and swing against the typical of its peers, with the peers'
+// own figures so the typical can be recomputed), one per count the page states. No sentence says anything about a city beyond the numbers.
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+
+const OUTLIER_SCOPE = 'relatorios/cidades-fora-da-curva'
+const OUTLIER_ROUNDS = [{ ano: 2026, turno: 2 }, { ano: 2022, turno: 2 }]
+const pct1 = (x: number) => formatFixedPct(x)
+
+export function outlierRecord(c: Ctx, r: OutlierRow, names: Names, label: CityLabel): Fact {
+  const city = label(r.nome, r.uf)
+  const turnoutPeers = r.peers.filter((p) => p.turnout !== undefined).length
+  const swingPeers = r.peers.filter((p) => p.swing !== undefined).length
+  const votos = (name: string, ano: number, v: number): FactInput => ({ label: std('fact.in.votosAt', { name, ano }), field: 'votes.csv · votos', value: int(v) })
+  const peerValue = (p: OutlierRow['peers'][number]) =>
+    std('fact.in.peerValue', { name: label(p.nome, p.uf), turnout: p.turnout === undefined ? std('fact.in.peerNone') : pct1(p.turnout), swing: p.swing === undefined ? std('fact.in.peerNone') : formatSignedPp(p.swing) })
+  return rec(
+    c, `${r.uf}-${r.slug}`, city, `${pct1(r.turnout)} · ${formatSignedPp(r.swing)}`,
+    both('fact.outlier', { city, turnout: pct1(r.turnout), typical: pct1(r.typicalTurnout), swing: formatSignedPp(r.swing), typicalSwing: formatSignedPp(r.typicalSwing), validos: int(r.validos) }),
+    [
+      { label: std('fact.in.comparecimento'), field: 'turnout.csv · comparecimento', value: int(r.comparecimento) },
+      { label: std('fact.in.aptos'), field: 'turnout.csv · aptos', value: int(r.aptos) },
+      { label: `${std('fact.in.validos')}, 2026`, field: 'turnout.csv · validos', value: int(r.validos) },
+      votos(names.primeiro, 2026, r.votos26.primeiro),
+      votos(names.segundo, 2026, r.votos26.segundo),
+      { label: `${std('fact.in.validos')}, 2022`, field: 'turnout.csv · validos', value: int(r.validos22) },
+      votos(names.primeiro, 2022, r.votos22.primeiro),
+      votos(names.segundo, 2022, r.votos22.segundo),
+      ...r.peers.map((p, i) => ({ label: std('fact.in.peer', { n: i + 1 }), value: peerValue(p) })),
+    ],
+    std('fact.f.outlier'),
+    [
+      std('fact.w.outTurnout', { c: int(r.comparecimento), a: int(r.aptos), pct: pct1(r.turnout), n: turnoutPeers, typical: pct1(r.typicalTurnout), gap: formatSignedPp(r.turnoutGap) }),
+      std('fact.w.outSwing', {
+        a26: int(r.votos26.primeiro), b26: int(r.votos26.segundo), v26: int(r.validos), m26: formatSignedPp(r.margin26),
+        a22: int(r.votos22.primeiro), b22: int(r.votos22.segundo), v22: int(r.validos22), m22: formatSignedPp(r.margin22),
+        swing: formatSignedPp(r.swing), n: swingPeers, typical: formatSignedPp(r.typicalSwing), gap: formatSignedPp(r.swingGap),
+      }),
+    ],
+    { name: std(METHOD_DOCS.outliers.key), href: METHOD_DOCS.outliers.href },
+  )
+}
+
+/** The count a list states ("Mostrando N de M cidades"), or the hub's headline: the cities the filter compared. */
+export function outlierCountRecord(c: Ctx, anchor: string, state: { uf: string; name: string } | undefined, min: number, n: number): Fact {
+  const where = state ? std('fact.out.where.uf', { name: state.name }) : std('fact.out.where.all')
+  const plainWhere = state ? say({ locale: DEFAULT_LOCALE, register: 'plain' }, 'fact.out.where.uf', { name: state.name }) : say({ locale: DEFAULT_LOCALE, register: 'plain' }, 'fact.out.where.all')
+  return rec(
+    c, anchor, std('fact.in.cities'), int(n),
+    { standard: std('fact.count.outliers', { where, min: int(min), n: int(n) }), plain: say({ locale: DEFAULT_LOCALE, register: 'plain' }, 'fact.count.outliers', { where: plainWhere, min: int(min), n: int(n) }) },
+    [countInput(std('fact.in.cities'), n), { label: std('fact.in.minimum'), field: 'turnout.csv · validos', value: int(min) }],
+    std('fact.f.outCount'), [std('fact.w.count', { n: int(n), min: int(min) })],
+    { name: std(METHOD_DOCS.outliers.key), href: METHOD_DOCS.outliers.href },
+  )
+}
+
+export interface OutlierCount {
+  uf: string | undefined
+  min: number
+  n: number
+}
+/**
+ * The pages of records of the report: one per state (the cities of that state that any list shows) and one for the counts the lists state. A city appears
+ * once, in the page of its state, however many lists show it; the lists link to it from wherever they are.
+ */
+export function outlierFactPages(listed: readonly OutlierRow[], counts: readonly OutlierCount[], names: Names, label: CityLabel, stateName: (uf: string) => string, fixture: boolean): FactPage[] {
+  const back = { path: 'relatorios/cidades-fora-da-curva/', label: std('fact.back.report', { name: std('fact.in.cities') }) }
+  const pages: FactPage[] = []
+  const ufs = [...new Set(listed.map((r) => r.uf))].sort()
+  for (const uf of ufs) {
+    const c: Ctx = { scope: OUTLIER_SCOPE, page: uf, fixture, checks: ['municipios'] }
+    const rows = listed.filter((r) => r.uf === uf)
+    const title = `Cidades fora da curva · ${stateName(uf)}`
+    pages.push({ scope: c.scope, page: c.page, title, subtitle: std('fact.sub.report', { name: title }), back: { ...back, label: std('fact.back.report', { name: 'Cidades fora da curva' }) }, fixture, facts: rows.map((r) => outlierRecord(c, r, names, label)), rounds: OUTLIER_ROUNDS })
+  }
+  const c: Ctx = { scope: OUTLIER_SCOPE, page: 'filtros', fixture, checks: ['municipios'] }
+  const title = 'Cidades fora da curva'
+  pages.push({
+    scope: c.scope, page: c.page, title, subtitle: std('fact.sub.report', { name: title }), back: { ...back, label: std('fact.back.report', { name: title }) }, fixture, rounds: OUTLIER_ROUNDS,
+    facts: counts.map((k) => outlierCountRecord(c, `filtro-${k.uf ?? 'todos'}-${k.min}`, k.uf ? { uf: k.uf, name: stateName(k.uf) } : undefined, k.min, k.n)),
+  })
+  return pages
 }

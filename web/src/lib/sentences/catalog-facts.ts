@@ -153,6 +153,18 @@ export const FACTS_STANDARD: Record<string, string> = {
   'seal.field.comparecimento': '{n} comparecimentos',
   'seal.field.validos': '{n} votos válidos',
   'seal.note': 'Texto gerado pelas conferências da montagem do site: se uma falhar, o site não é publicado.',
+  'fact.outlier': 'Em {city}, no 2º turno de 2026, o comparecimento foi de {turnout}, contra {typical} típico entre cidades parecidas; a virada desde 2022 foi de {swing}, contra {typicalSwing} típico. Foram {validos} votos válidos.',
+  'fact.count.outliers': 'Cidades comparadas com cidades parecidas ({where}), com {min} ou mais votos válidos no 2º turno de 2026: {n}.',
+  'fact.out.where.all': 'em todo o país',
+  'fact.out.where.uf': 'em {name}',
+  'fact.f.outlier': 'comparecimento = comparecimento ÷ eleitores aptos × 100; típico = mediana das cidades parecidas; virada = margem de 2026 − margem de 2022 entre os mesmos dois candidatos, margem = (votos de um − votos do outro) ÷ votos válidos × 100; diferença = valor da cidade − típico',
+  'fact.f.outCount': 'número de cidades com comparecimento e virada calculados (cada medida com pelo menos três cidades parecidas) e votos válidos iguais ou maiores que o mínimo',
+  'fact.w.outTurnout': 'comparecimento: {c} ÷ {a} × 100 = {pct}; típico, mediana de {n} cidades parecidas: {typical}; diferença: {gap}',
+  'fact.w.outSwing': 'margem 2026: ({a26} − {b26}) ÷ {v26} × 100 = {m26}; margem 2022: ({a22} − {b22}) ÷ {v22} × 100 = {m22}; virada: {swing}; típico, mediana de {n} cidades parecidas: {typical}; diferença: {gap}',
+  'fact.in.peer': '{n}ª cidade parecida',
+  'fact.in.peerValue': '{name}: comparecimento {turnout}, virada {swing}',
+  'fact.in.peerNone': 'sem dados',
+  'fact.method.outliers': 'Nota do método: cidades fora da curva',
 }
 
 export const FACTS_PLAIN: Record<string, string> = {
@@ -183,6 +195,10 @@ export const FACTS_PLAIN: Record<string, string> = {
   'fact.cohort.total': 'Cidades do 2º turno de 2026, sem os postos do exterior: {cities}. Estão em grupos: {grouped}. Tiveram empate antes de 2026: {ties}. Não têm dados anteriores: {nodata}.',
   'fact.cohort.limits': 'Cada número desta página conta cidades. Uma cidade entra num grupo pelo candidato que teve mais votos nela em 2018 e em 2022. Isso não diz quem votou em quem, nem o motivo. Os grupos não estão em ordem de importância.',
   'fact.state.count': 'Municípios do estado {name} no conjunto de dados: {n}.',
+  'fact.outlier': 'Em {city}, no 2º turno de 2026, {turnout} das pessoas que podiam votar foram votar. Entre cidades parecidas, o comum é {typical}. A virada desde 2022 foi de {swing}. Entre cidades parecidas, o comum é {typicalSwing}. Foram {validos} votos válidos.',
+  'fact.count.outliers': 'Cidades comparadas com cidades parecidas ({where}), com {min} ou mais votos válidos no 2º turno de 2026: {n}.',
+  'fact.out.where.all': 'em todo o país',
+  'fact.out.where.uf': 'em {name}',
 }
 
 Object.assign(CATALOG['pt-BR'].standard, FACTS_STANDARD)

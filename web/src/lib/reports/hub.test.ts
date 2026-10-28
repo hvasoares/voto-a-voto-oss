@@ -60,6 +60,20 @@ describe('hub rows (fixture state)', () => {
   })
 })
 
+describe('the Cidades fora da curva row (#34)', () => {
+  it('is added when the list has been computed, with a headline that says how many cities were compared and that it is a screening list', async () => {
+    const input = await fixtureInput()
+    const rows = hubRows(computeReports(input), input, { n: 4321, min: 5_000 })
+    expect(rows).toHaveLength(8)
+    expect(rows[5]).toEqual({ id: 'cidades-fora-da-curva', title: 'Cidades fora da curva', headline: 'Lista de triagem: 4.321 cidades comparadas com cidades parecidas', to: '/relatorios/cidades-fora-da-curva/' })
+    expect(rows[5]!.headline).not.toMatch(/irregular|suspeit|erro/i)
+  })
+  it('without it the hub is the seven rows of before', async () => {
+    const input = await fixtureInput()
+    expect(hubRows(computeReports(input), input).map((r) => r.id)).not.toContain('cidades-fora-da-curva')
+  })
+})
+
 describe.skipIf(!existsSync(resolve(REAL_DATA, 'cities.csv')))('hub rows (real data, figures of the highlights note)', () => {
   it('every headline reproduces the frame 6 figures', async () => {
     const input = await realInput()
