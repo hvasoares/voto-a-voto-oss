@@ -64,7 +64,7 @@ test.describe('Cidades fora da curva: the list', () => {
     }
   })
 
-  test('every row has its "ver cálculo", and it lands on a page that has the record with the peers and the calculation', async ({ page }) => {
+  test('every row has its "De onde vem este número?", and it lands on a page that has the record with the peers and the calculation', async ({ page }) => {
     const { rows } = await outliers
     const first = pickOutliers(rows, { uf: undefined, min: 5_000 }).shown[0]!
     await page.goto(PATH)

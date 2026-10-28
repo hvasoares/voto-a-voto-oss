@@ -152,7 +152,7 @@ test.describe('Meu Brasil story', () => {
     expect(shared.text).toContain('/meu-brasil/historia/?mora=rj/cidade-exemplo&vota=sp/cidade-exemplo-paulista#3')
   })
 
-  test('every number has its "ver cálculo", and the page it names exists and has that record', async ({ page, request }) => {
+  test('every number has its "De onde vem este número?", and the page it names exists and has that record', async ({ page, request }) => {
     await page.goto(story(ONE))
     await ready(page)
     const links = await page.locator('.story__calc a.calc').evaluateAll((els) => els.map((e) => e.getAttribute('href')!))

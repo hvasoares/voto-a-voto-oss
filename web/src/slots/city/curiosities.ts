@@ -1,7 +1,7 @@
 import { DEFAULT_LOCALE, REGISTERS, message, type Locale, type MessageKey, type Register } from '../../lib/sentences/catalog'
 import type { Fact } from '../../lib/curiosities'
 import { html, type Raw } from '../../shared/html'
-import { cardCalcLink } from '../../lib/facts/link'
+import { calcLink } from '../../lib/facts/link'
 import type { FactLinks } from './card'
 
 /** The cycles of a fact as the card prints them: "2022 → 2026" for a change, "2026", "2018, 2022 e 2026". */
@@ -27,7 +27,7 @@ export function curiosityCard(facts: readonly Fact[], id: string, links: FactLin
   const text = (key: MessageKey, params?: Record<string, string | number>) => voices.map((v) => html`<span data-register="${v.register}">${message(v, key, params)}</span>`)
   const items = facts.map(
     (f) =>
-      html`<li class="curio__fact"><p class="curio__rank">${message(voices[0]!, 'curio.rank', { n: f.rank })}</p><p class="curio__what">${voices.map((v) => html`<span data-register="${v.register}">${message(v, `curio.${f.code}`)}</span>`)}</p><p class="curio__group">${voices.map((v) => html`<span data-register="${v.register}">${message(v, 'curio.group', { n: f.n, cycles: cyclesText(f, v) })}</span>`)}</p>${cardCalcLink(links(f.code), locale)}</li>`,
+      html`<li class="curio__fact"><p class="curio__rank">${message(voices[0]!, 'curio.rank', { n: f.rank })}</p><p class="curio__what">${voices.map((v) => html`<span data-register="${v.register}">${message(v, `curio.${f.code}`)}</span>`)}</p><p class="curio__group">${voices.map((v) => html`<span data-register="${v.register}">${message(v, 'curio.group', { n: f.n, cycles: cyclesText(f, v) })}</span>`)}</p>${calcLink(links(f.code), locale)}</li>`,
   )
   return html`<section class="curio" aria-labelledby="curio-title-${id}"><h2 class="curio__title" id="curio-title-${id}">${text('curio.title')}</h2><ul class="curio__facts">${items}</ul><p class="curio__note">${text('curio.note')}</p></section>`
 }

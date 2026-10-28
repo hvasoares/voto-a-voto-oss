@@ -128,7 +128,7 @@ export interface MeuStoryText {
   big: string
   sentence: string
   kicker: string
-  /** Where the number is explained: the page of the fact record that covers it ("ver cálculo"), relative to the site root; `anchor` is its fragment. */
+  /** Where the number is explained: the page of the fact record that covers it (the calculation link), relative to the site root; `anchor` is its fragment. */
   calc?: { path: string; anchor: string }
 }
 

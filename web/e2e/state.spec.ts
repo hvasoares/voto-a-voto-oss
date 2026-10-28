@@ -255,7 +255,7 @@ test.describe('state links and map area', () => {
     await expect(page.locator('[data-placeholder="state-map"][data-uf="rj"]')).toBeVisible()
   })
 
-  test('the count of municipalities, its "ver cálculo" link and the seal stay on the page', async ({ page }) => {
+  test('the count of municipalities, its "De onde vem este número?" link and the seal stay on the page', async ({ page }) => {
     await page.goto(rj)
     await expect(page.locator('.page__subtitle')).toHaveText('6 municípios')
     await expect(page.locator('a.calc')).toBeVisible()

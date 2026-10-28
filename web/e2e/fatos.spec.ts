@@ -2,14 +2,14 @@ import { expect, test } from '@playwright/test'
 import { base, collectRequests, waitReady } from './helpers'
 
 /*
- * Fact records (#61): a "ver cálculo" link next to every figure of the city card, and the page of the calculation it opens: inputs,
+ * Fact records (#61): a "De onde vem este número?" link next to every figure of the city card, and the page of the calculation it opens: inputs,
  * formula, source and edition, readable without scripts. Phone first load is asserted in unit/measure terms elsewhere (docs/perf-budgets.md);
  * here: the links, the pages, the ids and the absence of new requests.
  */
 const city = `${base}rj/cidade-exemplo/`
 const fato = (page: string) => `${base}fato/rj/cidade-exemplo/${page}/`
 
-test.describe('city card: ver cálculo', () => {
+test.describe('city card: De onde vem este número?', () => {
   test('every figure of the visible view has its link, and each link lands on the record of that figure', async ({ page }) => {
     await page.goto(`${city}?ciclo=2026&turno=1`)
     await waitReady(page)
@@ -32,7 +32,7 @@ test.describe('city card: ver cálculo', () => {
     await expect(page.locator('.curio a.calc')).toHaveCount(0)
   })
 
-  test('the curiosities have a "ver cálculo" each, into the comparisons page of the city', async ({ page }) => {
+  test('the curiosities have a "De onde vem este número?" each, into the comparisons page of the city', async ({ page }) => {
     await page.goto(`${base}rj/cidade-exemplo/?ciclo=2026&turno=1`)
     const hrefs = await page.locator('.curio a.calc').evaluateAll((els) => els.map((e) => e.getAttribute('href')))
     expect(hrefs.length).toBeGreaterThan(0)
@@ -98,7 +98,7 @@ test.describe('the page of the calculation', () => {
     await expect(page).toHaveURL(`${city}?ciclo=2026&turno=1`)
   })
 
-  test('the earlier cycles have no page per city: their "ver cálculo" opens the one page of the rules, with every kind of figure', async ({ page }) => {
+  test('the earlier cycles have no page per city: their "De onde vem este número?" opens the one page of the rules, with every kind of figure', async ({ page }) => {
     expect((await page.goto(fato('2022-1')))!.status()).toBe(404)
     await page.goto(`${city}?ciclo=2022&turno=1`)
     const links = await page.locator('.city-panel[data-view="2022-1"] a.calc').evaluateAll((els) => els.map((e) => e.getAttribute('href')))

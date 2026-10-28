@@ -200,7 +200,7 @@ export function raceFacts(races: readonly { nome: string; uf: string; slug: stri
 }
 
 /**
- * The cycles before the latest have no fact page per city (35,000 pages that would triple the site): the city card's "ver cálculo" of those views opens this one
+ * The cycles before the latest have no fact page per city (35,000 pages that would triple the site): the city card's the calculation link of those views opens this one
  * page, which gives the rule of each kind of figure (the same formulas as the latest cycle, and where the numbers are read from). Every anchor of the card has its record here.
  */
 export const OLDER_ANCHORS: Record<string, string> = {

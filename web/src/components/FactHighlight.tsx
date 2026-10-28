@@ -12,6 +12,8 @@ import { parseFactPage, type FactCard } from '@/lib/facts/parse'
 export interface FactHighlightProps {
   /** Address of the page of the calculation (base included, no fragment). */
   href: string
+  /** The calculation link's words (catalog key `fact.link`), given by the page. */
+  calcLabel: string
 }
 
 const ACCENT = '#14505c'
@@ -24,7 +26,7 @@ const SENTENCES = /-variacao$/
 const YEARS = (cards: FactCard[]) => [...new Set(cards.map((c) => c.anchor.split('-')[0]!))]
 const KEYS = [['a', 'Parcela A'], ['b', 'Parcela B'], ['variacao', 'Variação']] as const
 
-export default function FactHighlight({ href }: FactHighlightProps) {
+export default function FactHighlight({ href, calcLabel }: FactHighlightProps) {
   const [cards, setCards] = useState<FactCard[]>([])
   const [active, setActive] = useState<string | undefined>()
   const plain = typeof document !== 'undefined' && document.documentElement.dataset.register === 'plain'
@@ -63,8 +65,8 @@ export default function FactHighlight({ href }: FactHighlightProps) {
   return (
     <section aria-label="Frases e números do estado" data-fact-highlight onKeyDown={(e) => e.key === 'Escape' && setActive(undefined)} style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24 }}>
       <div>
-        <h2 style={{ font: '400 20px/26px var(--font-serif)', margin: 0 }}>Frases e números</h2>
-        <p style={{ font: '400 12px/16px var(--font-sans)', color: MUTED, margin: '4px 0 0' }}>Escolha uma frase para ver a barra, a célula da tabela e o cálculo.</p>
+        <h2 style={{ font: '400 var(--step-3)/var(--lh-3) var(--font-serif)', margin: 0 }}>Frases e números</h2>
+        <p style={{ font: '400 var(--step-1)/var(--lh-1) var(--font-sans)', color: MUTED, margin: '4px 0 0' }}>Escolha uma frase para ver a barra, a célula da tabela e o cálculo.</p>
         <ul style={{ listStyle: 'none', margin: '12px 0 0', padding: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
           {cards.filter((c) => SENTENCES.test(c.anchor)).map((c) => (
             <li key={c.anchor}>
@@ -73,7 +75,7 @@ export default function FactHighlight({ href }: FactHighlightProps) {
                 aria-pressed={active === c.anchor}
                 onClick={() => choose(c.anchor)}
                 data-fact-sentence={c.anchor}
-                style={{ width: '100%', minHeight: 44, textAlign: 'left', padding: '8px 12px', borderRadius: 8, cursor: 'pointer', font: '400 14px/18px var(--font-sans)', color: 'inherit', background: active === c.anchor ? PAPER2 : 'transparent', border: `1px solid ${active === c.anchor ? ACCENT : RULE}` }}
+                style={{ width: '100%', minHeight: 44, textAlign: 'left', padding: '8px 12px', borderRadius: 8, cursor: 'pointer', font: '400 var(--step-1)/var(--lh-1) var(--font-sans)', color: 'inherit', background: active === c.anchor ? PAPER2 : 'transparent', border: `1px solid ${active === c.anchor ? ACCENT : RULE}` }}
               >
                 {plain ? c.sentences.plain : c.sentences.standard}
               </button>
@@ -82,8 +84,8 @@ export default function FactHighlight({ href }: FactHighlightProps) {
         </ul>
       </div>
       <div>
-        <table data-fact-table style={{ width: '100%', borderCollapse: 'collapse', font: '400 13px/18px var(--font-sans)' }}>
-          <caption style={{ textAlign: 'left', font: '400 11px/14px var(--font-sans)', color: MUTED, paddingBottom: 4 }}>Os números das barras, por ciclo</caption>
+        <table data-fact-table style={{ width: '100%', borderCollapse: 'collapse', font: '400 var(--step-1)/var(--lh-1) var(--font-sans)' }}>
+          <caption style={{ textAlign: 'left', font: '400 var(--step-1)/var(--lh-1) var(--font-sans)', color: MUTED, paddingBottom: 4 }}>Os números das barras, por ciclo</caption>
           <thead>
             <tr>
               <th scope="col" style={{ textAlign: 'left', padding: '4px 6px' }}>Ciclo</th>
@@ -93,7 +95,7 @@ export default function FactHighlight({ href }: FactHighlightProps) {
           <tbody>
             {YEARS(cards).map((ano) => (
               <tr key={ano}>
-                <th scope="row" style={{ textAlign: 'left', padding: '4px 6px', fontWeight: 600 }}>{ano}</th>
+                <th scope="row" style={{ textAlign: 'left', padding: '4px 6px', fontWeight: 700 }}>{ano}</th>
                 {KEYS.map(([k]) => {
                   const c = byAnchor.get(`${ano}-${k}`)
                   const on = !!active && !!c && (c.anchor === `${cycleOf(active)}-a` || c.anchor === active)
@@ -110,10 +112,10 @@ export default function FactHighlight({ href }: FactHighlightProps) {
         <div role="status" aria-live="polite" data-fact-calc style={{ marginTop: 16, padding: current ? '12px 14px' : 0, border: current ? `1px solid ${ACCENT}` : 'none', borderRadius: 12, background: current ? PAPER2 : 'transparent' }}>
           {current && (
             <>
-              <p style={{ font: '700 13px/16px var(--font-sans)', margin: 0 }}>Destacado: {(share ?? current).title}</p>
+              <p style={{ font: '700 var(--step-1)/var(--lh-1) var(--font-sans)', margin: 0 }}>Destacado: {(share ?? current).title}</p>
               {[share, current].filter((c): c is FactCard => !!c).filter((c, i, all) => all.indexOf(c) === i).map((c) => (
                 <div key={c.anchor}>
-                  <dl style={{ margin: '8px 0 0', font: '400 13px/18px var(--font-sans)' }}>
+                  <dl style={{ margin: '8px 0 0', font: '400 var(--step-1)/var(--lh-1) var(--font-sans)' }}>
                     {c.inputs.map((i) => (
                       <div key={i.label} style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
                         <dt>{i.label}</dt>
@@ -121,13 +123,13 @@ export default function FactHighlight({ href }: FactHighlightProps) {
                       </div>
                     ))}
                   </dl>
-                  <p style={{ font: '400 13px/18px var(--font-sans)', margin: '8px 0 0' }}>{c.formula}</p>
+                  <p style={{ font: '400 var(--step-1)/var(--lh-1) var(--font-sans)', margin: '8px 0 0' }}>{c.formula}</p>
                   {c.worked.map((w) => (
-                    <p key={w} style={{ font: '400 13px/18px var(--font-sans)', margin: '2px 0 0' }}>{w}</p>
+                    <p key={w} style={{ font: '400 var(--step-1)/var(--lh-1) var(--font-sans)', margin: '2px 0 0' }}>{w}</p>
                   ))}
                 </div>
               ))}
-              <a href={`${href}#${(share ?? current).anchor}`} style={{ display: 'inline-block', marginTop: 8, font: '600 12px/16px var(--font-sans)', color: ACCENT }}>ver cálculo ›</a>
+              <a href={`${href}#${(share ?? current).anchor}`} style={{ display: 'inline-block', marginTop: 8, font: '700 var(--step-1)/var(--lh-1) var(--font-sans)', color: ACCENT }}>{calcLabel} ›</a>
             </>
           )}
         </div>

@@ -1,6 +1,6 @@
 import { formatInt } from './city-model'
 import { html, Raw } from './html'
-import { cardCalcLink } from '../lib/facts/link'
+import { calcLink } from '../lib/facts/link'
 import { pickCandidateText } from './fit-candidate'
 
 /*
@@ -30,7 +30,7 @@ export interface TurnoutBarProps {
   candidates: { a: { label: string; pct: number; votos?: number; tone?: CandidateKind; short?: string }; b: { label: string; pct: number; votos?: number; tone?: CandidateKind; short?: string } }
   /** Round 1 only: everyone but the two leaders as one segment ("Outros candidatos (N)"); the three shares add up to 100. */
   others?: { label: string; pct: number; votos?: number }
-  /** Where "ver cálculo" goes for the two titles (#61); the titles carry no link when absent (the other screens that draw the bars). */
+  /** Where the calculation link goes for the two titles (#61); the titles carry no link when absent (the other screens that draw the bars). */
   calc?: { voted: string; notVoted: string }
 }
 
@@ -104,9 +104,9 @@ export function turnoutBar(p: TurnoutBarProps): Raw {
   ]
   const notVotedPct = 100 - p.votedPct
   return html`<section class="turnout" data-component="turnout-bar">
-    <h2 class="turnout__title">Votaram <span class="turnout__sep" aria-hidden="true">·</span> ${p.votedPct}% do eleitorado${p.calc && cardCalcLink(p.calc.voted)}</h2>
+    <h2 class="turnout__title">Votaram <span class="turnout__sep" aria-hidden="true">·</span> ${p.votedPct}% do eleitorado${p.calc && calcLink(p.calc.voted)}</h2>
     ${bar(`Votaram, por candidato: ${voted.filter((s) => s.pct > 0).map((s) => `${s.name} ${s.pct}%`).join(', ')} dos votos`, voted)}
-    <h2 class="turnout__title">Não votaram <span class="turnout__sep" aria-hidden="true">·</span> ${notVotedPct}% do eleitorado${p.calc && cardCalcLink(p.calc.notVoted)}</h2>
+    <h2 class="turnout__title">Não votaram <span class="turnout__sep" aria-hidden="true">·</span> ${notVotedPct}% do eleitorado${p.calc && calcLink(p.calc.notVoted)}</h2>
     ${bar('Não votaram, por tipo', notVoted)}
   </section>`
 }
@@ -149,11 +149,11 @@ export interface CandidateRowProps {
   votes: number
   /** Already formatted percentage text, e.g. "52% dos votos" or "78% dos que não votaram". */
   shareLabel: string
-  /** Where "ver cálculo" goes for this row (#61). */
+  /** Where the calculation link goes for this row (#61). */
   calc?: string
 }
 export function candidateRow(p: CandidateRowProps): Raw {
-  return html`<li class="legend__row" data-kind="${p.kind}"><span class="legend__swatch legend__swatch--${p.kind}" aria-hidden="true"></span><span class="legend__label">${p.label}${p.calc && cardCalcLink(p.calc)}</span><span class="legend__value">${formatInt(p.votes)} · ${p.shareLabel}</span></li>`
+  return html`<li class="legend__row" data-kind="${p.kind}"><span class="legend__swatch legend__swatch--${p.kind}" aria-hidden="true"></span><span class="legend__label">${p.label}${p.calc && calcLink(p.calc)}</span><span class="legend__value">${formatInt(p.votes)} · ${p.shareLabel}</span></li>`
 }
 
 /** Item of the reports hub (frame 6): bold title, one-line headline number, chevron. Real implementation: ticket #12. */

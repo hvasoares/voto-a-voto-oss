@@ -2,12 +2,12 @@ import { expect, test } from '@playwright/test'
 import { base, collectRequests } from './helpers'
 
 /*
- * Fact records on the other pages (#62): "ver cálculo" on Brasil e regiões, Comparar com 2022/2018 and Três ciclos por estado, the "conferido" seal written from the
+ * Fact records on the other pages (#62): "De onde vem este número?" on Brasil e regiões, Comparar com 2022/2018 and Três ciclos por estado, the "conferido" seal written from the
  * build's checks, and the fact pages behind them. On a phone the highlight island is not even requested.
  */
 const SEAL_MUNICIPIOS = /Contra a soma dos \d+ municípios e postos do exterior \(2026, 2º turno\): [\d.]+ eleitores aptos, [\d.]+ comparecimentos e [\d.]+ votos válidos, iguais ao total do país\./
 
-test.describe('ver cálculo and the seal on the other pages', () => {
+test.describe('De onde vem este número? and the seal on the other pages', () => {
   for (const [name, path, links] of [
     ['Brasil e regiões', 'brasil/', 2],
     ['Comparar com 2022', 'comparar/2022/', 2],

@@ -2,7 +2,7 @@
  * Fact records (#61), PURE: every number the city card publishes is one record with an id, a sentence (in both registers,
  * from the catalog), the numbers it is made of, the source of those numbers and the calculation that turns them into the
  * figure on the card. The record has its own address (`/fato/<escopo>/<página>/#<medida>`, see `factHref`), the card
- * links to it next to the figure ("ver cálculo"), and the build gate (`gate.ts`) fails on a record without a source and a
+ * links to it next to the figure (the calculation link), and the build gate (`gate.ts`) fails on a record without a source and a
  * calculation. The wording is in the catalog (`fact.*`); the figures come from the same `CityResult` the card prints.
  *
  * Ids are stable: they name the place, the cycle, the round and the measure, never a position or a number

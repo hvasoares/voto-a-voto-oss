@@ -15,7 +15,7 @@ const place = { cityName: 'Cidade Exemplo' }
 const facts = viewFacts(result, { uf: 'rj', slug: 'cidade-exemplo', name: 'Cidade Exemplo' })
 const links = factLinks(facts, 'the card test')
 
-describe('"ver cálculo" on the figures', () => {
+describe('"De onde vem este número?" on the figures', () => {
   const html = viewPanel(result, place, '2026-1', links).toString()
   const hrefs = [...html.matchAll(/<a class="calc" href="([^"]+)">De onde vem este número\?<\/a>/g)].map((m) => m[1])
 

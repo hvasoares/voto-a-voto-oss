@@ -10,7 +10,7 @@ const facts: Fact[] = [
 const html = curiosityCard(facts, 'x', (anchor) => `/fato/rj/x/comparacoes/#${anchor}`).toString()
 
 describe('the curiosities card', () => {
-  it('has a "ver cálculo" link on every fact, to that fact\'s record', () => {
+  it('has a "De onde vem este número?" link on every fact, to that fact\'s record', () => {
     expect(html.match(/<a class="calc" href="\/fato\/rj\/x\/comparacoes\/#(td|ml|bh)">De onde vem este número\?<\/a>/g)).toHaveLength(3)
   })
   it('is the frame: the rank, what it ranks, the group size and the cycles compared', () => {

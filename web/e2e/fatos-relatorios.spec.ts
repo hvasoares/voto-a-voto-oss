@@ -2,12 +2,12 @@ import { expect, test } from '@playwright/test'
 import { base, collectRequests } from './helpers'
 
 /*
- * Fact records on the rest of the reports, the hub, the state page and the state recap (#62): "ver cálculo" beside every listed figure, to a record
+ * Fact records on the rest of the reports, the hub, the state page and the state recap (#62): "De onde vem este número?" beside every listed figure, to a record
  * that exists, the "conferido" seal written from the build's checks, and the neutrality of "Como cada grupo votou" (it counts cities).
  */
 const linksOf = async (page: import('@playwright/test').Page) => page.locator('a.calc').evaluateAll((els) => els.map((e) => e.getAttribute('href')!))
 
-test.describe('ver cálculo and the seal on the reports, the hub, the state page and the recap', () => {
+test.describe('De onde vem este número? and the seal on the reports, the hub, the state page and the recap', () => {
   for (const [name, path, min] of [
     ['Cidades que viraram', 'relatorios/cidades-que-viraram/', 0],
     ['Maiores viradas', 'relatorios/maiores-viradas/', 2],

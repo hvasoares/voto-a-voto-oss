@@ -5,7 +5,7 @@ import { notVotedText } from '../src/slots/city-cycles/cycles-model'
 
 /*
  * #89: the City card's labels say what the visitor wants to do. The register pair names both options, the comparison link names both
- * cycles it offers, every "ver cálculo" reads "De onde vem este número?" (same address), and a bar segment too narrow for its word
+ * cycles it offers, every calculation link reads "De onde vem este número?" (same address), and a bar segment too narrow for its word
  * prints nothing (never "Br", "Nu"): the legend row (card) or the caption under the bar (three cycles) carries the label and the share.
  */
 const city = `${base}rj/cidade-exemplo/`
@@ -48,7 +48,7 @@ test.describe('labels in the visitor\'s words (phone)', () => {
     await expect(page.locator('a[data-tab="2018"]')).toHaveAttribute('href', `${base}comparar/2018/`)
   })
 
-  test('every "ver cálculo" of the card reads "De onde vem este número?", in both registers, with its own address', async ({ page }) => {
+  test('every calculation link of the card reads "De onde vem este número?", in both registers, with its own address', async ({ page }) => {
     await page.goto(`${city}?turno=1`)
     await waitReady(page)
     const calcs = page.locator('.city-page a.calc')

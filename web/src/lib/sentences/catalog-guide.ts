@@ -44,7 +44,7 @@ export const GUIDE_STANDARD: Record<string, string> = {
   'guide.cite.title': 'Como citar',
   'guide.cite.line': 'Fonte: TSE, dados finais, edição {edition}',
   'guide.cite.place': ' · {address}',
-  'guide.cite.note': 'Cada número da página da cidade tem um "ver cálculo". Se alguém duvidar, abra o cálculo na tela.',
+  'guide.cite.note': 'Cada número da página da cidade tem um "De onde vem este número?". Se alguém duvidar, abra o cálculo na tela.',
   'guide.noads': 'Esta página não tem anúncios nem rastreamento. As regras de monetização e de conteúdo político variam por plataforma: confira as da sua.',
   'guide.link.overlay': 'Montar o overlay para a live ›',
   'guide.link.game': 'Jogar Adivinhe a cidade ›',

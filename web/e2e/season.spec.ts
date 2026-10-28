@@ -31,7 +31,7 @@ test.describe('state season', () => {
     const pivot = page.locator('[data-pivot]')
     await expect(pivot).toContainText(/Entre 2022 e 2026, a parcela de .+ nos votos válidos do 2º turno variou [+−-]\d+,\d pp\./)
     await expect(pivot).toContainText(/Em \d+ das \d+ cidades com os três ciclos o lado com mais votos mudou\.|Em nenhuma das \d+ cidades/)
-    const href = await pivot.getByRole('link', { name: 'ver cálculo' }).getAttribute('href')
+    const href = await pivot.getByRole('link', { name: 'De onde vem este número?' }).getAttribute('href')
     expect(href).toContain('/fato/estado/rj/tres-ciclos/#2026-viradas')
     await page.goto(`${base}fato/estado/rj/tres-ciclos/`)
     await expect(page.locator('[id="2026-viradas"]')).toContainText('cidades com os três ciclos')

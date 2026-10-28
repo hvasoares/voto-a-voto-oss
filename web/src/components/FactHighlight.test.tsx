@@ -25,13 +25,13 @@ const seg = (k: string) => document.querySelector<HTMLElement>(`[data-seg="${k}"
 describe('the sentence highlight', () => {
   it('draws nothing until the records are read, and nothing when they cannot be', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 404 })))
-    const { container } = render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" />)
+    const { container } = render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" calcLabel="De onde vem este número?" />)
     await new Promise((r) => setTimeout(r, 20))
     expect(container.innerHTML).toBe('')
   })
 
   it('lists the sentence of each cycle (its change line) as a button and a table with the figures of the page', async () => {
-    render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" />)
+    render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" calcLabel="De onde vem este número?" />)
     expect(await screen.findAllByRole('button')).toHaveLength(1)
     expect(screen.getByRole('button', { name: SENTENCE }).getAttribute('aria-pressed')).toBe('false')
     expect(document.querySelector('[data-cell="2022-a"]')!.textContent).toContain('44,8%')
@@ -39,7 +39,7 @@ describe('the sentence highlight', () => {
   })
 
   it('a click lights the bar segment and the table cell and writes the calculation beside them', async () => {
-    render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" />)
+    render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" calcLabel="De onde vem este número?" />)
     await userEvent.click(await screen.findByRole('button', { name: SENTENCE }))
     expect(seg('2022-a').style.outline).toContain('solid')
     expect(seg('2022-b').style.outline).toBe('')
@@ -52,14 +52,14 @@ describe('the sentence highlight', () => {
   })
 
   it('the change lights the left bar segment of its cycle', async () => {
-    render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" />)
+    render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" calcLabel="De onde vem este número?" />)
     await userEvent.click(await screen.findByRole('button', { name: SENTENCE }))
     expect(seg('2022-a').style.outline).toContain('solid')
   })
 
   it('works by keyboard alone: Tab to a sentence, Enter lights it, Escape puts everything back', async () => {
     const user = userEvent.setup()
-    render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" />)
+    render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" calcLabel="De onde vem este número?" />)
     await screen.findAllByRole('button')
     await user.tab()
     expect(document.activeElement).toBe(screen.getByRole('button', { name: SENTENCE }))
@@ -72,17 +72,17 @@ describe('the sentence highlight', () => {
   })
 
   it('choosing the same sentence again clears it, and the calculation links to its record on the page of the calculation', async () => {
-    render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" />)
+    render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" calcLabel="De onde vem este número?" />)
     const button = await screen.findByRole('button', { name: SENTENCE })
     await userEvent.click(button)
-    expect(screen.getByRole('link', { name: 'ver cálculo ›' }).getAttribute('href')).toBe('/fato/estado/rj/tres-ciclos/#2022-a')
+    expect(screen.getByRole('link', { name: 'De onde vem este número? ›' }).getAttribute('href')).toBe('/fato/estado/rj/tres-ciclos/#2022-a')
     await userEvent.click(button)
     expect(seg('2022-a').style.outline).toBe('')
   })
 
   it('says the plain sentence when that is the register chosen', async () => {
     document.documentElement.dataset.register = 'plain'
-    render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" />)
+    render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" calcLabel="De onde vem este número?" />)
     expect(await screen.findByRole('button', { name: 'Em RJ, 2022, Lula teve 44,8%, +12,7 pontos.' })).toBeTruthy()
   })
 })

@@ -164,8 +164,8 @@ test.describe.serial('launch gate: 20+ figures against TSE (issue #21)', () => {
       await page.goto(base + route)
       for (const figure of figures) {
         const container: Locator = figure.scope ? page.locator(figure.scope).first() : page.locator('body')
-        // whitespace-flexible: innerText of element runs some labels together ("Sudeste41,1% · ..."); the city card's "ver cálculo" links (#61) may sit between a label and its figure
-        const pattern = new RegExp(figure.text.split(' ').map(escape).join('\\s*\\n?\\s*(?:ver cálculo\\s*)?'))
+        // whitespace-flexible: innerText of element runs some labels together ("Sudeste41,1% · ..."); the city card's "De onde vem este número?" links (#61) may sit between a label and its figure
+        const pattern = new RegExp(figure.text.split(' ').map(escape).join('\\s*\\n?\\s*(?:De onde vem este número\\?\\s*)?'))
         await expect(container, `${route} · ${figure.text} (fonte: ${figure.citation})`).toContainText(pattern)
         checked.push({ screen, route: base + route, figure: figure.text, citation: figure.citation })
       }

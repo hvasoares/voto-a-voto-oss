@@ -36,7 +36,7 @@ export const OUTLIER_STANDARD: Record<string, string> = {
   'outlier.method': 'Cada cidade é comparada com as cinco cidades parecidas do arquivo de pares (porte, comparecimento, margem e histórico). O típico é a mediana delas. A ordem é a distância nos dois números, na mesma escala.',
   'outlier.share': 'Compartilhar',
   'outlier.share.text': 'Lista de triagem, não uma conclusão: cidades mais distantes de cidades parecidas no comparecimento e na virada desde 2022.',
-  'outlier.calc': 'ver cálculo',
+  'outlier.calc': 'De onde vem este número?',
 }
 
 export const OUTLIER_PLAIN: Record<string, string> = {
@@ -67,7 +67,7 @@ export const OUTLIER_PLAIN: Record<string, string> = {
   'outlier.method': 'Cada cidade é comparada com as cinco cidades parecidas do arquivo de pares: porte, comparecimento, margem e histórico. O comum é o valor do meio entre elas. A ordem mostra a distância nos dois números, na mesma escala.',
   'outlier.share': 'Compartilhar',
   'outlier.share.text': 'Esta é uma lista para triagem, não uma conclusão: cidades mais distantes de cidades parecidas no comparecimento e na virada desde 2022.',
-  'outlier.calc': 'ver cálculo',
+  'outlier.calc': 'De onde vem este número?',
 }
 
 Object.assign(CATALOG['pt-BR'].standard, OUTLIER_STANDARD)

@@ -18,7 +18,7 @@ export interface StoryCardView {
   caption: string
   /** `votoavoto.exemplo.br/sp/historia#2` */
   address: string
-  /** The card's "ver cálculo" link, as the page's markup. */
+  /** The card's the calculation link link, as the page's markup. */
   calc?: string
 }
 
