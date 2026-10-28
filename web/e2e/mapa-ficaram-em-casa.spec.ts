@@ -1,9 +1,10 @@
+import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 import { createStore } from '../src/data'
 import { diskSource } from '../src/data/node'
 import { formatShare, stayHomeRows } from '../src/lib/stay-home'
-import { base } from './helpers'
+import { base, collectRequests, violations } from './helpers'
 
 /*
  * #32 "Ficaram em casa" at 390x844, fixture dataset (states rj, sp, mt; an overseas post `zz` in the data). The expected percentages are
@@ -109,7 +110,7 @@ test.describe('Ficaram em casa: map view', () => {
     })
     await page.goto(PATH)
     await page.getByRole('link', { name: 'Mapa', exact: true }).click()
-    await expect(page.locator('astro-island[ssr]')).toHaveAttribute('data-pending-vista', 'mapa')
+    await expect(page.locator('astro-island[component-url*="StayHomeMap"]')).toHaveAttribute('data-pending-vista', 'mapa')
     release()
     await expect(page.getByRole('img', { name: /^Parcela dos eleitores/ })).toBeVisible()
     expect(new URL(page.url()).searchParams.get('vista')).toBe('mapa')
@@ -145,5 +146,64 @@ test.describe('Entry point', () => {
       await page.goto(`${base}${p}`)
       await expect(page.locator(`a[href="${PATH}"]`)).toHaveCount(0)
     }
+  })
+})
+
+/** navigator.share is stubbed: a real system sheet cannot be driven here. */
+async function openShare(page: Page, mode: 'files' | 'none', route = PATH) {
+  await page.addInitScript((m) => {
+    const w = window as unknown as { __shares: unknown[] }
+    w.__shares = []
+    if (m === 'none') {
+      Object.defineProperty(navigator, 'share', { value: undefined, configurable: true })
+      Object.defineProperty(navigator, 'canShare', { value: undefined, configurable: true })
+      return
+    }
+    Object.defineProperty(navigator, 'canShare', { configurable: true, value: () => true })
+    Object.defineProperty(navigator, 'share', {
+      configurable: true,
+      value: (d: ShareData) => {
+        const rec: Record<string, unknown> = { files: (d.files ?? []).map((f) => ({ name: f.name, type: f.type })), text: d.text }
+        w.__shares.push(rec)
+        const f = d.files?.[0]
+        if (f) void f.arrayBuffer().then((b) => (rec.png = { w: new DataView(b).getUint32(16), signature: [...new Uint8Array(b, 0, 8)].join(',') }))
+        return Promise.resolve()
+      },
+    })
+  }, mode)
+  await page.goto(route)
+  // the share island loads when it scrolls into view (client:visible), so the first load stays light
+  await page.locator('[data-stayhome-share]').scrollIntoViewIfNeeded()
+  await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
+}
+const shares = (page: Page) => page.evaluate(() => (window as unknown as { __shares: { files: { name: string; type: string }[]; text: string; png?: { w: number; signature: string } }[] }).__shares)
+
+test.describe('Ficaram em casa: the share of the view', () => {
+  test('shares a PNG of the view and the link through the system sheet, inside the tap', async ({ page }) => {
+    await openShare(page, 'files', `${PATH}2022-2/`)
+    await page.getByRole('button', { name: 'Compartilhar o mapa' }).click()
+    await expect.poll(async () => (await shares(page))[0]?.png).toBeTruthy()
+    const [s] = await shares(page)
+    expect(s!.files[0]).toMatchObject({ name: 'voto-a-voto-ficaram-em-casa-2022-2.png', type: 'image/png' })
+    expect(s!.png).toEqual({ w: 1080, signature: '137,80,78,71,13,10,26,10' })
+    expect(s!.text).toContain('2º turno de 2022.')
+    expect(s!.text).toContain(`https://votoavoto.exemplo.br${base}mapa/ficaram-em-casa/2022-2/`)
+    expect(s!.text).not.toMatch(/cidades/)
+  })
+
+  test('without a system share sheet the image downloads', async ({ page }) => {
+    await openShare(page, 'none')
+    const dl = page.waitForEvent('download')
+    await page.getByRole('button', { name: 'Baixar imagem' }).click()
+    const d = await dl
+    expect(d.suggestedFilename()).toBe('voto-a-voto-ficaram-em-casa-2026-1.png')
+    expect((await readFile((await d.path())!)).length).toBeGreaterThan(1000)
+  })
+
+  test('the phone has no horizontal scroll and no request leaves the site', async ({ page }) => {
+    const seen = collectRequests(page)
+    await openShare(page, 'files')
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+    expect(violations(seen, [new URL(page.url()).origin])).toEqual([])
   })
 })

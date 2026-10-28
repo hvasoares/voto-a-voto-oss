@@ -126,7 +126,7 @@ One responsive layout from 390 px to a 720 px content column (1200 px on Home), 
   `integrations/desktop-shell.ts`) mounts the existing `CitySearch` into it on first focus and binds "/" to the city search. A phone never requests either file.
 - **Phone first load stays unchanged** (the rule of the whole milestone): desktop-only things are hidden by CSS and, when they would weigh the HTML, delivered as a **fragment document in a
   lazy `<iframe>`** (`layouts/FragmentDoc.astro`, `pages/fragmentos/*`): a lazy iframe that is not drawn is never requested. Used by the Home SVG map (`mapa-uf`) and the desktop Mapa por estado
-  (`mapa-por-estado/margem`, `virada`); their hover/keyboard script is inline in the fragment. They are `noindex` and linked from nowhere.
+  (`mapa-por-estado/margem`, `virada`, `ficaram-em-casa/<ciclo>`); their hover/keyboard script is inline in the fragment. They are `noindex` and linked from nowhere.
 - **UF outlines**: `data/geo/uf-outlines.json` (`make data` / `make data-outlines`, checked by `make data-check`), projected by `src/lib/uf-map.ts`, drawn by `components/UfMap.astro`.
 - `client:slot` (`integrations/slot-directive.js`): lazy island for a map slot, in view from 1024 px up, on first interaction below it (Estado municipality map).
 - Measure: `npx tsx scripts/measure.ts <dist> --path /brasil/ --size 1440x900` (exits when done). Tests: Playwright project `desktop` (`e2e/desktop-*.spec.ts`, 1440x900, each spec resizes for 390/768); screenshot

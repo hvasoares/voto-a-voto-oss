@@ -10,7 +10,6 @@
  * and says nothing about who those people are or what would have changed (words: `sentences/stayhome.ts`).
  */
 import type { Turnout, Vote } from '@/data'
-import { colors } from '@/shared/tokens'
 
 export const OVERSEAS_UF = 'zz'
 
@@ -70,18 +69,15 @@ export function stayHomeBin(share: number): StayHomeBin {
   return (STAY_HOME_EDGES.filter((e) => share >= e).length + 1) as StayHomeBin
 }
 
-/** CSS custom property of each step (the `seq-*` swatches). */
-export const STAY_HOME_COLOR: Record<StayHomeBin, string> = {
-  1: 'var(--c-seq-1)',
-  2: 'var(--c-seq-2)',
-  3: 'var(--c-seq-3)',
-  4: 'var(--c-seq-4)',
-  5: 'var(--c-seq-5)',
-  6: 'var(--c-seq-6)',
-  7: 'var(--c-seq-7)',
-}
+/**
+ * The one-direction teal scale of the Sketch frames, lightest to darkest. Kept here, not in `shared/tokens.ts`: a token becomes CSS variables inlined in EVERY
+ * page's head, and these seven are used by this screen alone (the city card's html has no room for them). Step 5 is a little darker than the frame's
+ * #43808c so that the paper ink on it reaches the 4.5:1 contrast of WCAG AA.
+ */
+const HEX: Record<StayHomeBin, string> = { 1: '#eef3f1', 2: '#cfe0e0', 3: '#a5c6ca', 4: '#74a5ad', 5: '#38707d', 6: '#24606c', 7: '#14404b' }
 
-const HEX: Record<StayHomeBin, string> = { 1: colors['seq-1'], 2: colors['seq-2'], 3: colors['seq-3'], 4: colors['seq-4'], 5: colors['seq-5'], 6: colors['seq-6'], 7: colors['seq-7'] }
+/** The fill of each step (a hex, used as is by the island, the fragment and the picture). */
+export const STAY_HOME_COLOR: Record<StayHomeBin, string> = HEX
 
 /** Ink on the lightest steps, paper on the dark ones (the contrast is tested). */
 export function stayHomeInk(bin: StayHomeBin): 'var(--foreground)' | 'var(--background)' {

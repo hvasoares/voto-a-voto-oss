@@ -173,6 +173,18 @@ export const EVENTS: EventDoc[] = [
     emitted: ['src/components/RecapShare.tsx'],
   },
   {
+    name: 'stayhome_opened',
+    description: 'The stay-at-home map (/mapa/ficaram-em-casa/, the third option of the Mapa por estado) was opened, for one cycle and round (counted on page load).',
+    props: { ciclo: 'Election year of the view', turno: 'Round of the view (1 or 2)' },
+    emitted: ['src/scripts/stayhome-analytics.ts'],
+  },
+  {
+    name: 'stayhome_shared',
+    description: 'The picture of the stay-at-home map was shared (the native sheet reported "shared").',
+    props: { ciclo: 'Election year of the view', turno: 'Round of the view (1 or 2)' },
+    emitted: ['src/components/StayHomeShare.tsx'],
+  },
+  {
     name: 'meu_brasil_place_added',
     description: 'A place was chosen in Meu Brasil (never its name: the role and how many places the card has now).',
     props: { role: 'mora | vota | nasceu', places: 'How many places the card has' },

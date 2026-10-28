@@ -7,10 +7,14 @@
  */
 import Base from '@/layouts/Base.astro'
 import StayHomeMap from '@/components/StayHomeMap'
+import StayHomeShare from '@/components/StayHomeShare'
 import { normalizeBase, withBase } from '@/paths'
 import { loadStayHome, stayHomeFragmentPath, stayHomePath } from '@/lib/stay-home-data'
 import { parseViewSlug, viewSlug } from '@/lib/stay-home-view'
 import { stayhomeSay } from '@/lib/sentences/stayhome'
+import { stayHomeContent } from '@/lib/stay-home-content'
+import { datasetFixture } from '@/lib/shard-files'
+import { siteOrigin } from '@/lib/share-url'
 
 interface Props {
   slug: string
@@ -21,6 +25,8 @@ const href = (path: string) => withBase(base, path)
 const set = await loadStayHome()
 const view = parseViewSlug(slug)!
 const model = set.model(view)
+const fixture = await datasetFixture()
+const content = stayHomeContent(model, set.rows(view), { origin: siteOrigin(), base, fixture, defaultView: set.defaultView })
 const viewPaths = Object.fromEntries(set.views.map((v) => [viewSlug(v), stayHomePath(v, set.defaultView)]))
 ---
 
@@ -38,11 +44,15 @@ const viewPaths = Object.fromEntries(set.views.map((v) => [viewSlug(v), stayHome
     <p class="mt-1.5 text-small leading-[14px]" data-island-failed hidden>{model.ui.failed}</p>
     </div>
     <iframe class="hidden h-[820px] w-full border-0 lg:col-start-1 lg:row-start-1 lg:block" src={href(stayHomeFragmentPath(view))} title="Ficaram em casa: o mapa, a escala, o estado selecionado e a tabela" loading="lazy" data-mapa-frame></iframe>
+    <div class="min-w-0 lg:col-start-1 lg:row-start-2 lg:mx-auto lg:w-[430px]" data-stayhome-share>
+      {model.empty ? null : <StayHomeShare client:visible ano={view.ano} turno={view.turno} text={content.variants.standard.text} svg={content.svg} filename={content.filename} link={content.url} label={stayhomeSay({}, 'stayhome.share')} />}
+    </div>
   </main>
   <footer class="mx-5 mt-2 border-t border-border pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary md:mx-auto md:w-full md:max-w-[680px] lg:mt-6 lg:max-w-[1200px] lg:border-t-0 lg:text-left" data-component="source-footer">
     Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>
   <script>
     import '@/scripts/map-pending'
+    import '@/scripts/stayhome-analytics'
   </script>
 </Base>
