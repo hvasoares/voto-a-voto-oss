@@ -3,7 +3,8 @@ import { buildCityResult } from '../../shared/city-model'
 import { headline } from '../../lib/sentences/headline'
 import { factLinks, FactGateError } from '../../lib/facts/gate'
 import { viewFacts } from '../../lib/facts/model'
-import { headlineId, viewArc, viewFigures, viewMargin, viewPanel, viewTwin } from './card'
+import { questionOf } from '../../lib/question'
+import { headlineId, viewQuestion, viewFigures, viewMargin, viewPanel, viewTwin } from './card'
 
 const result = buildCityResult({
   turnout: { ano: 2026, turno: 1, uf: 'rj', cdMunicipio: '1', aptos: 100000, comparecimento: 76600, abstencoes: 23400, brancos: 3000, nulos: 3600, anuladosApuSep: 0, validos: 70000 },
@@ -78,14 +79,23 @@ describe('margin line of a view', () => {
   })
 })
 
-describe('arc of the city', () => {
-  it('is the label and the not-the-cause line in both registers, the standard one first, in the page text', () => {
-    const html = viewArc({ kind: 'switched2022' }, place).toString()
+describe('question and answer of the city (#44)', () => {
+  const html = viewQuestion(questionOf({ kind: 'switched2022' }, false), place).toString()
+  it('opens with the question, then "Sim" and the arc label in both registers, the standard one first, in the page text', () => {
+    expect(html.indexOf('<h2 class="city-q__q"')).toBeLessThan(html.indexOf('city-q__yn'))
+    expect(html).toContain('Cidade Exemplo mudou de lado em 2022?')
+    expect(html).toContain('data-answer="yes"')
     expect(html).toContain('data-arc="switched2022"')
+    expect(html).toContain('<p class="city-q__yn">Sim.</p>')
     expect(html).toContain('Mudou de lado em 2022')
     expect(html).toContain('Descreve a sequência, não a causa.')
     expect(html).toContain('Em 2022, o lado com mais votos no 2º turno mudou')
     expect(html.indexOf('data-register="standard"')).toBeLessThan(html.indexOf('data-register="plain"'))
+  })
+  it('says "Não" for a city that did not change side', () => {
+    const no = viewQuestion(questionOf({ kind: 'same' }, false), place).toString()
+    expect(no).toContain('data-answer="no"')
+    expect(no).toContain('<p class="city-q__yn">Não.</p>')
   })
 })
 

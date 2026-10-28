@@ -2,12 +2,12 @@ import type { CityResult } from '../../shared/city-model'
 import { DEFAULT_LOCALE, REGISTERS, message, type Register } from '../../lib/sentences/catalog'
 import { headline, type Place } from '../../lib/sentences/headline'
 import { arcLabel } from '../../lib/sentences/arc'
-import type { Arc } from '../../lib/arcs'
 import { marginLine } from '../../lib/sentences/margin'
 import { toLegendRows, toTurnoutBarProps } from '../../shared/city-figures'
 import { candidateRow, turnoutBar } from '../../shared/components'
 import { html, type Raw } from '../../shared/html'
 import { calcLink } from '../../lib/facts/link'
+import { questionText, yesNo, type Question } from '../../lib/question'
 
 /** The address of the fact that explains the figure at an anchor (`lib/facts/gate.ts` `factLinks`): it throws for a figure with no record, so the card cannot print a number without one. */
 export type FactLinks = (anchor: string) => string
@@ -49,12 +49,14 @@ export function viewSentence(result: CityResult | undefined, place: Place, view:
 }
 
 /**
- * The arc label of the city (#41) and the line that says it describes the sequence, not the cause, in both registers.
- * It belongs to the city, not to a view: the same under every cycle and round tab.
+ * The question of the city (#44) and its answer, which opens the page: the question once, then "Sim"/"Não" and the arc label of the city (#41),
+ * in both registers, and the line that says it describes the sequence, not the cause. It belongs to the city, not to a view: the same under every
+ * cycle and round tab. The answer is in the HTML (visible without scripts and without a guess); the guess buttons are drawn by `scripts/city-guess.ts`.
  */
-export function viewArc(arc: Arc, place: Place): Raw {
-  const lines = voices(place).map((v) => ({ register: v.register, ...arcLabel(arc, { locale: place.locale, register: v.register }) }))
-  return html`<div class="city-arc" data-arc="${arc.kind}">${lines.map((l) => html`<p class="city-arc__pill" data-register="${l.register}">${l.label}</p>`)}${lines.map((l) => html`<p class="city-arc__note" data-register="${l.register}">${l.note}</p>`)}</div>`
+export function viewQuestion(q: Question, place: Place): Raw {
+  const lines = voices(place).map((v) => ({ register: v.register, ...arcLabel(q.arc, { locale: place.locale, register: v.register }) }))
+  const voice = { locale: place.locale }
+  return html`<section class="city-q" data-question="${q.kind}" data-answer="${q.answer ? 'yes' : 'no'}" aria-labelledby="city-q"><h2 class="city-q__q" id="city-q">${questionText(q, place.cityName, voice)}</h2><div class="city-arc" data-arc="${q.kind}"><p class="city-q__yn">${yesNo(q.answer, voice)}.</p>${lines.map((l) => html`<p class="city-arc__pill" data-register="${l.register}">${l.label}</p>`)}${lines.map((l) => html`<p class="city-arc__note" data-register="${l.register}">${l.note}</p>`)}</div></section>`
 }
 
 /** The twin city (#31) as the card links it: its display name, the label of its state and the address of its card. */

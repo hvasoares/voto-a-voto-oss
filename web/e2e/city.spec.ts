@@ -190,7 +190,7 @@ test.describe('city card: pre-rendered, no data request (the #49 contract, kept)
     await page.goto(`${base}zz/exterior-exemplo/`)
     await waitReady(page)
     await expect(page.locator('h1')).toHaveText('Exterior (posto exemplo)')
-    await expect(page.getByText('Voto no exterior')).toBeVisible()
+    await expect(page.locator('.page__subtitle')).toHaveText('Voto no exterior')
     await expect(page.getByRole('link', { name: /Ver o estado/ })).toHaveCount(0)
   })
 

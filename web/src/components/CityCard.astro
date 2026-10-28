@@ -14,11 +14,11 @@ import { loadCityShard, datasetFixture, loadPeersFile, loadCityNames, loadCurios
 import { factsOf } from '@/lib/curiosities'
 import { twinOf } from '@/lib/peers'
 import { cityShardResult } from '@/lib/city-shard'
-import { cityArc } from '@/lib/arcs'
+import { pickQuestion } from '@/lib/question'
 import { displayName, ufLabel } from '@/shared/city-search'
 import { CYCLES, type CityResult } from '@/shared/city-model'
 import { cycleTabs, roundTabs } from '@/shared/components'
-import { viewFigures, viewSentence, viewMargin, viewArc, viewTwin, headlineId } from '@/slots/city/card'
+import { viewFigures, viewSentence, viewMargin, viewQuestion, viewTwin, headlineId } from '@/slots/city/card'
 import { curiosityCard } from '@/slots/city/curiosities'
 import { loadCityFacts } from '@/lib/facts/load'
 import { factLinks } from '@/lib/facts/gate'
@@ -45,7 +45,7 @@ const city = shard.city
 const name = displayName(city.nome)
 const fixture = await datasetFixture()
 const overseas = city.uf === 'zz'
-const arc = cityArc(shard)
+const question = pickQuestion(shard)
 // Curiosities (#33): up to three rank facts; a city with too few peers has none, and then no card.
 const curio = await loadCuriositiesFile()
 const facts = curio && !backdrop ? factsOf(curio, uf, slug) : []
@@ -92,6 +92,7 @@ const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: T
         <a class="back" href={href('/')}>‹ Início</a>
         <h1 class="page__title">{name}</h1>
         <p class="page__subtitle">{sub}</p>
+        <Fragment set:html={viewQuestion(question, { cityName: name, overseas })} />
         <Fragment set:html={cycleTabs({ cycles: [...CYCLES], active: view.ano, hrefFor: (c) => viewHref(here, { ano: c, turno: view.turno }) })} />
         <Fragment set:html={roundTabs({ active: view.turno, hrefFor: (t) => viewHref(here, { ano: view.ano, turno: t }) })} />
         <div
@@ -111,7 +112,6 @@ const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: T
         <div class="city-words" data-city-words>
           {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} set:html={viewSentence(r, { cityName: name, overseas }, id, linksOf(id))} />)}
         </div>
-        <Fragment set:html={viewArc(arc, { cityName: name, overseas })} />
         <div class="city-margin-lines" data-city-words>
           {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} set:html={viewMargin(r, { cityName: name, overseas }, linksOf(id))} />)}
         </div>

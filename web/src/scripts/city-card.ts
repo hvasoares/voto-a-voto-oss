@@ -3,6 +3,7 @@
 import { getAnalytics, onAnalyticsReady } from '@/analytics'
 import { REGISTERS, type Register } from '@/lib/sentences/register'
 import { readRegister, saveRegister } from '@/lib/sentences/register-store'
+import { mountGuess } from './city-guess'
 import { createCityTracker, parseView, viewHref, viewId, type View } from '@/slots/city/city-view'
 
 const card = document.querySelector<HTMLElement>('[data-city-card]')
@@ -57,6 +58,9 @@ if (card) {
   })
   // Mark for the e2e specs: the deferred module script took over the page.
   document.documentElement.dataset.ready = 'city-card'
+  // The optional guess to the question at the top (nothing is fetched or sent).
+  const question = document.querySelector<HTMLElement>('[data-question]')
+  if (question) mountGuess(question, `${card.dataset.uf}/${card.dataset.slug}`)
 
   document.addEventListener('click', (e) => {
     const a = (e.target as Element).closest<HTMLAnchorElement>('[data-ciclo], [data-turno]')
