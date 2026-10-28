@@ -47,6 +47,8 @@ export default function StorySequence({ cards, words, onOpened, onReached, onSha
   const [ready, setReady] = useState(false)
   const track = useRef<HTMLOListElement>(null)
   const settle = useRef<number | undefined>(undefined)
+  /** While a move made by a tap or a key is still scrolling, where the row happens to be is not an answer (an older scroll must never replace the newer choice). */
+  const lockUntil = useRef(0)
   const last = cards.length
 
   /** Centres card `n` in the row by moving the row only (never the page, which stays where the visitor is). */
@@ -63,6 +65,8 @@ export default function StorySequence({ cards, words, onOpened, onReached, onSha
     (n: number) => {
       const next = Math.min(last, Math.max(1, n))
       setCurrent(next)
+      window.clearTimeout(settle.current)
+      lockUntil.current = reduced() ? 0 : performance.now() + 900
       centre(next, reduced() ? 'auto' : 'smooth')
     },
     [last],
@@ -97,21 +101,28 @@ export default function StorySequence({ cards, words, onOpened, onReached, onSha
   }, [current, ready, onReached])
 
   // The row rests on a card: that card is on show (after the scroll settles, so a swipe in motion does not flicker).
+  const rest = () => {
+    const wait = lockUntil.current - performance.now()
+    // A move by tap or key is still on its way: look again when it should have arrived.
+    if (wait > 0) {
+      settle.current = window.setTimeout(rest, wait + 40)
+      return
+    }
+    const el = track.current
+    if (!el) return
+    const mid = el.getBoundingClientRect().left + el.clientWidth / 2
+    let best = 1
+    let gap = Infinity
+    for (const [i, c] of [...el.children].entries()) {
+      const r = (c as HTMLElement).getBoundingClientRect()
+      const d = Math.abs(r.left + r.width / 2 - mid)
+      if (d < gap) ((gap = d), (best = i + 1))
+    }
+    setCurrent(best)
+  }
   const onScroll = () => {
     window.clearTimeout(settle.current)
-    settle.current = window.setTimeout(() => {
-      const el = track.current
-      if (!el) return
-      const mid = el.getBoundingClientRect().left + el.clientWidth / 2
-      let best = 1
-      let gap = Infinity
-      for (const [i, c] of [...el.children].entries()) {
-        const r = (c as HTMLElement).getBoundingClientRect()
-        const d = Math.abs(r.left + r.width / 2 - mid)
-        if (d < gap) ((gap = d), (best = i + 1))
-      }
-      setCurrent(best)
-    }, 90)
+    settle.current = window.setTimeout(rest, 90)
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {

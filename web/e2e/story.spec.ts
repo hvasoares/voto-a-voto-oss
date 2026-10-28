@@ -111,6 +111,20 @@ test.describe('state story', () => {
     await expect(page.locator('.story__note').last()).toContainText('/rj/historia#4')
   })
 
+  test('a key pressed while an older scroll is still settling wins: the card is the one asked for, and it stays', async ({ page }) => {
+    await page.goto(`${rj}#3`)
+    await ready(page)
+    await on(page, 3)
+    await page.locator('.story__track').focus()
+    // an older scroll event (its settle timer is pending) and, right after it, a key: the newer choice must not be replaced by where the row was
+    await page.evaluate(() => document.querySelector('.story__track')!.dispatchEvent(new Event('scroll')))
+    await page.keyboard.press('ArrowRight')
+    await on(page, 4)
+    await page.waitForTimeout(1300)
+    await on(page, 4)
+    await expect.poll(() => centered(page)).toBe(4)
+  })
+
   test('with reduced motion the row moves at once', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.goto(rj)
