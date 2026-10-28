@@ -21,7 +21,7 @@ test.describe('city page head: the preview tags', () => {
     await expect(page).toHaveTitle('Cidade Exemplo (RJ): resultado das eleições de 2026 · Voto a Voto')
     const d = await meta(page, 'meta[name=description]')
     expect(d).toContain('Dados fictícios (EXEMPLO). ')
-    expect(d).toMatch(/Resultado de Cidade Exemplo \(RJ\), 2026, 2º turno: votaram \d+% do eleitorado e Candidato A recebeu \d+% dos votos válidos\./)
+    expect(d).toMatch(/Resultado de Cidade Exemplo \(RJ\), 2026, 2º turno: votaram \d+% do eleitorado; dos votos válidos, Candidato A recebeu \d+% e Candidato B \d+%\./)
   })
 
   test('og:url is the page itself, absolute at the built origin', async ({ page }) => {

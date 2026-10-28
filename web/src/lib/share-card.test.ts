@@ -93,9 +93,10 @@ describe('shareCardSvg: what the picture says', () => {
     const ta = texts(shareCardSvg(a, opts))
     const tb = texts(shareCardSvg(b, opts))
     expect(ta).toHaveLength(tb.length)
-    expect(a.voted[0]!.pct).toBe(b.voted[0]!.pct)
-    expect(a.voted[0]!.label).toBe('Ana Souza')
-    expect(b.voted[0]!.label).toBe('Bruno Lima')
+    // ballot-number order whoever leads (#104): Ana (13) first in both, with her own share
+    expect(a.voted.map((s) => s.label)).toEqual(['Ana Souza', 'Bruno Lima'])
+    expect(b.voted.map((s) => s.label)).toEqual(['Ana Souza', 'Bruno Lima'])
+    expect(a.voted[0]!.pct).toBe(b.voted[1]!.pct)
   })
 })
 

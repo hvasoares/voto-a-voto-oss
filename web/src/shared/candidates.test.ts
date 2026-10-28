@@ -90,8 +90,8 @@ describe.each(CYCLES)('the same words and colours on every screen: %i', (ano) =>
   it('City card: the colour follows the candidate when the other one leads the city', () => {
     const swapped = buildCityResult({ turnout: turnout(ano, 2), votes: votesOf(ano, 2).map((v, i) => ({ ...v, votos: i === 0 ? 300 : 450 })), candidates: candidatesOf(ano) })
     const bars = turnoutBar(toTurnoutBarProps(swapped)).value
-    // the leader (candidate b) comes first in the card, and it is still blue
-    expect(bars.indexOf('bar__seg--b')).toBeLessThan(bars.indexOf('bar__seg--a'))
+    // candidate b leads the city, but the lower ballot number still comes first (#104), each in its own colour
+    expect(bars.indexOf('bar__seg--a')).toBeLessThan(bars.indexOf('bar__seg--b'))
     expect(bars).toMatch(new RegExp(`bar__seg--b"[^>]*>${b.name.split(' ')[0]}`))
   })
 

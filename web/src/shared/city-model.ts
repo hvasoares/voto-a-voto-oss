@@ -107,6 +107,16 @@ export interface CityResultInput {
   candidates: readonly Candidate[]
 }
 
+/**
+ * The segment of the candidate ahead in the city, by votes, whatever its position in `voted` (which is in ballot-number
+ * order, #104). `undefined` for a tie and for a result with fewer than two candidates: nobody is ahead then.
+ */
+export function leader(r: Pick<CityResult, 'voted'>): Segment | undefined {
+  const [x, y] = r.voted.filter((s) => s.key === 'a' || s.key === 'b')
+  if (!x || !y || x.votos === y.votos) return undefined
+  return x.votos > y.votos ? x : y
+}
+
 const share = (n: number, d: number) => (d <= 0 ? 0 : (n / d) * 100)
 
 export function buildCityResult({ turnout: t, votes, candidates }: CityResultInput): CityResult {
@@ -119,7 +129,11 @@ export function buildCityResult({ turnout: t, votes, candidates }: CityResultInp
     tally.set(v.candidatoNumero, row)
   }
   const ranking = [...tally.values()].sort((x, y) => y.votos - x.votos || x.numero - y.numero)
-  const [a, b, ...rest] = ranking
+  // The two candidates shown are the two with most votes, but they are LISTED in ballot-number order (#104): the lower
+  // number is side `a` (red) whatever the city's result, so the order never flips from one city to the next. Who is
+  // ahead is not read from this order: use `leader(result)` or `ranking`.
+  const [top1, top2, ...rest] = ranking
+  const [a, b] = [top1, top2].filter((c): c is CandidateTally => c !== undefined).sort((x, y) => x.numero - y.numero)
   const outrosVotos = rest.reduce((n, c) => n + c.votos, 0)
 
   const leaders: Segment[] = []

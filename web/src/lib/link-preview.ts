@@ -71,8 +71,10 @@ export function previewDescription(result: CityResult | undefined, city: Pick<Pr
   const cycle = { note, intro, ano: result.ano, turno: result.turno }
   if (result.aptos <= 0) return say('preview.noElectorate', cycle)
   if (result.validos <= 0) return say('preview.noValidVotes', { ...cycle, notVoted: result.notVotedPct })
-  const leader = result.voted[0]
-  return say('preview.default', { ...cycle, voted: result.votedPct, leader: leader?.label ?? '', pct: leader?.pct ?? 0 })
+  // Both shares in ballot-number order, as the card shows them; no word says who is ahead (#104).
+  const [first, second] = result.voted
+  if (first && second?.key === 'b') return say('preview.pair', { ...cycle, voted: result.votedPct, first: first.label, firstPct: first.pct, second: second.label, secondPct: second.pct })
+  return say('preview.default', { ...cycle, voted: result.votedPct, leader: first?.label ?? '', pct: first?.pct ?? 0 })
 }
 
 export interface PreviewHeadOptions {

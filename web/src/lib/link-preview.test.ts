@@ -56,7 +56,7 @@ describe('the head of a city with data', () => {
   })
 
   it('the description is one sentence of the result, every figure from the dataset, nothing invented', () => {
-    expect(head.description).toBe('Resultado de Cidade Exemplo (RJ), 2026, 2º turno: votaram 63% do eleitorado e Candidato A recebeu 53% dos votos válidos.')
+    expect(head.description).toBe('Resultado de Cidade Exemplo (RJ), 2026, 2º turno: votaram 63% do eleitorado; dos votos válidos, Candidato A recebeu 53% e Candidato B 47%.')
   })
 
   it('og:url is the page itself (origin and base)', () => {

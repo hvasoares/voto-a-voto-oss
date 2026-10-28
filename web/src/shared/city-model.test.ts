@@ -101,7 +101,7 @@ describe('buildCityResult', () => {
 
   it('a number with no candidate record is labelled by number, never by another year\'s name', () => {
     const r = buildCityResult({ turnout: turnout(), votes: [vote(99, 40), vote(98, 30)], candidates: [] })
-    expect(r.voted.map((s) => s.label)).toEqual(['Candidato nº 99', 'Candidato nº 98'])
+    expect(r.voted.map((s) => s.label)).toEqual(['Candidato nº 98', 'Candidato nº 99'])
   })
 
   it('a tie is ordered by candidate number so the page never depends on file order', () => {

@@ -41,6 +41,18 @@ test.describe('city card: fixture route is the frame', () => {
     const clipped = await segs.evaluateAll((els) => els.filter((e) => e.scrollWidth > e.clientWidth + 1 || e.scrollHeight > e.clientHeight + 1).map((e) => e.textContent))
     expect(clipped).toEqual([])
   })
+  test('a cycle won by the second candidate still lists the first one first: bars, legend and text alternative (#104)', async ({ page }) => {
+    // Cidade Exemplo, 2018, round 2: Candidato B has more votes than Candidato A
+    await page.goto(`${city}?ciclo=2018&turno=2`)
+    await waitReady(page)
+    const segs = figures(page).locator('.bar').first().locator('.bar__seg')
+    await expect(segs.first()).toContainText('Candidato A')
+    await expect(segs.first()).toHaveClass(/bar__seg--a/)
+    await expect(segs.nth(1)).toContainText('Candidato B')
+    await expect(segs.nth(1)).toHaveClass(/bar__seg--b/)
+    expect(await figures(page).locator('.legend__swatch--a, .legend__swatch--b').evaluateAll((els) => els.map((e) => e.className.match(/--(\w)/)![1]))).toEqual(['a', 'b'])
+    await expect(figures(page).locator('.bar[role="img"]').first()).toHaveAttribute('aria-label', /^Votaram, por candidato: Candidato A \d+%, Candidato B \d+%/)
+  })
   test('without a query the latest round of the latest cycle is shown', async ({ page }) => {
     await page.goto(city)
     await waitReady(page)
