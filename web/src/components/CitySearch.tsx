@@ -67,7 +67,7 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
         <CommandInput
           value={text}
           onValueChange={setText}
-          className={`h-full pl-[39px]! text-body! leading-[17px] placeholder:text-muted-foreground ${bar ? 'pr-10!' : 'pb-1 lg:pl-[22px]!'}`}
+          className={`h-full pl-[39px]! text-step-2! placeholder:text-muted-foreground ${bar ? 'pr-10!' : 'pb-1 lg:pl-[22px]!'}`}
           placeholder="Busque sua cidade"
           aria-label="Busque sua cidade"
           autoComplete="off"
@@ -94,8 +94,8 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
                       savePlace({ kind: 'city', uf: h.uf, slug: h.slug, nome: h.nome })
                     }}
                   >
-                    <span className="text-body font-bold leading-[18px] wrap-anywhere">{h.nome}</span>
-                    <span className="flex-none text-small text-muted-foreground">{h.ufLabel}</span>
+                    <span className="text-step-2 font-bold wrap-anywhere">{h.nome}</span>
+                    <span className="flex-none text-step-1 text-muted-foreground">{h.ufLabel}</span>
                   </a>
                 </CommandItem>
               ))}
@@ -104,9 +104,9 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
         </CommandList>
       </Command>
       <div aria-live="polite" className={bar ? BAR_LIST : undefined}>
-        {view.state === 'empty' && <p className="mt-2 text-small leading-4 text-muted-foreground">Nenhuma cidade encontrada. Confira a grafia ou escolha um estado abaixo.</p>}
+        {view.state === 'empty' && <p className="mt-2 text-step-1 text-muted-foreground">Nenhuma cidade encontrada. Confira a grafia ou escolha um estado abaixo.</p>}
         {view.state === 'results' && view.total > view.hits.length && (
-          <p className="mt-2 text-small leading-4 text-muted-foreground">Mostrando {view.hits.length} de {view.total}. Digite mais letras para refinar.</p>
+          <p className="mt-2 text-step-1 text-muted-foreground">Mostrando {view.hits.length} de {view.total}. Digite mais letras para refinar.</p>
         )}
       </div>
     </div>

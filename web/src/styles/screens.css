@@ -2,30 +2,18 @@
    so the markup contracts of the vanilla app (class names, e2e selectors, screenshots) carry over unchanged. The
    tokens come from src/theme.ts via the --sketch-* variables; the aliases below keep the old site names verbatim. */
 :root {
-  --c-paper: var(--sketch-color-paper);
-  --c-paper-2: var(--sketch-color-paper-2);
-  --c-ink: var(--sketch-color-ink);
-  --c-rule: var(--sketch-color-rule);
-  --c-muted: var(--sketch-color-muted);
-  --c-ring: var(--sketch-color-ring);
-  --c-accent: var(--sketch-color-accent);
-  --c-accent-fg: var(--sketch-color-accent-fg);
-  --c-flag: var(--sketch-color-flag);
-  --c-cand-a: var(--sketch-color-cand-a);
-  --c-cand-b: var(--sketch-color-cand-b);
-  --c-cand-outros: var(--sketch-color-cand-outros);
-  --c-abstencao: var(--sketch-color-abstencao);
-  --c-brancos: var(--sketch-color-brancos);
-  --c-nulos: var(--sketch-color-nulos);
+  /* The colours (--c-*) come from src/theme.ts, inlined in every page; the type scale (#86) is written here, once, for the shared
+     stylesheet: values are src/shared/tokens.ts `steps`, `leading` and `weights` (tokens.test.ts keeps the two in step). */
+  --step-1: 13px; --step-2: 16px; --step-3: 20px; --step-4: 26px;
+  --lh-1: 1.3; --lh-2: 1.4; --lh-3: 1.3; --lh-4: 1.2;
+  --fw-regular: 400; --fw-bold: 700;
   --font-serif: var(--sketch-font-serif);
   --font-sans: var(--sketch-font-sans);
   --fs-brand: var(--sketch-text-brand);
   --fs-title: var(--sketch-text-title);
   --fs-section: var(--sketch-text-section);
-  --fs-lead: var(--sketch-text-lead);
   --fs-body: var(--sketch-text-body);
   --fs-small: var(--sketch-text-small);
-  --fs-tiny: var(--sketch-text-tiny);
   --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px; --sp-6: 24px; --sp-8: 32px;
 }
 
@@ -40,11 +28,11 @@
 }
 .brand { font: 400 var(--fs-brand) var(--font-serif); color: var(--c-ink); }
 .app-header__sep { width: 1px; height: 18px; background: var(--c-rule); }
-.app-header__context { font-size: var(--fs-small); color: var(--c-muted); }
+.app-header__context { font-size: var(--step-1); color: var(--c-muted); }
 
 .banner {
   background: var(--c-flag); color: var(--c-ink);
-  font: 700 var(--fs-small)/1.2 var(--font-sans); letter-spacing: 0.02em;
+  font: var(--fw-bold) var(--step-1)/1.2 var(--font-sans); letter-spacing: 0.02em;
   text-align: center; padding: var(--sp-2) var(--gutter);
 }
 
@@ -52,15 +40,16 @@
 .back {
   display: inline-flex; align-items: center; min-height: var(--min-tap); padding: 0 var(--sp-4);
   border: 1px solid var(--c-rule); border-radius: var(--radius);
-  background: var(--c-paper); color: var(--c-ink); font-size: var(--fs-lead);
+  background: var(--c-paper); color: var(--c-ink); font-size: var(--step-2);
   margin-bottom: var(--sp-4);
 }
 .page__title { font: 400 var(--fs-title)/1.1 var(--font-serif); overflow-wrap: anywhere; }
-.page__subtitle { color: var(--c-muted); font-size: var(--fs-lead); margin-top: var(--sp-1); }
+.page__subtitle { color: var(--c-muted); font-size: var(--step-2); margin-top: var(--sp-1); }
+.state-page .page__subtitle, .city-page .page__subtitle, .cycles-page .page__subtitle { font-size: var(--step-1); line-height: var(--lh-1); }
 
 .source-footer {
   padding: var(--sp-4) var(--gutter) var(--sp-6);
-  text-align: center; font-size: var(--fs-small); color: var(--c-accent);
+  text-align: center; font-size: var(--step-1); color: var(--c-accent);
 }
 
 .source-footer__about {
@@ -72,12 +61,11 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 
 /* ---- state (#4 ported by #50): classes prefixed state- are owned by the state slot; `.state-page` scopes its frame to the Sketch frame "5 Estado" ---- */
 .state-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 11px; }
-.state-page .app-header__context { font-size: 12px; }
-.state-page .banner { font-size: 11px; font-weight: 600; letter-spacing: 0; line-height: 14px; padding: 5px var(--gutter); height: 24px; white-space: pre; overflow: hidden; }
+.state-page .banner { letter-spacing: 0; line-height: 1.2; padding: 5px var(--gutter); }
 .state-page .page__main { padding: 8px var(--gutter) var(--sp-4); }
-.state-page .back { min-width: 84px; margin: 0 0 8px -8px; font-size: 15px; padding: 0 12px; }
-.state-page .page__title { font-size: 26px; line-height: 36px; }
-.state-page .page__subtitle { font-size: 14px; line-height: 16px; margin-top: -4px; }
+.state-page .back { min-width: 84px; margin: 0 0 8px -8px; padding: 0 12px; }
+.state-page .page__title, .city-page .page__title, .cycles-page .page__title { font-size: var(--step-4); line-height: var(--lh-4); }
+.state-page .page__subtitle, .city-page .page__subtitle { margin-top: 0; }
 .state-map {
   display: flex; align-items: center; justify-content: center; height: 220px; margin-top: 4px;
   border: 1px dashed var(--c-ring); border-radius: var(--radius); background: var(--c-paper-2);
@@ -112,14 +100,13 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .state-links a:last-child { flex: 0 0 150px; text-align: right; }
 
 /* ---- city card (#5 ported by #50): shared bars (.turnout, .bar, .legend) are owned by #5 and reused by the cycles and share views; `.city-*` and `.city-page` belong to the city slot ---- */
-.turnout__title { font: 600 13px/16px var(--font-sans); }
+.turnout__title { font: var(--fw-bold) var(--step-1)/var(--lh-1) var(--font-sans); }
 .turnout__sep { margin: 0 3.5px; }
 .bar { display: flex; gap: 2px; height: 38px; margin-top: 9px; }
 .bar__seg {
   flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;
-  padding-bottom: 2px; font: 600 12px/15px var(--font-sans); white-space: pre; text-align: center; color: var(--c-ink);
+  padding-bottom: 2px; font: var(--fw-bold) var(--step-1)/var(--lh-1) var(--font-sans); white-space: pre; text-align: center; color: var(--c-ink);
 }
-.bar__seg--a, .bar__seg--b, .bar__seg--outros { font-size: 11px; }
 .bar__seg--a { background: var(--c-cand-a); color: var(--c-accent-fg); }
 /* Side B is the pair's blue (#84): paper text on it, 7.9:1 (the old taupe needed the dark ink). */
 .bar__seg--b { background: var(--c-cand-b); color: var(--c-accent-fg); }
@@ -136,26 +123,25 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .legend__swatch--abstencao { background: var(--c-abstencao); }
 .legend__swatch--brancos { background: var(--c-brancos); }
 .legend__swatch--nulos { background: var(--c-nulos); }
-.legend__label { flex: 1; min-width: 0; font: 400 13px/15px var(--font-sans); overflow-wrap: anywhere; }
-.legend__value { flex: none; font-size: 11px; line-height: 14px; color: var(--c-muted); }
+.legend__label { flex: 1; min-width: 0; font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); overflow-wrap: anywhere; }
+.legend__value { flex: none; font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); }
 /* "ver cálculo" (#61): under the legend label and after the bar titles; the accent colour passes 4.5:1 on the paper. */
-.calc { color: var(--c-accent); font: 600 10px/12px var(--font-sans); text-decoration: underline; }
+.calc { color: var(--c-accent); font: var(--fw-bold) var(--step-1)/var(--lh-1) var(--font-sans); text-decoration: underline; }
 .legend__label .calc { display: block; }
-.turnout__title .calc { float: right; font-size: 11px; line-height: 16px; }
+.turnout__title .calc { float: right; }
 .city-sentence + .calc, .city-margin ~ .calc { display: block; margin-top: 6px; }
 .curio__fact .calc { display: block; margin-top: 8px; }
 
+/* The card's base is the scale's small step (#86); only what is larger or bolder says so. */
+.city-page { font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); }
 .city-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
-.city-page .app-header__context { font-size: 12px; }
-.city-page .banner { font-size: 11px; font-weight: 600; letter-spacing: 0; line-height: 14px; padding: 6px var(--gutter) 0; height: 28px; white-space: pre; overflow: hidden; margin: 0 calc(-1 * var(--gutter)); }
+.city-page .banner { letter-spacing: 0; line-height: 1.2; padding: 6px var(--gutter); margin: 0 calc(-1 * var(--gutter)); }
 .city-page .page__main { padding: 0 var(--gutter) var(--sp-4); }
-.city-page .back { min-width: 84px; margin: 4px 0 8px -8px; font-size: 15px; padding: 0 12px; }
-.city-page .page__title { font-size: 26px; line-height: 36px; }
-.city-page .page__subtitle { font-size: 14px; line-height: 16px; margin-top: -4px; }
+.city-page .back { min-width: 84px; margin: 4px 0 8px -8px; padding: 0 12px; }
 .city-page .tabs, .tabs { display: flex; background: var(--c-paper-2); border-radius: var(--radius); padding: var(--sp-1); gap: var(--sp-1); }
 .city-page .tabs { margin-top: 14px; padding: 2px 4px; }
 .city-page .tabs + .tabs { margin-top: 6px; }
-.city-page .tabs__tab { min-height: 44px; font-size: 14px; }
+.city-page .tabs__tab { min-height: 44px; }
 .tabs__tab {
   flex: 1; display: flex; align-items: center; justify-content: center; min-height: 40px;
   color: var(--c-muted); border-radius: var(--radius);
@@ -165,50 +151,49 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .city-card .city-figures > .turnout__title:first-child { margin-top: 15px; }
 .city-card .bar + .turnout__title { margin-top: 17px; }
 .city-card .legend { margin-top: 12px; }
-.city-card .legend__row { height: 34px; }
-.city-page .city-headline { font: 400 18px/24px var(--font-serif); margin: 26px 0 0; }
+.city-card .legend__row { height: 40px; }
+.city-page .city-headline { font: 400 var(--step-3)/var(--lh-3) var(--font-serif); margin: 26px 0 0; }
 /* The register (linguagem simples): both sentences are pre-rendered; the choice is an attribute of <html> (set by the card's inline script before paint). */
 html[data-register="plain"] [data-register="standard"], html:not([data-register="plain"]) [data-register="plain"] { display: none; }
 .city-page .register { display: flex; gap: 4px; margin: 18px 0 0; padding: 2px 4px; background: var(--c-paper-2); border-radius: var(--radius); }
 .city-page .register[hidden] { display: none; }
-.city-page .register__choice { flex: 1; min-height: 44px; padding: 0 8px; border: 0; border-radius: var(--radius); background: transparent; color: var(--c-muted); font: 400 14px/18px var(--font-sans); cursor: pointer; }
+.city-page .register__choice { flex: 1; min-height: 44px; padding: 0 8px; border: 0; border-radius: var(--radius); background: transparent; color: var(--c-muted); cursor: pointer; }
 .city-page .register__choice[aria-pressed="true"] { background: var(--c-accent); color: var(--c-accent-fg); font-weight: 700; }
 .city-page .register__choice:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 2px; }
 .city-page .register:not([hidden]) + .city-sentence .city-headline { margin-top: 14px; }
-.city-page .city-headline__note { font: 400 11px/14px var(--font-sans); color: var(--c-ink); margin: 6px 0 0; }
-.city-page .city-margin { font: 400 14px/18px var(--font-sans); color: var(--c-ink); margin: 12px 0 0; }
+.city-page .city-headline__note { color: var(--c-ink); margin: 6px 0 0; }
+.city-page .city-margin, .city-page .city-arc__pill, .city-page .city-twin { font-size: var(--step-2); line-height: var(--lh-2); }
+.city-page .city-margin { color: var(--c-ink); margin: 12px 0 0; }
 .city-page .city-arc { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--c-rule); border-radius: 10px; background: var(--c-paper-2); }
-.city-page .city-arc__pill { margin: 0; color: var(--c-ink); font: 400 16px/22px var(--font-sans); }
-.city-page .city-twin { display: block; margin-top: 12px; color: var(--c-accent); font: 400 15px/20px var(--font-sans); }
-.city-page .city-twin__reason { display: block; margin-top: 1px; color: var(--c-muted); font-size: 11px; line-height: 14px; }
-.city-page .city-arc__note { margin: 0; color: var(--c-muted); font: 400 11px/14px var(--font-sans); }
-.city-page .city-q__q { margin: 16px 0 0; font: 400 22px/28px var(--font-serif); }
-.city-page .city-q__q::before, .city-page .city-q .city-arc::before { display: block; font: 600 10px/12px var(--font-sans); color: var(--c-muted); }
+.city-page .city-arc__pill { margin: 0; color: var(--c-ink); }
+.city-page .city-twin { display: block; margin-top: 12px; color: var(--c-accent); }
+.city-page .city-twin__reason { display: block; margin-top: 1px; color: var(--c-muted); }
+.city-page .city-arc__note { margin: 0; color: var(--c-muted); }
+.city-page .city-q__q { margin: 16px 0 0; font: 400 var(--step-3)/var(--lh-3) var(--font-serif); }
+.city-page .city-q__q::before, .city-page .city-q .city-arc::before { display: block; font: var(--fw-bold) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); }
 .city-page .city-q__q::before { content: "PERGUNTA"; }
 .city-page .city-q .city-arc::before { content: "RESPOSTA"; }
-.city-page .city-q__yn { float: left; margin: 0 .3em 0 0; font: 700 16px/22px var(--font-sans); }
-.city-page .city-q__btn { min-width: 80px; min-height: 44px; margin: 6px 8px 0 0; border: 1px solid var(--c-accent); border-radius: var(--radius); background: none; color: var(--c-accent); font: 600 15px/20px var(--font-sans); }
+.city-page .city-q__yn { float: left; margin: 0 .3em 0 0; font: 700 var(--step-2)/var(--lh-2) var(--font-sans); }
+.city-page .city-q__btn { min-width: 80px; min-height: 44px; margin: 6px 8px 0 0; border: 1px solid var(--c-accent); border-radius: var(--radius); background: none; color: var(--c-accent); font: 700 var(--step-2)/var(--lh-2) var(--font-sans); }
 .city-page .city-q__btn[aria-pressed="true"] { background: var(--c-accent); color: var(--c-accent-fg); }
-.city-nodata { margin: 24px 0; font-size: var(--fs-lead); color: var(--c-muted); }
+.city-nodata { margin: 24px 0; font-size: var(--step-2); color: var(--c-muted); }
 .city-share {
   display: flex; align-items: center; justify-content: center; height: 48px; margin-top: 18px;
-  background: var(--c-accent); color: var(--c-accent-fg); border-radius: var(--radius); font-size: 15px; padding-bottom: 1px;
+  background: var(--c-accent); color: var(--c-accent-fg); border-radius: var(--radius); font-size: var(--step-2); padding-bottom: 1px;
 }
 .city-links__sub { display: none; }
 .city-links { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 7px; padding-top: 15px; border-top: 1px solid var(--c-rule); }
 /* Tap target >= the 44px minimum in every direction (#19): the links are centred cells of the grid. */
-.city-links a { display: flex; align-items: center; justify-content: center; min-height: var(--min-tap); text-align: center; font: 600 11px/16px var(--font-sans); color: var(--c-accent); }
+.city-links a { display: flex; align-items: center; justify-content: center; min-height: var(--min-tap); text-align: center; font-weight: var(--fw-bold); color: var(--c-accent); }
 .city-page .page__main { padding-bottom: 0; }
-.city-page .source-footer { padding: 19px var(--gutter) 24px; color: var(--c-muted); font-size: 11px; line-height: 14px; }
+.city-page .source-footer { padding: 19px var(--gutter) 24px; color: var(--c-muted); }
 
 /* ---- three cycles of a city (#9, ported by #50): `.cycles-*` and `.cycle*` belong to the city-cycles slot; the bars reuse the shared .bar / .bar__seg ---- */
 .cycles-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
-.cycles-page .app-header__context { font-size: 12px; }
-.cycles-page .banner { font-size: 11px; font-weight: 600; letter-spacing: 0; line-height: 14px; padding: 6px var(--gutter) 0; height: 28px; white-space: pre; overflow: hidden; }
+.cycles-page .banner { letter-spacing: 0; line-height: 1.2; padding: 6px var(--gutter); }
 .cycles-page .page__main { padding: 4px var(--gutter) 0; }
-.cycles-page .back { min-width: 84px; margin: 0 0 8px -8px; font-size: 15px; padding: 0 12px; }
-.cycles-page .page__title { font-size: 26px; line-height: 36px; }
-.cycles-page .page__subtitle { font-size: 12px; line-height: 14px; margin-top: -4px; margin-bottom: 18px; }
+.cycles-page .back { min-width: 84px; margin: 0 0 8px -8px; padding: 0 12px; }
+.cycles-page .page__subtitle { margin-top: -4px; margin-bottom: 18px; }
 .cycles__round + .cycles__round { margin-top: 24px; }
 .cycle { box-sizing: border-box; height: 150px; margin: 0 0 0; padding: 9px 16px 0; border-top: 1px solid var(--c-rule); }
 .cycle__year { font: 700 15px/18px var(--font-sans); margin: 0; }
@@ -251,10 +236,8 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
   .city-body { display: grid; grid-template-columns: minmax(0, 640px) minmax(0, 480px); grid-template-rows: auto 1fr; column-gap: clamp(40px, 5.5vw, 80px); justify-content: center; align-items: start; }
   .city-left { grid-column: 1; grid-row: 1 / 3; }
   .city-right { grid-column: 2; grid-row: 2; }
-  .city-page .banner { grid-column: 2; grid-row: 1; justify-self: start; width: auto; height: auto; margin: 26px 0 0; padding: 3px 6px; border-radius: 3px; white-space: normal; font-size: 10px; line-height: 12px; }
+  .city-page .banner { grid-column: 2; grid-row: 1; justify-self: start; width: auto; height: auto; margin: 26px 0 0; padding: 3px 6px; border-radius: 3px; white-space: normal; }
   .city-page .back { min-width: 0; margin: 0; min-height: 28px; padding: 0; border: 0; background: none; font-size: 14px; color: var(--c-accent); }
-  .city-page .page__title { font-size: 46px; line-height: 56px; margin-top: 4px; }
-  .city-page .page__subtitle { font-size: 15px; line-height: 20px; margin-top: 0; }
   .city-page .tabs { margin-top: 24px; }
   .city-page .tabs + .tabs { margin-top: 10px; }
   .city-card { margin-top: 20px; padding: 4px 24px 20px; border: 1px solid var(--c-rule); border-radius: 12px; }
@@ -265,14 +248,12 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
   .city-card .legend { margin-top: 20px; }
   .city-card .legend__row { height: 34px; }
   .city-card .legend__label { flex: none; width: 228px; font-size: 15px; }
-  .legend__label .calc { display: inline; margin-left: 10px; font-size: 11px; }
-  .city-card .legend__value { font-size: 13px; }
+  .legend__label .calc { display: inline; margin-left: 10px; }
   .city-page .city-words { margin-top: 12px; }
   .city-page .city-headline { font-size: 26px; line-height: 33px; margin: 0; }
-  .city-page .city-headline__note { font-size: 12px; line-height: 16px; margin-top: 10px; color: var(--c-muted); }
+  .city-page .city-headline__note { margin-top: 10px; color: var(--c-muted); }
   .city-page .register { margin: 0 0 14px; }
   .city-page .register:not([hidden]) + .city-sentence .city-headline { margin-top: 0; }
-  .city-page .city-arc__note { font-size: 12px; line-height: 16px; }
   .city-page .city-twin { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--c-rule); font-size: 20px; line-height: 26px; }
   .city-page .city-twin__reason { margin-top: 2px; font-size: 14px; line-height: 18px; }
   .city-page .city-margin { font-size: 16px; line-height: 21px; margin-top: 18px; }
@@ -281,7 +262,7 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
   .city-links a { display: block; min-height: 76px; padding: 16px 0 0; text-align: left; font: 400 20px/26px var(--font-sans); border-bottom: 1px solid var(--c-rule); }
   .city-links__sub { display: block; margin-top: 2px; font-size: 14px; line-height: 18px; color: var(--c-muted); }
   .city-page .page-data { box-sizing: border-box; width: 100%; max-width: 1240px; margin: 8px auto 0; padding: 0 20px; }
-  .city-page .source-footer { width: 100%; max-width: 1200px; margin: 24px auto 0; padding: 24px 0; text-align: left; font-size: 13px; }
+  .city-page .source-footer { width: 100%; max-width: 1200px; margin: 24px auto 0; padding: 24px 0; text-align: left; }
 }
 
 /* ---- desktop (G10, #55): Estado and the three-cycles pages are a centered column of about 720 px from 768 px, and drop the page header
@@ -293,10 +274,10 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
 }
 @media (min-width: 1024px) {
   .state-page .app-header, .cycles-page .app-header { display: none; }
-  .state-page .banner, .cycles-page .banner { width: fit-content; max-width: none; height: auto; margin: 20px max(20px, calc(50% - 360px)) 0; padding: 3px 6px; border-radius: 3px; white-space: normal; font-size: 10px; line-height: 12px; align-self: flex-start; }
+  .state-page .banner, .cycles-page .banner { width: fit-content; max-width: none; height: auto; margin: 20px max(20px, calc(50% - 360px)) 0; padding: 3px 6px; border-radius: 3px; white-space: normal; align-self: flex-start; }
   .state-page .back, .cycles-page .back { min-width: 0; min-height: 28px; margin: 16px 0 0; padding: 0; border: 0; background: none; font-size: 14px; color: var(--c-accent); }
-  .state-page .page__title, .cycles-page .page__title { font-size: 46px; line-height: 56px; margin-top: 4px; }
-  .state-page .page__subtitle, .cycles-page .page__subtitle { font-size: 15px; line-height: 20px; margin-top: 0; }
+  .state-page .page__title, .city-page .page__title, .cycles-page .page__title { font-size: 46px; line-height: 56px; margin-top: 4px; }
+  .state-page .page__subtitle, .city-page .page__subtitle, .cycles-page .page__subtitle { font-size: 15px; line-height: 20px; margin-top: 0; }
   .state-page .page__main { padding: 0 20px var(--sp-4); }
   .state-map--island, .state-map { margin-top: 16px; }
   .state-search { margin-top: 20px; }
@@ -335,13 +316,13 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
 /* ---- curiosities (#33): a card on the city page. On a phone it is a block of the single column between the twin line and Compartilhar
    (the flex order below); from 1024 px it sits under the figures of the city card. ---- */
 .screen .curio { display: flex; flex-direction: column; }
-.screen .curio__title { order: 0; margin: 0; font: 400 12px/14px var(--font-sans); color: var(--c-muted); }
-.screen .curio__note { order: 1; margin: 16px 0 0; padding: 10px 12px; background: var(--c-paper-2); border: 1px solid var(--c-rule); border-radius: 8px; font: 400 12px/16px var(--font-sans); color: var(--c-ink); }
+.screen .curio__title { order: 0; margin: 0; font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); }
+.screen .curio__note { order: 1; margin: 16px 0 0; padding: 10px 12px; background: var(--c-paper-2); border: 1px solid var(--c-rule); border-radius: 8px; font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-ink); }
 .screen .curio__facts { order: 2; list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 10px; }
 .screen .curio__fact { display: grid; grid-template-columns: 76px 1fr; column-gap: 12px; padding: 16px; border: 1px solid var(--c-rule); border-radius: 8px; }
-.screen .curio__rank { grid-row: 1; margin: 0; font: 400 44px/48px var(--font-serif); color: var(--c-accent); }
-.screen .curio__what { grid-row: 1; grid-column: 2; margin: 0; font: 400 17px/22px var(--font-serif); color: var(--c-ink); }
-.screen .curio__group { grid-column: 1 / -1; margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--c-rule); font: 400 11px/14px var(--font-sans); color: var(--c-muted); }
+.screen .curio__rank { grid-row: 1; margin: 0; font: 400 var(--step-4)/var(--lh-4) var(--font-serif); color: var(--c-accent); }
+.screen .curio__what { grid-row: 1; grid-column: 2; margin: 0; font: 400 var(--step-2)/var(--lh-2) var(--font-serif); color: var(--c-ink); }
+.screen .curio__group { grid-column: 1 / -1; margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--c-rule); font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); }
 /* Phone: the two columns of the city page dissolve into one flex column, so the card (in the left column's markup, where the
    desktop wants it) can sit after the twin line; the other blocks keep their DOM order and their margins. */
 @media (max-width: 1023.98px) {
@@ -355,16 +336,16 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
   .screen .city-curio { display: block; margin-top: 20px; padding: 16px 20px 14px; border: 1px solid var(--c-rule); border-radius: 12px; }
   .screen .city-curio .curio__title { font: 600 14px/18px var(--font-sans); color: var(--c-ink); }
   .screen .city-curio .curio__facts { order: 1; margin-top: 12px; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-  .screen .city-curio .curio__note { order: 2; margin: 12px 0 0; padding: 0; background: none; border: 0; font-size: 11px; line-height: 14px; color: var(--c-muted); }
+  .screen .city-curio .curio__note { order: 2; margin: 12px 0 0; padding: 0; background: none; border: 0; color: var(--c-muted); }
   .screen .city-curio .curio__fact { display: block; padding: 0; border: 0; }
   .screen .city-curio .curio__rank { font-size: 32px; line-height: 36px; }
-  .screen .city-curio .curio__what { font: 400 12px/15px var(--font-sans); margin-top: 4px; }
-  .screen .city-curio .curio__group { margin-top: 8px; padding-top: 0; border: 0; font-size: 10px; line-height: 13px; }
+  .screen .city-curio .curio__what { font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); margin-top: 4px; }
+  .screen .city-curio .curio__group { margin-top: 8px; padding-top: 0; border: 0; }
 }
 
 /* The "conferido" seal (#62): a quiet block under the numbers, on the page of the calculation and on the pages it covers. */
 .seal { margin-top: 16px; padding: 12px 14px; border: 1px solid var(--c-accent); border-radius: 12px; background: var(--c-paper-2); }
-.seal__title { font: 700 13px/16px var(--font-sans); color: var(--c-accent); }
+.seal__title { font: var(--fw-bold) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-accent); }
 .seal__lines { margin: 6px 0 0; padding: 0; list-style: none; }
-.seal__lines li { font: 400 12px/16px var(--font-sans); margin-top: 4px; }
-.seal__note { font: 400 11px/14px var(--font-sans); color: var(--c-muted); margin-top: 8px; }
+.seal__lines li { font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); margin-top: 4px; }
+.seal__note { font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); margin-top: 8px; }

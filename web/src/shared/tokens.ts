@@ -41,6 +41,16 @@ export const fonts = {
 /** px values read from the frames: brand 20, page title 30, section 18, body 15, small 12. */
 export const type = { brand: 20, title: 30, section: 18, lead: 16, body: 15, small: 12, tiny: 10 } as const
 
+/**
+ * The type scale (#86): four sizes at a ratio of about 1.25 with a floor of 13 px, the line height each carries, and two weights.
+ * Step 1 small/caption, 2 body/lead, 3 section, 4 title. Screens read them as `--step-n`/`--lh-n` (and the Tailwind utilities `text-step-n`,
+ * which bring their line height); nothing outside these values is allowed on a migrated screen (e2e/type-scale.spec.ts).
+ * Expand-contract: the old `type` sizes above stay for the screens not migrated yet; the last wave (#87) removes them.
+ */
+export const steps = { 1: 13, 2: 16, 3: 20, 4: 26 } as const
+export const leading = { 1: 1.3, 2: 1.4, 3: 1.3, 4: 1.2 } as const
+export const weights = { regular: 400, bold: 700 } as const
+
 /** Page gutter is 20px in every frame; frames are 390px wide. */
 export const space = { 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24, 8: 32 } as const
 
@@ -53,6 +63,7 @@ export function tokensCss(): string {
     `  --font-serif: ${fonts.serif};`,
     `  --font-sans: ${fonts.sans};`,
     ...Object.entries(type).map(([k, v]) => `  --fs-${k}: ${v}px;`),
+    ...Object.entries(steps).map(([k, v]) => `  --step-${k}: ${v}px;`),
     ...Object.entries(space).map(([k, v]) => `  --sp-${k}: ${v}px;`),
     `  --radius: ${radius.control}px;`,
     `  --gutter: ${layout.gutter}px;`,

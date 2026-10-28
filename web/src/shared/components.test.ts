@@ -50,7 +50,8 @@ describe('segmentText: the text shrinks with the segment', () => {
   it('candidates: the name beside the share, wrapping and shortening before the share goes', () => {
     expect(segmentText('a', 52, 'Lula')).toBe('Lula 52%')
     expect(segmentText('b', 48, 'Flavio Bolsonaro')).toBe('Flavio Bolsonaro 48%')
-    expect(segmentText('b', 30, 'Flavio Bolsonaro')).toBe('Flavio\nBolsonaro 30%')
+    expect(segmentText('b', 36, 'Flavio Bolsonaro')).toBe('Flavio\nBolsonaro 36%')
+    expect(segmentText('b', 30, 'Flavio Bolsonaro')).toBe('Flavio\n30%')
     expect(segmentText('b', 26, 'Flavio Bolsonaro')).toBe('Flavio\n26%')
     expect(segmentText('b', 20, 'Flavio Bolsonaro')).toBe('Flavio\n20%')
     expect(segmentText('a', 8, 'Lula')).toBe('8%')

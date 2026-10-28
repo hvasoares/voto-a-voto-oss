@@ -40,6 +40,15 @@
   --text-body: var(--sketch-text-body);
   --text-small: var(--sketch-text-small);
   --text-tiny: var(--sketch-text-tiny);
+  /* The type scale (#86): text-step-1..4 set the size and its line height; weights are Tailwind's font-normal (400) and font-bold (700). */
+  --text-step-1: var(--step-1);
+  --text-step-1--line-height: var(--lh-1);
+  --text-step-2: var(--step-2);
+  --text-step-2--line-height: var(--lh-2);
+  --text-step-3: var(--step-3);
+  --text-step-3--line-height: var(--lh-3);
+  --text-step-4: var(--step-4);
+  --text-step-4--line-height: var(--lh-4);
 }
 
 @layer base {

@@ -36,16 +36,16 @@ export interface TurnoutBarProps {
 
 /** Text tiers of a bar segment: the first tier whose `min` (percent of the bar) is reached wins; below every tier the segment has no text. */
 const TIERS: Record<Exclude<CandidateKind, 'a' | 'b'>, { min: number; text: (pct: number) => string }[]> = {
-  outros: [{ min: 33, text: (p) => `Outros  ${p}% dos votos` }, { min: 20, text: (p) => `Outros  ${p}%` }, { min: 12, text: () => 'Outros' }, { min: 8, text: () => 'Ou' }],
-  abstencao: [{ min: 66, text: (p) => `Abstenção ${p}% dos que não votaram` }, { min: 30, text: (p) => `Abstenção ${p}%` }, { min: 20, text: () => 'Abstenção' }, { min: 8, text: () => 'Ab' }],
-  brancos: [{ min: 66, text: (p) => `Brancos ${p}% dos que não votaram` }, { min: 30, text: (p) => `Brancos ${p}%` }, { min: 20, text: () => 'Brancos' }, { min: 8, text: () => 'Br' }],
-  nulos: [{ min: 66, text: (p) => `Nulos ${p}% dos que não votaram` }, { min: 30, text: (p) => `Nulos ${p}%` }, { min: 20, text: () => 'Nulos' }, { min: 8, text: () => 'Nu' }],
+  outros: [{ min: 46, text: (p) => `Outros  ${p}% dos votos` }, { min: 26, text: (p) => `Outros  ${p}%` }, { min: 15, text: () => 'Outros' }, { min: 8, text: () => 'Ou' }],
+  abstencao: [{ min: 75, text: (p) => `Abstenção ${p}% dos que não votaram` }, { min: 32, text: (p) => `Abstenção ${p}%` }, { min: 22, text: () => 'Abstenção' }, { min: 8, text: () => 'Ab' }],
+  brancos: [{ min: 75, text: (p) => `Brancos ${p}% dos que não votaram` }, { min: 30, text: (p) => `Brancos ${p}%` }, { min: 20, text: () => 'Brancos' }, { min: 8, text: () => 'Br' }],
+  nulos: [{ min: 75, text: (p) => `Nulos ${p}% dos que não votaram` }, { min: 30, text: (p) => `Nulos ${p}%` }, { min: 20, text: () => 'Nulos' }, { min: 8, text: () => 'Nu' }],
 }
 
-/** Width of the card's bar at 390 px, rough bold 11px glyph width and the segment's padding: how much text fits a segment. */
+/** Width of the card's bar at 390 px, rough bold 13px glyph width (the type scale's step 1, #86) and the segment's padding: how much text fits a segment. */
 const BAR_PX = 318
-const GLYPH_PX = 6.4
-const PAD_PX = 8
+const GLYPH_PX = 7
+const PAD_PX = 10
 
 /**
  * The text of a candidate segment (#82): name and share, never the share alone unless the segment is a sliver. It gives way in
