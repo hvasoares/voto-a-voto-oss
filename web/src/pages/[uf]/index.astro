@@ -16,6 +16,7 @@ import { loadCityMapData, semContornoOf } from '@/lib/city-map-data'
 import { UF_NOME } from '@/lib/uf-names'
 import { datasetFixture, loadSearchShard, loadStateShard, loadStateUfs } from '@/lib/shard-files'
 import { recapUfs } from '@/lib/recap-data'
+import { hasStory } from '@/lib/story-data'
 import { nerdsPath } from '@/lib/nerds/paths'
 import { placesWithShards } from '@/lib/nerds/shards'
 import Seal from '@/components/Seal.astro'
@@ -43,6 +44,8 @@ const links = factLinks(facts.facts, `/${uf}/`, base)
 const seal = await sealOf(facts)
 // The recap exists for every state the three-cycle aggregates know (the overseas posts are not a state).
 const hasRecap = (await recapUfs()).includes(uf!)
+// The state story (#100): the same predicate that decides which /<uf>/historia/ pages are built.
+const hasHistoria = await hasStory(uf!, base)
 const hasNerds = placesWithShards().ufs.includes(uf!)
 // The municipality map of this state (tickets #16+#17): the same island the focused page
 // /mapa/<uf>/ hosts, filling the placeholder #4/#50 reserved. The list view comes pre-rendered;
@@ -86,6 +89,7 @@ const showMap = cityMap.rows.length > 0
         <a data-link="cycles" href={href(`/tres-ciclos/${uf}/`)}>Ver os três ciclos do estado ›</a>
         <a data-link="compare" href={href(`/cara-a-cara/?nivel=estado&a=${uf}`)}>Comparar com outro estado ›</a>
         {hasNerds && <a data-link="nerds" href={href(`/${nerdsPath({ level: 'estado', id: uf })}`)}>Dados para nerds ›</a>}
+        {hasHistoria && <a data-link="story" href={href(`/${uf}/historia/`)}>Ver a história do estado ›</a>}
         {hasRecap && <a data-link="recap" href={href(`/${uf}/resumo/`)}>Resumo do estado ›</a>}
       </nav>
     <Seal lines={seal} />

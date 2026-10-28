@@ -101,14 +101,15 @@ test.describe('Dados para nerds: estado, Placar', () => {
 })
 
 test.describe('Dados para nerds: the Estado page entry point', () => {
-  test('"Dados para nerds ›" sits between "Comparar com outro estado" and "Resumo do estado", opens the dashboard and shows a focus ring from the keyboard', async ({ page }) => {
+  test('"Dados para nerds ›" sits after "Comparar com outro estado" and before the story and recap links, opens the dashboard and shows a focus ring from the keyboard', async ({ page }) => {
     await page.goto(`${base}rj/`)
     const links = page.locator('.state-links a')
     const labels = await links.allTextContents()
     const i = labels.indexOf('Dados para nerds ›')
     expect(i).toBeGreaterThan(0)
     expect(labels[i - 1]).toBe('Comparar com outro estado ›')
-    if (labels[i + 1] !== undefined) expect(labels[i + 1]).toBe('Resumo do estado ›')
+    // the state story (#100) sits right before the recap; nerds keeps its place after "Comparar"
+    if (labels[i + 1] !== undefined) expect(['Ver a história do estado ›', 'Resumo do estado ›']).toContain(labels[i + 1])
     const link = page.locator('.state-links a[data-link="nerds"]')
     expect(await link.getAttribute('href')).toBe(`${base}dados-para-nerds/estado/rj/`)
     await link.focus()

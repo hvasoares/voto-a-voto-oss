@@ -36,9 +36,14 @@ export async function loadStory(uf: string, base: string): Promise<StoryPage | u
   return cards && { uf, stateName, cards }
 }
 
+/** Whether a state has a story page: the one predicate behind both `getStaticPaths` of `/<uf>/historia/` and the link on `/<uf>/` (#100), so the link and the page cannot disagree. */
+export async function hasStory(uf: string, base: string): Promise<boolean> {
+  return (await loadStory(uf, base)) !== undefined
+}
+
 /** The states that have a story (a sequence of six to eight cards). */
 export async function storyUfs(base: string): Promise<string[]> {
   const out: string[] = []
-  for (const uf of await loadStateUfs()) if (await loadStory(uf, base)) out.push(uf)
+  for (const uf of await loadStateUfs()) if (await hasStory(uf, base)) out.push(uf)
   return out
 }
