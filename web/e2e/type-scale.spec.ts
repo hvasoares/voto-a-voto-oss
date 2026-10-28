@@ -1,61 +1,16 @@
 import { expect, test, type Page } from '@playwright/test'
 import { activateSearch, base, waitReady } from './helpers'
 import { segmentText } from '../src/shared/components'
+import { SCALE, SCREENS, WEIGHTS, probe, textStyles } from './type-scale-probe'
 
 /*
- * #86: a real type scale. Four sizes (13, 16, 20, 26 px; ratio about 1.25, floor 13) and two weights (400, 700) are tokens
- * (`--fs-*`, `--fw-*` in src/shared/tokens.ts); this structural probe walks every text-bearing element of the City card and
- * of the Home at 390x844 and checks the computed values. The later wave (#87) extends SCREENS to the other pages.
+ * #86/#87: a real type scale. Four sizes (13, 16, 20, 26 px; ratio about 1.25, floor 13) and two weights (400, 700) are tokens
+ * (`--step-*`, `--fw-*` in src/shared/tokens.ts); the structural probe (e2e/type-scale-probe.ts) walks every text-bearing element of
+ * every route family at 390x844 (the desktop twin, desktop-type-scale.spec.ts, does it at 1440x900) and checks the computed values.
  */
-const SCALE = [13, 16, 20, 26]
-const WEIGHTS = [400, 700]
-const SCREENS = [
-  { name: 'City card', path: 'rj/cidade-exemplo/?turno=1' },
-  { name: 'City card, round 2', path: 'rj/cidade-exemplo/?turno=2' },
-  { name: 'Home', path: '' },
-]
-
-async function textStyles(page: Page) {
-  return page.evaluate(() => {
-    const rows: { size: number; weight: number; tag: string; text: string }[] = []
-    for (const el of document.querySelectorAll('body *')) {
-      const own = [...el.childNodes].filter((n) => n.nodeType === 3 && n.textContent?.trim()).map((n) => n.textContent!.trim()).join(' ')
-      if (!own) continue
-      if (el.closest('script, style, noscript, svg, [hidden], [aria-hidden="true"], .sr-only')) continue
-      const box = el.getBoundingClientRect()
-      const cs = getComputedStyle(el)
-      if (cs.display === 'none' || cs.visibility === 'hidden' || box.width <= 1 || box.height <= 1) continue
-      rows.push({ size: parseFloat(cs.fontSize), weight: Number(cs.fontWeight), tag: `${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]}`, text: own.slice(0, 40) })
-    }
-    return rows
-  })
-}
-
-for (const { name, path } of SCREENS) {
-  test.describe(`type scale: ${name}`, () => {
-    test('every text sits on the four steps, nothing under 13px, only weights 400 and 700', async ({ page }) => {
-      await page.goto(`${base}${path}`)
-      await waitReady(page)
-      const rows = await textStyles(page)
-      const sizes = [...new Set(rows.map((r) => r.size))].sort((a, b) => a - b)
-      const off = rows.filter((r) => !SCALE.includes(r.size) || !WEIGHTS.includes(r.weight)).map((r) => `${r.size}px/${r.weight} ${r.tag} "${r.text}"`)
-      expect(off, `off-scale text on ${name}`).toEqual([])
-      expect(sizes.length).toBeLessThanOrEqual(5)
-      expect(Math.min(...sizes)).toBeGreaterThanOrEqual(13)
-    })
-
-    test('nothing is clipped or wider than the phone', async ({ page }) => {
-      await page.goto(`${base}${path}`)
-      await waitReady(page)
-      const iw = await page.evaluate(() => window.innerWidth)
-      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(iw)
-      const clipped = await page.evaluate(() =>
-        [...document.querySelectorAll('body *')]
-          .filter((el) => el.getBoundingClientRect().width > 1 && !el.closest('.sr-only, [hidden], .source-footer__about') && el.textContent?.trim() && el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).overflowX !== 'visible')
-          .map((el) => `${el.tagName}.${el.className} "${el.textContent!.trim().slice(0, 30)}"`),
-      )
-      expect(clipped).toEqual([])
-    })
+for (const screen of SCREENS) {
+  test(`type scale: ${screen.name} sits on the four steps, nothing under 13px, no sideways scroll, nothing clipped`, async ({ page }) => {
+    await probe(page, screen)
   })
 }
 

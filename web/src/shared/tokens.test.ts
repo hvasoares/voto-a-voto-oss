@@ -21,7 +21,7 @@ describe('design tokens', () => {
     expect(Math.min(...sizes)).toBe(13)
     for (const [i, v] of sizes.slice(1).entries()) expect(v / sizes[i]!).toBeCloseTo(1.25, 0)
     expect(Object.values(weights)).toEqual([400, 700])
-    const css = readFileSync('src/styles/screens.css', 'utf8')
+    const css = readFileSync('src/styles/scale.css', 'utf8')
     for (const [k, v] of Object.entries(steps)) expect(css).toContain(`--step-${k}: ${v}px;`)
     for (const [k, v] of Object.entries(leading)) expect(css).toContain(`--lh-${k}: ${v};`)
     expect(css).toContain(`--fw-regular: ${weights.regular}; --fw-bold: ${weights.bold};`)

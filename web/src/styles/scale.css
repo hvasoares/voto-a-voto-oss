@@ -1,0 +1,8 @@
+/* The type scale (#86, finished by #87): the only font sizes, line heights and weights of the UI. Written once, here; values are
+   src/shared/tokens.ts `steps`, `leading` and `weights` (tokens.test.ts keeps the two in step). Imported by the shared stylesheet
+   (global.css) and by the fragment documents, which do not load it. The colours (--c-*) come from src/theme.ts, inlined in every page. */
+:root {
+  --step-1: 13px; --step-2: 16px; --step-3: 20px; --step-4: 26px;
+  --lh-1: 1.3; --lh-2: 1.4; --lh-3: 1.3; --lh-4: 1.2;
+  --fw-regular: 400; --fw-bold: 700;
+}
