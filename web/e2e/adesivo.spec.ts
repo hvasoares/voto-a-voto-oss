@@ -22,6 +22,8 @@ async function open(page: Page, share = false) {
     }
   }, share)
   await page.goto(route)
+  // The places load one by one (a card with one place is drawn first): wait for the picture of BOTH, the condition the page itself ends on, before reading its PNG.
+  await expect(page.locator('[data-sticker-page]')).toHaveAttribute('data-places', '2')
   await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
 }
 

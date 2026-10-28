@@ -23,7 +23,7 @@ export default function MeuBrasilSticker({ base, origin, fixture, edition }: Meu
   const sticker = useMemo(() => (cards.length ? stickerContent(cards, { origin, base, fixture, edition }) : undefined), [cards, origin, base, fixture, edition])
 
   return (
-    <div data-sticker-page data-ready={sticker ? 'yes' : 'no'}>
+    <div data-sticker-page data-ready={sticker ? 'yes' : 'no'} data-places={cards.length}>
       <div className={`mt-3 flex justify-center overflow-hidden rounded-md border border-border py-4 ${CHECKER}`} data-checker>
         {sticker ? (
           <div className="w-[190px] [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" data-sticker-picture dangerouslySetInnerHTML={{ __html: sticker.svg }} />
