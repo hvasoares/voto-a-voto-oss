@@ -1,0 +1,12 @@
+---
+/** "Cidades fora da curva" (#34) for one state (or "todos") and one minimum of valid votes: `/relatorios/cidades-fora-da-curva/mg/20000/`. */
+import OutlierPage from '@/components/OutlierPage.astro'
+import { loadOutliers } from '@/lib/reports/outliers-load'
+
+export async function getStaticPaths() {
+  const set = await loadOutliers()
+  return set.filters.map((f) => ({ params: { uf: f.uf ?? 'todos', min: String(f.min) }, props: { uf: f.uf, min: f.min } }))
+}
+const { uf, min } = Astro.props as { uf?: string; min: number }
+---
+<OutlierPage uf={uf} min={min} />

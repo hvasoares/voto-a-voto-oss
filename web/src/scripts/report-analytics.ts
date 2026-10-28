@@ -14,15 +14,17 @@ import { getAnalytics, onAnalyticsReady } from '@/analytics'
 const main = document.querySelector<HTMLElement>('[data-report]')
 onAnalyticsReady((a) => a.event('report_opened', { report: main?.dataset.report ?? '' }))
 
-const feedback = document.querySelector('[data-share-feedback]')
+const feedback = document.querySelectorAll('[data-share-feedback]')
 
 function show(text: string): void {
-  if (feedback) feedback.textContent = text
+  feedback.forEach((el) => (el.textContent = text))
 }
 
-document.querySelector('[data-share-report]')?.addEventListener('click', () => {
+document.querySelectorAll('[data-share-report]').forEach((button) => button.addEventListener('click', () => {
   const report = main?.dataset.report ?? ''
-  const data = { title: document.title, text: document.title, url: location.origin + location.pathname }
+  // A report with its own share sentence (Cidades fora da curva: the screening text) carries it in data-share-text.
+  const text = (button as HTMLElement).dataset.shareText
+  const data = { title: document.title, text: text ?? document.title, url: location.origin + location.pathname }
   if (typeof navigator.share === 'function') {
     navigator
       .share(data)
@@ -31,10 +33,10 @@ document.querySelector('[data-share-report]')?.addEventListener('click', () => {
     return
   }
   navigator.clipboard
-    .writeText(data.url)
+    .writeText(text ? `${text} ${data.url}` : data.url)
     .then(() => {
       show('Link copiado!')
       getAnalytics().event('report_shared', { report, method: 'clipboard' })
     })
     .catch(() => show('Não foi possível copiar o link.'))
-})
+}))

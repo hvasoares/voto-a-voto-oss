@@ -109,3 +109,8 @@ A regra do ticket foi "tokens ganham": as páginas de relatório já usam a esca
 exceções pontuais, padrão de todo o site e não só dos relatórios — o badge numerado dos rankings
 (`text-[13px]`) e o rodapé de fonte (`text-[12.3px]`) — que ficam como estão: valores únicos numa
 escala compartilhada, mexer neles mudaria o visual que o ticket manda preservar.
+**G5 (#32, #34), nenhum orçamento mudou:** "Ficaram em casa" (`/mapa/ficaram-em-casa/`) e "Cidades fora da curva" (`/relatorios/cidades-fora-da-curva/`) são páginas novas; a primeira carga das páginas que já existiam
+cresceu +16 B de JS (as duas linhas de `analytics/event-props.ts`), +260 B de gzip no CSS compartilhado (de 15779 para 16039 B; o orçamento é 16 KB) e, nas páginas de relatório, +51 B de JS
+(o botão de compartilhar lê `data-share-text`). O html do cartão da cidade ficou igual (6481 B): as sete cores da escala do mapa não entram nos tokens, que viram variáveis CSS no `<head>` de toda página.
+A página do mapa não carrega React na primeira carga (a ilha do mapa é `client:interaction`, a do compartilhar `client:visible`); a lista de relatório não tem ilha nem arquivo de dados.
+Números por página em `docs/checkpoints/issue-32.md` e `issue-34.md`.

@@ -1,0 +1,138 @@
+---
+/**
+ * "Cidades fora da curva" (Sketch frames "22 Cidades fora da curva", phone and desktop, ticket #34): a SCREENING list of the cities furthest from their peer
+ * cities on turnout and on the swing since 2022, under a Relatórios hub row. The text that says it is a screening list and not a conclusion is the first
+ * thing under the title and the share text. One static page per state and minimum (the filters are links, so the list works without JavaScript); every row
+ * shows the valid-vote count next to the rate, links to the city card and has its fact record ("ver cálculo") and the page its "conferido" seal.
+ */
+import Base from '@/layouts/Base.astro'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { displayName } from '@/shared/city-search'
+import { normalizeBase, withBase } from '@/paths'
+import { siteOrigin } from '@/lib/share-url'
+import { outlierPath } from '@/lib/reports/outliers'
+import { loadOutliers } from '@/lib/reports/outliers-load'
+import { outlierShare, outlierView } from '@/lib/reports/outliers-view'
+import Seal from '@/components/Seal.astro'
+import { calcLink } from '@/lib/facts/link'
+import { factLinks } from '@/lib/facts/gate'
+import { getOutlierFacts, sealOf } from '@/lib/facts/pages'
+
+interface Props {
+  uf?: string
+  min: number
+}
+const { uf, min } = Astro.props
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const set = await loadOutliers()
+const filter = { uf, min }
+const picked = set.pick(filter)
+const view = outlierView({ filter, shown: picked.shown, compared: picked.compared, names: { primeiro: displayName(set.pair.nomePrimeiro), segundo: displayName(set.pair.nomeSegundo) }, states: set.states, base })
+const facts = await getOutlierFacts()
+const links = factLinks(facts.facts, '/relatorios/cidades-fora-da-curva/', base)
+const seal = await sealOf(facts)
+const share = outlierShare(`${siteOrigin()}${href(outlierPath(uf, min))}`)
+const shareClass = cn(buttonVariants({ variant: 'default' }), 'min-h-11 w-full rounded-md text-body font-bold leading-[18px] text-primary-foreground')
+const badge = 'flex size-8 flex-none items-center justify-center rounded-full bg-primary pb-px text-[13px] font-bold leading-none text-primary-foreground'
+const summary = 'flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 rounded-md border border-border bg-background px-3 text-[13px] font-medium leading-[15px] [&::-webkit-details-marker]:hidden'
+const menu = 'absolute left-0 right-0 z-10 mt-1 max-h-72 overflow-auto rounded-md border border-border bg-background p-1 shadow-md'
+const item = 'flex min-h-11 items-center rounded px-2 text-[14px] aria-[current=true]:bg-secondary aria-[current=true]:font-bold'
+const cols = 'lg:grid lg:grid-cols-[2rem_minmax(0,1.7fr)_repeat(5,minmax(0,1fr))_5.5rem] lg:items-center lg:gap-x-4'
+---
+
+<Base title="Cidades fora da curva · Voto a Voto" description={view.screening}>
+  <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] lg:max-w-[1200px] flex-1 px-5 pb-2 pt-16 lg:px-0 lg:pt-8" id="main" data-page="relatorios" data-report="cidades-fora-da-curva" data-uf={uf ?? 'todos'} data-min={min}>
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('/relatorios/')}>‹ Relatórios</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">Cidades fora da curva</h1>
+    <p class="mt-1 text-small leading-[14px] text-muted-foreground wrap-anywhere lg:font-serif lg:text-[16px] lg:leading-[22px]" data-screening>{view.screening}</p>
+
+<div class="mt-3 lg:flex lg:items-start lg:justify-between lg:gap-6">
+    <nav class="grid grid-cols-2 gap-2 lg:w-[640px]" aria-label={view.filters.label} data-filters>
+      <details class="relative" data-filter="uf">
+        <summary class={summary}><span>{view.filters.uf.label}</span><span aria-hidden="true">▾</span></summary>
+        <ul class={`${menu} list-none`}>
+          {view.filters.uf.options.map((o) => <li><a class={item} href={o.href} aria-current={o.current ? 'true' : undefined}>{o.label}</a></li>)}
+        </ul>
+      </details>
+      <details class="relative" data-filter="min">
+        <summary class={summary}><span>{view.filters.min.label}</span><span aria-hidden="true">▾</span></summary>
+        <ul class={`${menu} list-none`}>
+          {view.filters.min.options.map((o) => <li><a class={item} href={o.href} aria-current={o.current ? 'true' : undefined}>{o.label}</a></li>)}
+        </ul>
+      </details>
+    </nav>
+
+      <div class="hidden w-[220px] flex-none flex-col gap-1 lg:flex" data-share-top>
+        <button class={shareClass} type="button" data-share-report data-share-text={view.screening}>{share.label}</button>
+        <span class="text-center text-small text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
+      </div>
+    </div>
+
+    <p class="mt-3 text-small leading-[15px] text-muted-foreground lg:hidden" data-legend>{view.legend}</p>
+    <p class="mt-1 text-small leading-[15px] text-muted-foreground" data-count>{view.count} <Fragment set:html={calcLink(links(`filtro-${uf ?? 'todos'}-${min}`))} /></p>
+
+    {view.empty && <p class="mt-3 text-body" data-empty>{view.empty}</p>}
+    {view.rows.length > 0 && (
+      <>
+        <div class={`mt-3 hidden border-b border-foreground pb-1 text-[11px] font-medium uppercase leading-[14px] tracking-wide text-muted-foreground ${cols}`} aria-hidden="true">
+          <span>{view.columns.rank}</span>
+          <span>{view.columns.city}</span>
+          <span class="text-center">{view.columns.turnout}</span>
+          <span class="text-center">{view.columns.typical}</span>
+          <span class="text-center">{view.columns.gap}</span>
+          <span class="text-center">{view.columns.swing}</span>
+          <span class="text-center">{view.columns.validos}</span>
+          <span></span>
+        </div>
+        <ol class="mt-1 list-none p-0 lg:mt-0" data-outliers>
+          {view.rows.map((r) => (
+            <li class="border-t border-border first:border-t-0 lg:border-t" data-outlier={r.anchor}>
+              <div class={`flex gap-3 py-3 ${cols}`}>
+                <span class={badge}>{r.rank}</span>
+                <div class="min-w-0 flex-1 lg:contents">
+                  <a class="block min-h-11 min-w-0 lg:min-h-0" href={r.href}>
+                    <span class="block text-body font-bold leading-[18px] text-foreground">{r.name}</span>
+                    <span class="mt-[5px] block text-small leading-[15px] text-muted-foreground lg:hidden">{r.turnoutLine} · {r.validosLine}</span>
+                    <span class="mt-[2px] block text-small leading-[15px] text-muted-foreground lg:hidden">{r.swingLine}</span>
+                  </a>
+                  <span class="hidden text-center text-[15px] lg:block">{r.turnout}</span>
+                  <span class="hidden text-center text-[15px] text-muted-foreground lg:block">{r.typical}</span>
+                  <span class="hidden text-center text-[15px] font-bold lg:block">{r.gap}</span>
+                  <span class="hidden text-center text-[15px] lg:block">{r.swing}</span>
+                  <span class="hidden text-center text-[15px] text-muted-foreground lg:block">{r.validos}</span>
+                  <span class="hidden whitespace-nowrap text-center lg:block"><Fragment set:html={calcLink(links(r.anchor))} /></span>
+                  <span class="block lg:hidden"><Fragment set:html={calcLink(links(r.anchor))} /></span>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </>
+    )}
+
+    <Seal lines={seal} />
+
+    <p class="mt-3 rounded-lg bg-secondary px-3 py-3 text-small font-medium leading-[16px] text-secondary-foreground" data-notice>
+      <svg class="mr-1 inline-block -translate-y-px" viewBox="0 0 12 13" width="10" height="11" aria-hidden="true" focusable="false">
+        <circle cx="6" cy="6.5" r="5.8" fill="none" stroke="currentColor" stroke-width="1.4" />
+        <text x="6" y="10.4" text-anchor="middle" font-size="9.5" fill="currentColor" font-family="Georgia, serif">i</text>
+      </svg>
+      {view.note}
+    </p>
+    <p class="mt-2 text-small leading-[15px] text-muted-foreground" data-sign>{view.sign}</p>
+    <p class="mt-1 text-small leading-[15px] text-muted-foreground" data-method>{view.method}</p>
+
+    <div class="mt-6 flex min-h-11 flex-col gap-2 lg:hidden" data-share>
+      <button class={shareClass} type="button" data-share-report data-share-text={view.screening}>{share.label}</button>
+      <span class="text-center text-small text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
+    </div>
+  </main>
+  <footer class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] lg:max-w-[1200px] border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary lg:text-left" data-component="source-footer">
+    Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+  </footer>
+  <script>
+    import '@/scripts/report-analytics'
+  </script>
+</Base>
