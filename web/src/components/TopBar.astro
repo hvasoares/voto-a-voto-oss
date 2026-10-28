@@ -1,6 +1,8 @@
 ---
 /**
- * The desktop top bar (ticket #51, Sketch "1 Home (desktop)"): wordmark, the city search and three links.
+ * The desktop top bar (ticket #51, then #103, Sketch "1 Home (desktop, top bar por tarefa)"): wordmark, the city search ("Ver minha cidade")
+ * and three task links (Comparar, Conferir, Usar os dados), each a plain anchor into a section of Home or of Sobre os dados. Relatórios and Mapa
+ * por estado left the bar: Home's "Entender o país e os estados" block and the footer line keep them reachable.
  * Pre-rendered HTML, readable and usable without scripts (the search needs them, as everywhere); the search is the
  * existing CitySearch component, but it is NOT an Astro island: an island would put the island runtime and its props in the
  * HTML of every page, phones included. The bar draws a plain field instead; on a 1024 px and wider viewport
@@ -11,28 +13,27 @@
 import { normalizeBase, withBase } from '@/paths'
 
 const base = normalizeBase(import.meta.env.BASE_URL)
-const here = Astro.url.pathname
 const links = [
-  { label: 'Relatórios', to: 'relatorios/' },
-  { label: 'Mapa por estado', to: 'mapa/' },
-  { label: 'Sobre os dados', to: 'sobre-os-dados/' },
-].map((l) => ({ ...l, href: withBase(base, l.to), current: here.startsWith(withBase(base, l.to)) }))
+  { label: 'Comparar', to: '#comparar' },
+  { label: 'Conferir', to: 'sobre-os-dados/#confira-voce-mesmo' },
+  { label: 'Usar os dados', to: 'sobre-os-dados/#usar-os-dados' },
+].map((l) => ({ ...l, href: withBase(base, l.to) }))
 ---
 <header class="hidden h-16 border-b border-border lg:block" data-component="top-bar">
   <div class="mx-auto flex h-full w-full max-w-[1240px] items-center px-5">
-    <a class="w-[280px] flex-none rounded-sm font-serif text-[26px] leading-9 text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" href={withBase(base, '/')} data-wordmark>Voto a Voto</a>
+    <a class="flex min-h-11 w-[280px] flex-none items-center rounded-sm font-serif text-step-4 text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" href={withBase(base, '/')} data-wordmark>Voto a Voto</a>
     <div class="relative w-[420px] flex-none">
       <div data-topbar-search data-base={base}>
         <div class="relative" data-city-search="bar">
           <svg class="pointer-events-none absolute left-[14px] top-[10px] text-muted-foreground" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="6.5" cy="6.5" r="6" fill="none" stroke="currentColor" stroke-width="1.9"></circle><path d="M16.2 12.2 12.4 16.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path></svg>
-          <input class="h-10 w-full rounded-md border border-border bg-transparent pl-[39px] pr-10 text-body leading-[17px] placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-primary" type="text" aria-label="Busque sua cidade" placeholder="Busque sua cidade" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" />
+          <input class="h-10 w-full rounded-md border border-border bg-transparent pl-[39px] pr-10 text-step-2 placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-primary" type="text" aria-label="Busque sua cidade" placeholder="Ver minha cidade" autocomplete="off" />
         </div>
       </div>
-      <kbd class="pointer-events-none absolute right-3 top-[10px] rounded-sm border border-border bg-secondary px-2 text-[11px] leading-5 text-muted-foreground" aria-hidden="true">/</kbd>
+      <kbd class="pointer-events-none absolute right-3 top-[10px] rounded-sm border border-border bg-secondary px-2 text-step-1 text-muted-foreground" aria-hidden="true">/</kbd>
     </div>
     <nav class="ml-auto flex items-center gap-1" aria-label="Principal">
       {links.map((l) => (
-        <a class="rounded-sm px-4 py-2.5 text-body leading-[18px] text-foreground underline-offset-8 hover:underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary aria-[current=page]:font-bold" href={l.href} aria-current={l.current ? 'page' : undefined}>{l.label}</a>
+        <a class="inline-flex min-h-11 items-center rounded-sm px-4 text-step-2 text-foreground underline-offset-8 hover:underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary" href={l.href}>{l.label}</a>
       ))}
     </nav>
   </div>

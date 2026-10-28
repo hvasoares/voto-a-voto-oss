@@ -12,7 +12,7 @@ for (const width of WIDTHS) {
 }
 
 test.describe('top bar', () => {
-  test('at 1440 it carries the wordmark, the search and the three links, in order', async ({ page }) => {
+  test('at 1440 it carries the wordmark, the search and the three task links, in order', async ({ page }) => {
     await page.goto(base)
     const bar = page.locator('[data-component="top-bar"]')
     await expect(bar).toBeVisible()
@@ -20,10 +20,12 @@ test.describe('top bar', () => {
     await expect(bar.locator('[data-city-search="bar"] input')).toBeVisible()
     const links = await bar.getByRole('navigation', { name: 'Principal' }).getByRole('link').evaluateAll((els) => els.map((e) => [e.textContent, e.getAttribute('href')]))
     expect(links).toEqual([
-      ['Relatórios', `${base}relatorios/`],
-      ['Mapa por estado', `${base}mapa/`],
-      ['Sobre os dados', `${base}sobre-os-dados/`],
+      ['Comparar', `${base}#comparar`],
+      ['Conferir', `${base}sobre-os-dados/#confira-voce-mesmo`],
+      ['Usar os dados', `${base}sobre-os-dados/#usar-os-dados`],
     ])
+    // "Ver minha cidade" is the search itself: it is the field's visible text and comes before the links.
+    await expect(bar.locator('[data-city-search="bar"] input')).toHaveAttribute('placeholder', 'Ver minha cidade')
   })
 
   test('below 1024 px it is not drawn (a phone and a tablet keep their own header)', async ({ page }) => {
@@ -34,10 +36,13 @@ test.describe('top bar', () => {
     }
   })
 
-  test('marks the current page', async ({ page }) => {
+  test('Relatórios and Mapa por estado are not in the bar, and stay one click away from the footer line', async ({ page }) => {
     await page.goto(`${base}relatorios/`)
-    await expect(page.locator('[data-component="top-bar"]').getByRole('link', { name: 'Relatórios' })).toHaveAttribute('aria-current', 'page')
-    await expect(page.locator('[data-component="top-bar"]').getByRole('link', { name: 'Mapa por estado' })).not.toHaveAttribute('aria-current', 'page')
+    const bar = page.locator('[data-component="top-bar"]')
+    await expect(bar.getByRole('link', { name: /Relatórios|Mapa por estado/ })).toHaveCount(0)
+    const line = page.locator('[data-component="consent-footer"]')
+    await expect(line.getByRole('link', { name: 'Relatórios' })).toHaveAttribute('href', `${base}relatorios/`)
+    await expect(line.getByRole('link', { name: 'Mapa por estado' })).toHaveAttribute('href', `${base}mapa/`)
   })
 
   test.describe('without JavaScript', () => {
@@ -45,9 +50,10 @@ test.describe('top bar', () => {
     test('the bar and its links are pre-rendered and usable', async ({ page }) => {
       await page.goto(base)
       const bar = page.locator('[data-component="top-bar"]')
-      await expect(bar.getByRole('link', { name: 'Sobre os dados' })).toBeVisible()
-      await bar.getByRole('link', { name: 'Relatórios' }).click()
-      await expect(page).toHaveURL(`${base}relatorios/`)
+      await expect(bar.getByRole('link', { name: 'Conferir' })).toBeVisible()
+      await bar.getByRole('link', { name: 'Usar os dados' }).click()
+      await expect(page).toHaveURL(`${base}sobre-os-dados/#usar-os-dados`)
+      await expect(page.locator('#usar-os-dados')).toBeVisible()
     })
   })
 

@@ -90,7 +90,7 @@ test.describe('tap targets (390x844)', () => {
     expect(lines.privacyH).toBeGreaterThanOrEqual(MIN)
     expect(lines.aboutH).toBeGreaterThanOrEqual(MIN)
     expect(lines.gap).toBeGreaterThanOrEqual(8)
-    expect(lines.consentFooterH).toBeLessThan(MIN + 24) // the page did not grow by a whole line
+    expect(lines.consentFooterH).toBeLessThan(2 * MIN + 24) // two lines since #103 (edition and privacy; Relatórios and Mapa por estado), not three
   })
 
   test('the notice: "Detalhes em Sobre os dados" has a 44 px hit area and does not touch the Prosseguir button', async ({ page }) => {

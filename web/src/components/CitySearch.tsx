@@ -72,7 +72,7 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
           value={text}
           onValueChange={setText}
           className={`h-full pl-[39px]! text-step-2! placeholder:text-muted-foreground ${bar ? 'pr-10!' : 'pb-1 lg:pl-[22px]!'}`}
-          placeholder="Busque sua cidade"
+          placeholder={bar ? 'Ver minha cidade' : 'Busque sua cidade'}
           aria-label="Busque sua cidade"
           autoComplete="off"
           autoCapitalize="off"

@@ -35,7 +35,8 @@ test.describe('home: content', () => {
       ['Meus lugares ao longo do tempo', 'meu-brasil/'],
       ['Usar os dados', 'sobre-os-dados/#usar-os-dados'],
     ] as const) {
-      await expect(page.getByRole('link', { name: new RegExp(label) })).toHaveAttribute('href', base + href)
+      // Scoped to the task block: the footer line (#103) repeats "Relatórios" and "Mapa por estado".
+      await expect(page.locator('[data-tasks]').getByRole('link', { name: new RegExp(label) })).toHaveAttribute('href', base + href)
     }
     // Scoped to the page's own footer: on a first visit the metrics banner (#20) also carries a
     // "Detalhes em Sobre os dados" link, and the page-wide locator would be ambiguous.
