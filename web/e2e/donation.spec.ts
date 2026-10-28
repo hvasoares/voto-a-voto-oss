@@ -46,7 +46,7 @@ test.describe('address configured', () => {
     for (const file of pages()) {
       const html = readFileSync(file, 'utf8')
       expect(html, file).toContain('data-donation-link')
-      expect(html, file).toMatch(new RegExp(`<a href="${ADDRESS.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^"]*" target="_blank" rel="noopener noreferrer" data-donation-link`))
+      expect(html, file).toMatch(new RegExp(`<a [^>]*?href="${ADDRESS.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[^"]*" target="_blank" rel="noopener noreferrer" data-donation-link`))
     }
   })
 
