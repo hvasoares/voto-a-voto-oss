@@ -1,31 +1,31 @@
 /* The desktop "Mapa por estado" fragment document (#54): tabs, map, selected-state panel, scale and table. Plain CSS: a fragment loads no Tailwind. */
 :root { --frag-gap: 56px; }
-body { color: var(--foreground); font-size: 15px; line-height: 1.35; }
+body { color: var(--foreground); font-size: var(--step-2); line-height: var(--lh-2); }
 a { color: var(--primary); text-decoration: none; }
 .mf { box-sizing: border-box; padding: 4px 2px 16px; }
 .mf__left { min-width: 0; }
 .mf__tabs { margin-top: 150px; margin-bottom: 12px; display: flex; gap: 4px; width: min(100%, 540px); padding: 4px; border-radius: 4px; background: var(--secondary); box-sizing: border-box; }
-.mf__tabs a { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 36px; border-radius: 4px; font-size: 14px; color: var(--muted-foreground); }
+.mf__tabs a { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 36px; border-radius: 4px; font-size: var(--step-1); color: var(--muted-foreground); }
 .mf__tabs a[aria-current="page"] { background: var(--primary); color: var(--primary-foreground); font-weight: 700; }
 .mf__grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); column-gap: var(--frag-gap); align-items: start; }
 .mf__panel { padding: 24px; border: 1px solid var(--border); border-radius: 12px; background: var(--secondary); }
 .mf__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .mf__head p { margin: 0; }
-.mf__name { font: 700 16px var(--sketch-font-serif); }
-.mf__big { font: 700 38px/44px var(--sketch-font-serif); }
-.mf__line { margin: 12px 0 0; font-size: 15px; line-height: 20px; }
-.mf__line + .mf__line { margin-top: 8px; font-size: 14px; color: var(--muted-foreground); }
-.mf__hint { margin: 20px 0 0; font-size: 14px; line-height: 18px; color: var(--muted-foreground); }
-.mf__open { display: flex; align-items: center; justify-content: center; min-height: 48px; margin-top: 20px; border-radius: 4px; background: var(--primary); color: var(--primary-foreground); font-weight: 700; font-size: 16px; }
+.mf__name { font: 700 var(--step-2)/var(--lh-2) var(--sketch-font-serif); }
+.mf__big { font: 700 var(--step-4)/var(--lh-4) var(--sketch-font-serif); }
+.mf__line { margin: 12px 0 0; font-size: var(--step-2); line-height: var(--lh-2); }
+.mf__line + .mf__line { margin-top: 8px; font-size: var(--step-1); color: var(--muted-foreground); }
+.mf__hint { margin: 20px 0 0; font-size: var(--step-1); line-height: var(--lh-1); color: var(--muted-foreground); }
+.mf__open { display: flex; align-items: center; justify-content: center; min-height: 48px; margin-top: 20px; border-radius: 4px; background: var(--primary); color: var(--primary-foreground); font-weight: 700; font-size: var(--step-2); }
 .mf__scale { margin: 20px 0 0; }
-.mf__scale figcaption { font-size: 14px; line-height: 18px; }
+.mf__scale figcaption { font-size: var(--step-1); line-height: var(--lh-1); }
 .mf__bar { display: flex; height: 22px; margin-top: 10px; }
 .mf__bar div { flex: 1; min-width: 0; }
-.mf__edges { display: flex; justify-content: space-between; margin-top: 4px; font-size: 12px; line-height: 14px; color: var(--muted-foreground); }
-.mf__note { margin: 10px 0 0; font-size: 13px; line-height: 17px; color: var(--muted-foreground); }
+.mf__edges { display: flex; justify-content: space-between; margin-top: 4px; font-size: var(--step-1); line-height: var(--lh-1); color: var(--muted-foreground); }
+.mf__note { margin: 10px 0 0; font-size: var(--step-1); line-height: var(--lh-1); color: var(--muted-foreground); }
 .mf__table { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 10px; }
 .mf__table summary { cursor: pointer; font-weight: 700; }
-.mf__table table { width: 100%; margin-top: 8px; border-collapse: collapse; font-size: 13px; }
+.mf__table table { width: 100%; margin-top: 8px; border-collapse: collapse; font-size: var(--step-1); }
 .mf__table th { text-align: left; border-bottom: 1px solid var(--border); padding: 4px 0; }
 .mf__table td { padding: 4px 0; border-top: 1px solid var(--border); }
 .mf__table th:not(:first-child), .mf__table td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
@@ -33,6 +33,6 @@ a { color: var(--primary); text-decoration: none; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 /* "Ficaram em casa" (#32): the cycle and round links under the three tabs, the six edges of a seven-step scale, the claim. */
 .mf__views { margin-top: 0; flex-wrap: wrap; }
-.mf__views a { flex: 1 1 30%; text-align: center; font-size: 13px; }
+.mf__views a { flex: 1 1 30%; text-align: center; font-size: var(--step-1); }
 .mf__edges--six { padding: 0 calc(100% / 14 - 8px); }
 .mf__claim { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 12px; }

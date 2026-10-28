@@ -17,3 +17,9 @@ export const hitUnits = (viewBoxWidth: number): number => Math.ceil((TOUCH_PX * 
 export function hitStroke(w: number, h: number, min: number): number {
   return Math.max(0, Math.ceil(min - Math.min(w, h)))
 }
+
+/**
+ * The font size, in viewBox units, that draws as `px` CSS px when the picture is `MAP_PX` wide (#87): the maps' labels are on the type scale
+ * by their RENDERED size, so a label in a 486-unit box is 18.05 units for the 13 px of step 1.
+ */
+export const labelUnits = (viewBoxWidth: number, px = 13): number => Math.round(((px * viewBoxWidth) / MAP_PX) * 100) / 100

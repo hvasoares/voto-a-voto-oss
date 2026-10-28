@@ -276,14 +276,14 @@ describe('CityMapMap: the label placement pass (placeLabels)', () => {
   ]
 
   it('a colliding neighbour loses its inline value (the bigger one claims it first)', () => {
-    // '+50,0' and '+8,0' at cx 30 / 45: the two value boxes overlap (half-widths 16.5 and 13.2)
-    const labels = placeLabels([SH('3390001', 30, 15), SH('3390002', 45, 15)], new Map([rowWith('3390001', 50), rowWith('3390002', 8)]), WIN)
-    expect(labels.get('3390001')).toMatchObject({ value: true, nome: false }) // name clips at the left edge
-    expect(labels.get('3390002')).toMatchObject({ value: false, nome: true }) // name fits under the winner
+    // '+50,0' and '+8,0' at cx 30 / 34: the two value boxes (13 px bold, 8 px a character, 3.5 px a unit) overlap
+    const labels = placeLabels([SH('3390001', 30, 15, 20), SH('3390002', 34, 15, 20)], new Map([rowWith('3390001', 50), rowWith('3390002', 8)]), WIN)
+    expect(labels.get('3390001')).toMatchObject({ value: true })
+    expect(labels.get('3390002')).toMatchObject({ value: false })
   })
 
   it('no label crosses the container: boxes past the edge are dropped, not clipped', () => {
-    const labels = placeLabels([SH('3390001', 92, 15)], new Map([rowWith('3390001', 50)]), WIN)
+    const labels = placeLabels([SH('3390001', 98, 15, 20)], new Map([rowWith('3390001', 50)]), WIN)
     expect(labels.get('3390001')).toMatchObject({ value: false, nome: false })
   })
 
@@ -312,10 +312,11 @@ describe('CityMapMap: the label placement pass (placeLabels)', () => {
       expect(kids.indexOf('g')).toBeGreaterThan(kids.lastIndexOf('a')) // labels after every fill
       const texts = [...map.querySelectorAll('g[data-cd-ibge="3399001"] text')]
       expect(texts).toHaveLength(2)
-      expect(texts[0]!.getAttribute('y')).toBe('33') // shape.cy - 2
+      expect(Number(texts[0]!.getAttribute('y'))).toBeCloseTo(35 - 2 / 3.5, 2) // shape.cy - 2 px, in viewBox units
       expect(texts[0]!.textContent).toBe('+50,0')
       expect(texts[0]!.getAttribute('fill')).toBe('var(--background)')
-      expect(texts[1]!.getAttribute('y')).toBe('45') // shape.cy + 10: the name never prints under the value
+      expect(Number(texts[1]!.getAttribute('y'))).toBeCloseTo(35 + 16 / 3.5, 2) // the name never prints under the value
+      expect(Number(texts[1]!.getAttribute('font-size'))).toBeCloseTo(13 / 3.5, 2) // 13 px (step 1) as drawn
       expect(texts[1]!.textContent).toBe('Rio de Janeiro')
       // Carmo's own name falls past the container edge; its value still prints, the text stays
       expect(map.querySelectorAll('g[data-cd-ibge="3399002"] text')).toHaveLength(1)

@@ -33,22 +33,22 @@ const viewPaths = Object.fromEntries(set.views.map((v) => [viewSlug(v), stayHome
 <Base title="Ficaram em casa · Mapa por estado · Voto a Voto" description={model.alt}>
   <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16 md:max-w-[720px] lg:grid lg:max-w-[1240px] lg:pt-8" id="main" data-page="mapa-ficaram-em-casa" data-ano={view.ano} data-turno={view.turno}>
     <div class="lg:relative lg:z-10 lg:col-start-1 lg:row-start-1 lg:w-[610px] lg:self-start">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('/')}>‹ Início</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">{stayhomeSay({}, 'stayhome.title')}</h1>
-    <p class="mt-1 font-serif text-lead leading-[22px] wrap-anywhere lg:text-[16px] lg:text-muted-foreground" data-subtitle>{model.subtitle}</p>
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('/')}>‹ Início</a>
+    <h1 class="mt-2 font-serif text-step-4 font-normal">{stayhomeSay({}, 'stayhome.title')}</h1>
+    <p class="mt-1 font-serif text-step-2 wrap-anywhere lg:text-muted-foreground" data-subtitle>{model.subtitle}</p>
     </div>
     {/* The phone layout: the tile mosaic, not drawn from 1024 px up, where the map document below takes its place. */}
     <div class="lg:hidden">
     <StayHomeMap client:interaction model={model} base={base} viewPaths={viewPaths} />
-    <noscript><p class="mt-1.5 text-small leading-[14px] text-muted-foreground">{model.ui.nojs}</p></noscript>
-    <p class="mt-1.5 text-small leading-[14px]" data-island-failed hidden>{model.ui.failed}</p>
+    <noscript><p class="mt-1.5 text-step-1 text-muted-foreground">{model.ui.nojs}</p></noscript>
+    <p class="mt-1.5 text-step-1" data-island-failed hidden>{model.ui.failed}</p>
     </div>
     <iframe class="hidden h-[820px] w-full border-0 lg:col-start-1 lg:row-start-1 lg:block" src={href(stayHomeFragmentPath(view))} title="Ficaram em casa: o mapa, a escala, o estado selecionado e a tabela" loading="lazy" data-mapa-frame></iframe>
     <div class="min-w-0 lg:col-start-1 lg:row-start-2 lg:mx-auto lg:w-[430px]" data-stayhome-share>
       {model.empty ? null : <StayHomeShare client:visible ano={view.ano} turno={view.turno} text={content.variants.standard.text} svg={content.svg} filename={content.filename} link={content.url} label={stayhomeSay({}, 'stayhome.share')} />}
     </div>
   </main>
-  <footer class="mx-5 mt-2 border-t border-border pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary md:mx-auto md:w-full md:max-w-[680px] lg:mt-6 lg:max-w-[1200px] lg:border-t-0 lg:text-left" data-component="source-footer">
+  <footer class="mx-5 mt-2 border-t border-border pb-6 pt-2 text-center text-step-1 text-primary md:mx-auto md:w-full md:max-w-[680px] lg:mt-6 lg:max-w-[1200px] lg:border-t-0 lg:text-left" data-component="source-footer">
     Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>
   <script>

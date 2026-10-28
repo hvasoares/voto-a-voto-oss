@@ -32,19 +32,19 @@ if (data.rows.length === 0) throw new Error(`${uf}: o dataset deste build nao te
 
 <Base title={`Mapa por município · ${ufNome} · Voto a Voto`}>
   <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16" id="main" data-page="mapa-uf" data-uf={uf}>
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px]" href={href('/')}>‹ Início</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">Mapa por município · {ufNome}</h1>
-    <p class="mt-1 font-serif text-lead leading-[22px] wrap-anywhere">Margem de {data.ladoANome} sobre {data.ladoBNome} no 2º turno de {data.ano}, em pontos percentuais (pp), {data.rows.length === 1 ? 'no 1 município' : `nos ${data.rows.length} municípios`} do estado.</p>
-    <nav class="mt-2 flex gap-3 text-body font-bold" aria-label="Voltar ao mapa por estado">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold" href={href('/')}>‹ Início</a>
+    <h1 class="mt-2 font-serif text-step-4 font-normal">Mapa por município · {ufNome}</h1>
+    <p class="mt-1 font-serif text-step-2 wrap-anywhere">Margem de {data.ladoANome} sobre {data.ladoBNome} no 2º turno de {data.ano}, em pontos percentuais (pp), {data.rows.length === 1 ? 'no 1 município' : `nos ${data.rows.length} municípios`} do estado.</p>
+    <nav class="mt-2 flex gap-3 text-step-2 font-bold" aria-label="Voltar ao mapa por estado">
       <a href={href('/mapa/')}>‹ Mapa por estado</a>
     </nav>
     <CityMapMap client:interaction base={base} data={data} geoUrl={href(`/geo/municipios-${uf}.json`)} ufNome={ufNome} semContorno={semContornoOf(uf, data.rows)} />
     <noscript>
-      <p class="mt-1.5 text-small leading-[14px] text-muted-foreground">A vista de mapa precisa de JavaScript. A lista acima funciona sem.</p>
+      <p class="mt-1.5 text-step-1 text-muted-foreground">A vista de mapa precisa de JavaScript. A lista acima funciona sem.</p>
     </noscript>
-    <p class="mt-1.5 text-small leading-[14px]" data-island-failed hidden>O mapa por município não está disponível agora. A lista acima continua.</p>
+    <p class="mt-1.5 text-step-1" data-island-failed hidden>O mapa por município não está disponível agora. A lista acima continua.</p>
   </main>
-  <footer class="mx-5 mt-2 border-t border-border pb-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+  <footer class="mx-5 mt-2 border-t border-border pb-2 text-center text-step-1 text-primary" data-component="source-footer">
     Fonte: TSE, dados finais · fronteiras: malhas do IBGE · <a class="inline-flex min-h-11 items-center" href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>
   <script>

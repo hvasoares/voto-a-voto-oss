@@ -12,6 +12,7 @@ import { getAnalytics } from '@/analytics'
 import { UF_TILES } from '@/slots/home/uf-grid'
 import type { StayHomeModel } from '@/lib/stay-home-view'
 import { CALLOUT_LEFT, CALLOUT_RIGHT, UF_SHAPES } from '@/lib/uf-polygons'
+import { labelUnits } from '@/lib/map-hit'
 
 export interface StayHomeMapProps {
   model: StayHomeModel
@@ -24,6 +25,8 @@ export interface StayHomeMapProps {
 type Presentation = 'mosaico' | 'mapa'
 
 const VB_WIDTH = 486
+/** Label size in viewBox units: 13 px (step 1) as drawn at the map's fixed 350 px width. */
+const LABEL = labelUnits(VB_WIDTH)
 const CALL_X = 392
 const CALL_W = 88
 const CALL_H = 48
@@ -78,7 +81,7 @@ export default function StayHomeMap({ model, base, viewPaths }: StayHomeMapProps
           { href: '/mapa/virada/', label: 'Virada', on: false },
           { href: '/mapa/ficaram-em-casa/', label: 'Ficaram em casa', on: true },
         ].map((t) => (
-          <a key={t.href} aria-current={t.on ? 'page' : undefined} className={'flex min-h-11 flex-1 items-center justify-center rounded-md px-1 text-center text-[13px] leading-[15px]' + (t.on ? TAB_ON : TAB_OFF)} href={withBase(t.href)}>
+          <a key={t.href} aria-current={t.on ? 'page' : undefined} className={'flex min-h-11 flex-1 items-center justify-center rounded-md px-1 text-center text-step-1' + (t.on ? TAB_ON : TAB_OFF)} href={withBase(t.href)}>
             {t.label}
           </a>
         ))}
@@ -86,7 +89,7 @@ export default function StayHomeMap({ model, base, viewPaths }: StayHomeMapProps
 
       <nav className="mt-2 grid grid-cols-6 gap-1 rounded-md bg-secondary p-1" aria-label={model.viewsLabel} data-slot="stayhome-views">
         {model.views.map((v) => (
-          <a key={v.slug} aria-current={v.current ? 'page' : undefined} className={'flex min-h-11 flex-col items-center justify-center rounded-md px-0 text-center text-[11.5px] leading-[14px]' + (v.current ? TAB_ON : TAB_OFF)} href={withBase(viewPaths[v.slug]!)}>
+          <a key={v.slug} aria-current={v.current ? 'page' : undefined} className={'flex min-h-11 flex-col items-center justify-center rounded-md px-0 text-center text-step-1' + (v.current ? TAB_ON : TAB_OFF)} href={withBase(viewPaths[v.slug]!)}>
             <span>{v.ano}</span>
             <span className="sr-only"> · </span>
             <span>{v.turno}</span>
@@ -99,7 +102,7 @@ export default function StayHomeMap({ model, base, viewPaths }: StayHomeMapProps
           <a
             key={v}
             aria-current={vista === v ? 'true' : undefined}
-            className={'grid min-h-11 min-w-16 place-items-center rounded-md px-3 text-[13px]' + (vista === v ? TAB_ON : TAB_OFF)}
+            className={'grid min-h-11 min-w-16 place-items-center rounded-md px-3 text-step-1' + (vista === v ? TAB_ON : TAB_OFF)}
             href={v === 'mapa' ? '?vista=mapa' : '?'}
             onClick={(e) => {
               e.preventDefault()
@@ -118,7 +121,7 @@ export default function StayHomeMap({ model, base, viewPaths }: StayHomeMapProps
         ))}
       </div>
 
-      {model.empty && <p className="mt-2 text-body" data-nodata>{model.empty}</p>}
+      {model.empty && <p className="mt-2 text-step-2" data-nodata>{model.empty}</p>}
 
       {vista === 'mosaico' ? (
         <nav className="mx-auto mt-1 grid w-fit justify-center gap-px [grid-auto-rows:48px] [grid-template-columns:repeat(7,48px)]" aria-label="Estados">
@@ -133,8 +136,8 @@ export default function StayHomeMap({ model, base, viewPaths }: StayHomeMapProps
                 onClick={stop(tile.uf)}
                 style={{ gridColumn: tile.col, gridRow: tile.row, width: 48, height: 48, background: c.fill, color: c.fg }}
               >
-                <span className="text-[14px] font-bold leading-[15px]">{tile.uf.toUpperCase()}</span>
-                <span className="text-[11px] leading-[12px]">{c.text}</span>
+                <span className="text-step-1 font-bold">{tile.uf.toUpperCase()}</span>
+                <span className="text-step-1">{c.text}</span>
                 <span className="sr-only">{c.detail}</span>
               </a>
             )
@@ -145,33 +148,33 @@ export default function StayHomeMap({ model, base, viewPaths }: StayHomeMapProps
       )}
 
       <figure className="mt-2 border-t border-border pt-2" data-slot="mapa-escala">
-        <figcaption className="text-small leading-[14px]">{model.legend.caption}</figcaption>
+        <figcaption className="text-step-1">{model.legend.caption}</figcaption>
         <div aria-hidden="true" className="mt-1.5 flex h-4 overflow-hidden rounded-sm">
           {model.legend.fills.map((fill, i) => (
             <div key={i} className="min-w-0 flex-1" style={{ background: fill }} />
           ))}
         </div>
-        <div aria-hidden="true" className="mx-[7%] flex justify-between text-[10px] leading-[12px] text-muted-foreground">
+        <div aria-hidden="true" className="mx-[7%] flex justify-between text-step-1 text-muted-foreground">
           {model.legend.edges.map((edge) => (
             <span key={edge}>{edge}%</span>
           ))}
         </div>
         <span className="sr-only">{model.legend.scaleSr}</span>
-        <p className="mt-1 text-small leading-[14px] text-muted-foreground">{vista === 'mapa' ? model.legend.mapNote : model.legend.size}</p>
+        <p className="mt-1 text-step-1 text-muted-foreground">{vista === 'mapa' ? model.legend.mapNote : model.legend.size}</p>
       </figure>
 
       {cell && (
         <div className="mt-2 border-t border-border pt-2" data-slot="mapa-selecionado">
           <div className="flex items-baseline justify-between gap-3">
-            <p aria-live="polite" className="font-serif text-body font-bold">
+            <p aria-live="polite" className="font-serif text-step-2 font-bold">
               {cell.selected}
               <span className="sr-only">{` · ${cell.name}`}</span>
             </p>
-            <p className="font-serif text-[28px] font-bold leading-[30px]" aria-hidden="true">{cell.text}</p>
+            <p className="font-serif text-step-4 font-bold" aria-hidden="true">{cell.text}</p>
           </div>
-          <p className="text-body leading-[18px]">{cell.lines[0]}</p>
-          <p className="mt-1 text-small leading-[14px] text-muted-foreground">{cell.lines[1]}</p>
-          <a className="mt-2 flex min-h-11 items-center justify-center rounded-md bg-primary text-body font-bold text-primary-foreground" data-abrir-estado="1" href={stateHref(selected)}>
+          <p className="text-step-2">{cell.lines[0]}</p>
+          <p className="mt-1 text-step-1 text-muted-foreground">{cell.lines[1]}</p>
+          <a className="mt-2 flex min-h-11 items-center justify-center rounded-md bg-primary text-step-2 font-bold text-primary-foreground" data-abrir-estado="1" href={stateHref(selected)}>
             {model.ui.open}
           </a>
         </div>
@@ -179,8 +182,8 @@ export default function StayHomeMap({ model, base, viewPaths }: StayHomeMapProps
 
       {model.claim && (
         <div className="mt-2 border-t border-border pt-2" data-slot="stayhome-claim">
-          <p className="text-body leading-[18px]">{model.claim.line}</p>
-          <p className="mt-1 text-small leading-[14px] text-muted-foreground">{model.claim.limits}</p>
+          <p className="text-step-2">{model.claim.line}</p>
+          <p className="mt-1 text-step-1 text-muted-foreground">{model.claim.limits}</p>
         </div>
       )}
 
@@ -193,8 +196,8 @@ function Table({ model, selected, stateHref }: { model: StayHomeModel; selected:
   const rows = useMemo(() => model.order.map((uf) => model.cells[uf]!), [model])
   return (
     <details className="mt-3 border-t border-border pt-2" data-slot="mapa-tabela">
-      <summary className="cursor-pointer text-body font-bold">{model.ui.table}</summary>
-      <table className="mt-1 w-full text-[13px] leading-[17px]">
+      <summary className="cursor-pointer text-step-2 font-bold">{model.ui.table}</summary>
+      <table className="mt-1 w-full text-step-1">
         <thead>
           <tr>
             <th scope="col" className="text-left">{model.ui.thUf}</th>
@@ -245,18 +248,19 @@ function MapView({ model, selected, tapState, stateHref }: { model: StayHomeMode
         const c = model.cells[shape.uf]
         if (!c) return null
         const isCallout = CALLOUT_RIGHT.includes(shape.uf) || CALLOUT_LEFT.includes(shape.uf)
-        const big = Math.max(shape.w, shape.h) > 55
+        // Two stacked 13 px lines (the name and the value) need a shape of about 56 x 44 px on screen; the others are reached through the callouts or a tap.
+        const big = shape.w >= 56 && shape.h >= 44
         return (
           <a key={shape.uf} className="cursor-pointer" aria-label={c.label} data-uf={shape.uf} href={stateHref(shape.uf)} onClick={open(shape.uf)}>
             <path d={toPath(shape.pts)} fill={c.fill} stroke="var(--background)" strokeWidth={2} />
             {selected === shape.uf && <path d={toPath(shape.pts)} fill="none" stroke="var(--foreground)" strokeWidth={2.5} pointerEvents="none" />}
             {big && !isCallout && (
-              <text fill={c.fg} fontSize={12} fontWeight={700} textAnchor="middle" x={shape.cx} y={shape.cy - 2} pointerEvents="none">
+              <text fill={c.fg} fontSize={LABEL} fontWeight={700} textAnchor="middle" x={shape.cx} y={shape.cy - 1} pointerEvents="none">
                 {shape.uf.toUpperCase()}
               </text>
             )}
             {big && !isCallout && (
-              <text fill={c.fg} fontSize={10} textAnchor="middle" x={shape.cx} y={shape.cy + 9} pointerEvents="none">
+              <text fill={c.fg} fontSize={LABEL} textAnchor="middle" x={shape.cx} y={shape.cy + LABEL} pointerEvents="none">
                 {c.text}
               </text>
             )}
@@ -274,8 +278,11 @@ function MapView({ model, selected, tapState, stateHref }: { model: StayHomeMode
             <a className="cursor-pointer" aria-label={c.label} data-uf={uf} href={stateHref(uf)} onClick={open(uf)}>
               <rect fill="var(--background)" height={CALL_H} rx={4} stroke={selected === uf ? 'var(--foreground)' : 'var(--border)'} strokeWidth={selected === uf ? 2 : 1} width={CALL_W} x={x} y={y} />
               <rect fill={c.fill} height={16} stroke="var(--border)" strokeWidth={0.5} width={16} x={x + 6} y={y + 16} />
-              <text dominantBaseline="middle" fill="var(--foreground)" fontSize={12} fontWeight={700} x={x + 27} y={y + CALL_H / 2}>
-                {uf.toUpperCase()} {c.text}
+              <text dominantBaseline="middle" fill="var(--foreground)" fontSize={LABEL} fontWeight={700} x={x + 27} y={y + CALL_H / 2 - LABEL / 2 - 1}>
+                {uf.toUpperCase()}
+              </text>
+              <text dominantBaseline="middle" fill="var(--foreground)" fontSize={LABEL} x={x + 27} y={y + CALL_H / 2 + LABEL / 2 + 1}>
+                {c.text}
               </text>
             </a>
           </g>

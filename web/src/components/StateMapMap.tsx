@@ -23,7 +23,7 @@ import { ufFullLabel, UF_NAMES } from '@/lib/uf-names'
 import type { StateMapData, StateMapRow } from '@/lib/state-map-data'
 import { BIN_COLOR, fgOf, marginBin, marginLegend, swingBin, swingLegend, tileEdge, type DivBin } from '@/lib/scale'
 import { CALLOUT_LEFT, CALLOUT_RIGHT, UF_SHAPES } from '@/lib/uf-polygons'
-import { hitStroke, hitUnits, MAP_PX } from '@/lib/map-hit'
+import { hitStroke, hitUnits, labelUnits, MAP_PX } from '@/lib/map-hit'
 
 export type MapKind = 'margin' | 'swing'
 export type MapPresentation = 'mosaico' | 'mapa'
@@ -37,6 +37,8 @@ export interface StateMapProps {
 
 /** SVG coordinate space: the projected map plus two callout boxes drawn in the same space. */
 const VB_WIDTH = 486
+/** Label size in viewBox units: 13 px (step 1) as drawn at the map's fixed 350 px width. */
+const LABEL = labelUnits(VB_WIDTH)
 const CALL_X = 392
 const CALL_W = 88
 const CALL_H = 54
@@ -144,7 +146,7 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
       <nav className="flex gap-1 rounded-md bg-secondary p-1" aria-label="Margem, virada ou ficaram em casa">
         <a
           aria-current={kind === 'margin' ? 'page' : undefined}
-          className={'flex min-h-11 flex-1 items-center justify-center rounded-md text-[14px]' + (kind === 'margin' ? ' bg-primary font-bold text-primary-foreground' : ' cursor-pointer text-muted-foreground')}
+          className={'flex min-h-11 flex-1 items-center justify-center rounded-md text-step-1' + (kind === 'margin' ? ' bg-primary font-bold text-primary-foreground' : ' cursor-pointer text-muted-foreground')}
           href={withBase('/mapa/')}
           onClick={() => {
             if (kind !== 'margin') analytics.event('map_view', { view: 'margin' })
@@ -154,7 +156,7 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
         </a>
         <a
           aria-current={kind === 'swing' ? 'page' : undefined}
-          className={'flex min-h-11 flex-1 items-center justify-center rounded-md text-[14px]' + (kind === 'swing' ? ' bg-primary font-bold text-primary-foreground' : ' cursor-pointer text-muted-foreground')}
+          className={'flex min-h-11 flex-1 items-center justify-center rounded-md text-step-1' + (kind === 'swing' ? ' bg-primary font-bold text-primary-foreground' : ' cursor-pointer text-muted-foreground')}
           href={withBase('/mapa/virada/')}
           onClick={() => {
             if (kind !== 'swing') analytics.event('map_view', { view: 'swing' })
@@ -162,7 +164,7 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
         >
           Virada (1º→2º)
         </a>
-        <a className="flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-md px-1 text-center text-[14px] leading-[15px] text-muted-foreground" href={withBase('/mapa/ficaram-em-casa/')}>
+        <a className="flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-md px-1 text-center text-step-1 text-muted-foreground" href={withBase('/mapa/ficaram-em-casa/')}>
           Ficaram em casa
         </a>
       </nav>
@@ -173,7 +175,7 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
           <a
             key={v}
             aria-current={vista === v ? 'true' : undefined}
-            className={'grid min-h-11 min-w-16 place-items-center rounded-md px-3 text-[13px]' + (vista === v ? ' bg-primary font-bold text-primary-foreground' : ' cursor-pointer text-muted-foreground')}
+            className={'grid min-h-11 min-w-16 place-items-center rounded-md px-3 text-step-1' + (vista === v ? ' bg-primary font-bold text-primary-foreground' : ' cursor-pointer text-muted-foreground')}
             href={v === 'mapa' ? '?vista=mapa' : '?'}
             onClick={(e) => {
               e.preventDefault()
@@ -214,8 +216,8 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
                   color: fgOf(bin),
                 }}
               >
-                <span className="text-[14px] font-bold leading-[15px]">{uf.toUpperCase()}</span>
-                <span className="text-[11px] leading-[12px]">{fmt(valueOf(row, kind))}</span>
+                <span className="text-step-1 font-bold">{uf.toUpperCase()}</span>
+                <span className="text-step-1">{fmt(valueOf(row, kind))}</span>
                 <span className="sr-only">{nameDetail(rows, uf, kind, ladoANome, ladoBNome)}</span>
               </a>
             )
@@ -227,7 +229,7 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
 
       {/* Escala numérica (as bordas dos degraus; nunca só a cor carrega o sentido). */}
       <figure className="mt-2 border-t border-border pt-2" data-slot="mapa-escala">
-        <figcaption className="text-small leading-[14px]">
+        <figcaption className="text-step-1">
           {kind === 'margin'
             ? `Margem (pp) = % de ${ladoANome} menos % de ${ladoBNome}. Negativo é ${ladoBNome} à frente; positivo é ${ladoANome} à frente.`
             : `Variação da margem entre os turnos (pp). Positivo: a margem se moveu para ${ladoANome}; negativo: para ${ladoBNome}.`}
@@ -237,37 +239,37 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
             <div key={bin} className="min-w-0 flex-1" style={{ background: BIN_COLOR[bin] }} />
           ))}
         </div>
-        <div aria-hidden="true" className="flex justify-between text-[10px] leading-[12px] text-muted-foreground">
+        <div aria-hidden="true" className="flex justify-between text-step-1 text-muted-foreground">
           {legend.edges.map((edge) => (
             <span key={edge}>{edge}</span>
           ))}
         </div>
         <span className="sr-only">Escala, da esquerda para a direita: {legend.edges.join(', ')} pp.</span>
-        {legend.negativeNote && <p className="text-small leading-[14px] text-muted-foreground">{legend.negativeNote}</p>}
-        <p className="mt-1 text-small leading-[14px] text-muted-foreground">Tamanho = votos válidos. Toque num estado para ver os totais.</p>
+        {legend.negativeNote && <p className="text-step-1 text-muted-foreground">{legend.negativeNote}</p>}
+        <p className="mt-1 text-step-1 text-muted-foreground">Tamanho = votos válidos. Toque num estado para ver os totais.</p>
       </figure>
 
       {/* Estado selecionado (frames: valor grande, votos válidos e as duas margens). */}
       <div className="mt-2 border-t border-border pt-2" data-slot="mapa-selecionado">
         <div className="flex items-baseline justify-between gap-3">
-          <p aria-live="polite" className="font-serif text-body font-bold">
+          <p aria-live="polite" className="font-serif text-step-2 font-bold">
             {selected.toUpperCase()} · selecionado
             <span className="sr-only">{` · ${UF_NAMES[selected.toLowerCase()] ?? selected.toUpperCase()}`}</span>
           </p>
-          <p className="font-serif text-[28px] font-bold leading-[30px]" aria-hidden="true">
+          <p className="font-serif text-step-4 font-bold" aria-hidden="true">
             {fmt((rowOf(rows, selected) && valueOf(rowOf(rows, selected)!, kind)) || 0)} pp
           </p>
         </div>
         <SelectedDetails kind={kind} data={data} uf={selected} />
-        <a className="mt-2 flex min-h-11 items-center justify-center rounded-md bg-primary text-body font-bold text-primary-foreground" data-abrir-estado="1" href={stateHref(selected)}>
+        <a className="mt-2 flex min-h-11 items-center justify-center rounded-md bg-primary text-step-2 font-bold text-primary-foreground" data-abrir-estado="1" href={stateHref(selected)}>
           Abrir estado
         </a>
       </div>
 
       {/* Alternativa sem cor dos frames: tabela; cada linha continua abrindo o estado. */}
       <details className="mt-3 border-t border-border" data-slot="mapa-tabela">
-        <summary className="cursor-pointer py-3 text-body font-bold">Tabela por estado</summary>
-        <table className="mt-1 w-full text-[13px] leading-[17px]">
+        <summary className="cursor-pointer py-3 text-step-2 font-bold">Tabela por estado</summary>
+        <table className="mt-1 w-full text-step-1">
           <thead>
             <tr>
               <th scope="col" className="text-left">Estado</th>
@@ -301,8 +303,8 @@ function SelectedDetails({ kind, data, uf }: { kind: MapKind; data: StateMapData
   const [first, second] = panelLines(kind, data, row)
   return (
     <>
-      <p className="text-body leading-[18px]">{first}</p>
-      <p className="mt-1 text-body leading-[18px]">{second}</p>
+      <p className="text-step-2">{first}</p>
+      <p className="mt-1 text-step-2">{second}</p>
     </>
   )
 }
@@ -370,7 +372,8 @@ function MapView(props: {
         const bin = binOf(rows, shape.uf, kind)
         const isCallout = CALLOUT_RIGHT.includes(shape.uf) || CALLOUT_LEFT.includes(shape.uf)
         const isSel = selected === shape.uf
-        const big = Math.max(shape.w, shape.h) > 55
+        // Two stacked 13 px lines (the name and the value) need a shape of about 56 x 44 px on screen; the others are reached through the callouts or a tap.
+        const big = shape.w >= 56 && shape.h >= 44
         return (
           <a
             key={shape.uf}
@@ -386,12 +389,12 @@ function MapView(props: {
             <path d={toPath(shape.pts)} fill={BIN_COLOR[bin]} stroke="var(--background)" strokeWidth={2} />
             {isSel && <path d={toPath(shape.pts)} fill="none" stroke="var(--foreground)" strokeWidth={2.5} pointerEvents="none" />}
             {big && !isCallout && (
-              <text fill={fgOf(bin)} fontSize={12} fontWeight={700} textAnchor="middle" x={shape.cx} y={shape.cy - 2} pointerEvents="none">
+              <text fill={fgOf(bin)} fontSize={LABEL} fontWeight={700} textAnchor="middle" x={shape.cx} y={shape.cy - 1} pointerEvents="none">
                 {shape.uf.toUpperCase()}
               </text>
             )}
             {big && !isCallout && (
-              <text fill={fgOf(bin)} fontSize={10} textAnchor="middle" x={shape.cx} y={shape.cy + 9} pointerEvents="none">
+              <text fill={fgOf(bin)} fontSize={LABEL} textAnchor="middle" x={shape.cx} y={shape.cy + LABEL} pointerEvents="none">
                 {fmt(valueOf(row, kind))}
               </text>
             )}
@@ -419,8 +422,11 @@ function MapView(props: {
               <rect data-hit={uf} fill="transparent" height={CALL_PITCH} width={CALL_W} x={x} y={y - (CALL_PITCH - CALL_H) / 2} />
               <rect fill="var(--background)" height={CALL_H} rx={4} stroke={selected === uf ? 'var(--foreground)' : 'var(--border)'} strokeWidth={selected === uf ? 2 : 1} width={CALL_W} x={x} y={y} />
               <rect fill={BIN_COLOR[binOf(rows, uf, kind)]} height={16} stroke="var(--border)" strokeWidth={0.5} width={16} x={x + 6} y={y + 16} />
-              <text dominantBaseline="middle" fill="var(--foreground)" fontSize={13} fontWeight={700} x={x + 27} y={y + CALL_H / 2}>
-                {uf.toUpperCase()} {fmt(valueOf(row, kind))}
+              <text dominantBaseline="middle" fill="var(--foreground)" fontSize={LABEL} fontWeight={700} x={x + 27} y={y + CALL_H / 2 - LABEL / 2 - 1}>
+                {uf.toUpperCase()}
+              </text>
+              <text dominantBaseline="middle" fill="var(--foreground)" fontSize={LABEL} x={x + 27} y={y + CALL_H / 2 + LABEL / 2 + 1}>
+                {fmt(valueOf(row, kind))}
               </text>
             </a>
           </g>

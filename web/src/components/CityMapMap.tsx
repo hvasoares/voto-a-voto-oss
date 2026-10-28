@@ -64,13 +64,15 @@ const ZOOM_STEP = 1.6
 const ZOOM_IN_MAX = 12
 /** The rendered width of the svg (px); the viewBox scales it. */
 export const RENDER_WIDTH = 350
-/** A shape shows its value once the row text is >= this wide on screen (the panel covers the rest). */
-const VALUE_PX = 26
-const NAME_PX = 46
-/** Label box estimate (viewBox units): bold 11px digits per char, and 10px name text per char;
+/** The labels are step 1 (13 px) AS DRAWN, at every zoom: their size in viewBox units is 13 / pxUnit (#87). A shape shows its value
+ * once the row text is >= this wide on screen (the panel covers the rest). */
+const LABEL_PX = 13
+const VALUE_PX = 40
+const NAME_PX = 64
+/** Label box estimate (screen px per character): bold 13 px digits, and 13 px regular name text;
  * deliberately a little over so the real text never reaches where the estimate allowed none. */
-const VALUE_CHAR = 6.6
-const NAME_CHAR = 5.4
+const VALUE_CHAR = 8
+const NAME_CHAR = 7
 /** Which inline labels a shape draws at the current zoom (after the placement pass). */
 export interface ShapeLabels {
   value: boolean
@@ -115,11 +117,11 @@ export function placeLabels(shapes: ReturnType<typeof meshShapes>, byIbge: Map<s
     const bb = bboxOf(shape)
     out.set(shape.codarea, { value: false, nome: false })
     // A value only prints where it was already legible at this zoom (same gates as before)...
-    if (bb.w * pxUnit >= VALUE_PX && bb.h * pxUnit >= 13)
-      candidates.push({ kind: 'value', codarea: shape.codarea, prio: bb.w * bb.h, sec: Math.abs(row.margin2), rect: rectOf(shape.cx, shape.cy - 2, fmt(row.margin2).length * VALUE_CHAR, 10, 3) })
+    if (bb.w * pxUnit >= VALUE_PX && bb.h * pxUnit >= 18)
+      candidates.push({ kind: 'value', codarea: shape.codarea, prio: bb.w * bb.h, sec: Math.abs(row.margin2), rect: rectOf(shape.cx, shape.cy - 2 / pxUnit, (fmt(row.margin2).length * VALUE_CHAR) / pxUnit, 12 / pxUnit, 4 / pxUnit) })
     // ...and a name only where it fits without clipping mid-word or crossing the container edge.
-    if (bb.w * pxUnit >= NAME_PX && bb.h * pxUnit >= 22)
-      candidates.push({ kind: 'nome', codarea: shape.codarea, prio: bb.w * bb.h, sec: Math.abs(row.margin2), rect: rectOf(shape.cx, shape.cy + 10, displayName(row.nome).length * NAME_CHAR, 8, 3) })
+    if (bb.w * pxUnit >= NAME_PX && bb.h * pxUnit >= 34)
+      candidates.push({ kind: 'nome', codarea: shape.codarea, prio: bb.w * bb.h, sec: Math.abs(row.margin2), rect: rectOf(shape.cx, shape.cy + 16 / pxUnit, (displayName(row.nome).length * NAME_CHAR) / pxUnit, 12 / pxUnit, 4 / pxUnit) })
   }
   const placed: LabelRect[] = []
   const admit = (kind: keyof ShapeLabels) => {
@@ -275,7 +277,7 @@ function Lista({ rows, base, uf, ladoANome, ladoBNome }: { rows: CityMarginRow[]
   useLayoutEffect(() => {
     document.dispatchEvent(new Event('city-list:mounted'))
   }, [])
-  if (rows.length === 0) return <p className="mt-2 text-body leading-[18px]">Nenhum município deste estado no dataset.</p>
+  if (rows.length === 0) return <p className="mt-2 text-step-2">Nenhum município deste estado no dataset.</p>
   const baseTrunk = base.replace(/\/$/, '')
   return (
     <nav className="mt-2" aria-label="Municípios">
@@ -336,6 +338,8 @@ function MapView({
   const svgRef = useRef<SVGSVGElement | null>(null)
   const full: Window_ = { x: 0, y: 0, w: W, h: H }
   const current = view ?? full
+  /** CSS px per viewBox unit at this zoom. */
+  const unit = RENDER_WIDTH / current.w
 
   const zoomed = view !== null && (view.w < full.w || view.h < full.h)
   const zoomTo = (factor: number) => {
@@ -420,11 +424,11 @@ function MapView({
   }
 
   if (meshError) {
-    return <p className="mt-2 text-body leading-[18px]">O arquivo da malha do estado não carregou. A lista acima continua funcionando.</p>
+    return <p className="mt-2 text-step-2">O arquivo da malha do estado não carregou. A lista acima continua funcionando.</p>
   }
   if (!mesh) {
     return (
-      <p className="mt-2 text-body leading-[18px]" aria-busy="true">
+      <p className="mt-2 text-step-2" aria-busy="true">
         Carregando a malha dos municípios…
       </p>
     )
@@ -481,30 +485,30 @@ function MapView({
           return (
             <g key={shape.codarea} data-cd-ibge={shape.codarea} pointerEvents="none">
               {lab.value && (
-                <text fill={ink} fontSize={11} fontWeight={700} textAnchor="middle" x={shape.cx} y={shape.cy - 2}>
+                <text fill={ink} fontSize={LABEL_PX / unit} fontWeight={700} textAnchor="middle" x={shape.cx} y={shape.cy - 2 / unit}>
                   {fmt(row!.margin2!)}
                 </text>
               )}
-              {lab.nome && <text fill={ink} fontSize={10} textAnchor="middle" x={shape.cx} y={shape.cy + 10}>{displayName(row!.nome)}</text>}
+              {lab.nome && <text fill={ink} fontSize={LABEL_PX / unit} textAnchor="middle" x={shape.cx} y={shape.cy + 16 / unit}>{displayName(row!.nome)}</text>}
             </g>
           )
         })}
       </svg>
       <div className="mt-1 flex items-center gap-1" role="group" aria-label="Zoom e pan do mapa">
-        <button type="button" className="min-h-11 min-w-11 flex-1 rounded-md border border-border bg-background text-body font-bold" onClick={() => zoomTo(ZOOM_STEP)}>
+        <button type="button" className="min-h-11 min-w-11 flex-1 rounded-md border border-border bg-background text-step-2 font-bold" onClick={() => zoomTo(ZOOM_STEP)}>
           + Aproximar
         </button>
-        <button type="button" className="min-h-11 min-w-11 flex-1 rounded-md border border-border bg-background text-body font-bold" onClick={() => zoomTo(1 / ZOOM_STEP)}>
+        <button type="button" className="min-h-11 min-w-11 flex-1 rounded-md border border-border bg-background text-step-2 font-bold" onClick={() => zoomTo(1 / ZOOM_STEP)}>
           − Afastar
         </button>
         {zoomed && (
-          <button type="button" className="min-h-11 min-w-11 flex-1 rounded-md border border-border bg-background text-body font-bold" onClick={() => setView(null)}>
+          <button type="button" className="min-h-11 min-w-11 flex-1 rounded-md border border-border bg-background text-step-2 font-bold" onClick={() => setView(null)}>
             Ver tudo
           </button>
         )}
       </div>
       {unmatched > 0 && (
-        <p className="mt-1 text-small leading-[14px] text-muted-foreground" data-slot="malha-sem-dados">
+        <p className="mt-1 text-step-1 text-muted-foreground" data-slot="malha-sem-dados">
           {unmatched} dos municípios do arquivo de fronteiras não têm dados neste dataset e ficam em cinza.
         </p>
       )}
@@ -523,7 +527,7 @@ function Escala({ vista, rows, shapes, semContorno, ladoANome, ladoBNome }: { vi
   const legend = marginLegend()
   return (
     <figure className="mt-2 border-t border-border pt-2" data-slot="mapa-escala">
-      <figcaption className="text-small leading-[14px]">
+      <figcaption className="text-step-1">
         Margem (pp) = % de {ladoANome} menos % de {ladoBNome} nos municípios. Negativo é {ladoBNome} à frente; positivo é {ladoANome} à frente.
       </figcaption>
       <div aria-hidden="true" className="mt-1.5 flex h-4 overflow-hidden rounded-sm">
@@ -531,23 +535,23 @@ function Escala({ vista, rows, shapes, semContorno, ladoANome, ladoBNome }: { vi
           <div key={bin} className="min-w-0 flex-1" style={{ background: BIN_COLOR[bin] }} />
         ))}
       </div>
-      <div aria-hidden="true" className="flex justify-between text-[10px] leading-[12px] text-muted-foreground">
+      <div aria-hidden="true" className="flex justify-between text-step-1 text-muted-foreground">
         {legend.edges.map((edge) => (
           <span key={edge}>{edge}</span>
         ))}
       </div>
       <span className="sr-only">Escala, da esquerda para a direita: {legend.edges.join(', ')} pp.</span>
       {semDados.length > 0 && (
-        <p className="mt-1 text-small leading-[14px] text-muted-foreground" data-slot="escala-sem-dados">
+        <p className="mt-1 text-step-1 text-muted-foreground" data-slot="escala-sem-dados">
           Sem cor: {semDados.length} {semDados.length === 1 ? 'município sem' : 'municípios sem'} dados do 2º turno.
         </p>
       )}
       {semContornoCount > 0 && (
-        <p className="mt-1 text-small leading-[14px] text-muted-foreground" data-slot="escala-sem-contorno">
+        <p className="mt-1 text-step-1 text-muted-foreground" data-slot="escala-sem-contorno">
           Sem contorno: {semContornoCount} {semContornoCount === 1 ? 'município não tem' : 'municípios não têm'} fronteira no arquivo do IBGE (o município é mais novo que a malha) e só aparece na lista.
         </p>
       )}
-      <p className="mt-1 text-small leading-[14px] text-muted-foreground">
+      <p className="mt-1 text-step-1 text-muted-foreground">
         {vista === 'mapa' ? 'Toque num município para ver os totais; a lista também repete os valores.' : 'Toque numa cidade da lista para abrir a carta dela; o mapa mostra os mesmos valores.'}
       </p>
       {shapes && <span className="sr-only">{shapes.length} municípios no arquivo de fronteiras.</span>}
@@ -578,24 +582,24 @@ function Selecionado({
     <div className="mt-2 border-t border-border pt-2" data-slot="mapa-selecionado">
       <div className="flex items-baseline justify-between gap-3">
         {/* The big figure never wraps: number and unit stay together even under a two-line title. */}
-        <p aria-live="polite" className="min-w-0 font-serif text-body font-bold wrap-anywhere">
+        <p aria-live="polite" className="min-w-0 font-serif text-step-2 font-bold wrap-anywhere">
           {displayName(row.nome)} · {row.margin2 === null ? 'sem dados' : 'selecionado'}
         </p>
-        <p className="shrink-0 whitespace-nowrap font-serif text-[28px] font-bold leading-[30px]" aria-hidden="true">
+        <p className="shrink-0 whitespace-nowrap font-serif text-step-4 font-bold" aria-hidden="true">
           {row.margin2 === null ? '—' : `${fmt(row.margin2)} pp`}
         </p>
       </div>
-      <p className="text-body leading-[18px]">Votos válidos (2º turno): {fmtInt(row.validos2)}</p>
+      <p className="text-step-2">Votos válidos (2º turno): {fmtInt(row.validos2)}</p>
       {row.margin2 === null ? (
-        <p className="mt-1 text-body leading-[18px]">Sem par do 2º turno de {ano} neste dataset: o município fica sem cor no mapa.</p>
+        <p className="mt-1 text-step-2">Sem par do 2º turno de {ano} neste dataset: o município fica sem cor no mapa.</p>
       ) : row.margin1 === null ? (
-        <p className="mt-1 text-body leading-[18px]">Margem ({ladoACompleto} − {ladoBCompleto}): {fmt(row.margin2!)} pp. (Sem dados do 1º turno neste dataset.)</p>
+        <p className="mt-1 text-step-2">Margem ({ladoACompleto} − {ladoBCompleto}): {fmt(row.margin2!)} pp. (Sem dados do 1º turno neste dataset.)</p>
       ) : (
-        <p className="mt-1 text-body leading-[18px]">
+        <p className="mt-1 text-step-2">
           Margem ({ladoACompleto} − {ladoBCompleto}): {fmt(row.margin2!)} pp. Na eleição anterior: {fmt(row.margin1)} pp. Variação: {fmt(row.swing!)} pp.
         </p>
       )}
-      <a className="mt-2 flex min-h-11 items-center justify-center rounded-md bg-primary text-body font-bold text-primary-foreground" data-abrir-cidade="1" href={cityHref(row.slug)}>
+      <a className="mt-2 flex min-h-11 items-center justify-center rounded-md bg-primary text-step-2 font-bold text-primary-foreground" data-abrir-cidade="1" href={cityHref(row.slug)}>
         Abrir cidade
       </a>
     </div>
