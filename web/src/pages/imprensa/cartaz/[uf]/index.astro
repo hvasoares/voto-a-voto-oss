@@ -1,0 +1,84 @@
+---
+/**
+ * The A2 state poster (#66): the state on the map of Brazil, the state's recap picture with the source seal, a QR to the state's page and the source line.
+ * Static markup; printing is the browser's own print command (`@page` 420x594 mm = A2). One page per state (27), pre-rendered; nothing per city.
+ */
+import Base from '@/layouts/Base.astro'
+import UfMap from '@/components/UfMap.astro'
+import { normalizeBase, withBase } from '@/paths'
+import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
+import '@/lib/sentences/catalog-press'
+import { recapUfs } from '@/lib/recap-data'
+import { stateKit } from '@/lib/press-kit-build'
+import { glyphSvg, qrGlyph } from '@/lib/qr-code'
+import { shortAddress } from '@/lib/share-text'
+
+export async function getStaticPaths() {
+  return (await recapUfs()).map((uf) => ({ params: { uf } }))
+}
+const { uf } = Astro.params
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const say = (key: string, params: Record<string, string | number> = {}) => message(DEFAULT_VOICE, key as never, params)
+const kit = await stateKit(uf!)
+const qr = glyphSvg(qrGlyph(kit.content.url), { label: `QR de ${shortAddress(kit.content.url)}`, margin: 1, paper: '#ffffff' })
+const source = kit.fixture ? say('press.poster.source.fixture', { address: kit.content.address }) : say('press.poster.source', { edition: kit.edition.id, address: kit.content.address })
+const available = new Set(await recapUfs())
+---
+<Base title={`${say('press.kit.title', { state: kit.stateName })} · ${say('press.poster.print')}`}>
+  <main class="mx-auto min-w-0 w-full max-w-[880px] flex-1 px-5 pt-3" id="main" data-page="imprensa-cartaz" data-uf={uf}>
+    <div class="print:hidden" data-screen>
+      <a class="inline-flex min-h-11 items-center text-body font-bold text-primary" href={href('/imprensa/')}>{say('press.back')}</a>
+      <p class="mt-1 text-small leading-[17px] text-muted-foreground">{say('press.poster.note')}</p>
+      <button type="button" class="mt-2 hidden min-h-11 w-full rounded-md border border-primary bg-primary text-body font-bold text-primary-foreground" data-print hidden>{say('press.poster.print')}</button>
+    </div>
+    <section data-poster class="poster mt-3" aria-label={kit.stateName}>
+      <h1 class="poster__title font-serif font-normal">{kit.stateName}</h1>
+      <div class="poster__map" role="img" aria-label={say('press.poster.map', { state: kit.stateName })}>
+        <UfMap available={available} base={base} selected={uf} label={say('press.poster.map', { state: kit.stateName })} />
+      </div>
+      <div class="poster__chart" set:html={kit.svg} />
+      <div class="poster__foot">
+        <div class="poster__qr" set:html={qr} />
+        <p class="poster__qrnote">{say('press.poster.qr')}</p>
+      </div>
+      <p class="poster__source" data-component="source-footer">{source}</p>
+    </section>
+  </main>
+</Base>
+<style is:global>
+  [data-page='imprensa-cartaz'] .poster { background: #faf7f0; border: 1px solid #d9d3c3; padding: 16px; }
+  [data-page='imprensa-cartaz'] .poster__title { font-size: 40px; line-height: 1.1; }
+  [data-page='imprensa-cartaz'] .poster__map svg { width: 100%; max-width: 320px; margin: 12px auto; display: block; }
+  [data-page='imprensa-cartaz'] .poster__map svg [data-map-uf] path { fill: #e3decf; }
+  [data-page='imprensa-cartaz'] .poster__map svg [data-selected='true'] path { fill: #14505c; stroke: #1c1b18; stroke-width: 2; }
+  [data-page='imprensa-cartaz'] .poster__chart svg { width: 100%; height: auto; display: block; }
+  [data-page='imprensa-cartaz'] .poster__foot { display: flex; gap: 16px; align-items: center; margin-top: 12px; }
+  [data-page='imprensa-cartaz'] .poster__qr svg { width: 120px; height: 120px; display: block; }
+  [data-page='imprensa-cartaz'] .poster__source { margin-top: 12px; font-size: 13px; color: #6a6558; }
+  @page { size: 420mm 594mm; margin: 0; }
+  @media print {
+    html, body { background: #faf7f0 !important; }
+    body { padding: 0 !important; margin: 0 !important; }
+    body > div > *:not(main) { display: none !important; }
+    [data-page='imprensa-cartaz'] { max-width: none; width: 420mm; height: 594mm; padding: 0; margin: 0; overflow: hidden; }
+    [data-page='imprensa-cartaz'] .poster { border: 0; margin: 0; width: 420mm; height: 594mm; box-sizing: border-box; padding: 24mm; display: flex; flex-direction: column; }
+    [data-page='imprensa-cartaz'] .poster__title { font-size: 40mm; }
+    [data-page='imprensa-cartaz'] .poster__map svg { max-width: 100mm; margin: 4mm auto; }
+    [data-page='imprensa-cartaz'] .poster__chart { flex: 1 1 0; min-height: 0; margin-top: 6mm; }
+    [data-page='imprensa-cartaz'] .poster__chart svg { width: 100%; height: 100%; }
+    [data-page='imprensa-cartaz'] .poster__foot { margin-top: auto; }
+    [data-page='imprensa-cartaz'] .poster__qr svg { width: 70mm; height: 70mm; }
+    [data-page='imprensa-cartaz'] .poster__qrnote { font-size: 9mm; }
+    [data-page='imprensa-cartaz'] .poster__source { font-size: 7mm; }
+  }
+</style>
+<script>
+  // "Imprimir" only where scripting runs; the browser's own print command works without it.
+  const button = document.querySelector<HTMLButtonElement>('[data-print]')
+  if (button) {
+    button.hidden = false
+    button.classList.remove('hidden')
+    button.addEventListener('click', () => window.print())
+  }
+</script>

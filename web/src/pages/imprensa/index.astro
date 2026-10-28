@@ -1,0 +1,68 @@
+---
+/**
+ * "Para a imprensa" (#66): the download page of the state kits (the sealed chart, the captions file, the A2 poster), the licence and credit text, and how to
+ * print the A3 sheet of a city. One kit per state (27), not one per city: the city sheet is one page that draws the city asked for in the address.
+ * No page links here yet: the address is the way in (an entry point is for the user to decide).
+ */
+import Base from '@/layouts/Base.astro'
+import PhoneHeader from '@/components/PhoneHeader.astro'
+import { normalizeBase, withBase } from '@/paths'
+import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
+import '@/lib/sentences/catalog-press'
+import { recapUfs } from '@/lib/recap-data'
+import { UF_NOME } from '@/lib/uf-names'
+import { currentEdition } from '@/lib/editions-load'
+import { editionLabel } from '@/lib/editions'
+import { loadCityRoutes } from '@/lib/city-routes'
+import { displayName } from '@/shared/city-search'
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const say = (key: string, params: Record<string, string | number> = {}) => message(DEFAULT_VOICE, key as never, params)
+const edition = await currentEdition()
+const ufs = await recapUfs()
+const [first] = await loadCityRoutes()
+const example = first ? `?mora=${first.uf}/${first.slug}` : '?mora=uf/cidade'
+const exampleHref = first ? href(`/imprensa/folha/${example}`) : undefined
+---
+<Base title={`${say('press.title')} · Voto a Voto`} description={say('press.sub')}>
+  <PhoneHeader />
+  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[880px] lg:pt-8" id="main" data-page="imprensa">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal lg:text-primary" href={href('/')}>‹ Início</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">{say('press.title')}</h1>
+    <p class="mt-1 text-body leading-[19px] text-muted-foreground">{say('press.sub')}</p>
+
+    <section class="mt-4 border-t border-border pt-3" aria-labelledby="licenca" data-licence>
+      <h2 id="licenca" class="font-serif text-section font-normal leading-[25px]">{say('press.licence.title')}</h2>
+      <p class="mt-1 text-body leading-[19px]">{say('press.licence')}</p>
+      <p class="mt-1 text-body font-bold leading-[19px]" data-credit>{say('press.credit', { date: editionLabel(edition) })}</p>
+      <p class="mt-1 text-small leading-[17px] text-muted-foreground">{say('press.seal.note')}</p>
+    </section>
+
+    <section class="mt-4 border-t border-border pt-3" aria-labelledby="estados" data-states>
+      <h2 id="estados" class="font-serif text-section font-normal leading-[25px]">{say('press.states.title')}</h2>
+      <p class="mt-1 text-small leading-[17px] text-muted-foreground">{say('press.states.note')}</p>
+      <ul class="mt-2 grid gap-2">
+        {ufs.map((uf) => {
+          const state = UF_NOME[uf] ?? uf.toUpperCase()
+          return (
+            <li class="rounded-md border border-border p-3" data-kit={uf}>
+              <p class="text-body font-bold leading-[18px]">{state}</p>
+              <p class="mt-1 flex flex-wrap gap-x-4 text-body leading-[19px]">
+                <a class="min-h-11 py-2 font-bold text-primary" href={href(`/imprensa/kit/${uf}/resumo-do-estado.svg`)} download>{say('press.link.chart', { state })}</a>
+                <a class="min-h-11 py-2 font-bold text-primary" href={href(`/imprensa/kit/${uf}/legendas.txt`)} download>{say('press.link.captions', { state })}</a>
+                <a class="min-h-11 py-2 font-bold text-primary" href={href(`/imprensa/cartaz/${uf}/`)}>{say('press.link.poster', { state })}</a>
+              </p>
+            </li>
+          )
+        })}
+      </ul>
+    </section>
+
+    <section class="mt-4 border-t border-border pt-3" aria-labelledby="folha" data-sheet-help>
+      <h2 id="folha" class="font-serif text-section font-normal leading-[25px]">{say('press.sheet.title')}</h2>
+      <p class="mt-1 text-body leading-[19px]">{say('press.sheet.note', { example: example })}</p>
+      {exampleHref && first && <p class="mt-1"><a class="min-h-11 py-2 text-body font-bold text-primary" href={exampleHref} data-sheet-example>{say('press.sheet.example', { name: displayName(first.nome) })}</a></p>}
+    </section>
+  </main>
+</Base>
