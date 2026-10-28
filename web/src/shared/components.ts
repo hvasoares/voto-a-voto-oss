@@ -34,17 +34,38 @@ export interface TurnoutBarProps {
 }
 
 /** Text tiers of a bar segment: the first tier whose `min` (percent of the bar) is reached wins; below every tier the segment has no text. */
-const TIERS: Record<CandidateKind, { min: number; text: (pct: number) => string }[]> = {
-  a: [{ min: 33, text: (p) => `A  ${p}% dos votos` }, { min: 14, text: (p) => `A  ${p}%` }, { min: 6, text: () => 'A' }],
-  b: [{ min: 33, text: (p) => `B  ${p}% dos votos` }, { min: 14, text: (p) => `B  ${p}%` }, { min: 6, text: () => 'B' }],
+const TIERS: Record<Exclude<CandidateKind, 'a' | 'b'>, { min: number; text: (pct: number) => string }[]> = {
   outros: [{ min: 33, text: (p) => `Outros  ${p}% dos votos` }, { min: 20, text: (p) => `Outros  ${p}%` }, { min: 12, text: () => 'Outros' }, { min: 8, text: () => 'Ou' }],
   abstencao: [{ min: 66, text: (p) => `Abstenção ${p}% dos que não votaram` }, { min: 30, text: (p) => `Abstenção ${p}%` }, { min: 20, text: () => 'Abstenção' }, { min: 8, text: () => 'Ab' }],
   brancos: [{ min: 66, text: (p) => `Brancos ${p}% dos que não votaram` }, { min: 30, text: (p) => `Brancos ${p}%` }, { min: 20, text: () => 'Brancos' }, { min: 8, text: () => 'Br' }],
   nulos: [{ min: 66, text: (p) => `Nulos ${p}% dos que não votaram` }, { min: 30, text: (p) => `Nulos ${p}%` }, { min: 20, text: () => 'Nulos' }, { min: 8, text: () => 'Nu' }],
 }
 
-/** The text that fits a segment of `pct` percent of its bar ('' when it is too narrow for any). */
-export function segmentText(kind: CandidateKind, pct: number): string {
+/**
+ * The name the card prints for a candidate's side (#82). The one place the bars read a name from, so a single table of
+ * candidate names (#84) can replace it without touching the layout; until then it is the label the card already has.
+ */
+export const sideName = (label: string): string => label
+
+/** Width of the card's bar at 390 px, rough bold 11px glyph width and the segment's padding: how much text fits a segment. */
+const BAR_PX = 318
+const GLYPH_PX = 6.4
+const PAD_PX = 8
+
+/**
+ * The text of a candidate segment (#82): name and share, never the share alone unless the segment is a sliver. It gives way in
+ * steps, wrapping before it shortens: "Flavio Bolsonaro 48%", "Flavio" over "Bolsonaro 48%", "Flavio Bolsonaro" over "48%", "Flavio" over "48%", "48%", ''.
+ */
+export function candidateText(name: string, pct: number): string {
+  const room = Math.floor(((pct / 100) * BAR_PX - PAD_PX) / GLYPH_PX)
+  const [first = '', ...rest] = name.split(' ')
+  const tries = [`${name} ${pct}%`, ...(rest.length ? [`${first}\n${rest.join(' ')} ${pct}%`] : []), `${name}\n${pct}%`, `${first}\n${pct}%`, `${pct}%`]
+  return tries.find((t) => Math.max(...t.split('\n').map((l) => l.length)) <= room) ?? ''
+}
+
+/** The text that fits a segment of `pct` percent of its bar ('' when it is too narrow for any). `name` is the candidate's for the two sides. */
+export function segmentText(kind: CandidateKind, pct: number, name = ''): string {
+  if (kind === 'a' || kind === 'b') return candidateText(name, pct)
   return TIERS[kind].find((t) => pct >= t.min)?.text(pct) ?? ''
 }
 
@@ -52,19 +73,25 @@ interface BarSegment {
   kind: CandidateKind
   pct: number
   title: string
+  /** The candidate's name (the two sides): the segment prints it beside the share. */
+  name?: string
 }
 
 const bar = (label: string, segs: BarSegment[]) =>
   html`<div class="bar" role="img" aria-label="${label}">${segs
     .filter((s) => s.pct > 0)
-    .map((s) => html`<span class="bar__seg bar__seg--${s.kind}" style="flex-grow:${s.pct}" title="${s.title}">${segmentText(s.kind, s.pct)}</span>`)}</div>`
+    .map((s) => {
+      const text = segmentText(s.kind, s.pct, s.name)
+      // the title only says more than the text when the text had to give way
+      return html`<span class="bar__seg bar__seg--${s.kind}" style="flex-grow:${s.pct}"${text === `${s.name} ${s.pct}%` ? '' : html` title="${s.title}"`}>${text}</span>`
+    })}</div>`
 
 export function turnoutBar(p: TurnoutBarProps): Raw {
   const { a, b } = p.candidates
   const voted: BarSegment[] = [
-    { kind: 'a', pct: a.pct, title: `${a.label}: ${a.pct}% dos votos` },
-    { kind: 'b', pct: b.pct, title: `${b.label}: ${b.pct}% dos votos` },
-    ...(p.others ? [{ kind: 'outros' as const, pct: p.others.pct, title: `${p.others.label}: ${p.others.pct}% dos votos` }] : []),
+    { kind: 'a', pct: a.pct, title: `${sideName(a.label)}: ${a.pct}% dos votos`, name: sideName(a.label) },
+    { kind: 'b', pct: b.pct, title: `${sideName(b.label)}: ${b.pct}% dos votos`, name: sideName(b.label) },
+    ...(p.others ? [{ kind: 'outros' as const, pct: p.others.pct, title: `${p.others.label}: ${p.others.pct}% dos votos`, name: p.others.label }] : []),
   ]
   const n = p.notVoted
   const notVoted: BarSegment[] = [
@@ -75,7 +102,7 @@ export function turnoutBar(p: TurnoutBarProps): Raw {
   const notVotedPct = 100 - p.votedPct
   return html`<section class="turnout" data-component="turnout-bar">
     <h2 class="turnout__title">Votaram <span class="turnout__sep" aria-hidden="true">·</span> ${p.votedPct}% do eleitorado${p.calc && calcLink(p.calc.voted)}</h2>
-    ${bar('Votaram, por candidato', voted)}
+    ${bar(`Votaram, por candidato: ${voted.filter((s) => s.pct > 0).map((s) => `${s.name} ${s.pct}%`).join(', ')} dos votos`, voted)}
     <h2 class="turnout__title">Não votaram <span class="turnout__sep" aria-hidden="true">·</span> ${notVotedPct}% do eleitorado${p.calc && calcLink(p.calc.notVoted)}</h2>
     ${bar('Não votaram, por tipo', notVoted)}
   </section>`

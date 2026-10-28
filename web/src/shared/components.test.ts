@@ -13,15 +13,23 @@ describe('turnoutBar', () => {
     const t = text(turnoutBar(props))
     expect(t).toContain('Votaram · 70% do eleitorado')
     expect(t).toContain('Não votaram · 30% do eleitorado')
-    expect(t).toContain('A 52% dos votos')
-    expect(t).toContain('B 48% dos votos')
+    expect(t).toContain('Candidato A 52%')
+    expect(t).toContain('Candidato B 48%')
+    expect(t).not.toContain('dos votos')
     expect(t).toContain('Abstenção 78% dos que não votaram')
     expect(t).toContain('Br')
     expect(t).toContain('Nu')
   })
-  it('sizes segments by their percent and carries the full text in the title', () => {
+  it('names the candidates in the picture\'s text alternative, with the shares, in ballot order', () => {
+    const out = turnoutBar({ ...props, candidates: { a: { label: 'Lula', pct: 52 }, b: { label: 'Flavio Bolsonaro', pct: 48 } } }).value
+    expect(out).toContain('aria-label="Votaram, por candidato: Lula 52%, Flavio Bolsonaro 48% dos votos"')
+  })
+  it('sizes segments by their percent; the title appears only when the text gave way', () => {
     const out = turnoutBar(props).value
-    expect(out).toMatch(/bar__seg--a" style="flex-grow:52" title="Candidato A: 52% dos votos"/)
+    expect(out).toMatch(/bar__seg--a" style="flex-grow:52">Candidato A 52%</)
+    const narrow = turnoutBar({ ...props, candidates: { a: { label: 'Flavio Bolsonaro', pct: 20 }, b: { label: 'Lula', pct: 80 } } }).value
+    expect(narrow).toMatch(/bar__seg--a" style="flex-grow:20" title="Flavio Bolsonaro: 20% dos votos">Flavio\n20%</)
+    expect(out).toMatch(/bar__seg--nulos" style="flex-grow:12" title="Nulos: 12% dos que não votaram"/)
     expect(out).toMatch(/bar__seg--nulos" style="flex-grow:12" title="Nulos: 12% dos que não votaram"/)
   })
   it('draws no segment for a part of 0% but never drops the others', () => {
@@ -39,11 +47,14 @@ describe('turnoutBar', () => {
 })
 
 describe('segmentText: the text shrinks with the segment', () => {
-  it('candidates', () => {
-    expect(segmentText('a', 52)).toBe('A  52% dos votos')
-    expect(segmentText('a', 20)).toBe('A  20%')
-    expect(segmentText('a', 8)).toBe('A')
-    expect(segmentText('a', 3)).toBe('')
+  it('candidates: the name beside the share, wrapping and shortening before the share goes', () => {
+    expect(segmentText('a', 52, 'Lula')).toBe('Lula 52%')
+    expect(segmentText('b', 48, 'Flavio Bolsonaro')).toBe('Flavio Bolsonaro 48%')
+    expect(segmentText('b', 30, 'Flavio Bolsonaro')).toBe('Flavio\nBolsonaro 30%')
+    expect(segmentText('b', 26, 'Flavio Bolsonaro')).toBe('Flavio\n26%')
+    expect(segmentText('b', 20, 'Flavio Bolsonaro')).toBe('Flavio\n20%')
+    expect(segmentText('a', 8, 'Lula')).toBe('8%')
+    expect(segmentText('a', 3, 'Lula')).toBe('')
   })
   it('not-voted parts', () => {
     expect(segmentText('abstencao', 78)).toBe('Abstenção 78% dos que não votaram')

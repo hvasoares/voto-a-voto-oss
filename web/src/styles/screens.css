@@ -117,7 +117,7 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 .bar { display: flex; gap: 2px; height: 38px; margin-top: 9px; }
 .bar__seg {
   flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;
-  padding-bottom: 2px; font: 600 12px/15px var(--font-sans); white-space: pre; color: var(--c-ink);
+  padding-bottom: 2px; font: 600 12px/15px var(--font-sans); white-space: pre; text-align: center; color: var(--c-ink);
 }
 .bar__seg--a, .bar__seg--b, .bar__seg--outros { font-size: 11px; }
 .bar__seg--a { background: var(--c-cand-a); color: var(--c-accent-fg); }

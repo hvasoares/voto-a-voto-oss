@@ -29,6 +29,18 @@ test.describe('city card: fixture route is the frame', () => {
     expect(t).toContain('Nulos ver cálculo 3.600 · 12% dos que não votaram')
     expect(t).toContain('Em Cidade Exemplo, no 1º turno de 2026, 30% do eleitorado não votou, quase tanto quanto o Candidato B recebeu (33,6%).')
   })
+  test('the bars name the candidates beside the share, in ballot order, with no label clipped (#82)', async ({ page }) => {
+    await page.goto(`${city}?turno=1`)
+    await waitReady(page)
+    const segs = figures(page).locator('.bar').first().locator('.bar__seg')
+    await expect(segs.first()).toHaveText('Candidato A 52%')
+    await expect(segs.nth(1)).toContainText('Candidato B')
+    for (const t of await segs.allInnerTexts()) expect(t).not.toMatch(/^[AB]\s+\d+%/)
+    await expect(figures(page).locator('.bar[role="img"]').first()).toHaveAttribute('aria-label', /^Votaram, por candidato: Candidato A 52%, Candidato B \d+%/)
+    // every segment shows its whole text: nothing is cut off by the segment's edge (a segment too narrow for any text prints none)
+    const clipped = await segs.evaluateAll((els) => els.filter((e) => e.scrollWidth > e.clientWidth + 1 || e.scrollHeight > e.clientHeight + 1).map((e) => e.textContent))
+    expect(clipped).toEqual([])
+  })
   test('without a query the latest round of the latest cycle is shown', async ({ page }) => {
     await page.goto(city)
     await waitReady(page)
