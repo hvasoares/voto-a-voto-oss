@@ -87,7 +87,7 @@ export default function MeuBrasil({ base, origin, fixture, edition }: MeuBrasilP
   }
 
   return (
-    <div data-meu-brasil data-places={refs.length} data-ready={content ? 'yes' : 'no'}>
+    <div data-meu-brasil data-places={refs.length} data-drawn={cards.length} data-ready={content ? 'yes' : 'no'}>
       {/* From 1024 px (the desktop frame) the headline sits over the fields and each place is a column; the picture below is the one that is shared. */}
       {content && <p className="mt-4 hidden font-serif text-[28px] leading-[36px] lg:block" data-headline>{content.variants.standard.alt}</p>}
       <div className="mt-3 grid gap-2 lg:grid-cols-3 lg:gap-[30px]">

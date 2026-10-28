@@ -82,9 +82,10 @@ test.describe('Cara a cara: choosing and switching', () => {
     await page.getByRole('combobox', { name: 'Cidade B' }).fill('exemplo paulista')
     await page.locator('[data-place-option]', { hasText: 'Cidade Exemplo Paulista' }).click()
     await ready(page)
-    expect(new URL(page.url()).search).toBe(CITIES)
-    const data = seen.map((r) => new URL(r.url).pathname).filter((p) => /\/city\//.test(p))
-    expect(data).toEqual([expect.stringMatching(/\/city\/rj\/cidade-exemplo\.json$/), expect.stringMatching(/\/city\/sp\/cidade-exemplo-paulista\.json$/)])
+    await expect.poll(() => new URL(page.url()).search).toBe(CITIES)
+    const cityData = () => seen.map((r) => new URL(r.url).pathname).filter((p) => /\/city\//.test(p))
+    await expect.poll(() => cityData().length).toBe(2)
+    expect(cityData()).toEqual([expect.stringMatching(/\/city\/rj\/cidade-exemplo\.json$/), expect.stringMatching(/\/city\/sp\/cidade-exemplo-paulista\.json$/)])
     expect(violations(seen, [new URL(page.url()).origin])).toEqual([])
   })
 

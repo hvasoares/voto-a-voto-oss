@@ -37,10 +37,10 @@ test.describe('Meu Brasil', () => {
 
   test('reloading the address reproduces the same card; the address follows the choices', async ({ page }) => {
     await open(page, THREE)
-    await ready(page)
+    await expect(page.locator('[data-meu-brasil]')).toHaveAttribute('data-drawn', '3')
     const first = await title(page).textContent()
     await page.reload()
-    await ready(page)
+    await expect(page.locator('[data-meu-brasil]')).toHaveAttribute('data-drawn', '3')
     expect(await title(page).textContent()).toBe(first)
     await page.getByRole('button', { name: 'Remover onde nasceu' }).click()
     await expect.poll(() => new URL(page.url()).search).toBe('?mora=rj/cidade-exemplo&vota=sp/cidade-exemplo-paulista')
