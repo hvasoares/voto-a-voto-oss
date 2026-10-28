@@ -139,6 +139,10 @@ test.describe('tap targets (390x844)', () => {
     const running = (t: Target) => /manifesto do repositório|data\/manifest\.json|github\.com\/hvasoares|Creative Commons|Detalhes em Sobre os dados/.test(t.what)
     expect(found.length).toBeGreaterThan(8)
     expect(small(found.filter((t) => !running(t)))).toEqual([])
+    // "Usar os dados" (#102): the widget link and the six links of the list are hit areas of their own
+    const uses = await page.locator('[data-component="use-data"] [data-use]').evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height))
+    expect(uses).toHaveLength(7)
+    for (const h of uses) expect(h).toBeGreaterThanOrEqual(44)
   })
 
   test('axe, target-size included: no violations on the Home with the notice open and on the hydrated map view', async ({ page }) => {

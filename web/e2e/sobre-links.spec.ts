@@ -25,14 +25,14 @@ test('every link into /sobre-os-dados/#... in the built site finds its anchor', 
     for (const m of readFileSync(file, 'utf8').matchAll(/href="[^"#]*sobre-os-dados\/?#([^"]+)"/g)) found.set(m[1]!, file)
   }
   // the privacy link of every footer and the edition links of the API page are among them
-  expect([...found.keys()]).toEqual(expect.arrayContaining(['privacidade', 'edicoes']))
+  expect([...found.keys()]).toEqual(expect.arrayContaining(['privacidade', 'edicoes', 'usar-os-dados']))
   const broken = [...found].filter(([id]) => !ids.has(id)).map(([id, file]) => `#${id} (from ${file})`)
   expect(broken).toEqual([])
 })
 
 test('the old addresses of the page all still exist', () => {
   const about = readFileSync(join(dist, 'sobre-os-dados', 'index.html'), 'utf8')
-  for (const id of ['calculo', 'conferido', 'confira', 'final-nao-ao-vivo', 'edicoes', 'dados-abertos', 'pendencias', 'limites', 'licenca', 'licencas', 'jornalistas', 'codigo', 'privacidade', 'guardado-no-aparelho', 'apoio', 'de-onde-vem']) {
+  for (const id of ['calculo', 'conferido', 'confira', 'final-nao-ao-vivo', 'edicoes', 'dados-abertos', 'pendencias', 'limites', 'licenca', 'licencas', 'jornalistas', 'usar-os-dados', 'widget-cidade', 'codigo', 'privacidade', 'guardado-no-aparelho', 'apoio', 'de-onde-vem']) {
     expect(about, id).toContain(`id="${id}"`)
   }
 })

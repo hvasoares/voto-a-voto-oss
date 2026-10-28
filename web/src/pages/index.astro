@@ -68,7 +68,7 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
     <section class="mt-2 lg:mt-12" aria-labelledby="tarefas" data-tasks>
     <h2 id="tarefas" class="font-serif text-step-3! font-normal lg:text-[22px]! lg:leading-[30px]!">O que você quer fazer?</h2>
     {/* The entries in the order a visit unfolds (data-task is the stable hook); "comparar" (id="comparar") is the chooser (#101). #102 inserts
-        "Usar os dados" and #103 anything else after "entender". A link to a screen that does not exist yet is not shown. */}
+        "Usar os dados" (done, after "entender") and #103 anything else after it. A link to a screen that does not exist yet is not shown. */}
     <ul class="mt-[5px] list-none p-0 lg:mt-3">
       <li data-task="ver-cidade"><TaskRow href="#busca" title="Ver minha cidade" sub="Busque pelo nome ou use a localização" /></li>
       <li data-task="compartilhar"><TaskRow href={href('/') + destinationLink('compartilhar')} title="Compartilhar um resultado" sub="Escolha a cidade e toque em Compartilhar" /></li>
@@ -93,6 +93,7 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
           {EXPLORE.filter((e) => e.task === 'entender').map((e) => <li><TaskRow href={href(e.to.replace(':uf', firstUf))} title={e.title} sub={e.sub} /></li>)}
         </ul>
       </li>
+      <li data-task="usar-os-dados"><TaskRow href={href('/sobre-os-dados/#usar-os-dados')} title="Usar os dados" sub="Widget, kit de imprensa, dados abertos e API" /></li>
     </ul>
     </section>
     </div>

@@ -41,6 +41,7 @@ test.describe('the task block', () => {
       ['comparar', 'Comparar'],
       ['conferir', 'Conferir um número'],
       ['entender', 'Entender o país e os estados'],
+      ['usar-os-dados', 'Usar os dados'],
     ])
     const text = (await page.locator('[data-tasks]').innerText()).toLowerCase()
     for (const word of ['vencedor', 'ranking', 'quem ganhou', 'por que']) expect(text).not.toContain(word)
@@ -70,6 +71,16 @@ test.describe('the task block', () => {
     })
   }
 
+  test('"Usar os dados" leads to its section of Sobre os dados with a plain link', async ({ page }) => {
+    await ready(page)
+    const entry = page.locator('[data-task="usar-os-dados"] a')
+    await expect(entry).toHaveCount(1)
+    await expect(entry).toHaveAttribute('href', `${base}sobre-os-dados/#usar-os-dados`)
+    await entry.click()
+    await expect(page).toHaveURL(`${base}sobre-os-dados/#usar-os-dados`)
+    await expect(page.locator('#usar-os-dados')).toBeInViewport()
+  })
+
   test('"Final, não ao vivo." shows once and is visible without scrolling on the phone', async ({ page }) => {
     await page.goto(base)
     expect(page.viewportSize()).toEqual({ width: 390, height: 844 })
@@ -80,13 +91,13 @@ test.describe('the task block', () => {
   test('keyboard: the entries follow one another in reading order and show a focus ring', async ({ page }) => {
     await ready(page)
     const links = page.locator('[data-tasks] a')
-    await expect(links).toHaveCount(12)
+    await expect(links).toHaveCount(13)
     await links.first().focus()
-    for (let i = 1; i < 12; i++) {
+    for (let i = 1; i < 13; i++) {
       await page.keyboard.press('Tab')
       await expect(links.nth(i)).toBeFocused()
     }
-    const ring = await links.nth(11).evaluate((el) => getComputedStyle(el).outlineStyle)
+    const ring = await links.nth(12).evaluate((el) => getComputedStyle(el).outlineStyle)
     expect(ring).not.toBe('none')
   })
 

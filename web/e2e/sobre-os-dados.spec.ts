@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
 
@@ -30,12 +31,23 @@ const OLD_HEADINGS = [
   { text: 'Final, não ao vivo', id: 'final-nao-ao-vivo', in: 'e-final' },
   { text: 'Dados abertos de cada edição', id: 'dados-abertos', in: 'qual-edicao' },
   { text: 'Como citar uma edição', id: 'como-citar', in: 'como-citar' },
-  { text: 'Para jornalistas e associações', id: 'jornalistas', in: 'jornalistas' },
+  { text: 'Para jornalistas e associações', id: 'jornalistas', in: 'usar-os-dados' },
   { text: 'Código aberto', id: 'codigo', in: 'codigo' },
   { text: 'Fontes e licença', id: 'licenca', in: 'de-onde-vem' },
   { text: 'Licenças do código e dos dados', id: 'licencas', in: 'licencas' },
   { text: 'Privacidade', id: 'privacidade', in: 'privacidade' },
   { text: 'O que fica guardado no seu aparelho', id: 'guardado-no-aparelho', in: 'privacidade' },
+]
+
+/** The seven ways to use the data outside the site (#102): data-use key, the page it reaches (path from the site root, `{id}` is the edition the page itself shows). */
+const USES = [
+  { key: 'widget', to: 'widget/', h1: /widget|Widget|Montar/ },
+  { key: 'imprensa', to: 'imprensa/', h1: 'Para a imprensa' },
+  { key: 'dados-abertos', to: 'edicoes/{id}/#dados-abertos', h1: /Edição|ediç/i },
+  { key: 'api', to: 'api/', h1: 'API de dados abertos' },
+  { key: 'dados-para-nerds', to: 'dados-para-nerds/', h1: /Brasil|nerds/ },
+  { key: 'feed', to: 'edicoes/feed.atom', h1: '' },
+  { key: 'fale-sem-errar', to: 'fale-sem-errar/', h1: 'Fale sem errar' },
 ]
 
 test.describe('sobre os dados page', () => {
@@ -154,5 +166,69 @@ test.describe('sobre os dados page', () => {
     await expect(page.locator('#main h1')).toBeVisible()
     const allowed = await allowedOrigins(baseURL!)
     expect(violations(seen, allowed)).toEqual([])
+  })
+
+  test('"Usar os dados" comes right after "Como citar" with the seven ways out and the widget block inside it', async ({ page }) => {
+    await page.goto(path)
+    const h2s = await page.locator('#main h2').evaluateAll((els) => els.map((e) => e.id))
+    expect(h2s.indexOf('usar-os-dados')).toBe(h2s.indexOf('como-citar') + 1)
+    const section = page.locator('section#usar-os-dados, section[aria-labelledby="usar-os-dados"]')
+    await expect(section).toHaveCount(1)
+    await expect(section.locator('[data-use]')).toHaveCount(USES.length)
+    expect(await section.locator('[data-use]').evaluateAll((els) => els.map((e) => e.getAttribute('data-use')))).toEqual(USES.map((u) => u.key))
+    // the merged widget block keeps its explanation and its entry point; the old address still lands on it
+    const widget = section.locator('[data-component="for-newsrooms"]')
+    await expect(widget.getByRole('heading', { name: 'Para jornalistas e associações' })).toBeVisible()
+    await expect(widget).toContainText('uma única linha de código')
+    await expect(widget.getByRole('link', { name: 'Montar o widget de uma cidade ›' })).toHaveAttribute('href', `${base}widget/`)
+    await page.goto(`${path}#jornalistas`)
+    await expect(page.locator('#jornalistas')).toBeAttached()
+    await expect(page.locator('[data-component="for-newsrooms"] h3')).toBeInViewport()
+    await page.goto(`${path}#usar-os-dados`)
+    await expect(page.locator('#usar-os-dados')).toBeInViewport()
+  })
+
+  for (const u of USES) {
+    test(`"Usar os dados": the ${u.key} link reaches its page`, async ({ page, request }) => {
+      await page.goto(path)
+      const edition = (await page.locator('[data-current-edition]').getAttribute('href'))!.match(/edicoes\/([^/]+)\//)![1]!
+      const link = page.locator(`[data-component="use-data"] [data-use="${u.key}"]`)
+      await expect(link).toHaveAttribute('href', base + u.to.replace('{id}', edition))
+      if (u.key === 'feed') {
+        expect((await request.get(base + u.to)).ok()).toBe(true)
+        return
+      }
+      await link.click()
+      await expect(page).toHaveURL(`${base}${u.to.replace('{id}', edition)}`)
+      await expect(page.locator('#main h1').first()).toContainText(u.h1)
+    })
+  }
+
+  test('"Usar os dados" works without scripts: plain links, one line each', async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false })
+    const page = await context.newPage()
+    await page.goto(path)
+    const links = page.locator('[data-component="use-data"] [data-use]')
+    await expect(links).toHaveCount(USES.length)
+    for (const l of await links.all()) await expect(l).toHaveAttribute('href', /.+/)
+    await expect(page.locator('[data-component="use-links"] li')).toHaveCount(6)
+    await context.close()
+  })
+
+  test('"Usar os dados": keyboard reaches each link in order and shows a focus ring', async ({ page }) => {
+    await page.goto(path)
+    const links = page.locator('[data-component="use-data"] [data-use]')
+    await links.first().focus()
+    for (let i = 1; i < USES.length; i++) {
+      await page.keyboard.press('Tab')
+      await expect(links.nth(i)).toBeFocused()
+    }
+    expect(await links.last().evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe('none')
+  })
+
+  test('"Usar os dados": no axe violations (target size included)', async ({ page }) => {
+    await page.goto(path)
+    const { violations: found } = await new AxeBuilder({ page }).include('[data-component="use-data"]').withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze()
+    expect(found.map((v) => v.id)).toEqual([])
   })
 })

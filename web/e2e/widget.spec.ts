@@ -112,8 +112,10 @@ test.describe('the page that makes the snippet', () => {
 
   test('"Sobre os dados" has a section for journalists and associations that leads here', async ({ page }) => {
     await page.goto(`${base}sobre-os-dados/`)
-    const section = page.locator('#jornalistas')
+    // #102: the section is now a block of "Usar os dados"; the old address #jornalistas still lands on it
+    const section = page.locator('[data-component="for-newsrooms"] h3')
     await expect(section).toHaveText('Para jornalistas e associações')
+    await expect(page.locator('#jornalistas')).toBeAttached()
     await page.locator('[data-component="for-newsrooms"] a').click()
     await expect(page).toHaveURL(new RegExp(`${base}widget/$`))
   })

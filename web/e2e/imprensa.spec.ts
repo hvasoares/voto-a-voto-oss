@@ -17,7 +17,7 @@ async function pdfOf(page: Page) {
 }
 
 test.describe('Para a imprensa', () => {
-  test('says the licence and the credit, lists a kit per state and no page links to it', async ({ page }) => {
+  test('says the licence and the credit, lists a kit per state and only Sobre os dados links to it', async ({ page }) => {
     await page.goto(press)
     await expect(page.locator('h1')).toHaveText('Para a imprensa')
     await expect(page.locator('[data-licence]')).toContainText('CC BY 4.0')
@@ -28,10 +28,14 @@ test.describe('Para a imprensa', () => {
       await expect(kit.locator('a[href$="legendas.txt"]')).toHaveAttribute('href', `${base}imprensa/kit/${uf}/legendas.txt`)
       await expect(kit.locator(`a[href="${base}imprensa/cartaz/${uf}/"]`)).toBeVisible()
     }
-    for (const path of ['', 'rj/', 'rj/cidade-exemplo/', 'sobre-os-dados/', 'relatorios/']) {
+    for (const path of ['', 'rj/', 'rj/cidade-exemplo/', 'relatorios/']) {
       await page.goto(`${base}${path}`)
       expect(await page.locator('a[href*="imprensa"]').count(), path).toBe(0)
     }
+    // #102: the one way in is the "Usar os dados" section of Sobre os dados
+    await page.goto(`${base}sobre-os-dados/`)
+    await expect(page.locator('a[href*="imprensa"]')).toHaveCount(1)
+    await expect(page.locator('[data-component="use-data"] a[data-use="imprensa"]')).toHaveAttribute('href', press)
   })
 
   test('the chart of a state carries the source seal at the top, in the middle and at the foot, and the captions file has the credit', async ({ request }) => {

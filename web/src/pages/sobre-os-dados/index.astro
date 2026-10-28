@@ -42,6 +42,16 @@ const tables = Object.entries(OUTPUT_ROWS)
 const githubManifest = GITHUB_URL + GITHUB_MANIFEST_PATH
 const donations = donationUrl() !== undefined
 const edition = await currentEdition()
+// The ways out, in the order a person usually needs them. The open dataset links to the edition page's "Dados abertos" section
+// (the files live under edicoes/<id>/dados/ but that folder has no page of its own).
+const uses = [
+  { key: 'imprensa', label: 'Para a imprensa ›', to: href('imprensa/'), line: 'Um kit por estado com gráfico, legenda, texto alternativo e crédito, cartazes para imprimir e uma folha de cidade.' },
+  { key: 'dados-abertos', label: 'Dados abertos da edição atual ›', to: `${href(editionPath(edition.id))}#dados-abertos`, line: 'Resultados por município em CSV e NDJSON, com dicionário de dados e o SHA-256 de cada arquivo.' },
+  { key: 'api', label: 'API de dados abertos ›', to: href('api/'), line: 'Para quem programa: os mesmos arquivos JSON que as páginas leem, sem chave, só para leitura.' },
+  { key: 'dados-para-nerds', label: 'Dados para nerds ›', to: href('dados-para-nerds/'), line: 'Os números do Brasil, das regiões e dos estados em tabelas, nos três ciclos.' },
+  { key: 'feed', label: 'Feed das edições ›', to: href(FEED_PATH), line: 'Para saber no seu leitor de feeds quando uma edição nova é publicada.' },
+  { key: 'fale-sem-errar', label: 'Fale sem errar ›', to: href('fale-sem-errar/'), line: 'Um guia para dizer os números sem errar, ao vivo ou em vídeo; dele você chega ao overlay para a live e ao jogo do dia.' },
+]
 const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
 ---
 
@@ -160,11 +170,27 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
       <p class="mt-1 text-small leading-[16px] text-muted-foreground">Cite sempre o endereço da edição, não o de uma página do site, que mostra a edição mais recente.</p>
     </section>
 
-    {/* "Usar os dados" (#102) goes here, between the task sections and the rest: the widget section below moves into it. */}
-    <section class={sec} aria-labelledby="jornalistas" data-component="for-newsrooms">
-      <h2 class={h2} id="jornalistas">Para jornalistas e associações</h2>
-      <p class="mt-[5px]">Dá para colocar o resultado de uma cidade no seu site com uma única linha de código: um quadro pequeno com o resultado, a fonte, a edição dos dados e um link de volta para o cartão da cidade. O quadro não tem script nem medição de uso, cabe em colunas de 320 px e nunca altera nada no seu site.</p>
-      <p class="mt-1"><a class="inline-flex min-h-11 items-center underline" href={href('widget/')}>Montar o widget de uma cidade ›</a></p>
+    {/* "Usar os dados" (#102): every way to use the data outside the site, all of them existing pages. The widget block (#29) is merged
+        into it; #jornalistas stays as an empty alias so old links still land on it. The ids are public addresses: do not rename. */}
+    <section class={sec} aria-labelledby="usar-os-dados" data-component="use-data">
+      <h2 class={h2} id="usar-os-dados">Usar os dados</h2>
+      <p class="mt-[5px]">Os resultados são abertos: dá para levá-los para fora do site, citando o TSE como origem e o projeto pela compilação. Estes são os caminhos.</p>
+      <div data-component="for-newsrooms">
+        {/* Legacy anchor: this block used to be the section #jornalistas. */}
+        <span id="jornalistas"></span>
+        <h3 class={h3} id="widget-cidade">Para jornalistas e associações</h3>
+        <p class="mt-[5px]">Dá para colocar o resultado de uma cidade no seu site com uma única linha de código: um quadro pequeno com o resultado, a fonte, a edição dos dados e um link de volta para o cartão da cidade. O quadro não tem script nem medição de uso, cabe em colunas de 320 px e nunca altera nada no seu site.</p>
+        <p class="mt-1"><a class="inline-flex min-h-11 items-center font-bold underline" href={href('widget/')} data-use="widget">Montar o widget de uma cidade ›</a></p>
+      </div>
+      <h3 class={h3}>Outros caminhos</h3>
+      <ul class="mt-[5px] list-none p-0" data-component="use-links">
+        {uses.map((u) => (
+          <li class="border-t border-border first:border-t-0">
+            <a class="flex min-h-11 items-center font-bold underline" href={u.to} data-use={u.key}>{u.label}</a>
+            <span class="block pb-1 text-step-1 text-muted-foreground">{u.line}</span>
+          </li>
+        ))}
+      </ul>
     </section>
 
     <section class={sec} aria-labelledby="codigo">
