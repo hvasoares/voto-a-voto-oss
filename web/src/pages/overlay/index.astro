@@ -21,6 +21,9 @@ const say = (key: string) => message(DEFAULT_VOICE, key as never)
     <p class="mt-1 text-body leading-[19px] text-muted-foreground">{say('overlay.sub')}</p>
     <OverlayBuilder client:load base={base} origin={siteOrigin()} />
     <noscript><p class="mt-2 text-small leading-[17px]" data-nojs>Montar o endereço precisa de JavaScript. O overlay fica em /overlay/tela/ com a cidade no endereço, como ?c=rj/cidade-exemplo&amp;m=nv&amp;a=2026.</p></noscript>
+    <script>
+      import '@/scripts/overlay-pending'
+    </script>
     <footer class="mt-4 border-t border-border pt-2 text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
       Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
     </footer>

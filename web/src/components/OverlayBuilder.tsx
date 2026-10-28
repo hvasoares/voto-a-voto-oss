@@ -36,13 +36,32 @@ function Group<T extends string | number>({ label, options, value, name, onChang
   )
 }
 
+/** The configuration after tapping the option `Label:value` (the `data-option` of a button); an unknown one changes nothing. */
+function applyOption(c: OverlayConfig, tapped: string): OverlayConfig {
+  const [label, value = ''] = tapped.split(':') as [string, string?]
+  const found = <T extends string | number>(list: readonly T[]) => list.find((o) => String(o) === value)
+  if (label === say('overlay.measure')) return { ...c, measure: found(MEASURES) ?? c.measure }
+  if (label === say('overlay.cycle')) return { ...c, ano: found(OVERLAY_CYCLES) ?? c.ano }
+  if (label === say('overlay.size')) return { ...c, size: found(OVERLAY_SIZES) ?? c.size }
+  if (label === say('overlay.bg')) return { ...c, background: found(BACKGROUNDS) ?? c.background }
+  return c
+}
+
 export default function OverlayBuilder({ base, origin }: OverlayBuilderProps) {
   const [config, setConfig] = useState<OverlayConfig>(DEFAULT_OVERLAY)
   const [place, setPlace] = useState<PickedPlace>()
   const [status, setStatus] = useState('')
+  const root = useRef<HTMLDivElement>(null)
+  const [ready, setReady] = useState(false)
   useEffect(() => {
-    const c = parseOverlay(location.search)
+    let c = parseOverlay(location.search)
+    // A tap that landed before hydration (kept by scripts/overlay-pending.ts) is applied on top of the address, in the order it was made.
+    const host = root.current?.closest('astro-island') as HTMLElement | null
+    const pending = host?.dataset.pendingOptions
+    if (host) delete host.dataset.pendingOptions
+    for (const tapped of pending ? pending.split('|') : []) c = applyOption(c, tapped)
     setConfig(c)
+    setReady(true)
     if (c.city) {
       const [uf, slug] = c.city.split('/') as [string, string]
       setPlace({ uf, slug, nome: slug })
@@ -91,7 +110,7 @@ export default function OverlayBuilder({ base, origin }: OverlayBuilderProps) {
   }
 
   return (
-    <div data-builder className="mt-3 lg:grid lg:grid-cols-[460px_1fr] lg:gap-10">
+    <div ref={root} data-builder data-ready={ready ? 'yes' : 'no'} className="mt-3 lg:grid lg:grid-cols-[460px_1fr] lg:gap-10">
       <div>
         <div>
           <PlacePicker base={base} label={say('overlay.place')} value={shownPlace} onPick={pick} />

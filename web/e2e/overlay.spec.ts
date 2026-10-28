@@ -83,6 +83,7 @@ test.describe('Overlay builder', () => {
     const ctx = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'] })
     const page = await ctx.newPage()
     await page.goto(`${base}overlay/?c=rj/cidade-exemplo`)
+    await expect(page.locator('[data-builder]')).toHaveAttribute('data-ready', 'yes')
     await page.locator('[data-option="Medida:margem"]').click()
     await page.locator('[data-option="Ciclo:2022"]').click()
     await page.locator('[data-option="Tamanho:600x200"]').click()
@@ -97,6 +98,29 @@ test.describe('Overlay builder', () => {
     await page.goto(path)
     await expect(page.locator('[data-overlay]')).toHaveAttribute('data-background', 'escuro')
     await expect(page.locator('[data-sentence]')).toContainText('votos separaram os dois primeiros')
+    await ctx.close()
+  })
+
+  test('a choice tapped while the island is still hydrating is kept, not lost (the address copied afterwards carries it)', async ({ browser }) => {
+    const ctx = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'] })
+    const page = await ctx.newPage()
+    // Hold every script back so the tap lands on the static markup, as it does on a slow phone or a loaded CI runner.
+    let release!: () => void
+    const gate = new Promise<void>((r) => (release = r))
+    await page.route(/\/_astro\/.*\.js/, async (route) => {
+      await gate
+      await route.continue()
+    })
+    await page.goto(`${base}overlay/?c=rj/cidade-exemplo`, { waitUntil: 'domcontentloaded' })
+    await expect(page.locator('[data-builder]')).toHaveAttribute('data-ready', 'no')
+    await page.locator('[data-option="Medida:margem"]').click()
+    await page.locator('[data-option="Fundo:escuro"]').click()
+    release()
+    await expect(page.locator('[data-builder]')).toHaveAttribute('data-ready', 'yes')
+    await expect(page.locator('[data-option="Medida:margem"]')).toHaveAttribute('aria-pressed', 'true')
+    await page.locator('[data-copy]').click()
+    await expect(page.locator('[data-status]')).toHaveText('Endereço copiado.')
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('m=margem&a=2026&t=2&s=1920x1080&f=escuro')
     await ctx.close()
   })
 
