@@ -1,6 +1,6 @@
 ---
 /**
- * The same page shell as `Base.astro` (head, top bar, skip link, edition link) WITHOUT the metrics boot and the notice banner: a page that promises it makes no analytics call
+ * The same page shell as `Base.astro` (head, top bar, skip link, edition link) WITHOUT the metrics boot and the notice banner (the support link stays: it is not a measurement): a page that promises it makes no analytics call
  * (the creator guide #67, the overlay builder #68) uses this one. With no boot installed `getAnalytics()` stays the no-op, so nothing is sent from the page or from any island on it.
  */
 import cdnImportMap from 'virtual:cdn-importmap'
@@ -10,6 +10,7 @@ import { normalizeBase, withBase } from '@/paths'
 import type { PreviewHead } from '@/lib/link-preview'
 import { DESKTOP_SHELL_FILE } from '../../integrations/desktop-shell'
 import TopBar from '@/components/TopBar.astro'
+import DonationLink from '@/components/DonationLink.astro'
 import { editionLabel, editionPath } from '@/lib/editions'
 import { currentEdition } from '@/lib/editions-load'
 
@@ -72,6 +73,7 @@ const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : withBase(b
         <a href={withBase(base, editionPath(edition.id))} data-edition-link>Edição {editionLabel(edition)}</a>
         <span aria-hidden="true"> · </span>
         <a href={privacyHref}>Privacidade</a>
+        <DonationLink />
       </div>
     </div>
     {/* Desktop shell (#51: the "/" shortcut and the top bar's search): a 1024 px viewport loads its module, a phone downloads nothing for it. */}

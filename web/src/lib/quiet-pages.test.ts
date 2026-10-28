@@ -7,9 +7,9 @@ const SRC = join(import.meta.dirname, '..')
 const read = (p: string) => readFileSync(join(SRC, p), 'utf8')
 
 describe('quiet pages', () => {
-  it('the quiet shell has no metrics boot, no notice banner and no support link', () => {
+  it('the quiet shell has no metrics boot and no notice banner', () => {
     const shell = read('layouts/QuietDoc.astro').replace(/\/\*[\s\S]*?\*\//g, '')
-    expect(shell).not.toMatch(new RegExp(['analytics-boot', 'ConsentBanner', 'Donation' + 'Link'].join('|')))
+    expect(shell).not.toMatch(/analytics-boot|ConsentBanner/)
   })
   it.each(['pages/fale-sem-errar/index.astro', 'components/CreatorGuide.tsx', 'lib/creator-phrases.ts', 'pages/overlay/index.astro', 'pages/overlay/tela/index.astro', 'components/OverlayView.tsx', 'components/OverlayBuilder.tsx', 'lib/overlay.ts'])('%s does not import the analytics and has no ad', (file) => {
     const code = read(file).replace(/\/\*[\s\S]*?\*\//g, '')

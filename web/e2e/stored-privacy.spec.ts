@@ -7,7 +7,7 @@ test.describe('data page: the privacy text lists what is stored', () => {
     await page.goto(`${base}sobre-os-dados/`)
     const list = page.locator('[data-component="stored-items"]')
     const keys = await list.locator('li').evaluateAll((els) => els.map((e) => e.getAttribute('data-stored-key')))
-    expect(keys.sort()).toEqual(['voto-a-voto:notice', 'voto-a-voto:place', 'voto-a-voto:register'])
+    expect(keys.sort()).toEqual(['voto-a-voto:game', 'voto-a-voto:notice', 'voto-a-voto:place', 'voto-a-voto:register'])
     await expect(page.locator('section[aria-labelledby="privacidade"]')).toContainText('Nada disso é enviado')
     await expect(page.locator('section[aria-labelledby="privacidade"]')).toContainText('esquecer meus dados')
   })
@@ -24,6 +24,8 @@ test.describe('data page: the privacy text lists what is stored', () => {
     const written = await page.evaluate(() => Object.keys(localStorage).sort())
     await page.goto(`${base}sobre-os-dados/`)
     const listed = await page.locator('[data-component="stored-items"] li').evaluateAll((els) => els.map((e) => e.getAttribute('data-stored-key')).sort())
-    expect(written).toEqual(listed)
+    // The game's key is written only when the game is played (e2e/adivinhe.spec.ts checks that key is the only one it writes); everything else written here must be listed.
+    expect(listed).toEqual(expect.arrayContaining(written))
+    expect(listed).toContain('voto-a-voto:game')
   })
 })
