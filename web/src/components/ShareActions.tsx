@@ -70,22 +70,32 @@ export default function ShareActions({ text, svg, filename, link, primaryLabel =
       getAnalytics().event('share_opened', { has_picture: true })
       onOpened?.()
     }
+    // The picture can change while an earlier one is still being rasterised (Meu Brasil draws the card with the first place, then again
+    // with both): a slow earlier PNG must never replace the newer one, so a changed picture starts over as pending and only the
+    // latest rasterisation may set the file and the state.
+    setFile(undefined)
+    setPngState('pending')
+    let current = true
     const ready = svgToPng(svg, filename)
     readyRef.current = ready
     void ready.then(
       (f) => {
+        if (!current) return
         setFile(f)
         setPngState(f ? 'ready' : 'failed')
       },
-      () => setPngState('failed'),
+      () => current && setPngState('failed'),
     )
+    return () => {
+      current = false
+    }
   }, [svg, filename])
 
   const show = (when: boolean) => (when ? {} : { hidden: true })
 
   /** Saves the picture (or, when it could not be made, the SVG itself). Used by the button and by the share fallback. */
   const download = async () => {
-    const f = file ?? (await readyRef.current)
+    const f = await readyRef.current
     if (f) saveBlob(f, f.name)
     else saveBlob(new Blob([svg], { type: 'image/svg+xml' }), filename.replace(/\.png$/, '.svg'))
   }

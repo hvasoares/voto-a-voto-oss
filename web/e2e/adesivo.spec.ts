@@ -42,6 +42,43 @@ test.describe('Meu Brasil sticker', () => {
     expect(code?.data).toBe(`https://votoavoto.exemplo.br${base}meu-brasil/${Q}`)
   })
 
+  test('a slow picture of the first place never replaces the picture of both places (slow runner)', async ({ page }) => {
+    // The card is drawn with the first place, then again with both. On a slow runner the first rasterisation ends after the second:
+    // hold the first canvas encoding until the second is done, then let it finish, and only then read the download.
+    await page.addInitScript(() => {
+      const w = window as unknown as { __calls: number; __firstDone: boolean; __release?: () => void }
+      w.__calls = 0
+      w.__firstDone = false
+      const orig = HTMLCanvasElement.prototype.toBlob
+      HTMLCanvasElement.prototype.toBlob = function (cb, type, q) {
+        const n = ++w.__calls
+        if (n !== 1) return orig.call(this, cb, type, q)
+        const hold = new Promise<void>((r) => (w.__release = r))
+        void hold.then(() => orig.call(this, (b) => { cb(b); w.__firstDone = true }, type, q))
+      }
+    })
+    // The second place arrives late, so the card is certainly drawn twice: first with one place, then with both.
+    let letSecond!: () => void
+    const second = new Promise<void>((r) => (letSecond = r))
+    await page.route('**/data/**/city/sp/cidade-exemplo-paulista.json', async (route) => {
+      await second
+      await route.continue()
+    })
+    await page.goto(route)
+    await page.waitForFunction(() => (window as unknown as { __calls: number }).__calls === 1)
+    letSecond()
+    await expect(page.locator('[data-sticker-page]')).toHaveAttribute('data-places', '2')
+    await page.waitForFunction(() => (window as unknown as { __calls: number }).__calls === 2)
+    await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
+    await page.evaluate(() => (window as unknown as { __release: () => void }).__release())
+    await page.waitForFunction(() => (window as unknown as { __firstDone: boolean }).__firstDone)
+    await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
+    const dl = page.waitForEvent('download')
+    await page.getByRole('button', { name: 'Baixar adesivo (PNG)' }).click()
+    const flat = await sharp(await readFile(((await (await dl).path()))!)).flatten({ background: '#ffffff' }).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+    expect(jsQR(new Uint8ClampedArray(flat.data), flat.info.width, flat.info.height)?.data).toBe(`https://votoavoto.exemplo.br${base}meu-brasil/${Q}`)
+  })
+
   test('the page shows the sticker on a checkerboard with the generated text alternative, and the headline is the card\'s', async ({ page }) => {
     await open(page)
     await expect(page.locator('[data-checker]')).toBeVisible()
