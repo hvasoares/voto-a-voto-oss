@@ -135,7 +135,7 @@ export default function Game({ base, origin }: GameProps) {
       <div className="mt-4 min-w-0 lg:mt-0">
         <p className="text-tiny uppercase leading-[14px] text-muted-foreground">{say('game.guess')}</p>
         {!result.finished && (
-          <div className="mt-1 flex items-start gap-2" data-guess-form>
+          <div className="mt-1 flex items-end gap-2" data-guess-form>
             <div className="min-w-0 flex-1">
               <PlacePicker base={base} label={say('game.guess.picker')} value={pick} onPick={(p) => { setPick(p); setNote('') }} placeholder={say('game.guess.placeholder')} />
             </div>
@@ -146,7 +146,7 @@ export default function Game({ base, origin }: GameProps) {
         )}
         <p className="min-h-5 text-small leading-[17px] text-destructive" role="status" data-note>{note}</p>
         <p className="text-small font-bold leading-[17px]" data-attempt>{say('game.attempt', { n: Math.min(guessed.length + (result.finished ? 0 : 1), MAX_GUESSES) })}</p>
-        <table className="mt-1 w-full border-collapse text-small" data-guesses>
+        <table className="mt-1 w-full border-collapse text-[13px]" data-guesses>
           <thead>
             <tr className="border-b border-foreground text-left text-tiny uppercase text-muted-foreground">
               <th className="py-1 pr-2">{say('game.col.city')}</th>
@@ -160,10 +160,10 @@ export default function Game({ base, origin }: GameProps) {
               const f = feedbacks[i]
               return (
                 <tr key={i} className="border-b border-border" data-row={i + 1} data-correct={f?.correct ? 'yes' : 'no'}>
-                  <td className="py-2 pr-2 text-body">{g ? `${i + 1}  ${g[2]} · ${g[0].toUpperCase()}` : <span className="text-muted-foreground">{i + 1}</span>}</td>
-                  <td className="py-2 pr-2 text-primary" data-distance>{f ? (f.correct ? '0 km' : `${new Intl.NumberFormat('pt-BR').format(f.km)} km ${ARROWS[f.dir]}`) : ''}</td>
-                  <td className="py-2 pr-2" data-turnout>{f ? `${MARK[f.turnout]} ${say(WORD[f.turnout])}` : ''}</td>
-                  <td className="py-2" data-size>{f ? `${MARK[f.size]} ${say(WORD[f.size])}` : ''}</td>
+                  <td className="py-2 pr-2 text-small">{g ? `${i + 1}  ${g[2]} · ${g[0].toUpperCase()}` : <span className="text-muted-foreground">{i + 1}</span>}</td>
+                  <td className="whitespace-nowrap py-2 pr-2 text-primary" data-distance>{f ? (f.correct ? '0 km' : `${new Intl.NumberFormat('pt-BR').format(f.km)} km ${ARROWS[f.dir]}`) : ''}</td>
+                  <td className="whitespace-nowrap py-2 pr-2" data-turnout>{f ? `${MARK[f.turnout]} ${say(WORD[f.turnout])}` : ''}</td>
+                  <td className="whitespace-nowrap py-2" data-size>{f ? `${MARK[f.size]} ${say(WORD[f.size])}` : ''}</td>
                 </tr>
               )
             })}

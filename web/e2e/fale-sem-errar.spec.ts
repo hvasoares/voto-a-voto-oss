@@ -63,6 +63,17 @@ test.describe('Fale sem errar', () => {
     await expect(page.locator('[data-noads]')).toContainText('não tem anúncios nem rastreamento')
   })
 
+  test('links to the overlay and to the game now that both exist, and they open', async ({ page }) => {
+    await page.goto(guide)
+    await expect(page.locator('[data-link-overlay]')).toHaveAttribute('href', `${base}overlay/`)
+    await expect(page.locator('[data-link-game]')).toHaveAttribute('href', `${base}adivinhe/`)
+    await page.locator('[data-link-overlay]').click()
+    await expect(page.locator('h1')).toHaveText('Overlay para live')
+    await page.goto(guide)
+    await page.locator('[data-link-game]').click()
+    await expect(page.locator('h1')).toHaveText('Adivinhe a cidade')
+  })
+
   test('fits the screen: no sideways scroll', async ({ page }) => {
     await page.goto(guide)
     await expect(page.locator('[data-phrase="turnout"]')).toBeVisible()

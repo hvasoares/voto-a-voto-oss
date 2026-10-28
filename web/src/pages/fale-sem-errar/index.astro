@@ -52,6 +52,10 @@ const rules = [1, 2, 3, 4, 5, 6]
     </CreatorGuide>
 
     <p class="mt-3 text-small leading-[17px] text-muted-foreground">{say('guide.cite.note')}</p>
+    <p class="mt-3 flex flex-wrap justify-between gap-x-6 text-body font-bold leading-[19px]" data-guide-links>
+      <a class="min-h-11 py-2 text-primary" href={href('/overlay/')} data-link-overlay>{say('guide.link.overlay')}</a>
+      <a class="min-h-11 py-2 text-primary" href={href('/adivinhe/')} data-link-game>{say('guide.link.game')}</a>
+    </p>
     <p class="mt-3 text-small leading-[17px] text-muted-foreground" data-noads>{say('guide.noads')}</p>
     <footer class="mt-3 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
       Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
