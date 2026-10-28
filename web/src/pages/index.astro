@@ -71,7 +71,7 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
         "compartilhar"; #102 inserts "Usar os dados" and #103 anything else after "entender", before "meu-brasil". A link to a screen
         that does not exist yet is not shown. */}
     <ul class="mt-[5px] list-none p-0 lg:mt-3">
-      <li data-task="ver-cidade"><TaskRow href="#busca" title="Ver minha cidade" sub="Busque pelo nome, use a localização ou volte à sua cidade" /></li>
+      <li data-task="ver-cidade"><TaskRow href="#busca" title="Ver minha cidade" sub="Busque pelo nome ou use a localização" /></li>
       <li data-task="compartilhar"><TaskRow href={href('/') + destinationLink('compartilhar')} title="Compartilhar um resultado" sub="Escolha a cidade e toque em Compartilhar" /></li>
       <li data-task="conferir"><TaskRow href={href('/sobre-os-dados/#confira-voce-mesmo')} title="Conferir um número" sub="De onde vem cada número e como conferir" /></li>
       <li data-task="entender" class="border-t border-border pt-3">
