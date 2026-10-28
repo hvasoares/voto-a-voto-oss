@@ -84,14 +84,18 @@ test.describe('Dados para nerds: estado, Placar', () => {
     await ctx.close()
   })
 
-  test('a phone and a desktop both load no island and no chart code on this page', async ({ page }) => {
-    for (const size of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+  test('a phone loads no chart code: the islands are not requested below 1024 px (and their markup is the plain table)', async ({ page }) => {
+    for (const size of [{ width: 390, height: 844 }, { width: 1023, height: 900 }]) {
       await page.setViewportSize(size)
       const seen = collectRequests(page)
       await page.goto(url('rj'))
       await expect(page.locator('[data-page="nerds"]')).toHaveAttribute('data-ready', 'yes')
-      expect(await page.locator('astro-island').count(), String(size.width)).toBe(0)
-      expect(seen.map((r) => r.url).filter((u) => /chart|d3|recharts|plot/i.test(u)), String(size.width)).toEqual([])
+      await page.locator('[data-series]').scrollIntoViewIfNeeded()
+      await page.waitForLoadState('networkidle')
+      expect(seen.map((r) => r.url).filter((u) => /Escada|client\.|react|chart|d3|recharts|plot/i.test(u)), String(size.width)).toEqual([])
+      await expect(page.locator('[data-escada]'), String(size.width)).toHaveAttribute('data-drawn', 'ficha')
+      expect(await page.locator('[data-ficha-table] tbody tr').count()).toBe(3)
+      expect(await page.locator('svg.nerds-bars').count()).toBe(0)
     }
   })
 })

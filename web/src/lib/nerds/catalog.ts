@@ -4,7 +4,7 @@ import { assertCatalog, type PanelRecord } from './panels'
 export const PLACAR: PanelRecord = {
   id: 'placar',
   level: 'todos',
-  shard: 'nivel',
+  shard: 'ciclo',
   transform: 'placar',
   kind: 'stat',
   measure: { family: 'participacao', id: 'comparecimento' },
@@ -18,6 +18,23 @@ export const PLACAR: PanelRecord = {
   },
 }
 
-export const CATALOG: readonly PanelRecord[] = [PLACAR]
+export const ESCADA: PanelRecord = {
+  id: 'escada',
+  level: 'todos',
+  shard: 'ciclos',
+  transform: 'escada',
+  kind: 'bar',
+  measure: { family: 'participacao', id: 'comparecimento', options: ['comparecimento', 'abstencao', 'brancos_nulos', 'validos'] },
+  series: 'turno',
+  title: 'Como o comparecimento mudou de um ciclo para o outro?',
+  footer: {
+    definicao: 'A medida escolhida, por ciclo e turno, no total do lugar mostrado.',
+    fonte: 'TSE, {edicao}, resultados finais de 2018, 2022 e 2026.',
+    calculo: 'Comparecimento e abstenção = votantes e não votantes ÷ eleitorado; brancos + nulos e votos válidos = parte do comparecimento. As barras começam em 0%.',
+    naoMede: 'O motivo de não votar nem a mudança de opinião de ninguém.',
+  },
+}
+
+export const CATALOG: readonly PanelRecord[] = [PLACAR, ESCADA]
 
 assertCatalog(CATALOG)

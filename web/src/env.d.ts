@@ -27,5 +27,7 @@ declare namespace astroHTML.JSX {
     'client:interaction'?: boolean
     /** Lazy map slot (#55): in view from 1024 px up, on first interaction below it. */
     'client:slot'?: boolean
+    /** Dashboard panel (#75): `client:media(min-width: 1024px)` and `client:visible` in one. */
+    'client:panel'?: boolean
   }
 }

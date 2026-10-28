@@ -14,9 +14,9 @@ const csv = (name: string) => {
 const record = (patch: Partial<PanelRecord> = {}): PanelRecord => ({ ...PLACAR, ...patch })
 
 describe('the closed registry of panel kinds', () => {
-  it('declares the seven kinds, and renders stat and table so far', () => {
+  it('declares the seven kinds, and renders stat, table and bar so far', () => {
     expect([...PANEL_KINDS]).toEqual(['stat', 'bar', 'line', 'histogram', 'heatmap', 'table', 'map'])
-    expect([...RENDERERS].sort()).toEqual(['stat', 'table'])
+    expect([...RENDERERS].sort()).toEqual(['bar', 'stat', 'table'])
   })
 
   it('fails the build for a record that names a kind with no renderer, with a clear message', () => {
@@ -80,7 +80,7 @@ describe('Placar prints the shard values', () => {
 
 describe('the candidatos family builds from the same record schema', () => {
   const fixture: PanelRecord = {
-    id: 'candidatos-tabela', level: 'todos', shard: 'nivel', transform: 'candidatos-tabela', kind: 'table', measure: { family: 'candidatos', id: 'votos' }, series: 'candidatos',
+    id: 'candidatos-tabela', level: 'todos', shard: 'ciclo', transform: 'candidatos-tabela', kind: 'table', measure: { family: 'candidatos', id: 'votos' }, series: 'candidatos',
     title: 'Quantos votos teve cada candidato?',
     footer: { definicao: 'Votos de cada candidato.', fonte: 'TSE, {edicao}.', calculo: 'Votos ÷ votos válidos.', naoMede: 'Quem ganhou nem por quê.' },
   }
@@ -88,7 +88,7 @@ describe('the candidatos family builds from the same record schema', () => {
   it('passes the gates and renders as a table in ballot-number order, never sorted by result', () => {
     expect(validatePanel(fixture)).toEqual([])
     const place = readPlace('brasil', null, root)
-    const spec = specFor(fixture, { 1: place.get('2022-1'), 2: place.get('2022-2') })
+    const spec = specFor(fixture, { cycle: { 1: place.get('2022-1'), 2: place.get('2022-2') }, all: place })
     expect(spec.kind).toBe('table')
     const numbers = (spec as ReturnType<typeof candidatosTabela>).rows.map((r) => Number(r.cells[0]))
     expect(numbers).toEqual([...numbers].sort((a, b) => a - b))

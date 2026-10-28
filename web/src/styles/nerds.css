@@ -69,6 +69,31 @@
 .nerds-table tbody th { font-weight: 400; }
 .nerds-table tr[data-total] > * { font-weight: 700; border-top: 2px solid var(--c-ink); }
 
+/* Escada (#75) */
+.nerds-weight { margin: 8px 0 0; font-size: 11px; color: var(--c-muted); }
+.nerds-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.nerds-picker button { min-height: 36px; padding: 0 12px; border: 1px solid var(--c-rule); border-radius: 999px; background: var(--c-paper); font: 400 13px/16px var(--font-sans); color: var(--c-ink); cursor: pointer; }
+.nerds-picker button[aria-pressed='true'] { background: var(--c-accent); border-color: var(--c-accent); color: var(--c-accent-fg); font-weight: 700; }
+.nerds-picker button:focus-visible, .nerds-link:focus-visible, .nerds-sort:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 2px; }
+.nerds-legend { display: flex; gap: 16px; margin: 12px 0 0; padding: 0; list-style: none; font-size: 13px; }
+.nerds-legend li { display: flex; align-items: center; gap: 6px; }
+.nerds-key { display: inline-block; width: 12px; height: 12px; }
+.nerds-key--1, .nerds-bar--1 { fill: var(--c-accent); background: var(--c-accent); }
+.nerds-key--2, .nerds-bar--2 { fill: #a8641a; background: #a8641a; }
+.nerds-bars { display: block; width: 100%; max-width: 720px; height: auto; margin-top: 8px; }
+.nerds-bars text { font: 400 12px var(--font-sans); fill: var(--c-ink); }
+.nerds-axis { fill: var(--c-muted) !important; }
+.nerds-cycle-label { font-weight: 700 !important; font-size: 14px !important; }
+.nerds-value { font-weight: 700 !important; }
+.nerds-value--1 { fill: var(--c-accent) !important; }
+.nerds-value--2 { fill: #a8641a !important; }
+.nerds-grid { stroke: var(--c-rule); stroke-width: 1; }
+.nerds-ref { stroke: var(--c-ink); stroke-width: 1.5; }
+.nerds-link, .nerds-sort { padding: 0; border: 0; background: none; font: inherit; color: var(--c-accent); cursor: pointer; text-align: inherit; }
+.nerds-link { min-height: 44px; font-weight: 700; }
+.nerds-sort { font-weight: 700; text-transform: inherit; letter-spacing: inherit; }
+.nerds-chartnote { margin: 4px 0 0; font-size: 13px; color: var(--c-muted); max-width: 70ch; }
+
 @media (min-width: 1024px) {
   .nerds { padding-top: 32px; }
   .nerds-head h1 { font-size: 44px; line-height: 52px; }

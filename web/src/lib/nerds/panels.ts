@@ -1,6 +1,7 @@
 import { int, pct1 } from './format'
 import type { Candidate, LevelShard, Metric } from './types'
 import type { Level } from './paths'
+import { buildEscada, type BarSpec } from './escada'
 
 /**
  * The panel catalogue machinery of "Dados para nerds" (#73). A panel is a RECORD: `{ id, level, shard, transform, kind, measure, series, title, footer }`; a pure function turns
@@ -14,7 +15,7 @@ export const PANEL_KINDS = ['stat', 'bar', 'line', 'histogram', 'heatmap', 'tabl
 export type PanelKind = (typeof PANEL_KINDS)[number]
 
 /** Kinds that have a renderer. Each later ticket adds its own: bar (#75), histogram (#78), map (#77) ... */
-export const RENDERERS: ReadonlySet<PanelKind> = new Set<PanelKind>(['stat', 'table'])
+export const RENDERERS: ReadonlySet<PanelKind> = new Set<PanelKind>(['stat', 'table', 'bar'])
 
 /** The measure families: participação (turno series) and candidatos (candidate series). */
 export const MEASURE_FAMILIES = {
@@ -37,11 +38,12 @@ export interface PanelRecord {
   id: string
   /** Where the panel appears; `todos` for every level. */
   level: Level | 'todos'
-  /** Which shard it reads: the one of its own level, for the chosen cycle (and turno). */
-  shard: 'nivel'
+  /** Which shards it reads: those of its own level for one cycle (`ciclo`, both turnos), or for every cycle (`ciclos`, the Escada and the Ficha). */
+  shard: 'ciclo' | 'ciclos'
   transform: string
   kind: PanelKind
-  measure: { family: Family; id: string }
+  /** `id` is the measure it opens on; `options` is what the panel's own picker offers (read from here, so a family can grow without changing the panel). */
+  measure: { family: Family; id: string; options?: readonly string[] }
   series: Series
   /** The title is the question the panel answers. */
   title: string
@@ -119,7 +121,7 @@ export interface TableSpec {
   columns: TableColumn[]
   rows: TableRow[]
 }
-export type Spec = StatSpec | TableSpec
+export type Spec = StatSpec | TableSpec | BarSpec
 
 /** The shards a panel reads: one per turno of the chosen cycle (a turno that did not happen is absent). */
 export type Shards = Partial<Record<1 | 2, LevelShard>>
@@ -178,12 +180,22 @@ export function candidatosTabela(shards: Shards): TableSpec {
   return { kind: 'table', caption: 'Votos por candidato, em ordem do número na urna', columns, rows }
 }
 
-export type Transform = (shards: Shards) => Spec
-export const TRANSFORMS: Record<string, Transform> = { placar, 'candidatos-tabela': candidatosTabela }
+/** What a transform reads: the shards of the chosen cycle, every shard of the place (`${ano}-${turno}`), and the Brasil shards when the place is not Brasil. */
+export interface PanelData {
+  cycle: Shards
+  all: ReadonlyMap<string, LevelShard>
+  reference?: ReadonlyMap<string, LevelShard>
+}
+export type Transform = (data: PanelData, record: PanelRecord) => Spec
+export const TRANSFORMS: Record<string, Transform> = {
+  escada: (d, r) => buildEscada(r, d),
+  placar: (d) => placar(d.cycle),
+  'candidatos-tabela': (d) => candidatosTabela(d.cycle),
+}
 
-/** (record, shards) -> spec. */
-export function specFor(record: PanelRecord, shards: Shards): Spec {
+/** (record, data) -> spec. */
+export function specFor(record: PanelRecord, data: PanelData): Spec {
   const transform = TRANSFORMS[record.transform]
   if (!transform) throw new Error(`panel "${record.id}": transform "${record.transform}" does not exist`)
-  return transform(shards)
+  return transform(data, record)
 }

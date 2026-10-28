@@ -18,6 +18,8 @@ export interface PlaceView {
   /** Cycles that have data for this place, ascending; `shards.get('2022-1')`. */
   cycles: number[]
   shards: Map<string, LevelShard>
+  /** The Brasil shards, for the reference line of a região or estado; empty on Brasil. */
+  reference: Map<string, LevelShard>
   /** `brasil`, `regiao`, `uf`: the key the shard files use. */
   shardLevel: ShardLevel
 }
@@ -41,7 +43,8 @@ export function loadPlace(level: Level, id: string | null, root?: string): Place
     if (regiao) crumbs.push({ label: regionLabel(regiao), path: `dados-para-nerds/regiao/${regiao}/` })
     crumbs.push({ label: placeName(level, id) })
   }
-  return { level, id, name: placeName(level, id), crumbs, cycles: [...cycles], shards, shardLevel }
+  const reference = level === 'brasil' ? new Map<string, LevelShard>() : readPlace('brasil', null, root)
+  return { level, id, name: placeName(level, id), crumbs, cycles: [...cycles], shards, reference, shardLevel }
 }
 
 export interface ChildLinks {

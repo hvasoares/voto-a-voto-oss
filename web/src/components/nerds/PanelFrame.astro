@@ -11,8 +11,10 @@ interface Props {
   edicao: string
   /** Where the cycle block lives, so ids are unique across the three cycle blocks. */
   scope: string
+  /** "Lê 6 arquivos de dados, 5,1 kB comprimidos": what the panel reads, printed under the footer. */
+  weight?: string
 }
-const { record, edicao, scope } = Astro.props
+const { record, edicao, scope, weight } = Astro.props
 const f = record.footer
 ---
 <section class="nerds-panel" data-panel={record.id} data-kind={record.kind} aria-labelledby={`${scope}-${record.id}-t`}>
@@ -28,5 +30,6 @@ const f = record.footer
       <div><dt>Cálculo</dt><dd data-field="calculo">{f.calculo}</dd></div>
       <div><dt>Não mede</dt><dd data-field="naoMede">{f.naoMede}</dd></div>
     </dl>
+    {weight && <p class="nerds-weight" data-weight>{weight}</p>}
   </footer>
 </section>

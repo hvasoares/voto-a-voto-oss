@@ -11,7 +11,9 @@ import PanelFrame from './PanelFrame.astro'
 import StatPanel from './StatPanel.astro'
 import { CATALOG } from '@/lib/nerds/catalog'
 import { nerdsPath, type Level } from '@/lib/nerds/paths'
-import { specFor } from '@/lib/nerds/panels'
+import { specFor, type PanelData } from '@/lib/nerds/panels'
+import EscadaPanel from './EscadaPanel'
+import { weightText } from '@/lib/nerds/escada'
 import { childLinks, loadPlace } from '@/lib/nerds/view'
 import { editionLabel, editionPath } from '@/lib/editions'
 import { currentEdition } from '@/lib/editions-load'
@@ -35,7 +37,9 @@ for (const shard of place.shards.values()) {
 }
 const latest = Math.max(...place.cycles)
 const down = childLinks(place)
-const panels = CATALOG.filter((r) => r.level === 'todos' || r.level === level)
+const here = CATALOG.filter((r) => r.level === 'todos' || r.level === level)
+const cyclePanels = here.filter((r) => r.shard === 'ciclo')
+const seriesPanels = here.filter((r) => r.shard === 'ciclos')
 const up = place.crumbs.length > 1 ? place.crumbs[place.crumbs.length - 2]! : undefined
 const title = `Dados para nerds: ${place.name} · Voto a Voto`
 ---
@@ -83,8 +87,8 @@ const title = `Dados para nerds: ${place.name} · Voto a Voto`
       return (
         <div class="nerds-cycle" data-ciclo-block={ciclo} data-latest={ciclo === latest ? '' : undefined}>
           <h2 class="nerds-cycle__title">Presidente {ciclo}</h2>
-          {panels.map((record) => {
-            const spec = specFor(record, shards)
+          {cyclePanels.map((record) => {
+            const spec = specFor(record, { cycle: shards, all: place.shards })
             return (
               <PanelFrame record={record} edicao={edicao} scope={scope}>
                 {spec.kind === 'stat' && <StatPanel spec={spec} />}
@@ -94,6 +98,16 @@ const title = `Dados para nerds: ${place.name} · Voto a Voto`
         </div>
       )
     })}
+    <div class="nerds-series" data-series>
+      {seriesPanels.map((record) => {
+        const spec = specFor(record, { cycle: {}, all: place.shards, reference: place.reference })
+        return (
+          <PanelFrame record={record} edicao={edicao} scope="serie" weight={spec.kind === 'bar' ? weightText(spec.weight) : undefined}>
+            {spec.kind === 'bar' && <EscadaPanel client:panel spec={spec} titleId={`serie-${record.id}-t`} />}
+          </PanelFrame>
+        )
+      })}
+    </div>
     <noscript><style is:inline set:html="[data-ciclo-block]{display:block!important}"></style></noscript>
   </main>
   <footer class="nerds-source" data-component="source-footer">Fonte: TSE, dados finais · <a href={href('sobre-os-dados/')}>Sobre os dados ›</a></footer>
