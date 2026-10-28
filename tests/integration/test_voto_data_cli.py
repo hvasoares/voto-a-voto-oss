@@ -284,7 +284,7 @@ def test_outlines_writes_the_geo_files_asks_the_ibge_once_per_state_and_a_second
     assert run_outlines(svc, tmp_path) == 0
     second = {p.name: p.read_bytes() for p in (tmp_path / "data" / "geo").iterdir()}
 
-    assert first == second and set(first) == {"uf-outlines.json", "manifest.json"}
+    assert first == second and set(first) == {"uf-outlines.json", "regions.json", "manifest.json"}
     assert len(ibge.requests) == 27
     out = capsys.readouterr().out
     assert "27 states, written" in out and "27 states, unchanged" in out

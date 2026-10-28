@@ -25,13 +25,21 @@ from voto_a_voto.reconcile import Finding
 from voto_a_voto.tse_scrape import OfflineCacheMissError, with_retries
 
 URL = "https://servicodados.ibge.gov.br/api/v3/malhas/estados/{code}?formato=application/vnd.geo%2Bjson&qualidade=intermediaria"
-OUTLINES_FILE, MANIFEST_FILE = "uf-outlines.json", "manifest.json"
+OUTLINES_FILE, MANIFEST_FILE, REGIONS_FILE = "uf-outlines.json", "manifest.json", "regions.json"
 SCHEMA_VERSION = 1
 # IBGE state code -> the dataset's lower-case UF (no overseas: "zz" is not a state).
 UF_BY_CODE = {
     "11": "ro", "12": "ac", "13": "am", "14": "rr", "15": "pa", "16": "ap", "17": "to",
     "21": "ma", "22": "pi", "23": "ce", "24": "rn", "25": "pb", "26": "pe", "27": "al", "28": "se", "29": "ba",
     "31": "mg", "32": "es", "33": "rj", "35": "sp", "41": "pr", "42": "sc", "43": "rs", "50": "ms", "51": "mt", "52": "go", "53": "df",
+}
+# The IBGE grandes regioes (ticket #71): membership of the 27 states, committed as data/geo/regions.json. No second geometry: a region is drawn from the outlines of its states.
+REGIONS = {
+    "norte": ["ac", "am", "ap", "pa", "ro", "rr", "to"],
+    "nordeste": ["al", "ba", "ce", "ma", "pb", "pe", "pi", "rn", "se"],
+    "centro-oeste": ["df", "go", "ms", "mt"],
+    "sudeste": ["es", "mg", "rj", "sp"],
+    "sul": ["pr", "rs", "sc"],
 }
 # Processing (recorded in the manifest): the map is drawn about 14 px per degree, so 0.1 degrees is one pixel; the file
 # is inlined in the Home page as SVG, so every point costs the phone too (0.015 gave 124 KB, 0.06 35 KB, 0.1 gives 21 KB).
@@ -113,6 +121,12 @@ def build(shapes: dict[str, list[Ring]]) -> bytes:
     return (json.dumps({"ufs": ufs}, separators=(",", ":")) + "\n").encode("utf-8")
 
 
+def build_regions() -> bytes:
+    """The committed membership file: ``{"regioes": {name: [uf...]}}``, regions and states in code-point order, compact, one trailing newline."""
+    regioes = {name: sorted(ufs) for name, ufs in sorted(REGIONS.items())}
+    return (json.dumps({"regioes": regioes}, separators=(",", ":")) + "\n").encode("utf-8")
+
+
 def ibge_transport(url: str, headers: dict) -> tuple[int, dict, str]:
     """Real transport: one HTTPS request, body decoded as UTF-8."""
     parts = urllib.parse.urlsplit(url)
@@ -166,25 +180,30 @@ def fetch(codes, cache_dir, transport=None, offline: bool = False, refresh: bool
     return Fetched(rings, source)
 
 
-def manifest_for(body: bytes, fetched: Fetched) -> dict:
+def manifest_for(body: bytes, fetched: Fetched, regions: bytes | None = None) -> dict:
+    regions = build_regions() if regions is None else regions
     return {
         "schema_version": SCHEMA_VERSION,
         "sources": [fetched.source],
         "processing": {"decimals": DECIMALS, "min_ring_area_deg2": MIN_RING_AREA_DEG2, "tolerance_degrees": TOLERANCE_DEGREES, "rings": "outer rings only, largest first"},
-        "outputs": {OUTLINES_FILE: {"bytes": len(body), "sha256": hashlib.sha256(body).hexdigest(), "ufs": len(fetched.rings)}},
+        "outputs": {
+            OUTLINES_FILE: {"bytes": len(body), "sha256": hashlib.sha256(body).hexdigest(), "ufs": len(fetched.rings)},
+            REGIONS_FILE: {"bytes": len(regions), "regioes": len(REGIONS), "sha256": hashlib.sha256(regions).hexdigest()},
+        },
     }
 
 
 def write(directory, fetched: Fetched) -> bool:
     """Writes the file and then its manifest; returns False (and touches nothing) when both are already these bytes."""
     directory = Path(directory)
-    body = build(fetched.rings)
-    manifest = (json.dumps(manifest_for(body, fetched), indent=2, sort_keys=True) + "\n").encode("utf-8")
-    current = {name: (directory / name).read_bytes() if (directory / name).exists() else None for name in (OUTLINES_FILE, MANIFEST_FILE)}
-    if current == {OUTLINES_FILE: body, MANIFEST_FILE: manifest}:
+    body, regions = build(fetched.rings), build_regions()
+    manifest = (json.dumps(manifest_for(body, fetched, regions), indent=2, sort_keys=True) + "\n").encode("utf-8")
+    wanted = {OUTLINES_FILE: body, REGIONS_FILE: regions, MANIFEST_FILE: manifest}
+    if {name: (directory / name).read_bytes() if (directory / name).exists() else None for name in wanted} == wanted:
         return False
     directory.mkdir(parents=True, exist_ok=True)
     (directory / OUTLINES_FILE).write_bytes(body)
+    (directory / REGIONS_FILE).write_bytes(regions)
     (directory / MANIFEST_FILE).write_bytes(manifest)
     return True
 
@@ -202,6 +221,7 @@ def check(directory) -> list[Finding]:
         findings.append(Finding("outlines", f"{OUTLINES_FILE}: sha256 differs from {MANIFEST_FILE}"))
     if len(body) != recorded["bytes"]:
         findings.append(Finding("outlines", f"{OUTLINES_FILE}: {len(body)} bytes, {MANIFEST_FILE} says {recorded['bytes']}"))
+    findings += check_regions(directory, manifest_path)
     ufs = json.loads(body.decode("utf-8"))["ufs"]
     have = [item["uf"] for item in ufs]
     expected = set(UF_BY_CODE.values())
@@ -216,4 +236,25 @@ def check(directory) -> list[Finding]:
                 findings.append(Finding("outlines", f"{item['uf']}: ring not closed"))
             if any(not (LAT_RANGE[0] <= lat <= LAT_RANGE[1] and LON_RANGE[0] <= lon <= LON_RANGE[1]) for lon, lat in ring):
                 findings.append(Finding("outlines", f"{item['uf']}: point outside Brazil"))
+    return findings
+
+
+def check_regions(directory: Path, manifest_path: Path) -> list[Finding]:
+    """The region file is the one the manifest hashes, and every one of the 27 states belongs to exactly one of the five regions."""
+    path = directory / REGIONS_FILE
+    recorded = json.loads(manifest_path.read_text(encoding="utf-8"))["outputs"].get(REGIONS_FILE)
+    if recorded is None or not path.exists():
+        return [Finding("regions", f"{directory} has no {REGIONS_FILE} listed in {MANIFEST_FILE}; run `make data`")]
+    body = path.read_bytes()
+    findings = []
+    if hashlib.sha256(body).hexdigest() != recorded["sha256"] or len(body) != recorded["bytes"]:
+        findings.append(Finding("regions", f"{REGIONS_FILE}: differs from {MANIFEST_FILE}"))
+    regioes = json.loads(body.decode("utf-8"))["regioes"]
+    if sorted(regioes) != sorted(REGIONS):
+        findings.append(Finding("regions", f"{REGIONS_FILE}: regions are {sorted(regioes)}, expected {sorted(REGIONS)}"))
+    members = [uf for ufs in regioes.values() for uf in ufs]
+    expected = set(UF_BY_CODE.values())
+    findings += [Finding("regions", f"{uf}: belongs to no region") for uf in sorted(expected - set(members))]
+    findings += [Finding("regions", f"{uf}: not one of the 27 states") for uf in sorted(set(members) - expected)]
+    findings += [Finding("regions", f"{uf}: belongs to more than one region") for uf in sorted({uf for uf in members if members.count(uf) > 1})]
     return findings

@@ -1,0 +1,26 @@
+---
+/**
+ * Geometry fixture of the dashboard (ticket #71): the region SVG and the UF SVG drawn from the SAME outlines, side by side, so a test can assert that a region is exactly the
+ * union of its states. Not linked from anywhere and not for indexing; the dashboard pages reuse RegionMap.astro.
+ */
+import Base from '@/layouts/Base.astro'
+import '../../../styles/nerds.css'
+import '../../../styles/uf-map.css'
+import RegionMap from '@/components/RegionMap.astro'
+import UfMap from '@/components/UfMap.astro'
+import { loadRegionMap } from '@/lib/region-map'
+import { normalizeBase } from '@/paths'
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const map = loadRegionMap()
+---
+<Base title="Geometria dos dados para nerds · Voto a Voto">
+  <main class="mx-auto min-w-0 w-full max-w-[1200px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="nerds-geometria">
+    <h1 class="font-serif text-title font-normal leading-[30px]">Geometria: regiões e estados</h1>
+    <p class="mt-1 text-small text-muted-foreground">As regiões são os contornos dos estados, agrupados; nenhuma outra geometria é desenhada.</p>
+    <div class="mt-3 grid gap-6 lg:grid-cols-2">
+      <RegionMap base={base} />
+      <UfMap available={new Set(map.ufs.map((s) => s.uf))} base={base} />
+    </div>
+  </main>
+</Base>

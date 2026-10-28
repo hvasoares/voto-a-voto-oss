@@ -1,5 +1,10 @@
 {
   "outputs": {
+    "regions.json": {
+      "bytes": 209,
+      "regioes": 5,
+      "sha256": "73c442786b6add22e2c4e2a449476a972dddbeecaf74d63ad7feb5267a2d7006"
+    },
     "uf-outlines.json": {
       "bytes": 21524,
       "sha256": "49ff630e6aef8a6e867bc3d347e5236c74cf5cc68c36e99a3ef6a2f2a91bfb1c",

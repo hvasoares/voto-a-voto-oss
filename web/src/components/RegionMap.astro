@@ -1,0 +1,29 @@
+---
+/**
+ * The static region map of the dashboard "Dados para nerds" (ticket #71), pre-rendered at build time as inline SVG: five linked shapes with their names, no JavaScript to draw.
+ * The shapes are the states' own paths (src/lib/region-map.ts groups the same outlines the Home and Mapa por estado draw), so no second geometry exists. Each region is a link
+ * with a title and a text label. #77 colours it; this component only draws, and keeps the focus ring and the hover in the dashboard stylesheet (styles/nerds.css).
+ */
+import { loadRegionMap } from '@/lib/region-map'
+import { regionLabel } from '@/lib/brasil'
+import { nerdsPath } from '@/lib/nerds/paths'
+import { withBase } from '@/paths'
+
+interface Props {
+  base: string
+  label?: string
+  /** `_top` inside a fragment document. */
+  target?: string
+}
+const { base, label = 'Mapa do Brasil por região', target } = Astro.props
+const map = loadRegionMap()
+---
+<svg class="nerds-region-map" viewBox={`0 0 ${map.width} ${map.height}`} role="group" aria-label={label} focusable="false" data-region-map>
+  {map.shapes.map((r) => (
+    <a href={withBase(base, nerdsPath({ level: 'regiao', id: r.regiao }))} target={target} data-region={r.regiao} aria-label={`Região ${regionLabel(r.regiao)}: abrir os dados`}>
+      <title>{regionLabel(r.regiao)}</title>
+      <path d={r.d} />
+      <text x={r.labelX} y={r.labelY + 4} text-anchor="middle">{regionLabel(r.regiao)}</text>
+    </a>
+  ))}
+</svg>

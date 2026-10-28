@@ -170,3 +170,37 @@ def test_check_finds_an_open_ring_and_a_point_outside_brazil(tmp_path):
 
     messages = " ".join(f.message for f in outlines.check(directory))
     assert "not closed" in messages and "outside Brazil" in messages
+
+
+def test_write_commits_the_region_membership_and_lists_it_in_the_manifest(tmp_path):
+    directory = full(tmp_path)
+    body = (directory / "regions.json").read_bytes()
+    manifest = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
+
+    assert manifest["outputs"]["regions.json"] == {"bytes": len(body), "regioes": 5, "sha256": hashlib.sha256(body).hexdigest()}
+    regioes = json.loads(body)["regioes"]
+    assert sorted(regioes) == ["centro-oeste", "nordeste", "norte", "sudeste", "sul"]
+    assert sorted(uf for ufs in regioes.values() for uf in ufs) == sorted(outlines.UF_BY_CODE.values())  # 27, each exactly once
+
+
+def test_check_finds_a_state_in_two_regions_a_missing_one_and_a_changed_file(tmp_path):
+    directory = full(tmp_path)
+    path = directory / "regions.json"
+    original = path.read_bytes()
+    manifest_path = directory / "manifest.json"
+
+    def rewrite_regions(change):
+        data = json.loads(original)
+        change(data["regioes"])
+        body = json.dumps(data, separators=(",", ":")).encode("utf-8")
+        path.write_bytes(body)
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["outputs"]["regions.json"].update(bytes=len(body), sha256=hashlib.sha256(body).hexdigest())
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    rewrite_regions(lambda r: r["sul"].append("sp"))
+    assert any("sp: belongs to more than one region" in f.message for f in outlines.check(directory))
+    rewrite_regions(lambda r: r["sul"].remove("rs"))
+    assert any("rs: belongs to no region" in f.message for f in outlines.check(directory))
+    path.write_bytes(original + b" ")
+    assert any("differs" in f.message for f in outlines.check(directory))
