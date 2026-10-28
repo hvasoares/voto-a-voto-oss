@@ -419,6 +419,19 @@ export const KEYS = [
   'fact.in.peerValue',
   'fact.in.peerNone',
   'fact.method.outliers',
+  /** Brasil e regiões (#91): the sentences live in `catalog-brasil.ts`, loaded only by that page's own modules (the page, its share sheet and its picture). */
+  'brasil.headline',
+  'brasil.region',
+  'brasil.regions',
+  'brasil.regionShare',
+  'brasil.turnout',
+  'brasil.votes',
+  'brasil.legend',
+  'brasil.blanks',
+  'brasil.share',
+  'brasil.share.note',
+  'brasil.base',
+  'brasil.nojs',
   /** Cidades fora da curva (#34): the sentences live in `catalog-outliers.ts`, loaded only by that report's own modules. */
   'outlier.screening',
   'outlier.legend',
@@ -460,7 +473,7 @@ export const STANDARD_ONLY_KEYS = ['card.example', 'card.president', 'card.round
 type StandardOnly = (typeof STANDARD_ONLY_KEYS)[number]
 
 /** The fact and seal sentences live in `catalog-facts.ts` (only the build and the fact pages load them; the browser's share code does not carry them). */
-type FactKey = `fact.${string}` | `seal.${string}` | `duel.${string}` | `stayhome.${string}` | `outlier.${string}`
+type FactKey = `fact.${string}` | `seal.${string}` | `duel.${string}` | `stayhome.${string}` | `outlier.${string}` | `brasil.${string}`
 const ptBR: Record<Exclude<Key, FactKey>, string> = {
   noData: 'Sem dados nesse ciclo.',
   'headline.note': 'Frase gerada dos números · também o texto alternativo',

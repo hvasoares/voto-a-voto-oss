@@ -91,8 +91,9 @@ const kinds: Record<string, (keys: CardKeys, ctx: ReopenContext) => Promise<Reco
 
 const kindOf = (view: string) => view.split(':')[0]!
 
-/** The page of a card kind the browser cannot recompute: the state recap is pre-rendered per state (its numbers are state totals, not in any shard the browser reads). */
+/** The page of a card kind the browser cannot recompute: the Brasil card (#91) and the state recap are pre-rendered per state (its numbers are state totals, not in any shard the browser reads). */
 function pageOf(keys: CardKeys, ctx: ReopenContext): string | undefined {
+  if (kindOf(keys.view) === 'brasil') return `${ctx.base}brasil/`
   return kindOf(keys.view) === 'recap' && keys.places[0] ? `${ctx.base}${keys.places[0]}/resumo/` : undefined
 }
 

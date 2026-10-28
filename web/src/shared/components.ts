@@ -44,8 +44,8 @@ const TIERS: Record<Exclude<CandidateKind, 'a' | 'b'>, ((pct: number) => string)
 
 /** Width of the card's bar at 390 px, rough bold 13px glyph width (the type scale's step 1, #86) and the segment's padding: how much text fits a segment. */
 const BAR_PX = 318
-const GLYPH_PX = 7
-const PAD_PX = 10
+export const GLYPH_PX = 7
+export const PAD_PX = 10
 
 /**
  * The text of a candidate segment (#82): name and share, never the share alone unless the segment is a sliver. It gives way in

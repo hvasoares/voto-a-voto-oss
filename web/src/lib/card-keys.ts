@@ -1,7 +1,7 @@
 /**
  * The keys a card carries (#38), PURE: what is needed to draw the same card again from the site's own data, and nothing else.
  *
- *   view     which card and which view of it:  city:2026-2 | stat:nao-votou:2026-2:square | recap | meu-brasil
+ *   view     which card and which view of it:  city:2026-2 | stat:nao-votou:2026-2:square | recap | brasil | meu-brasil
  *   places   the place codes it shows:         ["rj/cidade-exemplo"]  (a state is "rj"; Meu Brasil's carry their role: "mora=rj/x")
  *   edition  the id of the data edition:       "2026-10-26"
  *   lang     the language of its words:        "pt-BR"
@@ -26,7 +26,7 @@ export interface CardKeys {
   lang: Locale
 }
 
-const VIEW = /^(city:20\d\d-[12]|stat:(nao-votou|margem|comparecimento):20\d\d-[12]:(square|story|preview)|recap|meu-brasil)$/
+const VIEW = /^(city:20\d\d-[12]|stat:(nao-votou|margem|comparecimento):20\d\d-[12]:(square|story|preview)|recap|brasil|meu-brasil)$/
 const PLACE = /^(?:(?:mora|vota|nasceu)=)?[a-z]{2}(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)?$/
 const EDITION = /^[0-9]{4}-[0-9]{2}-[0-9]{2}(?:-[a-z0-9]+)?$/
 

@@ -72,6 +72,10 @@ describe('reopening a dropped SVG', () => {
     const svg = cityCard().svg.replace(/city:2026-2/g, 'recap').replace(/places="rj\/cidade-exemplo"/g, 'places="rj"')
     expect(await reopenFile(enc(svg), ctx)).toMatchObject({ status: 'unsupported', reason: 'recap', href: '/rj/resumo/' })
   })
+  it('the Brasil card (#91) is a good kind of card with no place: it points to /brasil/', async () => {
+    const svg = cityCard().svg.replace(/city:2026-2/g, 'brasil').replace(/places="rj\/cidade-exemplo"/g, 'places=""')
+    expect(await reopenFile(enc(svg), ctx)).toMatchObject({ status: 'unsupported', reason: 'brasil', href: '/brasil/' })
+  })
 })
 
 describe('reopening a dropped PNG', () => {
