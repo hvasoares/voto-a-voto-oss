@@ -1,0 +1,82 @@
+---
+/**
+ * The same page shell as `Base.astro` (head, top bar, skip link, edition link) WITHOUT the metrics boot and the notice banner: a page that promises it makes no analytics call
+ * (the creator guide #67, the overlay builder #68) uses this one. With no boot installed `getAnalytics()` stays the no-op, so nothing is sent from the page or from any island on it.
+ */
+import cdnImportMap from 'virtual:cdn-importmap'
+import 'virtual:theme.css'
+import '../styles/global.css'
+import { normalizeBase, withBase } from '@/paths'
+import type { PreviewHead } from '@/lib/link-preview'
+import { DESKTOP_SHELL_FILE } from '../../integrations/desktop-shell'
+import TopBar from '@/components/TopBar.astro'
+import { editionLabel, editionPath } from '@/lib/editions'
+import { currentEdition } from '@/lib/editions-load'
+
+interface Props {
+  title: string
+  /** The meta description; absent on pages that describe themselves nowhere. */
+  description?: string
+  /** The page's link-preview contract (og/twitter tags): provided by pages that have one, absent on the rest. */
+  preview?: PreviewHead
+}
+const { title, description, preview } = Astro.props
+const base = normalizeBase(import.meta.env.BASE_URL)
+// The footer's "Privacidade" link (and the in-banner detail link) open the privacy section of /sobre-os-dados/,
+// which discloses the metrics notice (the notice-only model of 2026-10-27) and the browser-level opt-out.
+const privacyHref = withBase(base, 'sobre-os-dados/#privacidade')
+// Ticket #59: every page names the edition of the data it shows and links to its immutable address.
+const edition = await currentEdition()
+// Dev serves the source module; a build serves the entry integrations/desktop-shell.ts emits under the site base.
+const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : withBase(base, DESKTOP_SHELL_FILE)
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {cdnImportMap && <script type="importmap" is:inline set:html={cdnImportMap} />}
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {preview && (
+      <>
+        <meta property="og:title" content={preview.ogTitle} />
+        <meta property="og:description" content={preview.description} />
+        <meta property="og:url" content={preview.url} />
+        {preview.image && (
+          <>
+            <meta property="og:image" content={preview.image.url} />
+            <meta property="og:image:type" content={preview.image.type} />
+            <meta property="og:image:width" content={String(preview.image.width)} />
+            <meta property="og:image:height" content={String(preview.image.height)} />
+            <meta property="og:image:alt" content={preview.image.alt} />
+          </>
+        )}
+        <meta name="twitter:card" content={preview.image ? 'summary_large_image' : 'summary'} />
+        <meta name="twitter:title" content={preview.ogTitle} />
+        <meta name="twitter:description" content={preview.description} />
+        {preview.image && <meta name="twitter:image" content={preview.image.url} />}
+        {preview.image && <meta name="twitter:image:alt" content={preview.image.alt} />}
+      </>
+    )}
+  </head>
+  <body>
+    {/* Skip link (issue #19): keyboard/screen-reader users reach the content without the tabs/grid. */}
+    <a class="sr-only focus:not-sr-only focus:z-50 focus:fixed focus:top-2 focus:left-2 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-body font-bold focus:text-foreground focus:outline-2 focus:outline-primary" href="#main">Pular para o conteúdo</a>
+    <div class="flex min-h-screen min-w-0 flex-col">
+      <TopBar />
+      <slot />
+      {/* NOT a <footer> element: every page carries its own (<footer data-component="source-footer">) and
+          the e2e specs resolve single-footer locators; this one line adds the edition link (#59), the privacy/consent link (#20) and, when a donation address is configured, the donation link (#36). */}
+      <div class="mx-auto w-full max-w-[430px] px-5 pb-6 pt-2 text-center text-[11px] leading-[15px]" data-component="consent-footer">
+        <a href={withBase(base, editionPath(edition.id))} data-edition-link>Edição {editionLabel(edition)}</a>
+        <span aria-hidden="true"> · </span>
+        <a href={privacyHref}>Privacidade</a>
+      </div>
+    </div>
+    {/* Desktop shell (#51: the "/" shortcut and the top bar's search): a 1024 px viewport loads its module, a phone downloads nothing for it. */}
+    <script is:inline define:vars={{ shell }}>
+      if (matchMedia('(min-width: 1024px)').matches) import(shell)
+    </script>
+  </body>
+</html>
