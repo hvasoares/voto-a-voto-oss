@@ -1,0 +1,149 @@
+---
+/**
+ * Screen 8: Brasil e regiões, the national and regional runoff view (ticket #10), redrawn by #91. Fully server-rendered static HTML: the screen has no
+ * interaction of its own beyond ordinary links (the Compartilhar link opens the share sheet, /brasil/compartilhar/), so no React island. The numbers are the
+ * build-time aggregation of web/src/lib/brasil.ts over the chosen DATA_DIR. National totals include the overseas posts, the regions exclude them and say so.
+ *
+ * Result first, participation after (#91): each region draws ONE bar, its valid votes by candidate; who turned out and who did not are numbers in text.
+ * Used as the page body of /brasil/ and, inert and aria-hidden (`backdrop`), behind the share sheet at /brasil/compartilhar/ (the City card's pattern).
+ */
+import { sideTone } from '@/shared/candidates'
+import { formatInt } from '@/shared/city-model'
+import { normalizeBase, withBase } from '@/paths'
+import { isFixtureDataset, loadBrasil } from '@/lib/brasil-load'
+import PageDataDownload from '@/components/PageDataDownload.astro'
+import Seal from '@/components/Seal.astro'
+import { calcLink } from '@/lib/facts/link'
+import { factLinks } from '@/lib/facts/gate'
+import { getFactPage, sealOf } from '@/lib/facts/pages'
+import { nerdsPath } from '@/lib/nerds/paths'
+import { placesWithShards } from '@/lib/nerds/shards'
+import { barText } from '@/lib/brasil-label'
+import { brasilBlanks, brasilLegend, brasilRegionShare, brasilShareLabel, brasilTurnout, brasilVotes } from '@/lib/sentences/brasil'
+
+interface Props {
+  /** Behind the share sheet: inert and aria-hidden, no landmark ids, nothing to read twice. */
+  backdrop?: boolean
+}
+const { backdrop = false } = Astro.props
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const view = await loadBrasil()
+const fixture = await isFixtureDataset()
+const nerds = placesWithShards()
+// Fact records (#62): every bar and region links to its record; the seal is written from the build's checks.
+const facts = await getFactPage('brasil', `${view.ano}-${view.turno}`)
+const links = factLinks(facts.facts, '/brasil/', base)
+const seal = await sealOf(facts)
+
+// Colours of the Sketch frame 8: the first candidate of a bar (lower ballot number) is the red one, the second the blue one. The colour is the candidate's own
+// (identity table, #84): the pair's red or blue; anyone else (a round 1 runner-up) is neutral. Bars carry the 2 px paper gap the frame shows between slices.
+// The text in a bar is 13 px bold (the type scale's step 1) and fitted to the segment (`barText`): nothing in a bar is smaller.
+const SEG = {
+  a: 'bg-[var(--c-lula)] text-[var(--c-accent-fg)]',
+  b: 'bg-[var(--c-bolsonaro)] text-[var(--c-accent-fg)]',
+  outros: 'bg-[var(--c-cand-outros)] text-[var(--c-ink)]',
+}
+const segOf = (cs: readonly { numero: number }[], i: number) => SEG[sideTone(view.ano, cs[i]!.numero, cs[1 - i]?.numero, i === 0 ? 'a' : 'b')]
+const segBase = 'flex min-w-0 items-center justify-center overflow-hidden whitespace-nowrap text-step-1 font-bold'
+const totalOf = (cs: readonly { pctScaled: number }[]) => cs.reduce((n, c) => n + c.pctScaled, 0) || 1
+const Wrapper = backdrop ? 'div' : 'main'
+const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
+---
+<Wrapper
+  {...main}
+  class="mx-auto w-full min-w-0 max-w-[430px] flex-1 px-5 pt-16 pb-2 md:max-w-[760px] lg:pt-8"
+  aria-hidden={backdrop ? 'true' : undefined}
+  inert={backdrop}
+>
+  {
+    fixture && (
+      <p role="note" class="-mx-5 -mt-16 mb-10 lg:-mt-8 lg:mb-6 bg-[var(--c-flag)] px-[var(--gutter)] py-2 text-center font-bold text-step-1 text-[var(--c-ink)]">
+        EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS
+      </p>
+    )
+  }
+  <p class="mb-3 print:hidden">
+    <a class="-ml-2 inline-flex min-h-12 min-w-[116px] items-center rounded-[var(--radius)] border border-border bg-background px-4 text-step-2 text-[var(--c-ink)] lg:ml-0 lg:min-h-8 lg:min-w-0 lg:border-0 lg:px-0 lg:text-[14px] lg:text-primary" href={href('/')}>‹ Início</a>
+  </p>
+  <h1 class="font-serif text-step-4 font-normal wrap-anywhere lg:text-[44px] lg:leading-[52px]">Brasil e regiões</h1>
+  <p class="text-step-1 text-muted-foreground">2º turno de {view.ano}</p>
+  <div class="mt-1 flex items-center justify-between gap-3">
+    <a class="inline-flex min-h-11 items-center text-step-2 font-bold text-primary" data-link="nerds" href={href(`/${nerdsPath({ level: 'brasil' })}`)}>Dados para nerds ›</a>
+    {
+      !backdrop && (
+        <a class="inline-flex min-h-11 items-center justify-center rounded-md border border-primary bg-background px-4 text-step-1 font-bold text-primary" href={href('/brasil/compartilhar/')} data-share>
+          {brasilShareLabel()}
+        </a>
+      )
+    }
+  </div>
+
+  <section class="pt-6" aria-labelledby="brasil-votos-validos" data-brasil-national>
+    <h2 id="brasil-votos-validos" class="font-sans! text-step-1! font-bold!">Brasil, votos válidos</h2>
+    <div class="mt-2 flex h-7 gap-[2px]" role="img" aria-label="Votos válidos no Brasil, por candidato" data-brasil-bar>
+      {view.nationalCandidates.map((c, i) => (
+        <span
+          class={`${segBase} ${segOf(view.nationalCandidates, i)}`}
+          style={`flex-grow:${c.pctScaled};flex-basis:0`}
+          title={`${c.labelFull}: ${formatInt(c.votos)} votos (${c.pctText}%)`}
+        >
+          {barText(c, (c.pctScaled / totalOf(view.nationalCandidates)) * 100)}
+        </span>
+      ))}
+    </div>
+    <p class="mt-2 text-step-1 text-[var(--c-ink)]" data-brasil-votos>
+      {view.nationalCandidates.map((c, i) => (
+        <>{i > 0 && ' · '}{brasilVotes(c.labelFull, formatInt(c.votos))}</>
+      ))}
+    </p>
+    <p class="mt-1"><Fragment set:html={calcLink(links(`pais-${view.nationalCandidates[0]!.numero}`))} /></p>
+  </section>
+
+  <section class="pt-6" aria-labelledby="brasil-por-regiao" data-brasil-regioes>
+    <h2 id="brasil-por-regiao" class="font-serif text-step-3! font-normal!">Por região</h2>
+    <p class="mt-1 text-step-1 text-muted-foreground" data-brasil-legend>{brasilLegend()}</p>
+    <ul class="mt-1 list-none p-0">
+      {view.regions.map((r) => (
+        <li class="pt-2" data-regiao={r.regiao}>
+          <div class="flex items-baseline justify-between gap-2">
+            <h3 class="font-sans text-step-1 font-bold">{r.label}</h3>
+            <p class="text-right text-step-1 text-[var(--c-ink)]">{brasilRegionShare(r)}</p>
+          </div>
+          <div class="mt-1 flex h-7 gap-[2px]" role="img" aria-label={`${r.label}: votos válidos, por candidato`} data-regiao-bar>
+            {r.candidates.map((c, i) => (
+              <span
+                class={`${segBase} ${segOf(r.candidates, i)}`}
+                style={`flex-grow:${c.pctScaled};flex-basis:0`}
+                title={`${c.labelFull}: ${c.pctText}% dos votos válidos da região`}
+              >
+                {barText(c, (c.pctScaled / totalOf(r.candidates)) * 100)}
+              </span>
+            ))}
+          </div>
+          <p class="mt-1 text-step-1 text-[var(--c-ink)]" data-participacao>{brasilTurnout(r)}</p>
+          <p class="text-step-1 text-muted-foreground" data-brancos-nulos>{brasilBlanks(r)}</p>
+          <div class="flex items-center justify-between">
+            <span class="[&>a]:inline-flex [&>a]:min-h-11 [&>a]:items-center"><Fragment set:html={calcLink(links(`${r.regiao}-parcela`))} /></span>
+            {nerds.regioes.includes(r.regiao) && <a class="inline-flex min-h-11 items-center text-step-1 font-bold text-primary" data-link="nerds-regiao" href={href(`/${nerdsPath({ level: 'regiao', id: r.regiao })}`)}>Dados da região ›</a>}
+          </div>
+        </li>
+      ))}
+    </ul>
+    <p class="mt-3 text-step-1 text-[var(--c-ink)]" data-brasil-note>
+      Brancos e nulos fazem parte do comparecimento e aparecem em cada região.
+    </p>
+  </section>
+
+  <Seal lines={seal} />
+
+  <nav class="mt-5 flex items-center justify-between border-t border-border pt-2" aria-label="Próximo">
+    <a class="inline-flex min-h-11 items-center text-step-2 font-bold text-foreground" href={href('/mapa/')}>Ver mapa por estado ›</a>
+    <a class="inline-flex min-h-11 items-center text-step-2 font-bold text-foreground" data-link="compare" href={href('/cara-a-cara/?nivel=regiao')}>Comparar regiões ›</a>
+    <PageDataDownload href={href('/brasil/dados.json')} filename="brasil.json" placement="row" />
+  </nav>
+</Wrapper>
+<footer class="mx-5 mt-2 pb-6 pt-2 text-center text-step-1 md:mx-auto md:max-w-[720px] lg:text-left text-muted-foreground" data-component="source-footer" aria-hidden={backdrop ? 'true' : undefined}>
+  Fonte: TSE, dados finais · <a class="inline-flex min-h-11 items-center" href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+</footer>

@@ -114,11 +114,12 @@ test.describe('brasil on the real dataset', () => {
     await page.goto(`${base}brasil/`)
     const bar = page.locator('[data-brasil-bar]')
     const both = [nat.votes.get('13')!, nat.votes.get('22')!]
-    // The frame shows the count WITH the share inside the red segment and only the count inside the
-    // blue one (both counts are also in each segment's title attribute).
-    await expect(bar.getByText(`Lula ${ptNumber.format(both[0]!)} · ${partShare(both[0]!, both, 2)}%`)).toBeVisible()
-    await expect(bar.getByText(`Flávio ${ptNumber.format(both[1]!)}`, { exact: true })).toBeVisible()
+    // #91: the bar carries each candidate's share (fitted to the segment); the counts are text under the bar and in each segment's title attribute.
+    await expect(bar.getByText(`Lula ${partShare(both[0]!, both, 2)}%`, { exact: true })).toBeVisible()
+    await expect(bar.getByText(`Flávio Bolsonaro ${partShare(both[1]!, both, 2)}%`, { exact: true })).toBeVisible()
+    await expect(page.locator('[data-brasil-votos]')).toHaveText(`Lula ${ptNumber.format(both[0]!)} votos · Flávio Bolsonaro ${ptNumber.format(both[1]!)} votos`)
     const titles = await bar.locator('span').evaluateAll((els) => els.map((e) => e.getAttribute('title')))
+    expect(titles[0]).toContain(`${ptNumber.format(both[0]!)} votos (${partShare(both[0]!, both, 2)}%)`)
     expect(titles[1]).toContain(`(${partShare(both[1]!, both, 2)}%)`)
   })
 
@@ -135,11 +136,13 @@ test.describe('brasil on the real dataset', () => {
       await expect(el.getByText(`${partShare(r.validos, regionValidos)}% dos votos válidos do país`)).toBeVisible()
       const lula = r.votes.get('13')!
       const flavio = r.votes.get('22')!
-      await expect(el.getByText(`Lula ${partShare(lula, [lula, flavio])}%`)).toBeVisible()
-      await expect(el.getByText(`Flávio ${partShare(flavio, [lula, flavio])}%`)).toBeVisible()
+      // ONE bar per region (#91); the text of a segment is its name (or the short form) and share, fitted to the segment, never cut
+      await expect(el.locator('[data-regiao-bar]')).toHaveCount(1)
+      const segs = el.locator('[data-regiao-bar] span')
+      await expect(segs.nth(0)).toHaveText(new RegExp(`^(Lula )?${partShare(lula, [lula, flavio])}%$`))
+      await expect(segs.nth(1)).toHaveText(new RegExp(`^(Flávio( Bolsonaro)? )?${partShare(flavio, [lula, flavio])}%$`))
       const turnoutParts = [r.comparecimento, r.aptos - r.comparecimento]
-      await expect(el.getByText(`Compareceram ${partShare(r.comparecimento, turnoutParts)}%`, { exact: true })).toBeVisible()
-      await expect(el.getByText(`Não ${partShare(r.aptos - r.comparecimento, turnoutParts)}%`, { exact: true })).toBeVisible()
+      await expect(el.locator('[data-participacao]')).toHaveText(`Compareceram ${partShare(r.comparecimento, turnoutParts)}% · Não compareceram ${partShare(r.aptos - r.comparecimento, turnoutParts)}%`)
       await expect(el.locator('[data-brancos-nulos]')).toContainText(
         `Brancos ${partShare(r.brancos, [r.brancos, r.comparecimento - r.brancos])}% · Nulos ${partShare(r.nulos, [r.nulos, r.comparecimento - r.nulos])}% do comparecimento.`,
       )
