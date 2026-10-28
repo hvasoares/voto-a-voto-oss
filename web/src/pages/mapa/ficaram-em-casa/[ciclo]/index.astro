@@ -1,0 +1,15 @@
+---
+/** "Ficaram em casa" (#32) for one cycle and round other than the plain address (`/mapa/ficaram-em-casa/2022-2/`). */
+import StayHomePage from '@/components/StayHomePage.astro'
+import { loadStayHome } from '@/lib/stay-home-data'
+import { viewSlug } from '@/lib/stay-home-view'
+
+export async function getStaticPaths() {
+  const set = await loadStayHome()
+  return set.views
+    .filter((v) => !(v.ano === set.defaultView.ano && v.turno === set.defaultView.turno))
+    .map((v) => ({ params: { ciclo: viewSlug(v) }, props: { slug: viewSlug(v) } }))
+}
+const { slug } = Astro.props as { slug: string }
+---
+<StayHomePage slug={slug} />

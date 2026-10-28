@@ -14,7 +14,8 @@ export type MapKind = 'margin' | 'swing'
 
 export interface MapCell {
   uf: string
-  bin: DivBin
+  /** The diverging step of the margin and swing maps; "Ficaram em casa" (#32) has its own scale and leaves it out. */
+  bin?: DivBin
   fill: string
   fg: string
   /** The value printed on the map or its callout: "-7,7", "+0,9" (the dataset's own rounding, no computed difference of ours). */

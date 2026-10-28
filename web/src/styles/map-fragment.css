@@ -31,3 +31,8 @@ a { color: var(--primary); text-decoration: none; }
 .mf__table th:not(:first-child), .mf__table td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
 .mf a:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* "Ficaram em casa" (#32): the cycle and round links under the three tabs, the six edges of a seven-step scale, the claim. */
+.mf__views { margin-top: 0; flex-wrap: wrap; }
+.mf__views a { flex: 1 1 30%; text-align: center; font-size: 13px; }
+.mf__edges--six { padding: 0 calc(100% / 14 - 8px); }
+.mf__claim { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 12px; }

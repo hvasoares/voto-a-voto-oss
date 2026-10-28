@@ -134,7 +134,7 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
   return (
     <section ref={sectionRef} data-slot="state-map" data-kind={kind} aria-label={kind === 'margin' ? 'Mapa por estado: margem' : 'Mapa por estado: virada'}>
       {/* Abas: margem (2º turno) | virada (1º→2º) — frames 10/10b; plain links between the routes. */}
-      <nav className="flex gap-1 rounded-md bg-secondary p-1" aria-label="Margem ou virada">
+      <nav className="flex gap-1 rounded-md bg-secondary p-1" aria-label="Margem, virada ou ficaram em casa">
         <a
           aria-current={kind === 'margin' ? 'page' : undefined}
           className={'flex min-h-11 flex-1 items-center justify-center rounded-md text-[14px]' + (kind === 'margin' ? ' bg-primary font-bold text-primary-foreground' : ' cursor-pointer text-muted-foreground')}
@@ -154,6 +154,9 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
           }}
         >
           Virada (1º→2º)
+        </a>
+        <a className="flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-md px-1 text-center text-[14px] leading-[15px] text-muted-foreground" href={withBase('/mapa/ficaram-em-casa/')}>
+          Ficaram em casa
         </a>
       </nav>
 

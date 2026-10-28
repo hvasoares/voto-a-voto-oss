@@ -374,6 +374,7 @@ export const KEYS = [
   'stayhome.selected.line1',
   'stayhome.selected.line2',
   'stayhome.open',
+  'stayhome.cell.label',
   'stayhome.table',
   'stayhome.table.uf',
   'stayhome.table.aptos',

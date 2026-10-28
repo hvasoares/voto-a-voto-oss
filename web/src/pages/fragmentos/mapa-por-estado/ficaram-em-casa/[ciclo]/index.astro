@@ -1,0 +1,15 @@
+---
+/** The desktop body of "Ficaram em casa" (#32) for one cycle and round, the document of the lazy iframe in src/pages/mapa/ficaram-em-casa/. */
+import FragmentDoc from '@/layouts/FragmentDoc.astro'
+import StayHomeFragment from '@/components/StayHomeFragment.astro'
+import { loadStayHome } from '@/lib/stay-home-data'
+import { viewSlug } from '@/lib/stay-home-view'
+
+export async function getStaticPaths() {
+  return (await loadStayHome()).views.map((v) => ({ params: { ciclo: viewSlug(v) } }))
+}
+const { ciclo } = Astro.params
+---
+<FragmentDoc title="Mapa por estado: ficaram em casa">
+  <StayHomeFragment slug={ciclo!} />
+</FragmentDoc>

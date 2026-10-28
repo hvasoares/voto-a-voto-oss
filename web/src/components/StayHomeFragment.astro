@@ -1,0 +1,132 @@
+---
+/**
+ * The desktop body of "Ficaram em casa" (#32), as the document of a lazy iframe from 1024 px up (like the margin and swing maps, #54): the three
+ * tabs, the cycle and round links, the SVG map coloured at build time (each state prints its percentage on the shape or its callout), the numeric
+ * legend, the selected-state panel at its default state, the claim of the measure note, and the table alternative. Pre-rendered; the one inline
+ * script (hover and keyboard fill the panel) is the one of the other two fragments.
+ */
+import UfMap from '@/components/UfMap.astro'
+import { loadStayHome, stayHomePath } from '@/lib/stay-home-data'
+import { parseViewSlug } from '@/lib/stay-home-view'
+import type { MapCell } from '@/lib/state-map-panel'
+import { normalizeBase, withBase } from '@/paths'
+
+interface Props {
+  slug: string
+}
+const { slug } = Astro.props
+const base = normalizeBase(import.meta.env.BASE_URL)
+const set = await loadStayHome()
+const view = parseViewSlug(slug)!
+const model = set.model(view)
+const available = new Set(Object.keys(model.cells))
+const cells: Record<string, MapCell> = Object.fromEntries(
+  Object.values(model.cells).map((c) => [c.uf, { uf: c.uf, fill: c.fill, fg: c.fg, text: c.text, big: c.text, name: c.name, label: c.label, lines: c.lines }]),
+)
+const selected = model.defaultUf
+const first = model.cells[selected]
+const hint = 'Passe o mouse ou use as setas para trocar de estado.'
+const pathOf = (s: string) => stayHomePath(parseViewSlug(s)!, set.defaultView)
+---
+<div class="mf" data-kind="stayhome">
+  <div class="mf__grid">
+    <div class="mf__left">
+    <nav class="mf__tabs" aria-label="Margem, virada ou ficaram em casa">
+      <a href={withBase(base, '/mapa/')} target="_top">Margem</a>
+      <a href={withBase(base, '/mapa/virada/')} target="_top">Virada</a>
+      <a href={withBase(base, '/mapa/ficaram-em-casa/')} target="_top" aria-current="page">Ficaram em casa</a>
+    </nav>
+    <nav class="mf__tabs mf__views" aria-label={model.viewsLabel} data-slot="stayhome-views">
+      {model.views.map((v) => <a href={withBase(base, pathOf(v.slug))} target="_top" aria-current={v.current ? 'page' : undefined}>{v.label}</a>)}
+    </nav>
+    {model.empty && <p class="mf__note" data-nodata>{model.empty}</p>}
+    <UfMap available={available} base={base} target="_top" cells={cells} selected={selected} label={model.alt} />
+    </div>
+    <div>
+      {first && (
+        <section class="mf__panel" data-slot="mapa-selecionado" aria-label="Estado selecionado">
+          <div class="mf__head">
+            <p class="mf__name" aria-live="polite"><span data-sel-uf>{selected.toUpperCase()}</span> · selecionado<span class="sr" data-sel-name>{` · ${first.name}`}</span></p>
+            <p class="mf__big" aria-hidden="true" data-sel-big>{first.text}</p>
+          </div>
+          <p class="mf__line" data-sel-line1>{first.lines[0]}</p>
+          <p class="mf__line" data-sel-line2>{first.lines[1]}</p>
+          <p class="mf__hint">{hint}</p>
+          <a class="mf__open" href={withBase(base, `/${selected}/`)} target="_top" data-abrir-estado="1" data-base={base}>{model.ui.open}</a>
+        </section>
+      )}
+      <figure class="mf__scale" data-slot="mapa-escala">
+        <figcaption>{model.legend.caption}</figcaption>
+        <div class="mf__bar" aria-hidden="true">{model.legend.fills.map((fill) => <div style={`background:${fill}`}></div>)}</div>
+        <div class="mf__edges mf__edges--six" aria-hidden="true">{model.legend.edges.map((edge) => <span>{edge}%</span>)}</div>
+        <span class="sr">{model.legend.scaleSr}</span>
+        <p class="mf__note">{model.legend.mapNote}</p>
+      </figure>
+      {model.claim && (
+        <section class="mf__claim" data-slot="stayhome-claim">
+          <p class="mf__line">{model.claim.line}</p>
+          <p class="mf__note">{model.claim.limits}</p>
+        </section>
+      )}
+    </div>
+  </div>
+  <details class="mf__table" data-slot="mapa-tabela">
+    <summary>{model.ui.table}</summary>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">{model.ui.thUf}</th>
+          <th scope="col">{model.ui.thAptos}</th>
+          <th scope="col">{model.ui.thShare}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {model.order.map((uf) => (
+          <tr>
+            <td><a href={withBase(base, `/${uf}/`)} target="_top" aria-label={model.cells[uf]!.label}>{uf.toUpperCase()}</a></td>
+            <td>{model.cells[uf]!.aptos}</td>
+            <td>{model.cells[uf]!.share}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </details>
+</div>
+<script is:inline>
+  (function () {
+    var q = function (s) { return document.querySelector(s) }
+    var links = [].slice.call(document.querySelectorAll('a[data-map-uf]'))
+    var open = q('[data-abrir-estado]')
+    var show = function (a) {
+      if (!a || !open || a.getAttribute('data-selected') === 'true') return
+      links.forEach(function (l) { l.removeAttribute('data-selected') })
+      a.setAttribute('data-selected', 'true')
+      q('[data-sel-uf]').textContent = a.getAttribute('data-map-uf').toUpperCase()
+      q('[data-sel-name]').textContent = ' · ' + a.getAttribute('data-name')
+      q('[data-sel-big]').textContent = a.getAttribute('data-big')
+      q('[data-sel-line1]').textContent = a.getAttribute('data-line1')
+      q('[data-sel-line2]').textContent = a.getAttribute('data-line2')
+      open.setAttribute('href', a.getAttribute('href'))
+    }
+    links.forEach(function (a) {
+      a.addEventListener('mouseenter', function () { show(a) })
+      a.addEventListener('focus', function () { show(a) })
+    })
+    var dir = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }
+    document.addEventListener('keydown', function (e) {
+      var d = dir[e.key]
+      var cur = document.activeElement
+      if (!d || !cur || cur.getAttribute('data-map-uf') === null) return
+      var x = +cur.getAttribute('data-x'), y = +cur.getAttribute('data-y'), best = null, bestScore = 1e9
+      links.forEach(function (l) {
+        if (l === cur) return
+        var dx = +l.getAttribute('data-x') - x, dy = +l.getAttribute('data-y') - y
+        var along = dx * d[0] + dy * d[1], across = Math.abs(dx * d[1] - dy * d[0])
+        if (along <= 0) return
+        var score = along + 2 * across
+        if (score < bestScore) { best = l; bestScore = score }
+      })
+      if (best) { e.preventDefault(); best.focus() }
+    })
+  })()
+</script>

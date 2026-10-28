@@ -1,0 +1,9 @@
+---
+/** "Ficaram em casa" (#32): the newest cycle's round 1, the plain address. The other cycles and rounds are `[ciclo]/`. */
+import StayHomePage from '@/components/StayHomePage.astro'
+import { loadStayHome } from '@/lib/stay-home-data'
+import { viewSlug } from '@/lib/stay-home-view'
+
+const set = await loadStayHome()
+---
+<StayHomePage slug={viewSlug(set.defaultView)} />

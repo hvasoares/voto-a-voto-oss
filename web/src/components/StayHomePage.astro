@@ -1,0 +1,48 @@
+---
+/**
+ * "Ficaram em casa" (Sketch frames "20 Mapa de quem ficou em casa (mosaico)" and "(mapa)", ticket #32): a third option of the Mapa por estado
+ * (Margem | Virada | Ficaram em casa). The share of each state's electorate that did not vote for anyone (abstention, blank and null), for every
+ * cycle and round the dataset has: the plain address is the newest cycle's round 1, the others are `/mapa/ficaram-em-casa/<ano>-<turno>/`.
+ * No candidate appears. The phone gets the tile mosaic (and the map after one tap); from 1024 px up the SVG map is the document of a lazy iframe.
+ */
+import Base from '@/layouts/Base.astro'
+import StayHomeMap from '@/components/StayHomeMap'
+import { normalizeBase, withBase } from '@/paths'
+import { loadStayHome, stayHomeFragmentPath, stayHomePath } from '@/lib/stay-home-data'
+import { parseViewSlug, viewSlug } from '@/lib/stay-home-view'
+import { stayhomeSay } from '@/lib/sentences/stayhome'
+
+interface Props {
+  slug: string
+}
+const { slug } = Astro.props
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const set = await loadStayHome()
+const view = parseViewSlug(slug)!
+const model = set.model(view)
+const viewPaths = Object.fromEntries(set.views.map((v) => [viewSlug(v), stayHomePath(v, set.defaultView)]))
+---
+
+<Base title="Ficaram em casa · Mapa por estado · Voto a Voto" description={model.alt}>
+  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16 md:max-w-[720px] lg:grid lg:max-w-[1240px] lg:pt-8" id="main" data-page="mapa-ficaram-em-casa" data-ano={view.ano} data-turno={view.turno}>
+    <div class="lg:relative lg:z-10 lg:col-start-1 lg:row-start-1 lg:w-[610px] lg:self-start">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('/')}>‹ Início</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">{stayhomeSay({}, 'stayhome.title')}</h1>
+    <p class="mt-1 font-serif text-lead leading-[22px] wrap-anywhere lg:text-[16px] lg:text-muted-foreground" data-subtitle>{model.subtitle}</p>
+    </div>
+    {/* The phone layout: the tile mosaic, not drawn from 1024 px up, where the map document below takes its place. */}
+    <div class="lg:hidden">
+    <StayHomeMap client:interaction model={model} base={base} viewPaths={viewPaths} />
+    <noscript><p class="mt-1.5 text-small leading-[14px] text-muted-foreground">{model.ui.nojs}</p></noscript>
+    <p class="mt-1.5 text-small leading-[14px]" data-island-failed hidden>{model.ui.failed}</p>
+    </div>
+    <iframe class="hidden h-[820px] w-full border-0 lg:col-start-1 lg:row-start-1 lg:block" src={href(stayHomeFragmentPath(view))} title="Ficaram em casa: o mapa, a escala, o estado selecionado e a tabela" loading="lazy" data-mapa-frame></iframe>
+  </main>
+  <footer class="mx-5 mt-2 border-t border-border pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary md:mx-auto md:w-full md:max-w-[680px] lg:mt-6 lg:max-w-[1200px] lg:border-t-0 lg:text-left" data-component="source-footer">
+    Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+  </footer>
+  <script>
+    import '@/scripts/map-pending'
+  </script>
+</Base>

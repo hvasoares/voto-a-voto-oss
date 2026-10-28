@@ -35,9 +35,10 @@ const hint = 'Passe o mouse ou use as setas para trocar de estado. Cada valor ta
   <div class="mf__grid">
     <div class="mf__left">
     {/* The page's own heading sits over the top of this document (src/pages/mapa/): the tabs start below it (150 px, see map-fragment.css). */}
-    <nav class="mf__tabs" aria-label="Margem ou virada">
+    <nav class="mf__tabs" aria-label="Margem, virada ou ficaram em casa">
       <a href={withBase(base, '/mapa/')} target="_top" aria-current={kind === 'margin' ? 'page' : undefined}>Margem (2º turno)</a>
       <a href={withBase(base, '/mapa/virada/')} target="_top" aria-current={kind === 'swing' ? 'page' : undefined}>Virada (1º→2º)</a>
+      <a href={withBase(base, '/mapa/ficaram-em-casa/')} target="_top">Ficaram em casa</a>
     </nav>
     <UfMap
       available={available}
