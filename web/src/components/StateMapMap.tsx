@@ -258,8 +258,8 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
       </div>
 
       {/* Alternativa sem cor dos frames: tabela; cada linha continua abrindo o estado. */}
-      <details className="mt-3 border-t border-border pt-2" data-slot="mapa-tabela">
-        <summary className="cursor-pointer text-body font-bold">Tabela por estado</summary>
+      <details className="mt-3 border-t border-border" data-slot="mapa-tabela">
+        <summary className="cursor-pointer py-3 text-body font-bold">Tabela por estado</summary>
         <table className="mt-1 w-full text-[13px] leading-[17px]">
           <thead>
             <tr>

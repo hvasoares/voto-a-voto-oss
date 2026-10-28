@@ -44,8 +44,8 @@ if (data.rows.length === 0) throw new Error(`${uf}: o dataset deste build nao te
     </noscript>
     <p class="mt-1.5 text-small leading-[14px]" data-island-failed hidden>O mapa por município não está disponível agora. A lista acima continua.</p>
   </main>
-  <footer class="mx-5 mt-2 border-t border-border pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
-    Fonte: TSE, dados finais · fronteiras: malhas do IBGE · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+  <footer class="mx-5 mt-2 border-t border-border pb-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+    Fonte: TSE, dados finais · fronteiras: malhas do IBGE · <a class="inline-flex min-h-11 items-center" href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>
   <script>
     import '@/scripts/map-pending'

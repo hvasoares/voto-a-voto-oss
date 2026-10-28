@@ -30,8 +30,8 @@ const data = await loadStateMapData()
     {/* 1024 px and up: the SVG map, scale, panel and table as the document of a lazy iframe; a phone never requests it (docs/checkpoints/issue-53.md). */}
     <iframe class="hidden h-[760px] w-full border-0 lg:col-start-1 lg:row-start-1 lg:block" src={href('/fragmentos/mapa-por-estado/virada/')} title="Mapa por estado: o mapa, a escala, o estado selecionado e a tabela" loading="lazy" data-mapa-frame></iframe>
 </main>
-  <footer class="mx-5 mt-2 border-t border-border pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary md:mx-auto md:w-full md:max-w-[680px] lg:mt-6 lg:max-w-[1200px] lg:border-t-0 lg:text-left" data-component="source-footer">
-    Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+  <footer class="mx-5 mt-2 border-t border-border pb-2 text-center text-[12.3px] leading-[15px] text-primary md:mx-auto md:w-full md:max-w-[680px] lg:mt-6 lg:max-w-[1200px] lg:border-t-0 lg:text-left" data-component="source-footer">
+    Fonte: TSE, dados finais · <a class="inline-flex min-h-11 items-center" href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>
   <script>
     import '@/scripts/map-pending'

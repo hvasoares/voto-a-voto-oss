@@ -15,7 +15,7 @@ const url = donationUrl()
 {url && variant === 'link' && (
   <>
     <span aria-hidden="true"> · </span>
-    <a href={url} target="_blank" rel="noopener noreferrer" data-donation-link>Apoie o projeto ↗<span class="sr-only"> (abre em nova aba)</span></a>
+    <a class="inline-flex min-h-11 items-center" href={url} target="_blank" rel="noopener noreferrer" data-donation-link>Apoie o projeto ↗<span class="sr-only"> (abre em nova aba)</span></a>
   </>
 )}
 {url && variant === 'button' && (
