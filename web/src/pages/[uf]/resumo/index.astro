@@ -17,6 +17,10 @@ import { recapContent } from '@/lib/recap-content'
 import { recapSubtitle, recapTitle } from '@/lib/sentences/recap'
 import { message, DEFAULT_VOICE } from '@/lib/sentences/catalog'
 import { UF_NOME } from '@/lib/uf-names'
+import Seal from '@/components/Seal.astro'
+import { calcLink } from '@/lib/facts/link'
+import { factLinks } from '@/lib/facts/gate'
+import { getFactPage, sealOf } from '@/lib/facts/pages'
 
 export async function getStaticPaths() {
   return (await recapUfs()).map((uf) => ({ params: { uf } }))
@@ -31,6 +35,11 @@ const recap = (await loadRecap(uf!))!
 const stateName = UF_NOME[uf!] ?? uf!.toUpperCase()
 const content = recapContent(recap, { stateName, origin: siteOrigin(), base, fixture, edition: edition.id })
 const hasData = recap.rows.some((r) => r.status === 'data')
+// Fact records (#62): the shares and the changes of the picture are the records of the state's three cycles (/fato/estado/<uf>/tres-ciclos/), one link per cycle with data, and the seal.
+const facts = await getFactPage(`estado/${uf}`, 'tres-ciclos')
+const links = factLinks(facts.facts, `/${uf}/resumo/`, base)
+const seal = await sealOf(facts)
+const calcCycles = recap.rows.filter((r) => r.status === 'data').map((r) => ({ ano: r.ano, link: calcLink(links(`${r.ano}-variacao`)) }))
 ---
 <Base title={`${recapTitle()} · ${stateName} · Voto a Voto`} description={content.variants.standard.alt}>
   <PhoneHeader />
@@ -47,6 +56,12 @@ const hasData = recap.rows.some((r) => r.status === 'data')
     ) : (
       <p class="mt-4 text-body" data-nodata>{content.variants.standard.alt}</p>
     )}
+    {hasData && (
+      <ul class="mt-2 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-small leading-[15px]" data-recap-calc>
+        {calcCycles.map((c) => <li><span class="text-muted-foreground">{c.ano} </span><Fragment set:html={c.link} /></li>)}
+      </ul>
+    )}
+    <Seal lines={seal} />
     <a class="mt-1 flex min-h-11 w-full items-center justify-center text-body font-bold text-primary" href={href(`/tres-ciclos/${uf}/`)} data-link="cycles">Ver os três ciclos do estado ›</a>
     <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
       {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>

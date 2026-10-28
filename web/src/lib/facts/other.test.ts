@@ -118,3 +118,85 @@ describe('the page of the rules of the earlier cycles', () => {
     expect(page.rounds).toHaveLength(4)
   })
 })
+
+describe('facts of the other reports, the hub and the state page', async () => {
+  const { biggestSwing, MIN_BIG_SWING_VALIDOS, MIN_FLIP_VALIDOS, MIN_TURNOUT_APTOS, rankedBigSwings, rankedFlipsToLula, rankedTurnout, rankedVoteDeltas, turnoutExtremes, flipsToLula, flipsToFlavio } = await import('../reports/compute')
+  const { loadCohortData } = await import('../cohorts-load')
+  const { cohortFacts, deltaFacts, hubFacts, stateCountFacts, swingFacts, turnoutListFacts } = await import('./other')
+  const data = await loadReportsData()
+  const reports = computeReports(data)
+  const { margins, pair } = reports
+  const names = { primeiro: pair.nomePrimeiro, segundo: pair.nomeSegundo }
+  const label = (nome: string, uf: string) => `${nome}/${uf.toUpperCase()}`
+  const neutral = (facts: { sentences: { standard: string; plain: string } }[]) => facts.flatMap((x) => [x.sentences.standard, x.sentences.plain]).join(' ').toLowerCase()
+  const noCause = /porque|por causa|culpa|devido|merec|melhor|pior|vence[ud]/
+
+  it('Cidades que viraram: one record per listed city with both rounds’ margins and the change, and the arithmetic closes', () => {
+    const rows = rankedFlipsToLula(margins)
+    const page = swingFacts(rows, names, label, true, { slug: 'cidades-que-viraram', name: 'Cidades que viraram no 2º turno', min: MIN_FLIP_VALIDOS })
+    expect(gateProblems(page.facts)).toEqual([])
+    expect(page.facts).toHaveLength(rows.length)
+    if (rows[0]) {
+      const r = rows[0]
+      const f = page.facts[0]!
+      expect(f.anchor).toBe(`${r.uf}-${r.slug}`)
+      expect(f.inputs).toHaveLength(6)
+      expect(f.calculation!.worked).toHaveLength(3)
+      expect(f.checks).toEqual(['municipios'])
+    }
+    expect(neutral(page.facts)).not.toMatch(noCause)
+  })
+  it('Maiores viradas: the counts the page states are records too (the filter and the cities that moved the other way)', () => {
+    const big = rankedBigSwings(margins)
+    const page = swingFacts(big.toward, names, label, true, { slug: 'maiores-viradas', name: 'Maiores viradas', min: MIN_BIG_SWING_VALIDOS, away: big.awayCount })
+    expect(gateProblems(page.facts)).toEqual([])
+    expect(page.facts.map((x) => x.anchor)).toEqual(expect.arrayContaining(['filtro', 'contrario']))
+    expect(page.facts.find((x) => x.anchor === 'filtro')!.shown).toBe(String(big.toward.length))
+  })
+  it('Comparecimento: both lists and the count, each rate with its volume', () => {
+    const t = rankedTurnout(data)
+    const page = turnoutListFacts(t.highest.slice(0, 10), t.lowest.slice(0, 10), t.compared, MIN_TURNOUT_APTOS, label, true)
+    expect(gateProblems(page.facts)).toEqual([])
+    expect(page.facts.filter((x) => x.anchor.startsWith('alto-'))).toHaveLength(Math.min(10, t.highest.length))
+    expect(page.facts.find((x) => x.anchor === 'filtro')!.shown).toBe(String(t.compared))
+    const first = page.facts[0]!
+    expect(first.inputs.map((i) => i.field)).toEqual(['turnout.csv · comparecimento', 'turnout.csv · aptos'])
+  })
+  it('Votos ganhos e perdidos: the total of each candidate and the listed cities, 2022 votes recovered from 2026 minus the change', () => {
+    const sec = (key: 'primeiro' | 'segundo') => {
+      const ranked = rankedVoteDeltas(reports.voteDeltas[key])
+      return { key, name: names[key], net: reports.netVotes[key], unchanged: ranked.unchanged, gains: ranked.gains.slice(0, 10), losses: ranked.losses.slice(0, 10) }
+    }
+    const page = deltaFacts([sec('primeiro'), sec('segundo')], label, true)
+    expect(gateProblems(page.facts)).toEqual([])
+    expect(page.facts.map((x) => x.anchor)).toEqual(expect.arrayContaining(['primeiro-total', 'segundo-total']))
+    expect(page.facts.find((x) => x.anchor === 'primeiro-total')!.inputs.map((i) => i.value)[0]).toBe(page.facts.find((x) => x.anchor === 'primeiro-total')!.shown)
+    expect(page.rounds).toEqual([{ ano: 2022, turno: 2 }, { ano: 2026, turno: 2 }])
+  })
+  it('Como cada grupo votou: counts cities, says so and states the limits; no cause, no ranking of groups or people', async () => {
+    const { report } = await loadCohortData()
+    const page = cohortFacts(report, true)
+    expect(gateProblems(page.facts)).toEqual([])
+    expect(page.facts.map((x) => x.anchor)).toContain('fora')
+    expect(page.note).toContain('contam cidades'.replace('contam', 'conta'))
+    expect(page.note).toContain('não diz quem votou em quem')
+    const text = neutral(page.facts)
+    expect(text).toContain('cidades')
+    expect(text).not.toMatch(/porque|por causa|culpa|devido|merec|melhor|pior/)
+    expect(text).not.toMatch(/eleitores d[aoe]s? grupo|pessoas d[aoe]s? grupo|os eleitores d/)
+    const total = page.facts.find((x) => x.anchor === 'fora')!
+    expect(total.calculation!.worked[0]).toMatch(/^[\d.]+ \+ [\d.]+ \+ [\d.]+ = [\d.]+$/)
+  })
+  it('the hub: one record for each headline figure, the same builders as the reports', () => {
+    const page = hubFacts({ names, flips: { primeiro: flipsToLula(margins).length, segundo: flipsToFlavio(margins).length }, biggest: biggestSwing(margins), net: reports.netVotes, race: closestRaces(margins)[0], turnout: turnoutExtremes(data) }, label, true)
+    expect(gateProblems(page.facts)).toEqual([])
+    expect(page.facts.map((x) => x.anchor)).toEqual(expect.arrayContaining(['cidades-que-viraram', 'votos-ganhos-e-perdidos', 'disputas-mais-apertadas', 'comparecimento']))
+    expect(page.facts.find((x) => x.anchor === 'cidades-que-viraram')!.shown).toBe(String(flipsToLula(margins).length).replace(/\B(?=(\d{3})+(?!\d))/g, '.'))
+  })
+  it('the state page: the count of municipalities, from cities.csv', () => {
+    const page = stateCountFacts('rj', 'Rio de Janeiro', 3, true)
+    expect(gateProblems(page.facts)).toEqual([])
+    expect(page.facts[0]).toMatchObject({ id: 'estado/rj/municipios/municipios', shown: '3' })
+    expect(page.back.path).toBe('rj/')
+  })
+})

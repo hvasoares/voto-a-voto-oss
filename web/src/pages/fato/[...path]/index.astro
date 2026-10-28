@@ -69,6 +69,7 @@ const title = `${std('fact.title')} · ${fp.title} · Voto a Voto`
       <Seal lines={seal} />
       <p class="fact__rounding">{std('fact.rounding')}</p>
       <p class="fact__neutral">{std('fact.neutral')}</p>
+      {fp.note && <p class="fact__neutral" data-limits>{fp.note}</p>}
       <h2 class="fact__block">{std('fact.source')}</h2>
       <ul class="fact__links">
         {sources.map((s) => <li><a href={s.url}>{s.name} ›</a></li>)}

@@ -14,6 +14,7 @@ import type { Fact as Curiosity } from '../curiosities'
 import type { CheckKind } from './checks'
 import { headline } from '../sentences/headline'
 import { marginLine, marginVotes } from '../sentences/margin'
+import '../sentences/catalog-facts'
 import { DEFAULT_LOCALE, message as say, REGISTERS, type Locale, type MessageKey, type Register } from '../sentences/catalog'
 
 /** The page of the facts of the curiosities card: it is the city's, not a cycle's. */

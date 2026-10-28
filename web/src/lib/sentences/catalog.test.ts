@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { buildCityResult } from '@/shared/city-model'
 import { CATALOG, KEYS, STANDARD_ONLY_KEYS, message, pluralCategory, template, type Key, type Voice } from './catalog'
+import './catalog-facts'
 import { headline } from './headline'
 
 const slots = (tpl: string) => [...tpl.matchAll(/\{(\w+)\}/g)].map((m) => m[1]!).sort()

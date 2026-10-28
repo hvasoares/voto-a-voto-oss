@@ -10,6 +10,7 @@
  */
 import type { CityShard } from '../city-shard'
 import type { TotalsFile } from '../shard-files'
+import '../sentences/catalog-facts'
 import { fill, message, template, DEFAULT_LOCALE, type Locale } from '../sentences/catalog'
 import { formatInt } from '@/shared/city-model'
 

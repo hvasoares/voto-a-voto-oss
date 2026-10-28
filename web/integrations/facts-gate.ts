@@ -29,6 +29,7 @@ export function verifyFactSite(files: readonly string[], read: (file: string) =>
     }
     if (!/<a href="[^"]*dados\.json|https:\/\/dadosabertos\.tse\.jus\.br\//.test(text)) problems.push(`${file}: no source link`)
     if (!/data-edition-link/.test(text)) problems.push(`${file}: no edition link`)
+    if (!/data-seal/.test(text)) problems.push(`${file}: no "conferido" seal`)
   }
   for (const file of files) {
     if (file.startsWith('fato/') || !file.endsWith('index.html')) continue

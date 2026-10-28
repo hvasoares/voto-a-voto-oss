@@ -8,6 +8,7 @@ import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { CATALOG } from './catalog'
+import './catalog-facts'
 
 const SRC = join(import.meta.dirname, '..', '..')
 const files = (dir: string): string[] =>
@@ -15,7 +16,7 @@ const files = (dir: string): string[] =>
     const p = join(dir, f)
     return statSync(p).isDirectory() ? files(p) : /\.(ts|tsx|astro)$/.test(f) && !/\.test\./.test(f) ? [p] : []
   })
-const sources = files(SRC).filter((p) => !p.endsWith(join('sentences', 'catalog.ts')))
+const sources = files(SRC).filter((p) => !p.endsWith(join('sentences', 'catalog.ts')) && !p.endsWith(join('sentences', 'catalog-facts.ts')))
 const text = new Map(sources.map((p) => [relative(SRC, p), readFileSync(p, 'utf8')]))
 /** Code without its comments (a comment may quote a sentence to explain it). */
 const code = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1')

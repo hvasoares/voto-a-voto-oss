@@ -101,10 +101,11 @@ test.describe('the page of the calculation', () => {
   test('the earlier cycles have no page per city: their "ver cálculo" opens the one page of the rules, with every kind of figure', async ({ page }) => {
     expect((await page.goto(fato('2022-1')))!.status()).toBe(404)
     await page.goto(`${city}?ciclo=2022&turno=1`)
-    const links = await page.locator('[data-view="2022-1"] a.calc').evaluateAll((els) => els.map((e) => e.getAttribute('href')))
+    const links = await page.locator('.city-panel[data-view="2022-1"] a.calc').evaluateAll((els) => els.map((e) => e.getAttribute('href')))
     expect(links.length).toBeGreaterThan(5)
     for (const href of links) expect(href).toMatch(new RegExp(`^${base}fato/metodo/ciclos-anteriores/#(frase|votaram|naoVotaram|candidato|parte|margem)$`))
     await page.goto(links[0]!)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     await expect(page.locator('.fact')).toHaveCount(6)
     await expect(page.locator('.fact__formula').first()).toBeVisible()
     await expect(page.locator('.fact__worked').first()).toContainText('Troque cada quantidade')

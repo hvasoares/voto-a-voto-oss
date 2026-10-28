@@ -68,6 +68,8 @@ export interface CityMargin {
   validos2: number
   /** The two candidates' exact votes in the runoff (the closest-race diff). */
   votos2: { primeiro: number; segundo: number }
+  /** The same two candidates' exact votes in the 1st round (the inputs of the margin the fact records show). */
+  votos1: { primeiro: number; segundo: number }
 }
 
 export interface VoteGain {
@@ -142,6 +144,7 @@ export function computeReports(input: MarginInput): ComputedReports {
       validos1,
       validos2,
       votos2: { primeiro: v21, segundo: v22 },
+      votos1: { primeiro: v11, segundo: v12 },
     })
   }
 

@@ -1,6 +1,7 @@
 # Fact records (#61, #62)
 
-Status of #62 (see the end): the records, the seal, the gate and the highlight are done for the city card, Brasil e regiões, Comparar com 2022 / 2018, Três ciclos por estado and the report Disputas mais apertadas; five reports and the hub are not yet covered.
+Status of #62: records, seal, gate and highlight are done for the city card, Brasil e regiões, Comparar com 2022 / 2018, Três ciclos por estado, and every report (Cidades que viraram, Maiores viradas, Comparecimento,
+Votos ganhos e perdidos, Disputas mais apertadas, Como cada grupo votou), the Relatórios hub, the state page and the state recap.
 
 Every number the site publishes on a page that has a record is a **fact record**: an id, a sentence (standard and plain register, from the catalog),
 the numbers it is made of (each with the dataset field it is read from, `turnout.csv · aptos`), the **source**, and the **calculation** (the rule in
@@ -71,8 +72,17 @@ state (`/fato/estado/<uf>/tres-ciclos/`, a desktop-only request) and reads the r
 choosing one lights the bar segment (`[data-seg]` of the page) and the table cells of its cycle and writes the calculation beside them in a polite live region, so every highlighted value is also
 readable by keyboard and touch. Styles are inline: the phone's stylesheet gets only the `.seal` rules (+166 B gzip in all).
 
-## Not covered in #62 (needs a decision or a follow-up)
+## Reports, hub, state page and recap (#62, last checkpoint)
 
-- Reports: Cidades que viraram, Maiores viradas, Comparecimento, Votos ganhos e perdidos, Como cada grupo votou (groups of cities: numbers about groups need the same neutrality review as the page), and the hub of
-  Relatórios. The framework is the same (`FactPage`, `raceFacts` is the pattern): one builder, one `getFactPage` + `factLinks` + `Seal` in the page.
-- The state page `/<uf>/` (a count of cities) and the state recap `/<uf>/resumo/`.
+`other.ts` also builds: `swingFacts` (Cidades que viraram, Maiores viradas: both rounds' votes and valid votes, the margins and their change; Maiores viradas adds the filter count and the cities that moved the other way),
+`turnoutListFacts` (Comparecimento: each rate with its volume, plus the filter count), `deltaFacts` (Votos ganhos e perdidos: the national sum per candidate and each listed city; the 2022 votes are 2026 minus the change),
+`cohortFacts` (Como cada grupo votou), `hubFacts` (one record for each headline figure of the hub, same builders) and `stateCountFacts` (the number of municipalities of the state page, from `cities.csv`).
+The state recap links to the three-cycle records of its state (the same shares and changes), one link per cycle. Every page has its `Seal`; `integrations/facts-gate.ts` now also fails a fact page without the seal.
+
+**Como cada grupo votou, neutrality.** Its numbers count CITIES grouped by who had more votes in 2018 and 2022; they say nothing about who voted for whom or why, and the groups have no order of importance. The page and its
+fact page say so in plain words (`fact.cohort.limits`); the records say "cidades" in every sentence ("A conta é de cidades, não de pessoas"); nothing ranks groups or people (tested).
+
+## The catalog split
+
+The fact and seal sentences live in `src/lib/sentences/catalog-facts.ts`, which registers them in `CATALOG` when imported (only the fact modules and `Seal.astro` import it). Putting them in `catalog.ts` added 14 KB raw
+(3.3 KB gzip) to the share code (`share-card`) that the recap and share pages load on a phone; measured with `scripts/measure.ts` and fixed here: the JS of those pages is again byte-identical to before G6.

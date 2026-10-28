@@ -1,6 +1,6 @@
 # Issue #62 (Fact records, "conferido" seal and sentence-to-data highlight on the other pages): checkpoints
 
-Status: **partial**. Done: the seal, the gate over the other pages, the highlight, the records of Brasil e regiões, Comparar com 2022 / 2018, Três ciclos por estado and the report Disputas mais apertadas.
+Status: **done** (see the last section for the final checkpoints); the text below is the first part. Done: the seal, the gate over the other pages, the highlight, the records of Brasil e regiões, Comparar com 2022 / 2018, Três ciclos por estado and the report Disputas mais apertadas.
 Not done: five reports and the hub (list in `docs/facts.md`).
 
 Sketch frames created (page "Election SPA v3 desktop", made without the user's approval; the build follows them): **"13 Três ciclos por estado (desktop, com o selo conferido)"**
@@ -40,3 +40,15 @@ Verdict: PASS (no code-fixable blockers).
 No new JS, CSS file or data on a phone; CSS +166 B gzip (the `.calc` and `.seal` rules, same file). HTML +0.3 KB per page for the links and the seal; Três ciclos por estado +2.6 KB (three seal lines
 of about 190 characters each, the links, and the island's wrapper and props). On desktop the island adds its JS (74 KB gzip, the shared React runtime included) and one request for the page of the calculation (5 KB).
 None of the audited budgets (home, city, mapa, report) changed in this ticket (`npm run check:perf`).
+
+
+## Final checkpoints (reports, hub, state page, recap)
+
+Behavior tests: `src/lib/facts/other.test.ts`, `integrations/facts-gate.test.ts` (failing site fixtures for reports, hub, state, recap and a fact page without the seal), `e2e/fatos-relatorios.spec.ts`, `e2e/fatos.spec.ts`
+(earlier cycles). Screenshot review (author, fixture state, 390x844 and 1440x900; no Sketch frame exists for these pages, the links and the seal reuse the approved city-card and "Três ciclos" style: `.calc` link under the
+row, the `.seal` box before the notice): differences found and fixed: the rules page overflowed sideways at 390 because the input value was a long sentence (fixed: "do cartão", test added); an input label read "Votos de" with an empty
+name (fixed). Accepted: the seal on report pages is wider than the list rows at 1440 (it follows the page column); the consent notice covers part of the captures (platform).
+
+Phone first load, before (9195c1c built in a scratch copy) -> after, fixture, `measure.ts` at 390x844: JS and data identical on every page; CSS 15605 -> 15779 B gzip (the `.calc`/`.seal` rules, same file);
+HTML gzip: /relatorios/ 3199 -> 3534, cidades-que-viraram 3620 -> 3945, maiores-viradas 3429 -> 3766, comparecimento 3999 -> 4396, votos-ganhos 4195 -> 4597, como-cada-grupo 3517 -> 3972, /rj/ 7622 -> 7884, /rj/resumo/ 7594 -> 8010.
+The first measure of the recap showed +3.3 KB gzip of JS: the catalog growth had reached the share code; fixed by `catalog-facts.ts`.

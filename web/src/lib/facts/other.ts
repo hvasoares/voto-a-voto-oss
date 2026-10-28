@@ -6,7 +6,11 @@
  */
 import type { BrasilCandidate, BrasilView } from '../brasil'
 import type { CompareRow, CycleBlock } from '../compare'
+import type { CityMargin, TurnoutExtreme, VoteDeltaRow, VoteGain } from '../reports/compute'
+import { formatFixedPct, formatSignedInt, formatSignedPp } from '../reports/format'
+import type { CohortReport } from '../cohorts'
 import { formatInt, formatPct } from '@/shared/city-model'
+import '../sentences/catalog-facts'
 import { DEFAULT_LOCALE, message as say, REGISTERS, type MessageKey, type Register } from '../sentences/catalog'
 import type { CheckKind } from './checks'
 import { factId, METHOD_DOCS, TSE_URL, type Fact, type FactInput } from './model'
@@ -23,6 +27,8 @@ export interface FactPage {
   facts: Fact[]
   /** What the seal of the page is made of: the checks of its facts and the rounds its numbers belong to. */
   rounds: { ano: number; turno: number }[]
+  /** An extra line of the page (its limits), already written from the catalog. */
+  note?: string
 }
 
 type Params = Record<string, string | number>
@@ -34,7 +40,7 @@ const int = formatInt
 const dividing = (part: number, whole: number, decimals = 1): string =>
   whole > 0 ? std('fact.w.share', { part: int(part), whole: int(whole), exact: decimals === 2 ? `${share(part, whole).toFixed(2).replace('.', ',')}%` : formatPct(share(part, whole)) }) : std('fact.w.none', { whole: int(whole) })
 
-interface Ctx {
+export interface Ctx {
   scope: string
   page: string
   fixture: boolean
@@ -181,7 +187,7 @@ export function olderCyclesFacts(fixture: boolean, olderRounds: { ano: number; t
     ['frase', std('fact.measure.frase'), std('fact.f.frase'), [[std('fact.in.aptos'), 'turnout.csv · aptos'], [std('fact.in.naoVotaram'), ''], [std('fact.in.first'), 'votes.csv · votos'], [std('fact.in.second'), 'votes.csv · votos']]],
     ['votaram', std('fact.measure.votaram'), std('fact.f.votaram'), [[std('fact.in.aptos'), 'turnout.csv · aptos'], [std('fact.in.validos'), 'turnout.csv · validos']]],
     ['naoVotaram', std('fact.measure.naoVotaram'), std('fact.f.naoVotaram'), [[std('fact.in.aptos'), 'turnout.csv · aptos'], [std('fact.in.validos'), 'turnout.csv · validos']]],
-    ['candidato', std('fact.measure.candidato'), std('fact.f.candidate'), [[std('fact.in.votos', { name: '' }).trim(), 'votes.csv · votos'], [std('fact.in.validos'), 'turnout.csv · validos']]],
+    ['candidato', std('fact.measure.candidato'), std('fact.f.candidate'), [[std('fact.in.votos', { name: std('fact.measure.candidato') }), 'votes.csv · votos'], [std('fact.in.validos'), 'turnout.csv · validos']]],
     ['parte', std('fact.measure.parte'), std('fact.f.notVotedPart'), [[std('fact.in.brancos'), 'turnout.csv · brancos'], [std('fact.in.nulos'), 'turnout.csv · nulos + anulados_apu_sep'], [std('fact.in.naoVotaram'), '']]],
     ['margem', std('fact.measure.margem'), `${std('fact.f.margin')}; ${std('fact.f.fits')}`, [[std('fact.in.first'), 'votes.csv · votos'], [std('fact.in.second'), 'votes.csv · votos'], [std('fact.in.naoVotaram'), '']]],
   ]
@@ -189,4 +195,178 @@ export function olderCyclesFacts(fixture: boolean, olderRounds: { ano: number; t
     rec(c, anchor, title, '', both('fact.old', { measure: title }), inputs.map(([label, field]) => ({ label, ...(field ? { field } : {}), value })), formula, [std('fact.w.old')], anchor === 'margem' ? { name: std(METHOD_DOCS.margin.key), href: METHOD_DOCS.margin.href } : undefined),
   )
   return { scope: c.scope, page: c.page, title: std('fact.sub.old'), subtitle: std('fact.sub.old'), back: { path: 'sobre-os-dados/', label: std('fact.back.old') }, fixture, facts, rounds: olderRounds }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+// The reports (#62): Cidades que viraram, Maiores viradas, Comparecimento, Votos ganhos e perdidos, Como cada grupo votou, the hub and the state pages.
+// One record per listed row (the figure the row prints), one for each count the page states; the sentences are the catalog's.
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+
+export interface Names {
+  primeiro: string
+  segundo: string
+}
+type CityLabel = (nome: string, uf: string) => string
+const R2026 = [{ ano: 2026, turno: 1 }, { ano: 2026, turno: 2 }]
+const reportPage = (c: Ctx, name: string, path: string, facts: Fact[], rounds = [{ ano: 2026, turno: 2 }], note?: string): FactPage => ({
+  scope: c.scope, page: c.page, title: name, subtitle: std('fact.sub.report', { name }), back: { path, label: std('fact.back.report', { name }) }, fixture: c.fixture, facts, rounds, note,
+})
+const countInput = (label: string, n: number): FactInput => ({ label, value: int(n) })
+
+/** The record of one city's margin and its change between the rounds (Cidades que viraram, Maiores viradas, the hub's biggest change). */
+export function marginRecord(c: Ctx, anchor: string, r: CityMargin, names: Names, label: CityLabel): Fact {
+  const city = label(r.nome, r.uf)
+  const m = (a: number, b: number, whole: number, value: number) => std('fact.w.margin', { a: int(a), b: int(b), whole: int(whole), pp: formatSignedPp(value) })
+  const votes = (name: string, turno: number, v: number): FactInput => ({ label: std('fact.in.votos', { name: `${name}, ${turno}º turno` }), field: 'votes.csv · votos', value: int(v) })
+  const validos = (turno: number, v: number): FactInput => ({ label: `${std('fact.in.validos')}, ${turno}º turno`, field: 'turnout.csv · validos', value: int(v) })
+  return rec(
+    c, anchor, city, formatSignedPp(r.swing),
+    both('fact.flip', { city, a: names.primeiro, b: names.segundo, m1: formatSignedPp(r.margin1), m2: formatSignedPp(r.margin2), swing: formatSignedPp(r.swing), validos: int(r.validos2) }),
+    [votes(names.primeiro, 1, r.votos1.primeiro), votes(names.segundo, 1, r.votos1.segundo), validos(1, r.validos1), votes(names.primeiro, 2, r.votos2.primeiro), votes(names.segundo, 2, r.votos2.segundo), validos(2, r.validos2)],
+    std('fact.f.flip'),
+    [m(r.votos1.primeiro, r.votos1.segundo, r.validos1, r.margin1), m(r.votos2.primeiro, r.votos2.segundo, r.validos2, r.margin2), std('fact.w.swing', { m2: formatSignedPp(r.margin2), m1: formatSignedPp(r.margin1), pp: formatSignedPp(r.swing) })],
+  )
+}
+
+/** Cidades que viraram / Maiores viradas: per listed city the margins of both rounds and the change; Maiores viradas adds its two counts. */
+export function swingFacts(rows: readonly CityMargin[], names: Names, label: CityLabel, fixture: boolean, report: { slug: string; name: string; min: number; away?: number }): FactPage {
+  const c: Ctx = { scope: `relatorios/${report.slug}`, page: 'cidades', fixture, checks: ['municipios'] }
+  const facts = rows.map((r) => marginRecord(c, `${r.uf}-${r.slug}`, r, names, label))
+  if (report.away !== undefined) {
+    const minLabel = int(report.min)
+    facts.push(
+      rec(c, 'filtro', std('fact.in.cities'), int(rows.length), both('fact.count.validos', { n: int(rows.length), min: minLabel }), [countInput(std('fact.in.cities'), rows.length), { label: std('fact.in.minimum'), field: 'turnout.csv · validos', value: minLabel }], std('fact.f.count'), [std('fact.w.count', { n: int(rows.length), min: minLabel })]),
+      rec(c, 'contrario', std('fact.in.cities'), int(report.away), both('fact.count.away', { n: int(report.away), min: minLabel, name: names.segundo }), [countInput(std('fact.in.cities'), report.away), { label: std('fact.in.minimum'), field: 'turnout.csv · validos', value: minLabel }], std('fact.f.count'), [std('fact.w.count', { n: int(report.away), min: minLabel })]),
+    )
+  }
+  return reportPage(c, report.name, `relatorios/${report.slug}/`, facts, R2026)
+}
+
+/** One city of a turnout list. */
+export function turnoutRecord(c: Ctx, anchor: string, r: TurnoutExtreme, label: CityLabel): Fact {
+  const city = label(r.nome, r.uf)
+  return rec(
+    c, anchor, city, formatFixedPct(r.rate),
+    both('fact.turnoutCity', { city, votos: int(r.comparecimento), aptos: int(r.aptos), pct: formatFixedPct(r.rate) }),
+    [{ label: std('fact.in.comparecimento'), field: 'turnout.csv · comparecimento', value: int(r.comparecimento) }, { label: std('fact.in.aptos'), field: 'turnout.csv · aptos', value: int(r.aptos) }],
+    std('fact.f.turnout'), [dividing(r.comparecimento, r.aptos)],
+  )
+}
+
+/** Comparecimento mais alto e mais baixo: both lists and the count the filter compared. */
+export function turnoutListFacts(high: readonly TurnoutExtreme[], low: readonly TurnoutExtreme[], compared: number, min: number, label: CityLabel, fixture: boolean): FactPage {
+  const c: Ctx = { scope: 'relatorios/comparecimento', page: 'cidades', fixture, checks: ['municipios'] }
+  const facts = [
+    ...high.map((r) => turnoutRecord(c, `alto-${r.uf}-${r.slug}`, r, label)),
+    ...low.map((r) => turnoutRecord(c, `baixo-${r.uf}-${r.slug}`, r, label)),
+    rec(c, 'filtro', std('fact.in.cities'), int(compared), both('fact.count.aptos', { n: int(compared), min: int(min) }), [countInput(std('fact.in.cities'), compared), { label: std('fact.in.minimum'), field: 'turnout.csv · aptos', value: int(min) }], std('fact.f.count'), [std('fact.w.count', { n: int(compared), min: int(min) })]),
+  ]
+  return reportPage(c, 'Comparecimento mais alto e mais baixo', 'relatorios/comparecimento/', facts)
+}
+
+/** One city's change in one candidate's runoff votes against 2022. */
+export function deltaRecord(c: Ctx, anchor: string, r: VoteDeltaRow, name: string, label: CityLabel): Fact {
+  const city = label(r.nome, r.uf)
+  const before = r.votos2026 - r.delta
+  return rec(
+    c, anchor, city, formatSignedInt(r.delta),
+    both('fact.delta', { city, name, v26: int(r.votos2026), v22: int(before), diff: formatSignedInt(r.delta) }),
+    [{ label: std('fact.in.votosAt', { name, ano: 2026 }), field: 'votes.csv · votos', value: int(r.votos2026) }, { label: std('fact.in.votosAt', { name, ano: 2022 }), field: 'votes.csv · votos', value: int(before) }],
+    std('fact.f.delta'), [std('fact.w.diff', { a: int(r.votos2026), b: int(before), d: formatSignedInt(r.delta) })],
+  )
+}
+/** The country-wide sum of those changes and the cities it is made of. */
+export function deltaTotalRecord(c: Ctx, anchor: string, name: string, net: VoteGain, unchanged: number): Fact {
+  return rec(
+    c, anchor, name, formatSignedInt(net.total),
+    both('fact.deltaTotal', { name, total: formatSignedInt(net.total), gained: int(net.cities.gained), lost: int(net.cities.lost) }),
+    [{ label: std('fact.in.total'), field: 'votes.csv · votos', value: formatSignedInt(net.total) }, countInput(std('fact.in.gained'), net.cities.gained), countInput(std('fact.in.lost'), net.cities.lost), countInput(std('fact.in.tied'), unchanged)],
+    std('fact.f.deltaTotal'), [std('fact.w.sum', { n: int(net.cities.gained + net.cities.lost + unchanged), total: formatSignedInt(net.total) })],
+  )
+}
+
+export interface DeltaSection {
+  key: 'primeiro' | 'segundo'
+  name: string
+  net: VoteGain
+  unchanged: number
+  gains: readonly VoteDeltaRow[]
+  losses: readonly VoteDeltaRow[]
+}
+/** Votos ganhos e perdidos vs. 2022: per candidate the total and the listed gains and losses. */
+export function deltaFacts(sections: readonly DeltaSection[], label: CityLabel, fixture: boolean): FactPage {
+  const c: Ctx = { scope: 'relatorios/votos-ganhos-e-perdidos', page: 'cidades', fixture, checks: ['municipios'] }
+  const facts = sections.flatMap((s) => [
+    deltaTotalRecord(c, `${s.key}-total`, s.name, s.net, s.unchanged),
+    ...s.gains.map((r) => deltaRecord(c, `${s.key}-alta-${r.uf}-${r.slug}`, r, s.name, label)),
+    ...s.losses.map((r) => deltaRecord(c, `${s.key}-perda-${r.uf}-${r.slug}`, r, s.name, label)),
+  ])
+  return reportPage(c, 'Votos ganhos e perdidos vs. 2022', 'relatorios/votos-ganhos-e-perdidos/', facts, [{ ano: 2022, turno: 2 }, { ano: 2026, turno: 2 }])
+}
+
+/**
+ * Como cada grupo votou: per group its size and valid votes, per candidate the cities where he had more votes in 2026 and their share of the group's decided cities,
+ * and the totals that close. Everything counts CITIES; the page says so, and says it does not tell who voted for whom or why.
+ */
+export function cohortFacts(report: CohortReport, fixture: boolean): FactPage {
+  const c: Ctx = { scope: 'relatorios/como-cada-grupo-votou', page: 'grupos', fixture, checks: ['municipios'] }
+  const pct = (x: number) => `${String(Number(x.toFixed(1))).replace('.', ',')}%`
+  const facts: Fact[] = []
+  for (const g of report.groups) {
+    const key = `${g.winner2018}-${g.winner2022}`
+    const decided = g.parts.reduce((n, p) => n + p.cities, 0)
+    facts.push(
+      rec(c, key, g.title, int(g.cities), both('fact.cohort.group', { title: g.title, n: int(g.cities), validos: int(g.validos2026) }),
+        [countInput(std('fact.in.groupCities'), g.cities), { label: std('fact.in.validos'), field: 'turnout.csv · validos', value: int(g.validos2026) }, countInput(std('fact.in.tied'), g.ties2026)],
+        std('fact.f.count'), [std('fact.w.n', { n: int(g.cities) })]),
+    )
+    for (const p of g.parts)
+      facts.push(
+        rec(c, `${key}-${p.candidate}`, `${g.title} · ${p.label}`, pct(p.pct), both('fact.cohort', { title: g.title, n: int(g.cities), k: int(p.cities), label: p.label, pct: pct(p.pct), decided: int(decided) }),
+          [{ label: std('fact.in.won', { label: p.label }), field: 'votes.csv · votos', value: int(p.cities) }, countInput(std('fact.in.decided'), decided)],
+          std('fact.f.cohort'), [std('fact.w.cohort', { k: int(p.cities), decided: int(decided), exact: formatPct(share(p.cities, decided)) })]),
+      )
+  }
+  const t = report.totals
+  facts.push(
+    rec(c, 'fora', std('fact.in.cities2026'), int(t.cities2026), both('fact.cohort.total', { cities: int(t.cities2026), grouped: int(t.grouped), ties: int(report.tieCases.length), nodata: int(report.noData.length) }),
+      [countInput(std('fact.in.grouped'), t.grouped), countInput(std('fact.in.tiesBefore'), report.tieCases.length), countInput(std('fact.in.noData'), report.noData.length)],
+      std('fact.f.cohortTotal'), [std('fact.w.cohortTotal', { grouped: int(t.grouped), ties: int(report.tieCases.length), nodata: int(report.noData.length), cities: int(t.cities2026) })]),
+  )
+  return reportPage(c, 'Como cada grupo votou', 'relatorios/como-cada-grupo-votou/', facts, [{ ano: 2018, turno: 2 }, { ano: 2022, turno: 2 }, { ano: 2026, turno: 2 }], say({ locale: DEFAULT_LOCALE, register: 'standard' }, 'fact.cohort.limits'))
+}
+
+export interface HubParts {
+  names: Names
+  flips: { primeiro: number; segundo: number }
+  biggest?: CityMargin
+  net: { primeiro: VoteGain; segundo: VoteGain }
+  race?: Parameters<typeof raceFacts>[0][number]
+  turnout: { high?: TurnoutExtreme; low?: TurnoutExtreme }
+}
+/** The hub of Relatórios: the figure each row's headline states, with the same builders as the reports. */
+export function hubFacts(h: HubParts, label: CityLabel, fixture: boolean): FactPage {
+  const c: Ctx = { scope: 'relatorios', page: 'resumo', fixture, checks: ['municipios'] }
+  const facts: Fact[] = []
+  const flip = (anchor: string, name: string, n: number) =>
+    rec(c, anchor, name, int(n), both('fact.flips', { name, n: int(n) }), [countInput(std('fact.in.cities'), n)], std('fact.f.flips'), [std('fact.w.n', { n: int(n) })])
+  facts.push(flip('cidades-que-viraram', h.names.primeiro, h.flips.primeiro), flip('cidades-que-viraram-2', h.names.segundo, h.flips.segundo))
+  if (h.biggest) facts.push(marginRecord(c, 'maiores-viradas', h.biggest, h.names, label))
+  facts.push(deltaTotalRecord(c, 'votos-ganhos-e-perdidos', h.names.primeiro, h.net.primeiro, 0))
+  if (h.race) {
+    const race = raceFacts([h.race], { primeiro: h.names.primeiro, segundo: h.names.segundo }, (n) => label(n, h.race!.uf).split('/')[0]!, fixture).facts[0]!
+    facts.push({ ...race, id: factId(c.scope, c.page, 'disputas-mais-apertadas'), scope: c.scope, page: c.page, anchor: 'disputas-mais-apertadas' })
+  }
+  if (h.turnout.high) facts.push(turnoutRecord(c, 'comparecimento', h.turnout.high, label))
+  if (h.turnout.low) facts.push(turnoutRecord(c, 'comparecimento-baixo', h.turnout.low, label))
+  return reportPage(c, 'Relatórios', 'relatorios/', facts, R2026)
+}
+
+/** The state page: the number of municipalities its list holds. */
+export function stateCountFacts(uf: string, name: string, n: number, fixture: boolean): FactPage {
+  const c: Ctx = { scope: `estado/${uf}`, page: 'municipios', fixture, checks: ['municipios'] }
+  const facts = [
+    rec(c, 'municipios', std('fact.in.cities'), int(n), both('fact.state.count', { name, n: int(n) }), [{ label: std('fact.in.cities'), field: 'cities.csv · cd_municipio', value: int(n) }], std('fact.f.stateCount'), [std('fact.w.stateCount', { n: int(n), uf: uf.toUpperCase() })]),
+  ]
+  return { scope: c.scope, page: c.page, title: name, subtitle: std('fact.sub.municipios', { name }), back: { path: `${uf}/`, label: std('fact.back.estado') }, fixture, facts, rounds: [{ ano: 2026, turno: 2 }] }
 }
