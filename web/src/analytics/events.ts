@@ -203,6 +203,24 @@ export const EVENTS: EventDoc[] = [
     emitted: ['src/components/MeuBrasil.tsx'],
   },
   {
+    name: 'meu_story_opened',
+    description: 'The Meu Brasil story was opened (never the places: only how many there are).',
+    props: { places: 'How many places the story has (1 to 3)' },
+    emitted: ['src/components/MeuBrasilStory.tsx'],
+  },
+  {
+    name: 'meu_story_card_reached',
+    description: 'A card of the Meu Brasil story came on show (its position in the sequence, nothing about the places).',
+    props: { position: 'The card position, from 1' },
+    emitted: ['src/components/MeuBrasilStory.tsx'],
+  },
+  {
+    name: 'meu_story_card_shared',
+    description: 'A card of the Meu Brasil story was shared (the native sheet reported "shared"): its position, nothing about the places.',
+    props: { position: 'The card position, from 1' },
+    emitted: ['src/components/MeuBrasilStory.tsx'],
+  },
+  {
     name: 'duel_pair_chosen',
     description: 'Two places were chosen in the head-to-head (Cara a cara). Never the places: only the level of the comparison.',
     props: { level: 'cidade | estado | regiao' },

@@ -127,6 +127,12 @@ export default function MeuBrasil({ base, origin, fixture, edition }: MeuBrasilP
       )}
       {content && (
         <div className="lg:mx-auto lg:max-w-[320px]">
+          {/* #97: the one way into the story of these places (the places travel in the address; the story page loads only from here). */}
+          <a className="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-body font-bold text-foreground" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={`${withBase(base, '/meu-brasil/historia/')}${placesQuery(cards.map((c) => c.ref))}`} data-story-link>Ver como história</a>
+        </div>
+      )}
+      {content && (
+        <div className="lg:mx-auto lg:max-w-[320px]">
           {/* #39: the reply. Opens the head-to-head with the first place as the sender's city and the search of the second in focus. */}
           <a className="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-body font-bold text-foreground" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={`${withBase(base, '/cara-a-cara/')}?nivel=cidade&a=${cards[0]!.ref.uf}/${cards[0]!.ref.slug}&resposta=1`} data-duel-reply>{duelSay({}, 'duel.reply')}</a>
         </div>

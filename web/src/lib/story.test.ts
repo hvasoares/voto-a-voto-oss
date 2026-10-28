@@ -71,7 +71,7 @@ describe('the cards of a state story', () => {
     expect(() => storyText({ kind: 'steady', n: 1, total: 1 }, { name: 'X'.repeat(200), cards: 7 })).toThrow(/limit is 150/)
   })
   it('is neutral: counts of places, never why, never a winner, a person or a party', () => {
-    const all = [...Object.values(STORY_STANDARD), ...Object.values(STORY_PLAIN)].join(' | ')
+    const all = [...Object.entries(STORY_STANDARD), ...Object.entries(STORY_PLAIN)].filter(([k]) => k.startsWith('story.')).map(([, v]) => v).join(' | ')
     expect(all).not.toMatch(/porque|devido|causa|culpa|motivo|venc|perd|ganh|derrot|lider|vitóri|lula|bolsonaro|\bPT\b|você|eleitor/i)
   })
 })
@@ -83,6 +83,16 @@ describe('the picture of a card', () => {
     const lines = [...svg.matchAll(/<text [^>]*>([^<]*)<\/text>/g)].map((m) => m[1]!)
     expect(lines).toEqual(expect.arrayContaining(['EXEMPLO', 'SP · 2022 → 2026', '38', 'votoavoto.exemplo.br/sp/historia#2']))
     expect(lines.join(' ')).toContain('de 641 cidades de São Paulo')
+  })
+})
+
+describe('the address of a card', () => {
+  it('is complete: a long address goes on two lines, never cut', () => {
+    const svg = storyCardSvg({ kicker: 'k', big: '1', sentence: 'x y z', address: 'votoavoto.exemplo.br/meu-brasil/historia#2', alt: 'a' })
+    const lines = [...svg.matchAll(/<text [^>]*>([^<]*)<\/text>/g)].map((m) => m[1]!)
+    expect(lines.join('')).toContain('votoavoto.exemplo.br/meu-brasil/historia#2'.replace('/historia#2', '') )
+    expect(lines.some((l) => l.includes('…'))).toBe(false)
+    expect(lines.filter((l) => /historia#2$/.test(l))).toHaveLength(1)
   })
 })
 

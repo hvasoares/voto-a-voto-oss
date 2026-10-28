@@ -1,0 +1,44 @@
+---
+/**
+ * Meu Brasil as a story (the Sketch frame "16b Meu Brasil em sequência", ticket #97): six to eight vertical cards built only from the places in the address (one to three), one idea and one number each, the most
+ * surprising fact on the second card, the share card last, as the swipeable sequence of #47. The places and the card on show live in the address (`?mora=…&vota=…#3`). Reached ONLY from the "Ver como história"
+ * button of the Meu Brasil card. The sequence is built in the browser from the shards of the picked places (as Meu Brasil itself is), so without scripts there is only the notice.
+ */
+import Base from '@/layouts/Base.astro'
+import PhoneHeader from '@/components/PhoneHeader.astro'
+import MeuBrasilStory from '@/components/MeuBrasilStory'
+import { normalizeBase, withBase } from '@/paths'
+import { datasetFixture } from '@/lib/shard-files'
+import { siteOrigin } from '@/lib/share-url'
+import { storySay } from '@/lib/story'
+import '@/lib/meu-story'
+import '@/styles/story.css'
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const fixture = await datasetFixture()
+const words = {
+  region: storySay('mbstory.region'),
+  dots: storySay('story.dots'),
+  dot: storySay('story.dot'),
+  share: storySay('story.share'),
+  linkNote: storySay('story.link.note'),
+  nojs: storySay('story.nojs'),
+  none: storySay('mbstory.none'),
+  loading: storySay('mbstory.loading'),
+  failed: storySay('mbstory.failed'),
+}
+---
+<Base title={`${storySay('mbstory.title')} · Voto a Voto`} description={storySay('mbstory.none')}>
+  <PhoneHeader />
+  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:pt-8" id="main" data-page="meu-brasil-historia">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal lg:text-primary" href={href('/meu-brasil/')} data-back-meu-brasil>{storySay('mbstory.back')}</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">{storySay('mbstory.title')}</h1>
+    <MeuBrasilStory client:load base={base} origin={siteOrigin()} fixture={fixture} words={words} />
+    <noscript><p class="mt-2 text-small leading-[17px]" data-nojs>{storySay('mbstory.nojs')}</p></noscript>
+    <p class="mt-2 text-center text-small leading-[17px] text-muted-foreground">{storySay('mbstory.note')}</p>
+    <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+      {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+    </footer>
+  </main>
+</Base>

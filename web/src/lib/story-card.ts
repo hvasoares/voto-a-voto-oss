@@ -4,7 +4,7 @@
  * (`votoavoto.exemplo.br/sp/historia#2`). The words come ready from the catalog; nothing here says anything.
  */
 import { colors } from '@/shared/tokens'
-import { esc, fit, rect, text, wrap } from './share-card'
+import { esc, fit, rect, text, textWidth, wrap } from './share-card'
 import { DEFAULT_LOCALE, message, type Locale } from './sentences/catalog'
 
 export const STORY_CARD_SIZE = { width: 1080, height: 1920 } as const
@@ -45,6 +45,14 @@ export function storyCardSvg(o: StoryCardOptions): string {
   lines.forEach((line, i) => out.push(text(LEFT, top + i * size * 1.3, size, line)))
   out.push(rect(LEFT, 1640, INNER, 4, colors.rule))
   out.push(text(LEFT, 1720, 42, fit(say(o.fixture ? 'card.brand.fixture' : 'card.brand'), 42, INNER), { fill: colors.muted }))
-  out.push(text(LEFT, 1790, 46, fit(o.address, 46, INNER), { weight: 600 }))
+  // The address must stay readable and complete: the biggest size that fits one line, else two lines broken after a "/" (never cut with "…" unless nothing else fits).
+  const size46 = [46, 42, 38].find((sz) => textWidth(o.address, sz) <= INNER)
+  if (size46) out.push(text(LEFT, 1790, size46, o.address, { weight: 600 }))
+  else {
+    let cut = 0
+    for (let i = 1; i < o.address.length; i++) if (o.address[i - 1] === '/' && textWidth(o.address.slice(0, i), 38) <= INNER) cut = i
+    const lines = cut ? [o.address.slice(0, cut), o.address.slice(cut)] : [o.address]
+    lines.forEach((line, i) => out.push(text(LEFT, 1778 + i * 46, 38, fit(line, 38, INNER), { weight: 600 })))
+  }
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${STORY_CARD_SIZE.width}" height="${STORY_CARD_SIZE.height}" viewBox="0 0 ${STORY_CARD_SIZE.width} ${STORY_CARD_SIZE.height}" role="img"><title>${esc(o.alt)}</title>${out.join('')}</svg>`
 }

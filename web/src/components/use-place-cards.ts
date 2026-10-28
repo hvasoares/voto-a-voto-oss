@@ -34,5 +34,5 @@ export function usePlaceCards(base: string) {
     [refs, shards],
   )
   const failed = refs.some((r) => shards[keyOf(r)] === 'failed')
-  return { refs, setRefs, cards, failed }
+  return { refs, setRefs, cards, failed, shards }
 }

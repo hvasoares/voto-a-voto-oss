@@ -29,7 +29,9 @@ export interface StorySequenceProps {
   /** Counters of the screen that uses it (#97's story_opened, card_reached, card_shared). */
   onOpened?: () => void
   onReached?: (n: number) => void
-  onShared?: () => void
+  onShared?: (n: number) => void
+  /** Escape closes the sequence (the screen that opened it decides where it goes back to); without it Escape does nothing. */
+  onClose?: () => void
 }
 
 const fill = (tpl: string, params: Record<string, string | number>) => tpl.replace(/\{(\w+)\}/g, (whole, k: string) => (k in params ? String(params[k]) : whole))
@@ -39,7 +41,7 @@ const fromHash = (max: number) => {
   return Number.isInteger(n) && n >= 1 && n <= max ? n : 1
 }
 
-export default function StorySequence({ cards, words, onOpened, onReached, onShared }: StorySequenceProps) {
+export default function StorySequence({ cards, words, onOpened, onReached, onShared, onClose }: StorySequenceProps) {
   const [enhanced, setEnhanced] = useState(false)
   const [current, setCurrent] = useState(1)
   const [ready, setReady] = useState(false)
@@ -66,18 +68,22 @@ export default function StorySequence({ cards, words, onOpened, onReached, onSha
     [last],
   )
 
-  // Hydrated: the list becomes the row, at the card the address names.
+  // Hydrated: the list becomes the row, and (once the row's layout is committed, never before) it is put at the card the address names.
   useEffect(() => {
     setEnhanced(true)
+    setCurrent(fromHash(last))
+  }, [last])
+  useEffect(() => {
+    if (!enhanced) return
     const n = fromHash(last)
-    setCurrent(n)
+    // The browser jumped the page to the card's anchor before this ran; the card is in the row, so the page goes back to its top.
+    window.scrollTo({ top: 0 })
+    centre(n, 'auto')
     requestAnimationFrame(() => {
-      // The browser jumped the page to the card's anchor before this ran; the card is in the row, so the page goes back to its top.
-      window.scrollTo({ top: 0 })
       centre(n, 'auto')
       setReady(true)
     })
-  }, [last])
+  }, [enhanced, last])
 
   // The card on show is in the address; a counter hears it when it is reached.
   const reached = useRef(0)
@@ -109,6 +115,7 @@ export default function StorySequence({ cards, words, onOpened, onReached, onSha
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape' && onClose) return onClose()
     const to = e.key === 'ArrowRight' ? current + 1 : e.key === 'ArrowLeft' ? current - 1 : e.key === 'Home' ? 1 : e.key === 'End' ? last : undefined
     if (to === undefined) return
     e.preventDefault()
@@ -136,7 +143,7 @@ export default function StorySequence({ cards, words, onOpened, onReached, onSha
             ))}
           </div>
           <p className="story__now" aria-live="polite" data-caption>{shown.caption}</p>
-          <ShareActions text={shown.text} svg={shown.svg} filename={shown.filename} link={shown.link} primaryLabel={words.share} textHidden onOpened={onOpened} onShared={onShared} />
+          <ShareActions text={shown.text} svg={shown.svg} filename={shown.filename} link={shown.link} primaryLabel={words.share} textHidden onOpened={onOpened} onShared={() => onShared?.(current)} />
           <p className="story__note">{fill(words.linkNote, { address: shown.address })}</p>
         </>
       ) : (
