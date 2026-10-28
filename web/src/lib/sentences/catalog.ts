@@ -358,6 +358,37 @@ export const KEYS = [
   'duel.reply',
   'duel.reply.note',
   'duel.reply.done',
+  /** The stay-at-home map (#32): the sentences live in `catalog-stayhome.ts`, loaded only by that map's own modules. */
+  'stayhome.title',
+  'stayhome.tab',
+  'stayhome.sub',
+  'stayhome.turno.1',
+  'stayhome.turno.2',
+  'stayhome.views.label',
+  'stayhome.view',
+  'stayhome.legend',
+  'stayhome.legend.scale',
+  'stayhome.legend.size',
+  'stayhome.legend.map',
+  'stayhome.selected',
+  'stayhome.selected.line1',
+  'stayhome.selected.line2',
+  'stayhome.open',
+  'stayhome.table',
+  'stayhome.table.uf',
+  'stayhome.table.aptos',
+  'stayhome.table.share',
+  'stayhome.claim',
+  'stayhome.claim.limits',
+  'stayhome.noData',
+  'stayhome.alt',
+  'stayhome.alt.part',
+  'stayhome.share',
+  'stayhome.share.text',
+  'stayhome.card.base',
+  'stayhome.card.legend',
+  'stayhome.failed',
+  'stayhome.nojs',
 ] as const
 
 export type Key = (typeof KEYS)[number]
@@ -370,7 +401,7 @@ export const STANDARD_ONLY_KEYS = ['card.example', 'card.president', 'card.round
 type StandardOnly = (typeof STANDARD_ONLY_KEYS)[number]
 
 /** The fact and seal sentences live in `catalog-facts.ts` (only the build and the fact pages load them; the browser's share code does not carry them). */
-type FactKey = `fact.${string}` | `seal.${string}` | `duel.${string}`
+type FactKey = `fact.${string}` | `seal.${string}` | `duel.${string}` | `stayhome.${string}`
 const ptBR: Record<Exclude<Key, FactKey>, string> = {
   noData: 'Sem dados nesse ciclo.',
   'headline.note': 'Frase gerada dos números · também o texto alternativo',

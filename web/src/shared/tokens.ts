@@ -28,6 +28,13 @@ export const colors = {
   'div-neg-1': '#99c1f4',
   'div-neg-2': '#4087de',
   'div-neg-3': '#0052ab',
+  'seq-1': '#eef3f1', // one-direction teal scale of "Ficaram em casa" (#32), lightest to darkest
+  'seq-2': '#cfe0e0',
+  'seq-3': '#a5c6ca',
+  'seq-4': '#74a5ad',
+  'seq-5': '#38707d',
+  'seq-6': '#24606c',
+  'seq-7': '#14404b',
 } as const
 
 export const fonts = {
