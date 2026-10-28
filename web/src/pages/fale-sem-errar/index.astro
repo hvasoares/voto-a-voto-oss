@@ -26,7 +26,7 @@ const rules = [1, 2, 3, 4, 5, 6]
     <a class="inline-flex min-h-11 items-center text-body font-bold text-primary" href={href('/')}>‹ Início</a>
     <h1 class="mt-1 font-serif text-title font-normal leading-[30px] lg:text-[34px] lg:leading-[40px]">{say('guide.title')}</h1>
     <p class="mt-1 text-body leading-[19px] text-muted-foreground">{say('guide.sub')}</p>
-    <CreatorGuide client:load base={base} origin={siteOrigin()} edition={label} />
+    <CreatorGuide client:load base={base} origin={siteOrigin()} edition={label}>
 
     <section class="mt-4 border-t border-border pt-3" aria-labelledby="nao-diga" data-never>
       <h2 id="nao-diga" class="font-serif text-section font-normal leading-[30px]">{say('guide.never.title')}</h2>
@@ -49,6 +49,7 @@ const rules = [1, 2, 3, 4, 5, 6]
         {rules.map((n) => <li>{say(`guide.rules.${n}`)}</li>)}
       </ul>
     </section>
+    </CreatorGuide>
 
     <p class="mt-3 text-small leading-[17px] text-muted-foreground">{say('guide.cite.note')}</p>
     <p class="mt-3 text-small leading-[17px] text-muted-foreground" data-noads>{say('guide.noads')}</p>

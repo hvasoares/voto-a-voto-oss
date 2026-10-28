@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useCityShards } from '@/components/use-city-shards'
 import PlacePicker, { type PickedPlace } from '@/components/PlacePicker'
 import { creatorPhrases } from '@/lib/creator-phrases'
@@ -19,11 +19,13 @@ export interface CreatorGuideProps {
   origin: string
   /** `26/10/2026`: the current edition's label. */
   edition: string
+  /** The static sections between the phrases and the citation (the "Não diga" list and the rules), as the frame orders them. */
+  children?: ReactNode
 }
 
 const say = (key: string, params: Record<string, string | number> = {}) => message(DEFAULT_VOICE, key as MessageKey, params)
 
-export default function CreatorGuide({ base, origin, edition }: CreatorGuideProps) {
+export default function CreatorGuide({ base, origin, edition, children }: CreatorGuideProps) {
   const [place, setPlace] = useState<PickedPlace>()
   const [register, setRegister] = useState<Register>('standard')
   const [status, setStatus] = useState('')
@@ -62,7 +64,7 @@ export default function CreatorGuide({ base, origin, edition }: CreatorGuideProp
       <div className="mt-4 flex items-center justify-between gap-3">
         <h2 className="font-serif text-section font-normal leading-[30px]">{say('guide.can.title')}</h2>
         <button type="button" role="switch" aria-checked={register === 'plain'} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-[var(--c-paper-2)] px-3 text-small" onClick={() => setRegister(register === 'plain' ? 'standard' : 'plain')} data-register-toggle>
-          <span aria-hidden="true" className={`size-4 rounded-full ${register === 'plain' ? 'bg-primary' : 'bg-muted'}`} />
+          <span aria-hidden="true" className={`size-4 rounded-full ${register === 'plain' ? 'bg-primary' : 'bg-[#a8a090]'}`} />
           {say('guide.plain.toggle')}
         </button>
       </div>
@@ -87,6 +89,7 @@ export default function CreatorGuide({ base, origin, edition }: CreatorGuideProp
         ))}
       </ul>
       <p className="min-h-6 text-small leading-[17px] text-muted-foreground" role="status" aria-live="polite" data-status>{status}</p>
+      {children}
       <h2 className="mt-4 border-t border-border pt-3 font-serif text-section font-normal leading-[30px]">{say('guide.cite.title')}</h2>
       <div className="mt-2 flex items-center justify-between gap-3 rounded-md border border-border bg-[var(--c-paper-2)] p-3">
         <p className="font-mono text-small leading-[17px] wrap-anywhere" data-citation>{citation}</p>
