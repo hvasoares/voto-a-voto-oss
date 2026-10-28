@@ -25,14 +25,21 @@ getAnalytics().pageView(location.pathname, document.title)
 
 /* ── The banner ────────────────────────────────────────────────────────────────────────────────── */
 
+// The shell is the banner's parent (Base.astro's min-h-screen column). While the banner is up it is shorter by the banner's height, so a SHORT page keeps its
+// footer above the banner without scrolling, and the body padding adds the room a LONG page needs at its end. Both are given back when the banner goes.
 const pad = () => {
-  if (banner) document.body.style.paddingBottom = `${banner.offsetHeight}px`
+  if (!banner) return
+  const room = banner.offsetHeight
+  document.body.style.paddingBottom = `${room}px`
+  if (banner.parentElement) banner.parentElement.style.minHeight = `calc(100vh - ${room}px)`
 }
 const unpad = () => {
-  if (banner) document.body.style.paddingBottom = ''
+  if (!banner) return
+  document.body.style.paddingBottom = ''
+  if (banner.parentElement) banner.parentElement.style.minHeight = ''
 }
-// The banner is a fixed bottom bar: it would sit over the page's own footer while open, so the body
-// gains matching bottom padding while the banner is up — the page stays scrollable and clickable.
+// The banner is a fixed bottom bar: it would sit over the page's own footer while open, so the page
+// makes matching room while the banner is up: it stays scrollable and clickable.
 const fit = () => {
   if (banner && !banner.hidden) pad()
 }
