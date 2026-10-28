@@ -41,11 +41,11 @@ test('capture mapa-rj / mapa (map view, mesh fetched on demand)', async ({ page 
   await record(page, 'mapa', url)
 })
 
-test('capture mapa-rj / selecionado (panel after tapping Campos dos Goytacazes)', async ({ page }) => {
-  const url = `${base}mapa/rj/`
+test('capture mapa-rj / selecionado (map view, panel after tapping the Campos dos Goytacazes shape)', async ({ page }) => {
+  const url = `${base}mapa/rj/?vista=mapa`
   await page.goto(url)
   await page.evaluate(() => document.fonts.ready)
-  await page.locator('a[data-cd-ibge="3301009"]').click()
+  await page.locator('[data-slot="mapa-municipios"] a[data-cd-ibge="3301009"]').dispatchEvent('click')
   await expect(page.locator('[data-slot="mapa-selecionado"]')).toContainText('Campos dos Goytacazes')
   await page.evaluate(() => document.querySelector('[data-slot="mapa-selecionado"]')!.scrollIntoView({ block: 'start' }))
   const file = resolve(dir, 'selecionado.png')

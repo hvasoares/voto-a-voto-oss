@@ -3,8 +3,9 @@
  * The pattern is `StateMapMap` (ticket #11), applied to one state's municipalities:
  *
  * - The pre-rendered markup is always the LIST view: one plain link per municipality (name, signed
- *   margin, colour chip), ordered by round-2 valid votes, plus legend, the selected-municipality
- *   panel and the notes. Everything works without JavaScript.
+ *   margin, colour chip), ordered by round-2 valid votes, plus legend and the notes. Everything
+ *   works without JavaScript. A tap on a row simply follows its link to the City card (#83): the
+ *   list is where the state page's search filters (see `scripts/state-search.ts`), not a selector.
  * - Hydrated, the "Mapa" view fetches the state's committed mesh file (`geoUrl`, a GET to the
  *   site's own origin, only when a visitor asks for the map), joins every shape to the dataset by
  *   the 7-digit IBGE code, and draws an SVG choropleth with pan and zoom; a tap SELECTS the
@@ -18,7 +19,7 @@
  * Analytics (ticket #20 surface, noop today): `map_view {view}` when the view changes,
  * `map_municipio_tap {cd}` when a hydrated tap selects a municipality.
  */
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement } from 'react'
 import { formatInt } from '@/shared/city-model'
 import { displayName } from '@/shared/city-search'
 import { getAnalytics } from '@/analytics'
@@ -166,11 +167,6 @@ export default function CityMapMap({ data, base, geoUrl, ufNome, semContorno }: 
     if (cd !== selected) setSelected(cd)
     analytics.event('map_municipio_tap', { cd })
   }
-  const stop = (cd: string) => (e: MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault()
-    tapCd(cd)
-  }
-
   const setVista_ = (v: Vista) => {
     if (v !== vista) analytics.event('map_view', { view: v })
     setVista(v)
@@ -179,6 +175,17 @@ export default function CityMapMap({ data, base, geoUrl, ufNome, semContorno }: 
     else url.searchParams.delete('vista')
     window.history.replaceState(null, '', url)
   }
+
+  // The state page's search box sits above the island (outside React). Typing there while the map is
+  // showing brings the list back: the filter only exists on the list, so the visitor sees the result of the typing.
+  useEffect(() => {
+    if (vista !== 'mapa') return
+    const input = document.querySelector('[data-state-search] input')
+    const back = () => setVista_('lista')
+    input?.addEventListener('input', back)
+    return () => input?.removeEventListener('input', back)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vista])
 
   // The mesh loads only when a visitor opens the map view (and once; an error keeps the list and shows a note).
   useEffect(() => {
@@ -221,7 +228,7 @@ export default function CityMapMap({ data, base, geoUrl, ufNome, semContorno }: 
           <a
             key={v}
             aria-current={vista === v ? 'true' : undefined}
-            className={'grid min-h-11 place-items-center rounded-md px-3 text-[13px]' + (vista === v ? ' bg-primary font-bold text-primary-foreground' : ' cursor-pointer text-muted-foreground')}
+            className={'grid min-h-11 place-items-center rounded-md px-3 text-step-1' + (vista === v ? ' bg-primary font-bold text-primary-foreground' : ' cursor-pointer text-muted-foreground')}
             href={v === 'mapa' ? '?vista=mapa' : '?'}
             onClick={(e) => {
               e.preventDefault()
@@ -233,14 +240,15 @@ export default function CityMapMap({ data, base, geoUrl, ufNome, semContorno }: 
         ))}
       </div>
 
-      {vista === 'lista' ? <Lista rows={rows} base={base} uf={uf} selected={selected} stop={stop} ladoANome={ladoANome} ladoBNome={ladoBNome} /> : null}
+      {vista === 'lista' ? <Lista rows={rows} base={base} uf={uf} ladoANome={ladoANome} ladoBNome={ladoBNome} /> : null}
 
       {vista === 'mapa' ? (
         <MapView mesh={mesh} meshError={meshError} byIbge={byIbge} tapCd={tapCd} cityHref={cityHref} selected={selected} ladoANome={ladoANome} ladoBNome={ladoBNome} ufNome={ufNome} />
       ) : null}
 
-      <Escala rows={rows} shapes={vista === 'mapa' && mesh ? meshShapes(mesh) : null} semContorno={semContorno} ladoANome={ladoANome} ladoBNome={ladoBNome} />
-      <Selecionado row={byCd.get(selected) ?? null} cityHref={cityHref} ladoANome={ladoANome} ladoBNome={ladoBNome} ladoACompleto={ladoANomeCompleto} ladoBCompleto={ladoBNomeCompleto} ano={ano} />
+      <Escala vista={vista} rows={rows} shapes={vista === 'mapa' && mesh ? meshShapes(mesh) : null} semContorno={semContorno} ladoANome={ladoANome} ladoBNome={ladoBNome} />
+      {/* The panel belongs to the map: there a tap selects. In the list a tap opens the City card, so no selection to show. */}
+      {vista === 'mapa' ? <Selecionado row={byCd.get(selected) ?? null} cityHref={cityHref} ladoANome={ladoANome} ladoBNome={ladoBNome} ladoACompleto={ladoANomeCompleto} ladoBCompleto={ladoBNomeCompleto} ano={ano} /> : null}
     </section>
   )
 }
@@ -256,9 +264,17 @@ function binOf(row: CityMarginRow | undefined): DivBin | null {
   return marginBin(row.margin2)
 }
 
-/** The pre-rendered (and no-JS) view: one row per municipality, colour chip + name + signed pp. */
-function Lista({ rows, base, uf, selected, stop, ladoANome, ladoBNome }: { rows: CityMarginRow[]; base: string; uf: string; selected: string; stop: (cd: string) => (e: MouseEvent<HTMLAnchorElement>) => void; ladoANome: string; ladoBNome: string }): ReactElement {
+/**
+ * The pre-rendered (and no-JS) view, and the ONE list of the state page: one row per municipality, colour chip + name + signed pp
+ * + valid votes. Every row is a plain link to the City card (no click handler: hydrated or not, a tap navigates). The state
+ * page's search filters these very rows by toggling `hidden` on them (React never sets that attribute, so hydration and re-renders
+ * leave it alone); a fresh mount of the list (back from the map view) announces itself so the filter is applied before paint.
+ */
+function Lista({ rows, base, uf, ladoANome, ladoBNome }: { rows: CityMarginRow[]; base: string; uf: string; ladoANome: string; ladoBNome: string }): ReactElement {
   const sorted = useMemo(() => [...rows].sort((a, b) => b.validos2 - a.validos2 || a.nome.localeCompare(b.nome, 'pt')), [rows])
+  useLayoutEffect(() => {
+    document.dispatchEvent(new Event('city-list:mounted'))
+  }, [])
   if (rows.length === 0) return <p className="mt-2 text-body leading-[18px]">Nenhum município deste estado no dataset.</p>
   const baseTrunk = base.replace(/\/$/, '')
   return (
@@ -268,28 +284,21 @@ function Lista({ rows, base, uf, selected, stop, ladoANome, ladoBNome }: { rows:
         return (
           <a
             key={row.cdMunicipio}
-            className={
-              'flex min-h-11 items-center gap-2 border-t border-border px-1 text-left' +
-              (selected === row.cdMunicipio ? ' bg-secondary font-bold' : '') +
-              ' focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary'
-            }
+            className="flex min-h-11 items-center gap-2 border-t border-border px-1 text-left text-foreground [content-visibility:auto] [contain-intrinsic-size:auto_45px] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary"
             data-cd={row.cdMunicipio}
             data-cd-ibge={row.cdIbge}
             href={`${baseTrunk}/${uf}/${row.slug}/`}
-            onClick={stop(row.cdMunicipio)}
-            aria-label={`${displayName(row.nome)}: ${valueText(row, ladoANome, ladoBNome)}; ${fmtInt(row.validos2)} votos válidos`}
           >
-            <span
-              aria-hidden="true"
-              className="w-4 shrink-0 self-center rounded-sm border border-border"
-              style={{ background: bin ? BIN_COLOR[bin] : 'var(--muted)', height: 18 }}
-            />
-            <span className="min-w-0 flex-1 truncate text-body leading-[18px]">{displayName(row.nome)}</span>
-            <span className="text-[13px] leading-[18px]" aria-hidden="true">
+            <span aria-hidden="true" className="w-4 shrink-0 self-center rounded-sm border border-border" style={{ background: bin ? BIN_COLOR[bin] : 'var(--muted)', height: 18 }} />
+            <span className="min-w-0 flex-1 truncate text-step-2">{displayName(row.nome)}</span>
+            {/* The row's name is its own text (label in name): the figures are visible, and the words that say who is ahead are read, not seen. */}
+            <span className="text-step-1">
               {row.margin2 === null ? 'sem dados' : `${fmt(row.margin2)} pp`}
+              <span className="sr-only">{row.margin2 === null ? ' do 2º turno' : `, ${row.margin2 < 0 ? ladoBNome : ladoANome} à frente`}</span>
             </span>
-            <span className="text-[11px] leading-[18px] text-muted-foreground" aria-hidden="true">
+            <span className="text-step-1 text-muted-foreground">
               {fmtInt(row.validos2)}
+              <span className="sr-only"> votos válidos</span>
             </span>
           </a>
         )
@@ -504,7 +513,7 @@ function MapView({
 }
 
 /** Legend: the same margin scale and numeric edges as ticket #11, plus the without-fill counts. */
-function Escala({ rows, shapes, semContorno, ladoANome, ladoBNome }: { rows: CityMarginRow[]; shapes: { codarea: string }[] | null; semContorno: number; ladoANome: string; ladoBNome: string }): ReactElement {
+function Escala({ vista, rows, shapes, semContorno, ladoANome, ladoBNome }: { vista: Vista; rows: CityMarginRow[]; shapes: { codarea: string }[] | null; semContorno: number; ladoANome: string; ladoBNome: string }): ReactElement {
   const semDados = rows.filter((r) => r.margin2 === null)
   // Dataset municipalities the committed mesh does not carry (ticket #17: e.g. a municipality the
   // IBGE created after the mesh's year): the row stays in the list; the map simply has no shape.
@@ -538,13 +547,15 @@ function Escala({ rows, shapes, semContorno, ladoANome, ladoBNome }: { rows: Cit
           Sem contorno: {semContornoCount} {semContornoCount === 1 ? 'município não tem' : 'municípios não têm'} fronteira no arquivo do IBGE (o município é mais novo que a malha) e só aparece na lista.
         </p>
       )}
-      <p className="mt-1 text-small leading-[14px] text-muted-foreground">Toque num município para ver os totais; a lista também repete os valores.</p>
+      <p className="mt-1 text-small leading-[14px] text-muted-foreground">
+        {vista === 'mapa' ? 'Toque num município para ver os totais; a lista também repete os valores.' : 'Toque numa cidade da lista para abrir a carta dela; o mapa mostra os mesmos valores.'}
+      </p>
       {shapes && <span className="sr-only">{shapes.length} municípios no arquivo de fronteiras.</span>}
     </figure>
   )
 }
 
-/** The selected municipality (frame 5's big value), pre-rendered for the default selection. */
+/** The selected municipality (frame 5's big value), shown with the map view, where a tap selects. */
 function Selecionado({
   row,
   cityHref,

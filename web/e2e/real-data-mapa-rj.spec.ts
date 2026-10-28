@@ -28,14 +28,16 @@ test.describe('mapa/rj on the real dataset', () => {
     // Campos dos Goytacazes: -15,8pp; Belford Roxo -12,3pp in the runoff (swing +8,6, pinned in vitest)
     await expect(page.locator('a[data-cd-ibge="3301009"]')).toContainText('-15,8')
     await expect(page.locator('a[data-cd-ibge="3300456"]')).toContainText('-12,3')
-    // Barra do Piraí flips: -5,1 -> +4,2 in the panel of the tapped row
-    await page.locator('a[data-cd-ibge="3300308"]').click()
+    // Barra do Piraí flips: -5,1 -> +4,2 in the panel of the tapped shape (a tap on a list row opens the City card, #83)
+    await page.goto(`${base}mapa/rj/?vista=mapa`)
+    await expect(page.locator('[data-slot="mapa-municipios"] a[data-cd-ibge]')).toHaveCount(92, { timeout: 15_000 })
+    await page.locator('[data-slot="mapa-municipios"] a[data-cd-ibge="3300308"]').dispatchEvent('click')
     const panel = page.locator('[data-slot="mapa-selecionado"]')
     await expect(panel).toContainText(/Margem \(Lula − Flávio Bolsonaro\): \+4,2 pp\. Na eleição anterior: -5,1 pp\. Variação: \+9,3 pp\./)
   })
 
-  test('the default selection is Rio de Janeiro with the note figures in the panel', async ({ page }) => {
-    await page.goto(`${base}mapa/rj/`)
+  test('the default selection is Rio de Janeiro with the note figures in the panel (map view)', async ({ page }) => {
+    await page.goto(`${base}mapa/rj/?vista=mapa`)
     const panel = page.locator('[data-slot="mapa-selecionado"]')
     await expect(panel).toContainText('Rio de Janeiro · selecionado')
     await expect(panel).toContainText('Votos válidos (2º turno): 3.683.589')
@@ -67,9 +69,7 @@ test.describe('mapa/rj on the real dataset', () => {
     await page.waitForLoadState('networkidle')
     const geoOnLoad = seen.filter((r) => new URL(r.url).pathname.includes('/geo/'))
     expect(geoOnLoad).toEqual([]) // nothing before the map view
-    // hydrate with a row tap first (client:interaction); the toggle then switches in-page
-    await page.locator('a[data-cd-ibge="3300308"]').click()
-    await expect(page.locator('[data-slot="mapa-selecionado"]')).toContainText('Barra do Piraí')
+    // the toggle tap hydrates the island (client:interaction) and is kept through the hydration
     await page.getByRole('link', { name: 'Mapa', exact: true }).click()
     await expect(page.locator('[data-slot="mapa-municipios"] a[data-cd-ibge]')).toHaveCount(92, { timeout: 15_000 })
     await page.waitForLoadState('networkidle')

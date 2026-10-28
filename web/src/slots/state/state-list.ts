@@ -1,6 +1,5 @@
-/** Pure logic of the state page: what rows to list. No DOM, no I/O. */
+/** Pure logic of the state page: the alphabetical rows (the page's count, the story and fact data). No DOM, no I/O. */
 import { displayName, fold } from '../../shared/city-search'
-import { html } from '../../shared/html'
 
 export interface StateRow {
   slug: string
@@ -17,8 +16,3 @@ export function stateRows(cities: readonly { nome: string; slug: string }[]): St
 }
 
 export const countLabel = (n: number): string => `${n} ${n === 1 ? 'município' : 'municípios'}`
-
-/** Row markup shared by the pre-rendered list and the search results. Kept tiny: SP has 645 rows. The chevron is CSS. */
-export function rowMarkup(href: string, nome: string, sub: string) {
-  return html`<li><a class="state-row" href="${href}"><span>${nome}</span><small>${sub}</small></a></li>`
-}

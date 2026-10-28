@@ -51,18 +51,35 @@ describe('map-pending page script', () => {
     expect(document.querySelector('astro-island')?.hasAttribute('data-pending-uf')).toBe(false)
   })
 
-  it('keeps the tapped municipality (data-cd) too, on a separate attribute', async () => {
+  it('keeps a tapped map shape (data-cd inside an svg) on its own attribute', async () => {
     document.body.innerHTML = `
       <astro-island data-slot="city-map">
-        <a data-cd="58001" href="/s/rj/cidade/">Cidade</a>
+        <svg><a data-cd="58001" href="/s/rj/cidade/"><path d="M0 0"/></a></svg>
       </astro-island>
     `
     await import('./map-pending')
-    const tile = document.querySelector('a[data-cd]') as HTMLElement
-    pointerdown(tile)
-    click(tile)
+    const shape = document.querySelector('a[data-cd]') as unknown as HTMLElement
+    pointerdown(shape)
+    click(shape)
     const island = document.querySelector('astro-island') as HTMLElement
     expect(island.getAttribute('data-pending-cd')).toBe('58001')
+    expect(island.hasAttribute('data-pending-uf')).toBe(false)
+  })
+
+  it('leaves a tap on a list row alone: the link navigates, hydrated or not (#83)', async () => {
+    document.body.innerHTML = `
+      <astro-island data-slot="city-map" ssr>
+        <section data-uf="rj"><nav><a data-cd="58001" href="/s/rj/cidade/">Cidade</a></nav></section>
+      </astro-island>
+    `
+    await import('./map-pending')
+    const row = document.querySelector('a[data-cd]') as HTMLElement
+    pointerdown(row)
+    const ev = new MouseEvent('click', { bubbles: true, cancelable: true })
+    Object.defineProperty(ev, 'target', { value: row })
+    expect(document.dispatchEvent(ev)).toBe(true)
+    const island = document.querySelector('astro-island') as HTMLElement
+    expect(island.hasAttribute('data-pending-cd')).toBe(false)
     expect(island.hasAttribute('data-pending-uf')).toBe(false)
   })
 })

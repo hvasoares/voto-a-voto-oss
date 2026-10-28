@@ -1,11 +1,11 @@
 ---
 /**
  * State page (the approved Sketch frame "5 Estado", ported from site/src/slots/state/slot.ts by #50).
- * Pre-rendered one page per state, straight from the shards — same markup contract as the vanilla app
- * (`[data-state-list] a.state-row`, `[data-state-results]`, the map area for #16/#17); the search script
- * reads the rows already in the page and makes no request.
+ * Pre-rendered one page per state, straight from the shards. The search box comes first and filters the ONE list of
+ * municipalities below it (#83): the coloured rows of the municipality island's Lista view, pre-rendered and linkable
+ * without JavaScript; the search script reads those rows from the page and makes no request.
  */
-import { countLabel, rowMarkup, stateRows } from '@/slots/state/state-list'
+import { countLabel, stateRows } from '@/slots/state/state-list'
 import { normalizeBase, withBase } from '@/paths'
 import PageDataDownload from '@/components/PageDataDownload.astro'
 import { cityDataPath, stateDataPath } from '@/lib/api'
@@ -36,7 +36,6 @@ const label = uf!.toUpperCase()
 const fixture = await datasetFixture()
 const pageTitle = `Estado selecionado: ${label}`
 const banner = fixture ? 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS' : undefined
-const sub = `${fixture ? 'Município fictício' : 'Município'} · ${label}`
 const rows = stateRows(state.cities)
 // Fact record (#62): the number of municipalities has its record (from cities.csv) and the seal.
 const facts = await getFactPage(`estado/${uf}`, 'municipios')
@@ -66,6 +65,14 @@ const showMap = cityMap.rows.length > 0
       <h1 class="page__title">{pageTitle}</h1>
       <p class="page__subtitle">{countLabel(rows.length)}</p>
       <Fragment set:html={calcLink(links('municipios'))} />
+      {showMap && (
+        <div class="state-search" data-state-search data-uf={uf}>
+          <input class="state-search__input" type="search" name="q" placeholder={`Busque sua cidade em ${label}`} aria-label={`Busque sua cidade em ${label}`} autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" />
+        </div>
+      )}
+      <noscript><p class="state-note">A busca precisa de JavaScript. A lista abaixo mostra todas as cidades.</p></noscript>
+      <p class="state-note" data-state-results aria-live="polite" hidden></p>
+      {/* The ONE list of the state (#83): the island's coloured rows, below the search that filters them. Without JavaScript it is the full list of plain links. */}
       <div class:list={['state-map', showMap && 'state-map--island']} data-placeholder="state-map" data-ticket="16 17" data-uf={uf} data-map-area>
         {showMap ? (
           <CityMapMap client:slot base={base} data={cityMap} geoUrl={href(`/geo/municipios-${uf}.json`)} ufNome={UF_NOME[uf!] ?? label} semContorno={semContornoOf(uf!, cityMap.rows)} />
@@ -73,14 +80,6 @@ const showMap = cityMap.rows.length > 0
           <span>Espaço do mapa de municípios</span>
         )}
       </div>
-      <div class="state-search" data-state-search data-uf={uf}>
-        <input class="state-search__input" type="search" name="q" placeholder={`Busque sua cidade em ${label}`} aria-label={`Busque sua cidade em ${label}`} autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" />
-      </div>
-      <noscript><p class="state-note">A busca precisa de JavaScript. Use a lista abaixo.</p></noscript>
-      <div class="state-results" data-state-results aria-live="polite" hidden></div>
-      <ul class="state-list" data-state-list aria-label="Municípios">
-        {rows.map((r) => <Fragment set:html={rowMarkup(href(`/${uf}/${r.slug}/`), r.nome, sub)} />)}
-      </ul>
       <nav class="state-links" aria-label="Mais sobre o estado">
         <a data-link="map" href={href('/mapa/')}>Ver mapa por estado ›</a>
         <a data-link="map-municipio" href={href(`/mapa/${uf}/`)}>Ver mapa por município ›</a>

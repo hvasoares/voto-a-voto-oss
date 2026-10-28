@@ -17,11 +17,12 @@ interface Target {
   hitH: number
 }
 
-async function hitAreas(page: Page): Promise<Target[]> {
-  return page.evaluate((min) => {
+async function hitAreas(page: Page, scope = 'body'): Promise<Target[]> {
+  return page.evaluate(({ min, scope }) => {
     const sel = 'a[href], button, input:not([type=hidden]), select, textarea, summary, [role=button], [role=combobox], [role=link]'
     const out: { what: string; hitW: number; hitH: number }[] = []
     for (const el of document.querySelectorAll<HTMLElement>(sel)) {
+      if (!el.closest(scope)) continue
       if (el.closest('.sr-only, [hidden], [aria-hidden="true"], svg, noscript')) continue
       const cs = getComputedStyle(el)
       if (cs.display === 'none' || cs.visibility === 'hidden' || el.closest('[inert]')) continue
@@ -46,7 +47,7 @@ async function hitAreas(page: Page): Promise<Target[]> {
       }
     }
     return out
-  }, MIN)
+  }, { min: MIN, scope })
 }
 
 /** Interactive elements whose hit area is under 44 in height (every kind) or in width (blocks: a word of text is always wide enough). */
@@ -114,6 +115,21 @@ test.describe('tap targets (390x844)', () => {
       expect(small(await hitAreas(page))).toEqual([])
     })
   }
+
+  test('Estado (#83): the search box, the Lista | Mapa toggle, every city row and the links have a 44 px hit height', async ({ page }) => {
+    await page.goto(`${base}rj/`)
+    await waitReady(page)
+    await page.locator('[data-consent-continue]').click()
+    // this ticket's own area: the search box and the island (toggle + rows); the page's header, "ver cálculo" and footer lines belong to other tickets
+    const scope = '[data-state-search], [data-map-area], .state-links'
+    const found = await hitAreas(page, scope)
+    expect(found.filter((t) => /Lista|Mapa|Cidade Exemplo|Busque/.test(t.what)).length).toBeGreaterThanOrEqual(8)
+    expect(small(found)).toEqual([])
+    // and after typing: the filtered row and the search box keep it
+    await page.getByRole('searchbox').fill('exemplo b')
+    await expect(page.locator('[data-state-search]')).toHaveAttribute('data-filtered', '1')
+    expect(small(await hitAreas(page, scope))).toEqual([])
+  })
 
   test('axe, target-size included: no violations on the Home with the notice open and on the hydrated map view', async ({ page }) => {
     for (const path of ['', 'mapa/?vista=mapa']) {

@@ -11,9 +11,19 @@ export {}
 
 const KEYS: (keyof HTMLElement['dataset'])[] = ['pendingUf', 'pendingCd']
 
+/**
+ * A row of the municipality LIST is a plain link to the City card (#83): a tap there is never kept or swallowed, hydrated or
+ * not. Only the map shapes (SVG anchors, which exist after hydration) and the state tiles keep the select-first behaviour.
+ */
+const isListRow = (e: Event): boolean => {
+  const row = (e.target as Element | null)?.closest('a[data-cd]')
+  return !!row && !row.closest('svg')
+}
+
 document.addEventListener(
   'pointerdown',
   (e) => {
+    if (isListRow(e)) return
     const island = islandOf(e)
     if (!island) return
     const first = KEYS.every((k) => island.dataset[k] === undefined)
@@ -35,6 +45,7 @@ document.addEventListener(
       host.dataset.pendingVista = toggle.getAttribute('href')!.includes('vista=mapa') ? 'mapa' : 'lista'
       return
     }
+    if (isListRow(e)) return
     const island = islandOf(e)
     if (!island) return
     e.preventDefault()

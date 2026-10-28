@@ -55,22 +55,6 @@ test('capture state / default', async ({ page }) => {
   )
 })
 
-/* The sketch fixture state (?fixture=sketch) draws the frame's own illustrative figures, for the comparison with web/reference/05-estado.png. */
-test('capture state / sketch', async ({ page }) => {
-  await page.goto(`${base}rj/?fixture=sketch`)
-  await page.evaluate(() => document.fonts.ready)
-  await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
-  await page.evaluate(() => window.scrollTo(0, 0))
-  const dir = resolve('.captures', 'state')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'sketch.png')
-  await page.screenshot({ path: file, animations: 'disabled' })
-  writeFileSync(
-    resolve(dir, 'sketch.json'),
-    JSON.stringify({ slot: 'state', state: 'sketch', route: `${base}rj/?fixture=sketch`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'web/reference/05-estado.png', capture: file }, null, 2) + '\n',
-  )
-})
-
 /* City card (#50, the ported Sketch frame "2 Cartão da cidade"; ?turno=1 is the frame's round), next to web/reference/02-cartao-da-cidade.png. */
 test('capture city / card, 1º turno', async ({ page }) => {
   await page.goto(`${base}rj/cidade-exemplo/?turno=1`)

@@ -33,9 +33,8 @@ test.describe('mapa/rj: content', () => {
     await expect(page.getByRole('link', { name: 'Lista' })).toHaveAttribute('aria-current', 'true')
     await expect(page.getByRole('link', { name: 'Mapa', exact: true })).toHaveAttribute('href', '?vista=mapa')
     await expect(page.locator('[data-slot="mapa-escala"]')).toContainText('+30')
-    await expect(page.locator('[data-slot="mapa-selecionado"]')).toContainText('Cidade Exemplo · selecionado')
-    await expect(page.locator('[data-slot="mapa-selecionado"]')).toContainText('Votos válidos (2º turno): 68.434')
-    await expect(page.locator('[data-slot="mapa-selecionado"]')).toContainText(/Na eleição anterior: \+4,0 pp\. Variação: -3,1 pp\./)
+    // the list view has no selection panel (a row is a link to the City card, #83): the panel belongs to the map view
+    await expect(page.locator('[data-slot="mapa-selecionado"]')).toHaveCount(0)
     await expect(page.locator('footer')).toContainText('fronteiras: malhas do IBGE')
     await expect(page.locator('#consent-banner')).toHaveCount(1)
   })
@@ -60,12 +59,22 @@ test.describe('mapa/rj: content', () => {
     expect(sw).toBeLessThanOrEqual(iw)
   })
 
-  test('a hydrated tap selects instead of navigating', async ({ page }) => {
+  test('a tap on a list row opens the City card (#83), hydrated or not', async ({ page }) => {
     await page.goto(`${base}mapa/rj/`)
     await page.locator('a[data-cd="99004"]').click()
-    await expect(page.locator('[data-slot="mapa-selecionado"]')).toContainText('Cidade Exemplo C · selecionado')
-    await expect(page.locator('[data-slot="mapa-selecionado"]')).toContainText('-13,2 pp')
-    expect(new URL(page.url()).pathname).toMatch(/mapa\/rj\/$/)
+    await expect(page).toHaveURL(new RegExp(`${base}rj/cidade-exemplo-c/$`))
+  })
+
+  test('the map view keeps the selection panel: default selection with "Abrir cidade"', async ({ page }) => {
+    await page.goto(`${base}mapa/rj/`)
+    // the toggle tap is the first tap: it hydrates the island and is kept (data-pending-vista), never lost
+    await page.getByRole('link', { name: 'Mapa', exact: true }).click()
+    await expect(page.locator('[data-slot="mapa-municipios"]')).toBeVisible()
+    const panel = page.locator('[data-slot="mapa-selecionado"]')
+    await expect(panel).toContainText('Cidade Exemplo · selecionado')
+    await expect(panel).toContainText('Votos válidos (2º turno): 68.434')
+    await expect(panel).toContainText(/Na eleição anterior: \+4,0 pp\. Variação: -3,1 pp\./)
+    await expect(panel.getByRole('link', { name: 'Abrir cidade' })).toHaveAttribute('href', `${base}rj/cidade-exemplo/`)
   })
 
   test('the map view draws all 92 mesh polygons; the fixture names stay muted with the note', async ({ page }) => {
@@ -94,9 +103,7 @@ test.describe('mapa/rj: content', () => {
     })
     await page.goto(`${base}mapa/rj/`)
     expect(seen).toEqual([])
-    // hydrate with a row tap first (client:interaction); the toggle then switches in-page
-    await page.locator('a[data-cd="99004"]').click()
-    await expect(page.locator('[data-slot="mapa-selecionado"]')).toContainText('Cidade Exemplo C')
+    // the toggle tap hydrates the island (client:interaction) and is kept through the hydration
     await page.getByRole('link', { name: 'Mapa', exact: true }).click()
     await expect(page.locator('[data-slot="mapa-municipios"]')).toBeVisible()
     await page.waitForLoadState('networkidle')

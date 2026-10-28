@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Analytics } from '../../analytics'
-import { createStateSearch, resultsMarkup } from './state-search'
+import { createStateSearch } from './state-search'
 
 const ROWS = [
   { slug: 'abreu-e-lima', nome: 'Abreu e Lima' },
@@ -65,31 +65,5 @@ describe('state search analytics', () => {
       ['state_link_tap', { uf: 'rj', link: 'map' }],
       ['state_link_tap', { uf: 'rj', link: 'cycles' }],
     ])
-  })
-})
-
-describe('resultsMarkup', () => {
-  const href = (slug: string) => `/rj/${slug}/`
-  it('lists hits as links to the city page with the same row look, in rank order', () => {
-    const { search } = setup()
-    const markup = resultsMarkup(search.search('sao'), 'RJ', 'Município · RJ', href)
-    expect([...markup.matchAll(/href="([^"]+)"/g)].map((m) => m[1])).toEqual(['/rj/sao-goncalo/', '/rj/sao-joao-da-barra/'])
-    expect(markup).toContain('class="state-row"')
-    expect(markup).toContain('2 municípios encontrados')
-  })
-
-  it('explains an empty result and names the state', () => {
-    const { search } = setup()
-    expect(resultsMarkup(search.search('qqqqq'), 'RJ', '', href)).toContain('Nenhuma cidade encontrada em RJ.')
-  })
-
-  it('draws nothing for a short query', () => {
-    const { search } = setup()
-    expect(resultsMarkup(search.search('a'), 'RJ', '', href)).toBe('')
-  })
-
-  it('escapes names', () => {
-    const view = { state: 'results' as const, total: 1, hits: [{ uf: 'rj', slug: 'x', nome: '<b>x</b>', ufLabel: 'RJ' }] }
-    expect(resultsMarkup(view, 'RJ', 's', href)).not.toContain('<b>')
   })
 })

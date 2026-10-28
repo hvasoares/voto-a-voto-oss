@@ -1,7 +1,7 @@
 /** Search of the state page: the shared city search, scoped to the rows of ONE state, plus its analytics. */
 import type { Analytics } from '../../analytics'
 import { buildIndex, fold, MIN_QUERY, searchCities, type SearchHit } from '../../shared/city-search'
-import { countLabel, rowMarkup, type StateRow } from './state-list'
+import type { StateRow } from './state-list'
 
 export interface StateSearchView {
   state: 'short' | 'empty' | 'results'
@@ -26,11 +26,4 @@ export function createStateSearch(rows: StateRow[], uf: string, analytics: Analy
     listTap: (position: number) => emit('city_list_tap', { uf, position }),
     linkTap: (link: 'map' | 'cycles' | 'recap') => emit('state_link_tap', { uf, link }),
   }
-}
-
-export function resultsMarkup(view: StateSearchView, label: string, sub: string, href: (slug: string) => string): string {
-  if (view.state === 'short') return ''
-  if (view.state === 'empty') return `<p class="state-note">Nenhuma cidade encontrada em ${label}. Confira a grafia.</p>`
-  const found = `<p class="state-note">${countLabel(view.total)} ${view.total === 1 ? 'encontrado' : 'encontrados'}</p>`
-  return `${found}<ul aria-label="Municípios encontrados">${view.hits.map((h) => rowMarkup(href(h.slug), h.nome, sub).value).join('')}</ul>`
 }

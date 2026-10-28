@@ -103,8 +103,8 @@ describe('CityMapMap island (lista)', () => {
     expect(primeiro.getAttribute('href')).toBe('/s/rj/rio-de-janeiro/')
     expect(primeiro.textContent).toContain('Rio de Janeiro')
     expect(primeiro.textContent).toContain('+50,0 pp')
-    expect(primeiro.getAttribute('aria-label')).toContain('Maria à frente')
-    expect(primeiro.getAttribute('aria-label')).toContain('200 votos válidos')
+    expect(primeiro.textContent).toContain('Maria à frente')
+    expect(primeiro.textContent).toContain('200 votos válidos')
   })
 
   it('a city without a round-2 pairing renders without fill and without a value', () => {
@@ -112,11 +112,17 @@ describe('CityMapMap island (lista)', () => {
     const paraty = screen.getByRole('link', { name: /Paraty/ })
     expect(paraty.textContent).toContain('sem dados')
     expect(paraty.querySelector('span[aria-hidden="true"]')!.getAttribute('style')).toContain('var(--muted)')
-    expect(paraty.getAttribute('aria-label')).toContain('sem dados do 2º turno')
+    expect(paraty.textContent).toContain('sem dados do 2º turno')
   })
 
-  it('selects the city with most round-2 valid votes by default and shows its details', () => {
+  it('the list view has no selection panel: a row is only a link', () => {
     setup()
+    expect(document.querySelector('[data-slot="mapa-selecionado"]')).toBeNull()
+  })
+
+  it('selects the city with most round-2 valid votes by default and shows its details (map view)', async () => {
+    const { user } = setup()
+    await user.click(screen.getByRole('link', { name: 'Mapa' }))
     const panel = document.querySelector('[data-slot="mapa-selecionado"]') as HTMLElement
     expect(panel.textContent).toContain('Rio de Janeiro · selecionado')
     expect(panel.textContent).toContain('+50,0 pp')
@@ -136,13 +142,37 @@ describe('CityMapMap island (lista)', () => {
     expect(esc.textContent).toContain('Sem cor: 1 município sem dados do 2º turno.')
   })
 
-  it('a hydrated tap selects the city and fires map_municipio_tap, staying on the page', async () => {
+  it('a tap on a row is a plain link: nothing stops it and no selection event fires (#83)', async () => {
+    setup()
+    const row = screen.getByRole('link', { name: /Carmo/ })
+    expect(row.getAttribute('href')).toBe('/s/rj/carmo/')
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true })
+    row.dispatchEvent(click)
+    expect(click.defaultPrevented).toBe(false)
+    expect(events.find(([n]) => n === 'map_municipio_tap')).toBeUndefined()
+  })
+
+  it('announces itself on every mount so the page search can filter the fresh rows', async () => {
+    const mounted = vi.fn()
+    document.addEventListener('city-list:mounted', mounted)
     const { user } = setup()
-    await user.click(screen.getByRole('link', { name: /Carmo/ }))
-    const panel = document.querySelector('[data-slot="mapa-selecionado"]') as HTMLElement
-    expect(panel.textContent).toContain('Carmo · selecionado')
-    expect(events).toContainEqual(['map_municipio_tap', { cd: '02' }])
-    expect((screen.getByRole('link', { name: 'Abrir cidade' }) as HTMLAnchorElement).getAttribute('href')).toBe('/s/rj/carmo/')
+    expect(mounted).toHaveBeenCalledTimes(1)
+    await user.click(screen.getByRole('link', { name: 'Mapa' }))
+    await user.click(screen.getByRole('link', { name: 'Lista' }))
+    expect(mounted).toHaveBeenCalledTimes(2)
+    document.removeEventListener('city-list:mounted', mounted)
+  })
+
+  it('typing in the state page search while the map shows brings the list back', async () => {
+    document.body.insertAdjacentHTML('beforeend', '<div data-state-search><input type="search"></div>')
+    const { user } = setup()
+    await user.click(screen.getByRole('link', { name: 'Mapa' }))
+    expect(document.querySelector('[data-slot="mapa-municipios"]')).toBeTruthy()
+    await user.type(document.querySelector('[data-state-search] input')!, 'c')
+    expect(document.querySelector('[data-slot="mapa-municipios"]')).toBeNull()
+    expect(screen.getByRole('navigation', { name: 'Municípios' })).toBeTruthy()
+    expect(window.location.search).not.toContain('vista=mapa')
+    document.querySelector('[data-state-search]')!.remove()
   })
 })
 
@@ -205,6 +235,7 @@ describe('CityMapMap island (pre-hydration tap and deep link)', () => {
   it('honours data-pending-cd left by the page script: the tap is never lost', () => {
     const island = document.createElement('astro-island') as HTMLElement
     island.setAttribute('data-pending-cd', '03')
+    window.history.replaceState(null, '', '/s/rj/?vista=mapa')
     document.body.appendChild(island)
     render(
       <CityMapMap base="/s/" geoUrl="/s/geo/municipios-rj.json" ufNome="Rio de Janeiro" semContorno={0} data={DATA} />,

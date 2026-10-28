@@ -49,9 +49,8 @@ test.describe('mapa/mt: the municipality the mesh does not draw yet (the #16 rul
     await expect(page.locator('[data-slot="escala-sem-contorno"]')).toContainText('só aparece na lista.')
   })
 
-  test('the tapped row stays selected with the swing absent (there is no 2026 runoff before this one)', async ({ page }) => {
-    await page.goto(`${base}mapa/mt/`)
-    await page.locator('a[data-cd="99201"]').click()
+  test('the map view panel shows the only municipality with the swing absent (there is no 2026 runoff before this one)', async ({ page }) => {
+    await page.goto(`${base}mapa/mt/?vista=mapa`)
     const panel = page.locator('[data-slot="mapa-selecionado"]')
     await expect(panel).toContainText('+0,2 pp')
     // the fixture city has both rounds of 2026: the prior margin is the round 1 of the same cycle
@@ -85,7 +84,6 @@ test.describe('the state page hosts the map island (the #4/#50 placeholder fille
       seen.push({ path: new URL(r.url()).pathname, method: r.method() })
     })
     await page.goto(`${base}rj/`)
-    await page.locator('a[data-cd="99001"]').click()
     await page.getByRole('link', { name: 'Mapa', exact: true }).click()
     await expect(page.locator('[data-slot="mapa-municipios"]')).toBeVisible()
     await page.waitForLoadState('networkidle')
