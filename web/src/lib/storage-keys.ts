@@ -11,4 +11,6 @@ export const GAME_KEY = 'voto-a-voto:game'
 
 export const GUESS_KEY = 'voto-a-voto:guess'
 
-export const STORED_KEYS: readonly string[] = [PLACE_KEY, REGISTER_KEY, NOTICE_STORAGE_KEY, GAME_KEY, GUESS_KEY]
+export const SEASON_KEY = 'voto-a-voto:season'
+
+export const STORED_KEYS: readonly string[] = [PLACE_KEY, REGISTER_KEY, NOTICE_STORAGE_KEY, GAME_KEY, GUESS_KEY, SEASON_KEY]

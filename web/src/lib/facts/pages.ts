@@ -8,7 +8,7 @@ import { COMPARE_CYCLES } from '../compare'
 import { isFixtureDataset, loadBrasil } from '../brasil-load'
 import { loadCityRoutes } from '../city-routes'
 import { currentEdition } from '../editions-load'
-import { datasetFixture, loadStateShard, loadStateUfs } from '../shard-files'
+import { datasetFixture, loadArcsFile, loadStateShard, loadStateUfs } from '../shard-files'
 import { CHECK_KINDS, sealLines, sealProblems, type CheckKind } from './checks'
 import { loadChecks } from './checks-load'
 import { assertPublishable } from './gate'
@@ -106,7 +106,8 @@ export function loadFactPages(): Promise<FactPage[]> {
       const state = await loadStateShard(uf)
       if (state) out.push(stateCountFacts(uf, UF_NOME[uf] ?? uf.toUpperCase(), stateRows(state.cities).length, fixture))
     }
-    for (const { uf } of stateOrder(stats)) out.push(stateCyclesFacts(uf, cycleBlocksFor(stats.find((s) => s.uf === uf)!), fixture))
+    const arcsOf = await loadArcsFile()
+    for (const { uf } of stateOrder(stats)) out.push(stateCyclesFacts(uf, cycleBlocksFor(stats.find((s) => s.uf === uf)!), fixture, arcsOf?.byState[uf]))
     for (const p of out) assertPublishable(p.facts, `/fato/${p.scope}/${p.page}/`)
     for (const p of out) await sealOf(p)
     return out

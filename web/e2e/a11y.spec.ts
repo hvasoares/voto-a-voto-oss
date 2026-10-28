@@ -15,6 +15,7 @@ const ROUTES = [
   { route: 'mapa/', name: 'state tile map' },
   { route: 'relatorios/cidades-que-viraram/', name: 'report' },
   { route: 'mapa/ficaram-em-casa/', name: 'stay-home map' },
+  { route: 'tres-ciclos/rj/', name: 'state season (#42, #43)' },
   { route: 'rj/cidade-exemplo/tres-ciclos/', name: 'city three cycles with the replay (#46)' },
 ]
 

@@ -10,6 +10,8 @@ import type { CityMargin, TurnoutExtreme, VoteDeltaRow, VoteGain } from '../repo
 import type { OutlierRow } from '../reports/outliers'
 import { formatFixedPct, formatSignedInt, formatSignedPp } from '../reports/format'
 import type { CohortReport } from '../cohorts'
+import type { ArcCounts } from '../arcs'
+import { citiesChanged } from '../season'
 import { formatInt, formatPct } from '@/shared/city-model'
 import '../sentences/catalog-facts'
 import { DEFAULT_LOCALE, message as say, REGISTERS, type MessageKey, type Register } from '../sentences/catalog'
@@ -123,7 +125,7 @@ export function compareFacts(rows: readonly CompareRow[], ciclo: number, fixture
 }
 
 /** Três ciclos por estado: per cycle with data, each side's share of the valid votes and the change in points against the cycle before. */
-export function stateCyclesFacts(uf: string, blocks: readonly CycleBlock[], fixture: boolean): FactPage {
+export function stateCyclesFacts(uf: string, blocks: readonly CycleBlock[], fixture: boolean, arcs?: ArcCounts): FactPage {
   const c: Ctx = { scope: `estado/${uf}`, page: 'tres-ciclos', fixture, checks: ['municipios'] }
   const name = uf.toUpperCase()
   const facts: Fact[] = []
@@ -149,6 +151,16 @@ export function stateCyclesFacts(uf: string, blocks: readonly CycleBlock[], fixt
       facts.push(rec(c, `${b.ano}-variacao`, `${b.ano} · ${b.left.label}`, '', both('fact.start', { where, label: b.left.label, pct: `${b.left.pct}%` }), [{ label: std('fact.in.votosAt', { name: b.left.label, ano: b.ano }), value: int(b.left.votes) }], std('fact.f.candidate'), [dividing(b.left.votes, b.validos)]))
     }
     previous = b
+  }
+  // The season's pivot (#42): in how many cities of the state the side with the most votes changed in 2026, from the city arcs (#41).
+  const counted = arcs && citiesChanged(arcs)
+  if (arcs && counted && counted.total > 0) {
+    const { n, total } = counted
+    facts.push(
+      rec(c, '2026-viradas', std('fact.in.turned'), `${n} de ${total}`, both('fact.state.turned', { name, n: int(n), total: int(total) }),
+        [{ label: std('fact.in.turned'), value: int(n) }, { label: std('fact.in.kept'), value: int(total - n) }], std('fact.f.turned'), [std('fact.w.turned', { n: int(n), total: int(total) })],
+        { name: std(METHOD_DOCS.arcs.key), href: METHOD_DOCS.arcs.href }),
+    )
   }
   const rounds = blocks.filter((b) => b.status === 'data').map((b) => ({ ano: b.ano, turno: 2 }))
   return { scope: c.scope, page: c.page, title: name, subtitle: std('fact.sub.state', { name }), back: { path: `tres-ciclos/${uf}/`, label: std('fact.back.state') }, fixture, facts, rounds }

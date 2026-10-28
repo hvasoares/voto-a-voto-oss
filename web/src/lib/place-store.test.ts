@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { NOTICE_STORAGE_KEY } from './consent'
-import { GAME_KEY, GUESS_KEY } from './storage-keys'
+import { GAME_KEY, GUESS_KEY, SEASON_KEY } from './storage-keys'
 import { forgetAll, placeHref, placeLabel, PLACE_KEY, readPlace, savePlace } from './place-store'
 import { STORED_ITEMS } from './stored-items'
 import { REGISTER_KEY } from './sentences/register-store'
@@ -75,6 +75,7 @@ describe('place store', () => {
     s.setItem(NOTICE_STORAGE_KEY, 'acknowledged')
     s.setItem(GAME_KEY, '{}')
     s.setItem(GUESS_KEY, '{}')
+    s.setItem(SEASON_KEY, 'reverse')
     s.setItem('someone-else', 'kept')
     forgetAll(s)
     expect([...s.m.keys()]).toEqual(['someone-else'])
@@ -82,7 +83,7 @@ describe('place store', () => {
   })
 
   it('lists, for the privacy text, exactly the keys the site writes', () => {
-    expect(STORED_ITEMS.map((i) => i.key).sort()).toEqual([GAME_KEY, GUESS_KEY, NOTICE_STORAGE_KEY, PLACE_KEY, REGISTER_KEY].sort())
+    expect(STORED_ITEMS.map((i) => i.key).sort()).toEqual([GAME_KEY, GUESS_KEY, NOTICE_STORAGE_KEY, PLACE_KEY, REGISTER_KEY, SEASON_KEY].sort())
     for (const item of STORED_ITEMS) expect(item.what.length).toBeGreaterThan(10)
   })
 

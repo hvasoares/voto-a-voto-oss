@@ -52,12 +52,20 @@ export type ArcCounts = Record<ArcKind, number>
 export interface ArcsFile {
   counts: ArcCounts
   overseas: ArcCounts
+  /** The same counts per state (#42: the season of a state says in how many of its cities the side changed); the overseas posts are not a state. */
+  byState: Record<string, ArcCounts>
 }
 
 const zero = (): ArcCounts => Object.fromEntries(ARC_KINDS.map((k) => [k, 0])) as ArcCounts
 
 export function countArcs(shards: Iterable<CityShard>): ArcsFile {
-  const file: ArcsFile = { counts: zero(), overseas: zero() }
-  for (const shard of shards) (shard.city.uf === 'zz' ? file.overseas : file.counts)[cityArc(shard).kind]++
+  const file: ArcsFile = { counts: zero(), overseas: zero(), byState: {} }
+  for (const shard of shards) {
+    const { kind } = cityArc(shard)
+    const uf = shard.city.uf
+    ;(uf === 'zz' ? file.overseas : file.counts)[kind]++
+    if (uf !== 'zz') (file.byState[uf] ??= zero())[kind]++
+  }
+  file.byState = Object.fromEntries(Object.entries(file.byState).sort(([a], [b]) => a.localeCompare(b)))
   return file
 }

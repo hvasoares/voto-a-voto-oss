@@ -74,6 +74,15 @@ describe('facts of the state three-cycles page', async () => {
   it('the change is computed from the unrounded shares and the line shows both', () => {
     expect(f['2022-variacao']!.calculation.worked[0]).toMatch(/^\d+,\d\d% − \d+,\d\d% = [+-]\d+,\d pontos percentuais$/)
   })
+  it('with the state\'s city arcs it adds the pivot record: in how many cities the side changed in 2026, through the gate', () => {
+    const withArcs = stateCyclesFacts('rj', cycleBlocksFor(rj), true, { same: 3, switched2022: 1, switched2026: 1, returned: 0, switchedTwice: 0, tie: 0, missing: 1 })
+    expect(gateProblems(withArcs.facts)).toEqual([])
+    const turned = by(withArcs.facts)['2026-viradas']!
+    expect(turned.shown).toBe('1 de 5')
+    expect(turned.sentences.standard).toBe('Em RJ, entre 2022 e 2026, o lado com mais votos no 2º turno mudou em 1 das 5 cidades com os três ciclos.')
+    expect(turned.calculation!.worked).toEqual(['1 de 5 cidades'])
+    expect(withArcs.facts.find((x) => x.anchor === '2026-viradas')!.method).toBeDefined()
+  })
   it('a cycle with no data has no record (never a zero) and the seal rounds are the cycles with data', async () => {
     const mt = stats.find((s) => s.uf === 'mt')
     const p = stateCyclesFacts('mt', cycleBlocksFor(mt!), true)

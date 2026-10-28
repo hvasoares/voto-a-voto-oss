@@ -36,7 +36,7 @@ import { computePeers, encodePeers } from '../src/lib/peers'
 import { datasetFingerprint, FINGERPRINT_FILES, type ShardSources } from './shards-fingerprint'
 
 /** Bumped when the shard layout changes: a cached version directory is rebuilt when this does not match. */
-export const SHARD_GENERATOR = 'voto-shards/6'
+export const SHARD_GENERATOR = 'voto-shards/7'
 
 export const TURNOUT_FIELDS = ['aptos', 'comparecimento', 'abstencoes', 'brancos', 'nulos', 'anuladosApuSep', 'validos'] as const
 type TurnoutFields = Pick<Turnout, (typeof TURNOUT_FIELDS)[number]>

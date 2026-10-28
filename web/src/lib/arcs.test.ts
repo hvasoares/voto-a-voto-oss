@@ -57,6 +57,8 @@ describe('arc of a city', () => {
     expect(file.counts.same).toBe(1)
     expect(file.counts.switched2022).toBe(1)
     expect(file.overseas.same).toBe(1)
+    expect(file.byState).toEqual({ rj: { ...file.byState.rj!, same: 1, switched2022: 1 } })
+    expect(Object.keys(file.byState)).not.toContain('zz')
   })
 })
 

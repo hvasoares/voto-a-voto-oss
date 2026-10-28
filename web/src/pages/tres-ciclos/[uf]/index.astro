@@ -9,6 +9,9 @@ import FactHighlight from '@/components/FactHighlight'
 import { calcLink } from '@/lib/facts/link'
 import { factLinks } from '@/lib/facts/gate'
 import { getFactPage, sealOf } from '@/lib/facts/pages'
+import { loadArcsFile, loadStateShard } from '@/lib/shard-files'
+import { episodeLabel, pivotText, seasonPivot, seasonSay } from '@/lib/season'
+import '@/styles/season.css'
 
 const { uf } = Astro.params
 
@@ -32,6 +35,12 @@ const seal = await sealOf(facts)
 // The legend follows the dataset's names (never invented): 2026 left, the 2018 rival, the 2026 rival.
 const legend = { left: labelsOf(state, 2026).left, old: labelsOf(state, 2018).rival, left26: labelsOf(state, 2026).rival }
 const sides = (b: CycleBlock) => [{ s: b.left!, token: 'lula' }, { s: b.rival!, token: 'bolsonaro' }] as const
+// The season (#42): the pivot between episodes 2 and 3 from the city arcs of the state (#41), with its fact record.
+const arcsFile = await loadArcsFile()
+const cityCount = (await loadStateShard(uf))?.cities.length ?? 0
+const pivot = seasonPivot(blocks, arcsFile?.byState[uf], cityCount)
+const pivotLine = pivotText(pivot)
+const pivotRecord = facts.facts.some((f) => f.anchor === '2026-viradas')
 const miniRows = (st: StateStats) => Array.from({ length: CYCLES.length }, (_, i) => ({ i, b: cycleBlocksFor(st)[i]! }))
 ---
 
@@ -51,34 +60,47 @@ const miniRows = (st: StateStats) => Array.from({ length: CYCLES.length }, (_, i
       )}
     </nav>
 
-    <section class="mt-1" data-component="cycles" aria-label={`Três ciclos de ${uf.toUpperCase()}`}>
-      {blocks.map((b) => (
-        <div class="py-[2px] lg:py-3" data-cycle={String(b.ano)}>
-          <h2 class="text-small font-bold leading-[15px] lg:font-serif lg:text-[24px] lg:font-normal lg:leading-[30px]">{uf.toUpperCase()} · {b.ano}</h2>
-          {b.status === 'data' ? (
-            <>
-              <div class="mt-[4px] flex h-[26px] min-w-0 overflow-hidden rounded lg:h-[36px]" role="img" aria-label={`Barras: ${b.left!.label} ${b.left!.pct}%, ${b.rival!.label} ${b.rival!.pct}% dos votos válidos`}>
-                {sides(b).map(({ s, token }) => (
-                  <span data-seg={`${b.ano}-${token === 'lula' ? 'a' : 'b'}`} class={`flex min-w-0 items-center justify-center px-1 text-small font-bold text-white ${token === 'lula' ? 'bg-lula' : 'bg-bolsonaro'}`} style={`flex: 0 0 ${s.tenths / 10}%`}>
-                    <span class="wrap-anywhere text-center">{s.label} {s.pct}%</span>
-                  </span>
-                ))}
-              </div>
-              <p class="mt-[1px] text-tiny leading-[12px] text-muted-foreground lg:mt-1 lg:text-[14px] lg:leading-[18px]" data-change={b.changePp ? 'yes' : 'no'}>
-                {b.changePp ? (
-                  <>{b.left!.label}: {b.changePp} pp vs {b.changeVs}</>
-                ) : (
-                  <>{message(DEFAULT_VOICE, 'recap.start')}</>
-                )}
-              </p>
-              <p class="mt-[2px] text-right"><Fragment set:html={calcLink(links(`${b.ano}-a`))} /></p>
-            </>
-          ) : (
-            <p class="mt-1 text-tiny leading-[12px] text-muted-foreground">sem dados</p>
-          )}
-        </div>
-      ))}
+    <p class="season-sub" data-season-sub data-chrono={seasonSay('season.order.sub.chrono')} data-reverse={seasonSay('season.order.sub.reverse')}>{seasonSay('season.sub')}</p>
+    <div class="season-order" role="group" aria-label={seasonSay('season.order.label')} data-season-order hidden>
+      <button type="button" data-order="chronological" aria-pressed="true">{seasonSay('season.order.chrono')}</button>
+      <button type="button" data-order="reverse" aria-pressed="false">{seasonSay('season.order.reverse')}</button>
+    </div>
+    <p class="sr-only" role="status" aria-live="polite" data-season-status data-chrono={seasonSay('season.order.announce.chrono')} data-reverse={seasonSay('season.order.announce.reverse')}></p>
+
+    {/* The season: three episodes in reading order, the pivot between the 2nd and the 3rd; every episode is an anchor (#2018, #2022, #2026). `scripts/season-order.ts` can reverse the whole list. */}
+    <section class="season" data-component="cycles" data-season aria-label={`Três ciclos de ${uf.toUpperCase()}`}>
+      {blocks.flatMap((b, i) => {
+        const episode = (
+          <div class="season-ep py-[2px] lg:py-3" id={String(b.ano)} data-cycle={String(b.ano)} data-episode={i + 1}>
+            <p class="season-ep__head"><span>{episodeLabel(i + 1, b.ano)}</span><a href={`#${b.ano}`}>#{b.ano}</a></p>
+            <h2 class="text-small font-bold leading-[15px] lg:font-serif lg:text-[24px] lg:font-normal lg:leading-[30px]">{uf.toUpperCase()} · {b.ano}</h2>
+            {b.status === 'data' ? (
+              <>
+                <div class="mt-[4px] flex h-[26px] min-w-0 overflow-hidden rounded lg:h-[36px]" role="img" aria-label={`Barras: ${b.left!.label} ${b.left!.pct}%, ${b.rival!.label} ${b.rival!.pct}% dos votos válidos`}>
+                  {sides(b).map(({ s, token }) => (
+                    <span data-seg={`${b.ano}-${token === 'lula' ? 'a' : 'b'}`} class={`flex min-w-0 items-center justify-center px-1 text-small font-bold text-white ${token === 'lula' ? 'bg-lula' : 'bg-bolsonaro'}`} style={`flex: 0 0 ${s.tenths / 10}%`}>
+                      <span class="wrap-anywhere text-center">{s.label} {s.pct}%</span>
+                    </span>
+                  ))}
+                </div>
+                <p class="mt-[1px] text-tiny leading-[12px] text-muted-foreground lg:mt-1 lg:text-[14px] lg:leading-[18px]" data-change={b.changePp ? 'yes' : 'no'}>
+                  {b.changePp ? (
+                    <>{b.left!.label}: {b.changePp} pp vs {b.changeVs}</>
+                  ) : (
+                    <>{message(DEFAULT_VOICE, 'recap.start')}</>
+                  )}
+                </p>
+                <p class="mt-[2px] text-right"><Fragment set:html={calcLink(links(`${b.ano}-a`))} /></p>
+              </>
+            ) : (
+              <p class="mt-1 text-tiny leading-[12px] text-muted-foreground">sem dados</p>
+            )}
+          </div>
+        )
+        return i === 1 ? [episode, <aside class="season-pivot" data-pivot={pivot.kind}><p>{pivotLine}</p>{pivotRecord && <p class="mt-[2px] text-right"><Fragment set:html={calcLink(links('2026-viradas'))} /></p>}</aside>] : [episode]
+      })}
     </section>
+    <p class="season-note" data-season-note data-chrono={seasonSay('season.order.note.chrono')} data-reverse={seasonSay('season.order.note.reverse')}>{seasonSay('season.order.note.chrono')}</p>
 
     <p class="mt-1 text-tiny leading-[12px] text-muted-foreground" data-component="legend">
       Vermelho = {legend.left}. Azul = {legend.old} (2018 e 2022) e {legend.left26} (2026).
@@ -144,4 +166,7 @@ const miniRows = (st: StateStats) => Array.from({ length: CYCLES.length }, (_, i
   <footer class="mx-auto w-full max-w-[430px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
     Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
   </footer>
+  <script>
+    import '@/scripts/season-order'
+  </script>
 </Base>

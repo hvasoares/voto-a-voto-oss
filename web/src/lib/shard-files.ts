@@ -13,6 +13,7 @@ import { dataDir } from './data-dir'
 import { cityShardResult, type CityShard } from './city-shard'
 import type { PeersFile } from './peers'
 import type { CuriositiesFile } from './curiosities'
+import type { ArcsFile } from './arcs'
 import type { CityResult } from '../shared/city-model'
 
 const FINGERPRINT_FILES = ['candidates.csv', 'centroids.csv', 'cities.csv', 'manifest.json', 'turnout.csv', 'votes.csv'] as const
@@ -96,6 +97,15 @@ export function loadCuriositiesFile(): Promise<CuriositiesFile | undefined> {
   const key = process.env.DATA_DIR ?? '(default)'
   const memo = curioMemos.get(key) ?? shardJson<CuriositiesFile>('curiosities.json')
   curioMemos.set(key, memo)
+  return memo
+}
+
+/** The published `arcs.json` (#41, per state since #42), parsed once per dataset. */
+const arcMemos = new Map<string, Promise<ArcsFile | undefined>>()
+export function loadArcsFile(): Promise<ArcsFile | undefined> {
+  const key = process.env.DATA_DIR ?? '(default)'
+  const memo = arcMemos.get(key) ?? shardJson<ArcsFile>('arcs.json')
+  arcMemos.set(key, memo)
   return memo
 }
 
