@@ -57,8 +57,8 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
 
 <Base title="Sobre os dados · Voto a Voto">
   <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="sobre-os-dados">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal" href={href('/')}>‹ Início</a>
-    <h1 class="mt-2 font-serif text-title font-normal leading-[30px] lg:text-[44px] lg:leading-[52px]">Sobre os dados</h1>
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('/')}>‹ Início</a>
+    <h1 class="mt-2 font-serif text-step-4 font-normal">Sobre os dados</h1>
 
     {/* The five task sections, in the order a visitor checks a number (#98). Their ids are public addresses: do not rename. */}
     <section class={sec} aria-labelledby="e-final">
@@ -94,13 +94,13 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
         {rows.map((r) => (
           <li class="border-t border-border py-2 first:border-t-0 first:pt-0" data-source={r.label}>
             <span class="font-bold break-all">{r.label}</span>
-            <span class="block leading-[16px] text-muted-foreground">{r.kind}</span>
-            {r.note && <span class="block break-all leading-[16px]">{r.note}</span>}
-            {r.meta && <span class="mt-[3px] block break-all text-small leading-[16px]">{r.meta}</span>}
+            <span class="block text-muted-foreground">{r.kind}</span>
+            {r.note && <span class="block break-all">{r.note}</span>}
+            {r.meta && <span class="mt-[3px] block break-all text-step-1">{r.meta}</span>}
           </li>
         ))}
       </ul>
-      <p class="mt-1 text-small leading-[14px] text-muted-foreground">O <code>digest</code> da linha de 2026 reúne em um único SHA-256 o hash de cada arquivo coletado, ordenado por nome, e a <code>geração</code> é a data mais recente que o TSE marcou em um arquivo coletado. Manifesto no GitHub: <a href={githubManifest}>data/manifest.json ›</a></p>
+      <p class="mt-1 text-step-1 text-muted-foreground">O <code>digest</code> da linha de 2026 reúne em um único SHA-256 o hash de cada arquivo coletado, ordenado por nome, e a <code>geração</code> é a data mais recente que o TSE marcou em um arquivo coletado. Manifesto no GitHub: <a href={githubManifest}>data/manifest.json ›</a></p>
       <p class="mt-1">O site lê só as tabelas que o pipeline grava somadas por município: {tables}, todas conferidas contra o manifesto. Os centros dos municípios (centroids.csv) vêm do serviço de malhas do IBGE, um arquivo por estado; o município de Boa Esperança do Norte/MT, criado depois da malha que o IBGE publica, não tem centro e por isso nunca é oferecido como a cidade mais próxima. Os arquivos originais do TSE ficam no cache da coleta, não no site: nada aqui baixa de novo um arquivo do TSE para mostrar um número.</p>
       <section aria-labelledby="calculo">
         <h3 class={h3} id="calculo">Como os números do site são calculados</h3>
@@ -167,7 +167,7 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
     <section class={sec} aria-labelledby="como-citar">
       <h2 class={h2} id="como-citar">Como citar uma edição</h2>
       <p class="mt-[5px] break-words" data-component="citation">{citation(edition, editionAddress)}</p>
-      <p class="mt-1 text-small leading-[16px] text-muted-foreground">Cite sempre o endereço da edição, não o de uma página do site, que mostra a edição mais recente.</p>
+      <p class="mt-1 text-step-1 text-muted-foreground">Cite sempre o endereço da edição, não o de uma página do site, que mostra a edição mais recente.</p>
     </section>
 
     {/* "Usar os dados" (#102): every way to use the data outside the site, all of them existing pages. The widget block (#29) is merged
@@ -208,7 +208,7 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
     <section class={sec} aria-labelledby="privacidade">
       <h2 class={h2} id="privacidade">Privacidade</h2>
       <p class="mt-[5px]">O que este site coleta de você: nada pessoal.</p>
-      <ul class="mt-1 list-disc space-y-1 pl-5 text-small leading-[16px]">
+      <ul class="mt-1 list-disc space-y-1 pl-5 text-step-1">
         <li>A navegação é estática; não há conta nem formulário.</li>
         <li>O texto digitado na busca não é enviado: a busca roda no próprio navegador.</li>
         <li>O botão "Usar minha localização" só pede a posição ao navegador depois do seu toque. A posição é usada
@@ -225,7 +225,7 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
       </ul>
       <h3 class={h3} id="guardado-no-aparelho">O que fica guardado no seu aparelho</h3>
       <p class="mt-[5px]">O site lembra de poucas coisas, só no navegador deste aparelho (armazenamento local). Nada disso é enviado a nós nem a ninguém, e nenhuma delas é necessária: com o armazenamento do navegador bloqueado, o site funciona inteiro, apenas sem lembrar.</p>
-      <ul class="mt-1 list-disc space-y-1 pl-5 text-small leading-[16px]" data-component="stored-items">
+      <ul class="mt-1 list-disc space-y-1 pl-5 text-step-1" data-component="stored-items">
         {STORED_ITEMS.map((i) => <li data-stored-key={i.key}><code>{i.key}</code>: {i.what}.</li>)}
       </ul>
       <p class="mt-1">O atalho "Sua cidade" da página inicial mostra o que você escolheu; "esquecer meus dados", nele, apaga tudo o que está na lista acima.</p>
