@@ -1,0 +1,90 @@
+/**
+ * The sentences of the daily game "Adivinhe a cidade" (#69, #70), kept out of `catalog.ts` like `catalog-duel.ts`: only the game's modules import this file, and importing it
+ * registers the sentences in `CATALOG`. Same rules as the catalog: data, templates with `{name}` slots, both registers, reviewed like code.
+ *
+ * Wording rule: the clues speak about size, turnout, the number of times the result changed side, the region and the state, and nothing else. They never name a candidate, a party
+ * or who won. The result grid never carries the city's name.
+ */
+import { CATALOG } from './catalog'
+
+export const GAME_STANDARD: Record<string, string> = {
+  'game.title': 'Adivinhe a cidade',
+  'game.sub': 'Cidade nº {n} · {date} · uma nova cidade por dia',
+  'game.clues': 'Pistas',
+  'game.clue.n': 'Pista {n} · {kind}',
+  'game.clue.locked': 'Revelada após o {n}º palpite',
+  'game.clue.kind.size': 'Porte',
+  'game.clue.kind.turnout': 'Comparecimento em 2026',
+  'game.clue.kind.swings': 'Três ciclos',
+  'game.clue.kind.region': 'Região',
+  'game.clue.kind.state': 'Estado',
+  'game.clue.size.0': 'Até 5 mil eleitores',
+  'game.clue.size.1': 'Entre 5 e 20 mil eleitores',
+  'game.clue.size.2': 'Entre 20 e 100 mil eleitores',
+  'game.clue.size.3': 'Entre 100 e 500 mil eleitores',
+  'game.clue.size.4': 'Mais de 500 mil eleitores',
+  'game.clue.turnout': 'Entre {lo}% e {hi}% do eleitorado compareceu no 2º turno',
+  'game.clue.swings.0': 'O resultado não mudou de lado entre 2018 e 2026',
+  'game.clue.swings.1': 'O resultado mudou de lado 1 vez entre 2018 e 2026',
+  'game.clue.swings.2': 'O resultado mudou de lado 2 vezes entre 2018 e 2026',
+  'game.clue.region': 'Fica na região {region}',
+  'game.clue.state': 'Fica no estado {state}',
+  'game.rules': 'As pistas falam de porte, comparecimento e lugar. Nunca de candidatos, partidos ou de quem ganhou. Todas vêm dos dados finais do TSE.',
+  'game.howto': 'Você tem 6 palpites. A cada palpite aparece uma pista nova e a dica de distância. ▲ = a cidade secreta tem mais · ▼ = tem menos.',
+  'game.guess': 'Seu palpite',
+  'game.guess.placeholder': 'Digite o nome de um município',
+  'game.guess.send': 'Enviar',
+  'game.guess.picker': 'Município',
+  'game.guess.unknown': 'Essa cidade não está no jogo: não tem os três ciclos ou o ponto central.',
+  'game.guess.again': 'Você já tentou essa cidade.',
+  'game.col.city': 'Município',
+  'game.col.distance': 'Distância',
+  'game.col.turnout': 'Comparecimento',
+  'game.col.size': 'Porte',
+  'game.more': 'maior',
+  'game.less': 'menor',
+  'game.equal': 'igual',
+  'game.dir.N': 'norte',
+  'game.dir.NE': 'nordeste',
+  'game.dir.E': 'leste',
+  'game.dir.SE': 'sudeste',
+  'game.dir.S': 'sul',
+  'game.dir.SW': 'sudoeste',
+  'game.dir.W': 'oeste',
+  'game.dir.NW': 'noroeste',
+  'game.attempt': 'Palpite {n} de 6',
+  'game.won': 'Acertou em {n} de 6. A cidade era {city}.',
+  'game.lost': 'Não foi desta vez. A cidade era {city}.',
+  'game.next': 'Próxima cidade em {time}',
+  'game.loading': 'Carregando o jogo…',
+  'game.failed': 'Não foi possível carregar o jogo agora.',
+  'game.nojs': 'O jogo precisa de JavaScript.',
+  'game.source': 'Fonte: TSE, dados finais',
+  'game.share.title': 'Compartilhar o resultado (depois do fim)',
+  'game.share.head': 'Adivinhe a cidade nº {n} · {score}/6',
+  'game.share.head.lost': 'Adivinhe a cidade nº {n} · X/6',
+  'game.share.note': 'O resultado não mostra o nome da cidade, para não estragar o jogo de ninguém.',
+  'game.share.button': 'Compartilhar',
+  'game.share.copy': 'Copiar o resultado',
+  'game.share.copied': 'Resultado copiado.',
+  'game.share.copy.failed': 'A cópia não funcionou neste navegador. Selecione o resultado e copie.',
+  'game.share.legend': '1º quadrado: distância · 2º: comparecimento · 3º: porte',
+  'game.history.title': 'Seu histórico neste navegador',
+  'game.history.empty': 'Ainda não há partidas.',
+  'game.history.row': 'Nº {n}: {score}',
+  'game.history.won': '{n}/6',
+  'game.history.lost': 'X/6',
+  'game.history.clear': 'Apagar o histórico',
+  'game.history.cleared': 'Histórico apagado.',
+  'game.history.note': 'O histórico fica só neste navegador. Nada é enviado.',
+  'game.storage.blocked': 'Este navegador não deixa guardar o histórico. O jogo funciona, mas não será lembrado.',
+}
+
+export const GAME_PLAIN: Record<string, string> = {
+  ...GAME_STANDARD,
+  'game.rules': 'As pistas falam do tamanho, da participação e do lugar. Não falam de candidatos, de partidos nem de quem ganhou. Os dados são finais, do TSE.',
+  'game.howto': 'São 6 palpites. A cada palpite sai uma pista nova e a distância. ▲ = a cidade secreta tem mais · ▼ = tem menos.',
+}
+
+Object.assign(CATALOG['pt-BR'].standard, GAME_STANDARD)
+Object.assign(CATALOG['pt-BR'].plain, GAME_PLAIN)
