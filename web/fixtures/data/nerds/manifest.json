@@ -1,0 +1,204 @@
+{
+  "cargo": "presidente",
+  "edition": "2026-10-26",
+  "hash": "f591db74932ecbdc",
+  "schema_version": 1,
+  "shards": {
+    "brasil/2018-1.json": {
+      "ano": 2018,
+      "bytes": 720,
+      "level": "brasil",
+      "sha256": "a6e901a0b3c2eca9b142cdf593457855ddcb10ac76077e520d65fdde394c4ef7",
+      "turno": 1
+    },
+    "brasil/2018-2.json": {
+      "ano": 2018,
+      "bytes": 723,
+      "level": "brasil",
+      "sha256": "e045eef6795166b50d30bebfb7a48f9ab133f6710116c2928b550741cfe14561",
+      "turno": 2
+    },
+    "brasil/2022-1.json": {
+      "ano": 2022,
+      "bytes": 722,
+      "level": "brasil",
+      "sha256": "44ee933e8340c69a99f1604cbb17cefc0be207d581e22fda4b92ae7d720cf522",
+      "turno": 1
+    },
+    "brasil/2022-2.json": {
+      "ano": 2022,
+      "bytes": 721,
+      "level": "brasil",
+      "sha256": "aed0e9fe76ba4e1d6e5ddffc5952ae111b0d91a0520b634e244b0834a6324a32",
+      "turno": 2
+    },
+    "brasil/2026-1.json": {
+      "ano": 2026,
+      "bytes": 837,
+      "level": "brasil",
+      "sha256": "cced1d7b0487d3689187a6bcbbc3ce46280c185914194cf2fce11fd03d845309",
+      "turno": 1
+    },
+    "brasil/2026-2.json": {
+      "ano": 2026,
+      "bytes": 835,
+      "level": "brasil",
+      "sha256": "0946e7cf135854409a7c001334851c73e0b136d64d6f3fd72d391cbb61954072",
+      "turno": 2
+    },
+    "regiao/centro-oeste/2026-1.json": {
+      "ano": 2026,
+      "bytes": 496,
+      "level": "regiao",
+      "sha256": "15e5e276fdf4709376c21d84ec9ac28a4039a184e5566658e08ab948e9bb5a7a",
+      "turno": 1
+    },
+    "regiao/centro-oeste/2026-2.json": {
+      "ano": 2026,
+      "bytes": 494,
+      "level": "regiao",
+      "sha256": "e4c392601cc79e55b2a9804891fbbbcfeccc803b8e01fbd6eaaf8fe47aa2d47e",
+      "turno": 2
+    },
+    "regiao/sudeste/2018-1.json": {
+      "ano": 2018,
+      "bytes": 546,
+      "level": "regiao",
+      "sha256": "c9f45ff8340d6a6b5cba1c4cf00e4eda84773e1c660b4a0a559d0f54ba4f7146",
+      "turno": 1
+    },
+    "regiao/sudeste/2018-2.json": {
+      "ano": 2018,
+      "bytes": 547,
+      "level": "regiao",
+      "sha256": "7807e127778f631c8c8dd179619dc9c18f3eb513024bf3f1765975d9fe0e380c",
+      "turno": 2
+    },
+    "regiao/sudeste/2022-1.json": {
+      "ano": 2022,
+      "bytes": 546,
+      "level": "regiao",
+      "sha256": "6699fcf3019d7306c9bf9beb8f438c0768cae7c456073132bbdd5c53af47edec",
+      "turno": 1
+    },
+    "regiao/sudeste/2022-2.json": {
+      "ano": 2022,
+      "bytes": 547,
+      "level": "regiao",
+      "sha256": "da98ad4a406057665b7b3290e7523aaad7fa111fdc331e13ead51202e6fe5814",
+      "turno": 2
+    },
+    "regiao/sudeste/2026-1.json": {
+      "ano": 2026,
+      "bytes": 547,
+      "level": "regiao",
+      "sha256": "a6c31d7d74220e3b3ecb36212ce01978f2b47eb849e87a39b636672f9ddc3f90",
+      "turno": 1
+    },
+    "regiao/sudeste/2026-2.json": {
+      "ano": 2026,
+      "bytes": 547,
+      "level": "regiao",
+      "sha256": "a644d6346a2b43cd8de709501b8d4f098f854a220d29b09f57469d6a43fdfa5f",
+      "turno": 2
+    },
+    "uf/mt/2026-1.json": {
+      "ano": 2026,
+      "bytes": 561,
+      "level": "uf",
+      "sha256": "055421f4fb900482d490e06e5871be614dd0413901b0da088685b9f3e6a3f88e",
+      "turno": 1
+    },
+    "uf/mt/2026-2.json": {
+      "ano": 2026,
+      "bytes": 559,
+      "level": "uf",
+      "sha256": "42a085c2a3af302f419186fa225c14e2c9dff2cd82ae1c2348860279b45bc6f6",
+      "turno": 2
+    },
+    "uf/rj/2018-1.json": {
+      "ano": 2018,
+      "bytes": 957,
+      "level": "uf",
+      "sha256": "6ef9dd2c5d0ea1e35dc2d461dffeb66dae16b8efc0eea86e9f24a272c7775f7a",
+      "turno": 1
+    },
+    "uf/rj/2018-2.json": {
+      "ano": 2018,
+      "bytes": 957,
+      "level": "uf",
+      "sha256": "d6c146bebe9e9c376afa1410aeaed0cede7a3ea4ee643a1a02a060ea28052acb",
+      "turno": 2
+    },
+    "uf/rj/2022-1.json": {
+      "ano": 2022,
+      "bytes": 956,
+      "level": "uf",
+      "sha256": "8486a60d863d08977fb7fbc78338ab1334ac2ce8128b7a1d03d8118a853988b3",
+      "turno": 1
+    },
+    "uf/rj/2022-2.json": {
+      "ano": 2022,
+      "bytes": 957,
+      "level": "uf",
+      "sha256": "25ef37e1db06b8c510efe5f6dfa970f11adb36612725f3355d8378a0b7ce331a",
+      "turno": 2
+    },
+    "uf/rj/2026-1.json": {
+      "ano": 2026,
+      "bytes": 958,
+      "level": "uf",
+      "sha256": "0978d1e37cf2068d2bb000a010674aa7f925b8951f033b51b4c0ada9f43f1d2c",
+      "turno": 1
+    },
+    "uf/rj/2026-2.json": {
+      "ano": 2026,
+      "bytes": 957,
+      "level": "uf",
+      "sha256": "69d92162e444f68234c123862039e72712fc96ce1a4bb095b3e0c56558308fb3",
+      "turno": 2
+    },
+    "uf/sp/2018-1.json": {
+      "ano": 2018,
+      "bytes": 555,
+      "level": "uf",
+      "sha256": "bad3c74e10aba68e9c8fc4976892ff73c514fd1bb37d9455b778ca65b4e412cc",
+      "turno": 1
+    },
+    "uf/sp/2018-2.json": {
+      "ano": 2018,
+      "bytes": 555,
+      "level": "uf",
+      "sha256": "cd6f50bcd6bb911098bf08df0fe082489df7a02c73ba1792fcfe9355d11cd92d",
+      "turno": 2
+    },
+    "uf/sp/2022-1.json": {
+      "ano": 2022,
+      "bytes": 555,
+      "level": "uf",
+      "sha256": "77632d53d1928bf82067f1bd302bda529de3961b450977f6fbd14edf034905db",
+      "turno": 1
+    },
+    "uf/sp/2022-2.json": {
+      "ano": 2022,
+      "bytes": 555,
+      "level": "uf",
+      "sha256": "a386dc548c8374bca759187da873fe3bd80f0688106d83bb29cf600496b561d7",
+      "turno": 2
+    },
+    "uf/sp/2026-1.json": {
+      "ano": 2026,
+      "bytes": 555,
+      "level": "uf",
+      "sha256": "ea73c7599851343b3224a5a3a66f99770e04ab5962347e694027b6742166e64c",
+      "turno": 1
+    },
+    "uf/sp/2026-2.json": {
+      "ano": 2026,
+      "bytes": 555,
+      "level": "uf",
+      "sha256": "3293d69d3439c676e726bf0993e17705a9c2f84da6ce593df7f64d39043ad646",
+      "turno": 2
+    }
+  }
+}

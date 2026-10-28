@@ -18,7 +18,7 @@ from collections import Counter
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
-from voto_a_voto import centroids, editions, nonvoters, outlines, reconcile
+from voto_a_voto import centroids, editions, nerds, nonvoters, outlines, reconcile
 from voto_a_voto.cities import City, parse_cities
 from voto_a_voto.dataset import CycleData, Dataset, assemble, cycle_from_munzona, cycle_from_results, read_dataset, write_dataset, write_manifest
 from voto_a_voto.manifest import build_manifest, check_manifest, summarize_results_files, turnout_identity
@@ -256,12 +256,24 @@ def main(argv=None, services: Services | None = None) -> int:
     outlines_parser.add_argument("--refresh", action="store_true", help="baixa de novo, mesmo o que está no cache")
     outlines_parser.add_argument("--data-dir", default="data")
     outlines_parser.add_argument("--cache-dir", default=".cache")
+    nerds_parser = commands.add_parser("nerds", help="gera os shards por nível do painel Dados para nerds (ticket #72) em data/nerds/, presos à edição publicada")
+    nerds_parser.add_argument("--data-dir", default="data")
+    nerds_parser.add_argument("--editions-dir", default="editions")
     nonvoters_parser = commands.add_parser("nonvoters", help="imprime a medida do ticket #24: não-votantes maiores que a margem, por ciclo, turno e estado")
     nonvoters_parser.add_argument("--data-dir", default="data")
     args = parser.parse_args(argv)
 
     if args.command == "nonvoters":
         print(nonvoters.render(nonvoters.measure(read_dataset(args.data_dir))), end="")
+        return 0
+
+    if args.command == "nerds":
+        try:
+            count, changed = nerds.write(Path(args.data_dir), Path(args.editions_dir))
+        except (nerds.NerdsError, editions.EditionError) as error:
+            print(f"nerds FAILED: {error}", file=sys.stderr)
+            return 1
+        print(f"{args.data_dir}/nerds: {count} shards, {'written' if changed else 'unchanged'}")
         return 0
 
     if args.command == "outlines":
@@ -285,6 +297,8 @@ def main(argv=None, services: Services | None = None) -> int:
             print(f"publish-edition FAILED: {error}", file=sys.stderr)
             return 1
         print(f"{args.editions_dir}/{published.id}: {'published' if published.created else 'already published, nothing written'}")
+        count, _ = nerds.write(Path(args.data_dir), Path(args.editions_dir))  # the level shards are pinned to the edition just published (#72)
+        print(f"{args.data_dir}/nerds: {count} shards")
         return 0
 
     if args.command == "publish-auto":
@@ -298,6 +312,8 @@ def main(argv=None, services: Services | None = None) -> int:
             print(f"publish-auto REJECTED: nothing was published; the reason is in {args.editions_dir}/status.json", file=sys.stderr)
             return 1
         print("publish-auto: no new data, nothing to publish" if outcome.result == "unchanged" else f"publish-auto: edition {outcome.edition} published")
+        if outcome.result != "unchanged":
+            nerds.write(options.data_dir, Path(args.editions_dir))
         return 0
 
     if args.command == "rollback-edition":
@@ -307,6 +323,7 @@ def main(argv=None, services: Services | None = None) -> int:
             print(f"rollback-edition FAILED: {error}", file=sys.stderr)
             return 1
         print(f"{args.data_dir} restored to edition {restored}; no edition was changed")
+        nerds.write(Path(args.data_dir), Path(args.editions_dir))
         return 0
 
     if args.command == "check":
@@ -314,6 +331,7 @@ def main(argv=None, services: Services | None = None) -> int:
         findings += outlines.check(Path(args.data_dir) / "geo")
         if args.editions_dir is not None:
             findings += editions.check_editions(Path(args.editions_dir), Path(args.data_dir))
+            findings += nerds.check(Path(args.data_dir), Path(args.editions_dir))
         if findings:
             print(f"data-check FAILED: {len(findings)} finding(s)", file=sys.stderr)
             print_findings(findings)

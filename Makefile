@@ -1,4 +1,4 @@
-.PHONY: test tse-scrape data data-outlines data-2018 data-2022 data-2026 data-check publish-edition rollback-edition nonvoters deploy \
+.PHONY: test tse-scrape data data-outlines data-nerds data-2018 data-2022 data-2026 data-check publish-edition rollback-edition nonvoters deploy \
         install typecheck web-test browser e2e e2e-pages e2e-real build-deploy ci web-install
 
 test:
@@ -20,6 +20,11 @@ data-outlines:
 # Atualiza um só ciclo; os outros vêm do cache.
 data-2026 data-2022 data-2018:
 	uv run voto-data build --cycles $(subst data-,,$@)
+
+# Gera os shards por nível (Brasil, região, estado × ciclo × turno) do painel Dados para nerds em data/nerds/ (#72), presos à edição publicada que é data/.
+# `make publish-edition` e `make rollback-edition` já os regeneram; use este alvo para refazê-los sozinhos (idempotente: uma segunda execução não muda nenhum byte).
+data-nerds:
+	uv run voto-data nerds
 
 # Valida data/ sem rede: hashes do manifest, contagens, identidades e totais nacionais do TSE; e as edições
 # publicadas em editions/ (intactas, e data/ é uma delas).

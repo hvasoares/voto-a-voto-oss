@@ -94,3 +94,22 @@ pointer (edition, fingerprint, absolute endpoint addresses) because the director
 `peers.json` is a build input and is not documented as API. Desktop pages (city card, three cycles, state, /brasil/) link
 "Baixar os dados desta página" to the file the page is drawn from: the city or state shard itself, or `/brasil/dados.json`, the
 `BrasilView` the page renders, serialized as it is. The link is hidden below 1024 px by an inline media rule (no new CSS or JS for the phone).
+
+## Level shards of "Dados para nerds" (#72)
+
+Made by the Python data task (`make data-nerds`, also run by `make publish-edition` / `rollback-edition`), committed under `data/nerds/` (fixtures: `web/fixtures/data/nerds/`),
+read at BUILD time only (the pages print them as tables; nothing is fetched by a browser, nothing is copied to `dist`). Layout and rules: `src/voto_a_voto/nerds.py`.
+
+| Level | Path under `nerds/` | Rows |
+|---|---|---|
+| Brasil | `brasil/<ano>-<turno>.json` | total, 5 regiões + `exterior`, 27 UFs + `zz` |
+| Região | `regiao/<regiao>/<ano>-<turno>.json` | total, its UFs |
+| Estado | `uf/<uf>/<ano>-<turno>.json` | total, all its municípios (id = slug) |
+
+Header: edition id and content hash (the dataset fingerprint), level, id, cargo, cycle, turno, `columns`, `candidatos` (ballot-number order). A turno that did not happen has no shard.
+Columns: `eleitorado` (aptos), `comparecimento`, `abstencao`, `brancos_nulos` (brancos + nulos + anulados e apurados em separado, so candidates + brancos_nulos = comparecimento),
+`validos`, `nao_instalados` (eleitorado − comparecimento − abstenção, which the TSE reports apart: the overseas posts and one municipality in 2022), then one `votos` per candidate.
+Seções apuradas are not in the dataset, so the shards do not carry them. `manifest.json` lists every shard (size, SHA-256); `make data-check` rebuilds every shard from the six files,
+compares bytes, and checks the sums across levels and the candidate identity.
+
+Sizes (real data, 198 shards, 3.3 MB raw): Brasil ≤ 5.4 kB raw / 2.8 kB gzip, região ≤ 2.2 kB / 1.2 kB, estado ≤ 88 kB / 40.4 kB (MG 2018-1; the budget reference for panel tickets).

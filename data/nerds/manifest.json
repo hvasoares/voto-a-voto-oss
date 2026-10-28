@@ -1,0 +1,1394 @@
+{
+  "cargo": "presidente",
+  "edition": "2026-10-27",
+  "hash": "1caa8653ea4b6728",
+  "schema_version": 1,
+  "shards": {
+    "brasil/2018-1.json": {
+      "ano": 2018,
+      "bytes": 5401,
+      "level": "brasil",
+      "sha256": "c874ad3fc21337a158a10662cfca52ff32256322472f9d85812c8e072e6687b6",
+      "turno": 1
+    },
+    "brasil/2018-2.json": {
+      "ano": 2018,
+      "bytes": 2630,
+      "level": "brasil",
+      "sha256": "c186b4e7217fa6410b0e89ed9fd6d6cd9a06fd6a8001edcdfd19db2241a91293",
+      "turno": 2
+    },
+    "brasil/2022-1.json": {
+      "ano": 2022,
+      "bytes": 4720,
+      "level": "brasil",
+      "sha256": "16a1086eb80e52687982b8a7ceb8d569b4eb058fc9b6d3fd7df91fdea280ae6c",
+      "turno": 1
+    },
+    "brasil/2022-2.json": {
+      "ano": 2022,
+      "bytes": 2618,
+      "level": "brasil",
+      "sha256": "bb00ce543ce269b4c8120913f2b9ee767feb72730a5b35e8c7fc2c23b0cfc0cd",
+      "turno": 2
+    },
+    "brasil/2026-1.json": {
+      "ano": 2026,
+      "bytes": 4956,
+      "level": "brasil",
+      "sha256": "54210e5db7a47b83ad1d518146b6350323dc9754a82d6ea23f6700cb418c1a96",
+      "turno": 1
+    },
+    "brasil/2026-2.json": {
+      "ano": 2026,
+      "bytes": 2614,
+      "level": "brasil",
+      "sha256": "320010417cbc8816c9dea74627e64ff2580b2420bfe305a6f1cc48116b8ffa98",
+      "turno": 2
+    },
+    "regiao/centro-oeste/2018-1.json": {
+      "ano": 2018,
+      "bytes": 1602,
+      "level": "regiao",
+      "sha256": "b441e70ef3f4bad7e5d1a89e12932a85f782d1f6950f3a22aa8fd054d52c9285",
+      "turno": 1
+    },
+    "regiao/centro-oeste/2018-2.json": {
+      "ano": 2018,
+      "bytes": 712,
+      "level": "regiao",
+      "sha256": "47e523b4f26da8b13d9dd8cacbc246e2df252ec348ccff75a7dd0b0662c92363",
+      "turno": 2
+    },
+    "regiao/centro-oeste/2022-1.json": {
+      "ano": 2022,
+      "bytes": 1407,
+      "level": "regiao",
+      "sha256": "776836ff97f307d312a940ca0771f33d153171445e0e28fe2cf1d9d76269c403",
+      "turno": 1
+    },
+    "regiao/centro-oeste/2022-2.json": {
+      "ano": 2022,
+      "bytes": 699,
+      "level": "regiao",
+      "sha256": "bd7147c3eaa58eef4fab98e6674485280acf6fbd0ed234e6b8b79a38ccdf0c1d",
+      "turno": 2
+    },
+    "regiao/centro-oeste/2026-1.json": {
+      "ano": 2026,
+      "bytes": 1501,
+      "level": "regiao",
+      "sha256": "85132414b9d886aa1ca73acdb7b6b939529c051e3f6bd7f1c0a0c43b7db39d36",
+      "turno": 1
+    },
+    "regiao/centro-oeste/2026-2.json": {
+      "ano": 2026,
+      "bytes": 700,
+      "level": "regiao",
+      "sha256": "fe4c16c5819a5883307aa97bfa59711701364bb0078dbc7a74196c71e32b24b5",
+      "turno": 2
+    },
+    "regiao/nordeste/2018-1.json": {
+      "ano": 2018,
+      "bytes": 2224,
+      "level": "regiao",
+      "sha256": "b8323909d9463b874f3b653a7f7f42858704327a2ffaf9a86b186e2a5abdb3dc",
+      "turno": 1
+    },
+    "regiao/nordeste/2018-2.json": {
+      "ano": 2018,
+      "bytes": 1025,
+      "level": "regiao",
+      "sha256": "e95cb6d9d7fcfb0328caa4320f8e09793c585a06064995e23b1e79f0452b8e4f",
+      "turno": 2
+    },
+    "regiao/nordeste/2022-1.json": {
+      "ano": 2022,
+      "bytes": 1942,
+      "level": "regiao",
+      "sha256": "03e1a7028311f94f29c9651a37a9ea674c5c3414574755f5ccd24d0a2de0d1e9",
+      "turno": 1
+    },
+    "regiao/nordeste/2022-2.json": {
+      "ano": 2022,
+      "bytes": 1011,
+      "level": "regiao",
+      "sha256": "5d23eccb8c4fb808a3d265a4daab8df4b0b0568ea12d1c5237111b0e0bebd7a0",
+      "turno": 2
+    },
+    "regiao/nordeste/2026-1.json": {
+      "ano": 2026,
+      "bytes": 2067,
+      "level": "regiao",
+      "sha256": "ec51e59f2458acd486abdc4fd4808c1dd18ac02f72e0355ed7cc7d105d857177",
+      "turno": 1
+    },
+    "regiao/nordeste/2026-2.json": {
+      "ano": 2026,
+      "bytes": 1011,
+      "level": "regiao",
+      "sha256": "17d95f5cdc466696a3c068eb9965bd9ef40c837118d092cd35f21daefaf1112e",
+      "turno": 2
+    },
+    "regiao/norte/2018-1.json": {
+      "ano": 2018,
+      "bytes": 1907,
+      "level": "regiao",
+      "sha256": "1874701a32a965f0908b8bc7388fb72f4f106b2ee5ce475d53b757ac3a5def12",
+      "turno": 1
+    },
+    "regiao/norte/2018-2.json": {
+      "ano": 2018,
+      "bytes": 860,
+      "level": "regiao",
+      "sha256": "18416237b783beffa7a706a2a0046dde0104d2f7ac487d0a108fb1be9938ef84",
+      "turno": 2
+    },
+    "regiao/norte/2022-1.json": {
+      "ano": 2022,
+      "bytes": 1666,
+      "level": "regiao",
+      "sha256": "fbe536976a0c0671c4e97a247101d10224fc028435972b7740a78e020d3ee4ec",
+      "turno": 1
+    },
+    "regiao/norte/2022-2.json": {
+      "ano": 2022,
+      "bytes": 851,
+      "level": "regiao",
+      "sha256": "df20228c5f865091cf93d18844968d65ee657c836cd971273ad33c6848aec735",
+      "turno": 2
+    },
+    "regiao/norte/2026-1.json": {
+      "ano": 2026,
+      "bytes": 1768,
+      "level": "regiao",
+      "sha256": "09f6b9395c857684add48e82c853c9602bcd77d4848adadc9a81a9cbdc00aa70",
+      "turno": 1
+    },
+    "regiao/norte/2026-2.json": {
+      "ano": 2026,
+      "bytes": 850,
+      "level": "regiao",
+      "sha256": "22d807a3d902e72071223c397c57ce574b42e7d0e1c2aeeafd7b603098c4f17f",
+      "turno": 2
+    },
+    "regiao/sudeste/2018-1.json": {
+      "ano": 2018,
+      "bytes": 1658,
+      "level": "regiao",
+      "sha256": "b0b8766e9c7d7f4b6eeecbd6af7e6fa7fbccd66260af3afb3495748c7e88e87f",
+      "turno": 1
+    },
+    "regiao/sudeste/2018-2.json": {
+      "ano": 2018,
+      "bytes": 726,
+      "level": "regiao",
+      "sha256": "8a689d5e2fd124b8f4e2ce67e128d2b18ca04722bf28b2fe38fe9cbd6e532e51",
+      "turno": 2
+    },
+    "regiao/sudeste/2022-1.json": {
+      "ano": 2022,
+      "bytes": 1450,
+      "level": "regiao",
+      "sha256": "0dfa34628c71527fa24e7db468028cd4c04b75c58a9573f93e6ded81df584b8a",
+      "turno": 1
+    },
+    "regiao/sudeste/2022-2.json": {
+      "ano": 2022,
+      "bytes": 713,
+      "level": "regiao",
+      "sha256": "e13c495e54714191f3e7c7ba2e4383e87966285e33d27ffc1b81d8d9ffe03617",
+      "turno": 2
+    },
+    "regiao/sudeste/2026-1.json": {
+      "ano": 2026,
+      "bytes": 1554,
+      "level": "regiao",
+      "sha256": "ffe7cc80a423190456a32ddbc4de43f8f79c2297fea8d7b92883ee47453d98a4",
+      "turno": 1
+    },
+    "regiao/sudeste/2026-2.json": {
+      "ano": 2026,
+      "bytes": 717,
+      "level": "regiao",
+      "sha256": "b0ef6f55e23c752ff7c41f4046fb1373b2cdd8696625a7c3c54c77e3bc4605bd",
+      "turno": 2
+    },
+    "regiao/sul/2018-1.json": {
+      "ano": 2018,
+      "bytes": 1491,
+      "level": "regiao",
+      "sha256": "fe7af1b986e9379609b9a8ae760d3538a785dfa28222b68ba7bbfc5404021449",
+      "turno": 1
+    },
+    "regiao/sul/2018-2.json": {
+      "ano": 2018,
+      "bytes": 641,
+      "level": "regiao",
+      "sha256": "a2c29b506456ccce9f64cc8c033ecbb3cea376c2636dee2463c4c635fd5e74f2",
+      "turno": 2
+    },
+    "regiao/sul/2022-1.json": {
+      "ano": 2022,
+      "bytes": 1308,
+      "level": "regiao",
+      "sha256": "9b86018ff72343e5a3a671c903369c4725284b7e1c75892e7c117f2c09875a65",
+      "turno": 1
+    },
+    "regiao/sul/2022-2.json": {
+      "ano": 2022,
+      "bytes": 629,
+      "level": "regiao",
+      "sha256": "8de836e338b0566e4530652834f943179a60ae19cae58056d0c6a5028be68653",
+      "turno": 2
+    },
+    "regiao/sul/2026-1.json": {
+      "ano": 2026,
+      "bytes": 1405,
+      "level": "regiao",
+      "sha256": "a12996488ba3ea9e054436cb6a8667e2f0959b1a9fdc62490f0a6853630d514f",
+      "turno": 1
+    },
+    "regiao/sul/2026-2.json": {
+      "ano": 2026,
+      "bytes": 631,
+      "level": "regiao",
+      "sha256": "e7e6b2ec2477741d65558410eac6154b4c08b297f0e0047c46803e94a95ed158",
+      "turno": 2
+    },
+    "uf/ac/2018-1.json": {
+      "ano": 2018,
+      "bytes": 3378,
+      "level": "uf",
+      "sha256": "444b7f2b3709af966d9c22ec8195cc603577cd6e581ae9b01e2115c35f0da555",
+      "turno": 1
+    },
+    "uf/ac/2018-2.json": {
+      "ano": 2018,
+      "bytes": 1995,
+      "level": "uf",
+      "sha256": "30f4e6a01e0eed1ba69c1c130de324044e7b7e2b0746fbe2a15959929596ebf7",
+      "turno": 2
+    },
+    "uf/ac/2022-1.json": {
+      "ano": 2022,
+      "bytes": 3035,
+      "level": "uf",
+      "sha256": "276aff7932ace0effddd95ad9519fcb6375697b9aa83e80287d87d7a368063ef",
+      "turno": 1
+    },
+    "uf/ac/2022-2.json": {
+      "ano": 2022,
+      "bytes": 1983,
+      "level": "uf",
+      "sha256": "96aff38688389e7fbb09e5eb74b482b0a74ef20657b9d1db73125853425a6552",
+      "turno": 2
+    },
+    "uf/ac/2026-1.json": {
+      "ano": 2026,
+      "bytes": 3179,
+      "level": "uf",
+      "sha256": "6c32fb94b38d75a43ae43d575047e158d9eb1e4678fdc65710c0572a47f53b10",
+      "turno": 1
+    },
+    "uf/ac/2026-2.json": {
+      "ano": 2026,
+      "bytes": 2002,
+      "level": "uf",
+      "sha256": "177e6bf6ff8388fd61024d54b52b2f079c3c1dbb27a388aa93c5f0ab045464de",
+      "turno": 2
+    },
+    "uf/al/2018-1.json": {
+      "ano": 2018,
+      "bytes": 11698,
+      "level": "uf",
+      "sha256": "31c65eba6d94e3f1de49be028799f4502f41321c9e61159519b07a4526b5d5ef",
+      "turno": 1
+    },
+    "uf/al/2018-2.json": {
+      "ano": 2018,
+      "bytes": 7641,
+      "level": "uf",
+      "sha256": "e2e070ff14397d81429f09f2ac928823744e9ee2c3cc9fe571909bee25991cb2",
+      "turno": 2
+    },
+    "uf/al/2022-1.json": {
+      "ano": 2022,
+      "bytes": 10632,
+      "level": "uf",
+      "sha256": "58ec3fdfac3e9543a86216e029fc805c37d69a7593c0627dee6e52e075f6bfdc",
+      "turno": 1
+    },
+    "uf/al/2022-2.json": {
+      "ano": 2022,
+      "bytes": 7661,
+      "level": "uf",
+      "sha256": "fa8180c3eb9e7b5826a09d2bcbb88c4f905990199a5743ae9e36ea2319129894",
+      "turno": 2
+    },
+    "uf/al/2026-1.json": {
+      "ano": 2026,
+      "bytes": 10856,
+      "level": "uf",
+      "sha256": "776198661bfc7b1f92675349a9bf9b1e8e56d84a2896940571680c893690621f",
+      "turno": 1
+    },
+    "uf/al/2026-2.json": {
+      "ano": 2026,
+      "bytes": 7670,
+      "level": "uf",
+      "sha256": "580d6abde4389857b3d2084f21c0c9dc9ff51046af21463b6ab9290ada6b9bba",
+      "turno": 2
+    },
+    "uf/am/2018-1.json": {
+      "ano": 2018,
+      "bytes": 7291,
+      "level": "uf",
+      "sha256": "2f5a3bd6baf69d21cb995bfb174b45ee7a7feba9f02605fc7d41bd5f062d8ec5",
+      "turno": 1
+    },
+    "uf/am/2018-2.json": {
+      "ano": 2018,
+      "bytes": 4602,
+      "level": "uf",
+      "sha256": "34a9f31e8060b06e65cdadadb908266e85cb69348780326fcdd7f9e6d7ee8c52",
+      "turno": 2
+    },
+    "uf/am/2022-1.json": {
+      "ano": 2022,
+      "bytes": 6608,
+      "level": "uf",
+      "sha256": "ade42b0cc49aace3e955ebb56fb394d81c2f137d4184f8f7608be487ecf10cda",
+      "turno": 1
+    },
+    "uf/am/2022-2.json": {
+      "ano": 2022,
+      "bytes": 4612,
+      "level": "uf",
+      "sha256": "0bc257cebc39fe1616ed4aa99189df2262a9908c3d9f7939011c65549c012cbf",
+      "turno": 2
+    },
+    "uf/am/2026-1.json": {
+      "ano": 2026,
+      "bytes": 6825,
+      "level": "uf",
+      "sha256": "0fd4e58dc173c29d836b732330038683adba859e1425bb19eca0528b68bc9387",
+      "turno": 1
+    },
+    "uf/am/2026-2.json": {
+      "ano": 2026,
+      "bytes": 4615,
+      "level": "uf",
+      "sha256": "06b068bca2ada0eec416db617f550d70f09926a9d117aabf2c112a359b6449fa",
+      "turno": 2
+    },
+    "uf/ap/2018-1.json": {
+      "ano": 2018,
+      "bytes": 2744,
+      "level": "uf",
+      "sha256": "c7a041cc2da73df8266f1f0db99e87aae8350bf4c453bf4da89461dd82b95f9b",
+      "turno": 1
+    },
+    "uf/ap/2018-2.json": {
+      "ano": 2018,
+      "bytes": 1548,
+      "level": "uf",
+      "sha256": "b553239363372edeec62314231b893667544b76500847b7244c43bdedc17bdf8",
+      "turno": 2
+    },
+    "uf/ap/2022-1.json": {
+      "ano": 2022,
+      "bytes": 2448,
+      "level": "uf",
+      "sha256": "acc1726e5a93bbacf3dad5a16d3257b8dcfb6d45258ee8f87bddd4dbb35e8756",
+      "turno": 1
+    },
+    "uf/ap/2022-2.json": {
+      "ano": 2022,
+      "bytes": 1535,
+      "level": "uf",
+      "sha256": "beed3175260a7d5c709019638e4976c612cccf6facc14f46290718d581ddc905",
+      "turno": 2
+    },
+    "uf/ap/2026-1.json": {
+      "ano": 2026,
+      "bytes": 2562,
+      "level": "uf",
+      "sha256": "a8e017e0349fd26778505374a6ece5bb7b9ad8570aada2fb24ac90fce326fcfb",
+      "turno": 1
+    },
+    "uf/ap/2026-2.json": {
+      "ano": 2026,
+      "bytes": 1534,
+      "level": "uf",
+      "sha256": "081d4ccc93f9468e6eb2619ac7a9e665f0f51edd72c5a5befe14ff66bedb536c",
+      "turno": 2
+    },
+    "uf/ba/2018-1.json": {
+      "ano": 2018,
+      "bytes": 42861,
+      "level": "uf",
+      "sha256": "7d5ce7784625e67a8532c60f88a15936c0a5b5b339ffa530cfab663d723deac4",
+      "turno": 1
+    },
+    "uf/ba/2018-2.json": {
+      "ano": 2018,
+      "bytes": 28600,
+      "level": "uf",
+      "sha256": "f859a70ae567d635a55e20bd7197481030a0838d6e51208d37d7277f0b448205",
+      "turno": 2
+    },
+    "uf/ba/2022-1.json": {
+      "ano": 2022,
+      "bytes": 39235,
+      "level": "uf",
+      "sha256": "486945c6d11451f9aea476b861de6e91429cd58263c932f9abeee77ec8fe1456",
+      "turno": 1
+    },
+    "uf/ba/2022-2.json": {
+      "ano": 2022,
+      "bytes": 28732,
+      "level": "uf",
+      "sha256": "88b682ff9960813f82b6c11dd1f9fb7994d970139f1ffce8014ecd3adf4dc6af",
+      "turno": 2
+    },
+    "uf/ba/2026-1.json": {
+      "ano": 2026,
+      "bytes": 40057,
+      "level": "uf",
+      "sha256": "f71ae432f00638ab6c81f99dd50df5c7fe8c27c0d75e8f0e2e4d7abd6722dea6",
+      "turno": 1
+    },
+    "uf/ba/2026-2.json": {
+      "ano": 2026,
+      "bytes": 28753,
+      "level": "uf",
+      "sha256": "20f4907f9036b3d29a1a7ae92349318d814aea49e7af75023dcdc9c5d3001d97",
+      "turno": 2
+    },
+    "uf/ce/2018-1.json": {
+      "ano": 2018,
+      "bytes": 19186,
+      "level": "uf",
+      "sha256": "4f87e38012ab47c95c416721d1df67d375e6dc087c657e39cbce401f51e03fc2",
+      "turno": 1
+    },
+    "uf/ce/2018-2.json": {
+      "ano": 2018,
+      "bytes": 12524,
+      "level": "uf",
+      "sha256": "495f9a5b6b9ac7d0868fda3a143fa53d868758a2f664127791be41be71290a2e",
+      "turno": 2
+    },
+    "uf/ce/2022-1.json": {
+      "ano": 2022,
+      "bytes": 17477,
+      "level": "uf",
+      "sha256": "738d9b15487521f873deea7f7abfb25ca1e40b8c37b63e8b5cf69eef20c950d1",
+      "turno": 1
+    },
+    "uf/ce/2022-2.json": {
+      "ano": 2022,
+      "bytes": 12532,
+      "level": "uf",
+      "sha256": "ff5151fc793b6f409593556e27457d45640a360dbc12653cd52ba845448c5d7d",
+      "turno": 2
+    },
+    "uf/ce/2026-1.json": {
+      "ano": 2026,
+      "bytes": 18025,
+      "level": "uf",
+      "sha256": "c1620f460721cadf6289b080a6e7d3b68dc6099e0f3b85b0edd096afba4e956a",
+      "turno": 1
+    },
+    "uf/ce/2026-2.json": {
+      "ano": 2026,
+      "bytes": 12560,
+      "level": "uf",
+      "sha256": "43cdbe72e9ea07d811f09eb7a59fdba1e80becebcbba33ca34db5c9c0359c3ce",
+      "turno": 2
+    },
+    "uf/df/2018-1.json": {
+      "ano": 2018,
+      "bytes": 1262,
+      "level": "uf",
+      "sha256": "a5baa766010c76bbc1256dad09de3e380fbb59775acb2e4eefd5f423b5642485",
+      "turno": 1
+    },
+    "uf/df/2018-2.json": {
+      "ano": 2018,
+      "bytes": 561,
+      "level": "uf",
+      "sha256": "24709aa3416ed90ab7f936fe28c7abfa55c96c26bc333db9a099e22a0330f673",
+      "turno": 2
+    },
+    "uf/df/2022-1.json": {
+      "ano": 2022,
+      "bytes": 1114,
+      "level": "uf",
+      "sha256": "8a5b1360015803fbb53864272be6b30df30ce02b2fc9be405db10b063617920e",
+      "turno": 1
+    },
+    "uf/df/2022-2.json": {
+      "ano": 2022,
+      "bytes": 547,
+      "level": "uf",
+      "sha256": "9b28b2da149414e4c55ca8b4d42bdf9a91dc188d0c6554135b46187d9b430c3b",
+      "turno": 2
+    },
+    "uf/df/2026-1.json": {
+      "ano": 2026,
+      "bytes": 1194,
+      "level": "uf",
+      "sha256": "a543078af65bfdc464638915e9b32926923ac5bd461a4c2542c05a8e5eee99bd",
+      "turno": 1
+    },
+    "uf/df/2026-2.json": {
+      "ano": 2026,
+      "bytes": 547,
+      "level": "uf",
+      "sha256": "e91e7bcfc252dffaf0cb0f82501f9a043d5511869ef811223c544a95be1982ef",
+      "turno": 2
+    },
+    "uf/es/2018-1.json": {
+      "ano": 2018,
+      "bytes": 9492,
+      "level": "uf",
+      "sha256": "cdba13ac8e395a2bd632bba594d73feba69cee764240256b5cfbb6ae1b37da8d",
+      "turno": 1
+    },
+    "uf/es/2018-2.json": {
+      "ano": 2018,
+      "bytes": 6035,
+      "level": "uf",
+      "sha256": "8c72c10e2729cdbe568a8caa0db85f49e4dadc92e7e52491f83c0dadeaf41374",
+      "turno": 2
+    },
+    "uf/es/2022-1.json": {
+      "ano": 2022,
+      "bytes": 8516,
+      "level": "uf",
+      "sha256": "256144cf2befd9ace5155e78f193c924980affde7aba914f47dc9e23d9994ffb",
+      "turno": 1
+    },
+    "uf/es/2022-2.json": {
+      "ano": 2022,
+      "bytes": 6024,
+      "level": "uf",
+      "sha256": "e70a767d52cc95a2ecbf05e9ecfaa0ab92a996b6a7f6066dbaa6908ed7b5c211",
+      "turno": 2
+    },
+    "uf/es/2026-1.json": {
+      "ano": 2026,
+      "bytes": 8808,
+      "level": "uf",
+      "sha256": "2dc51451e5a94a86b09888d2129d82adc42c91fb83b2155da36c5497193e3fec",
+      "turno": 1
+    },
+    "uf/es/2026-2.json": {
+      "ano": 2026,
+      "bytes": 6034,
+      "level": "uf",
+      "sha256": "83c37dd3c92fb50a8ef62bd52c886b8828bdbd15e9a97cf63d860bd54b5fc8de",
+      "turno": 2
+    },
+    "uf/go/2018-1.json": {
+      "ano": 2018,
+      "bytes": 25985,
+      "level": "uf",
+      "sha256": "5e6b803f8f51271f0f5f167590a7185b41f5475f22eebfc8c0cb2267167b07d1",
+      "turno": 1
+    },
+    "uf/go/2018-2.json": {
+      "ano": 2018,
+      "bytes": 17353,
+      "level": "uf",
+      "sha256": "eb6792f597af99e7ee28cb6c6d8fc478df7b8287a16e075dd8a5520ad9434c95",
+      "turno": 2
+    },
+    "uf/go/2022-1.json": {
+      "ano": 2022,
+      "bytes": 23580,
+      "level": "uf",
+      "sha256": "f10d0e28381457ec02ed283c612d5c9b10a7da75a6760f2eb8e9ac46c736f0e4",
+      "turno": 1
+    },
+    "uf/go/2022-2.json": {
+      "ano": 2022,
+      "bytes": 17333,
+      "level": "uf",
+      "sha256": "51a90e1453b13126671a37aae0f52b089af8c7c68bfb21d431cabace275761ba",
+      "turno": 2
+    },
+    "uf/go/2026-1.json": {
+      "ano": 2026,
+      "bytes": 24181,
+      "level": "uf",
+      "sha256": "38c058c585f30bced9f4df76214fe24badaed5aaee392f36b46f596f7ab53fad",
+      "turno": 1
+    },
+    "uf/go/2026-2.json": {
+      "ano": 2026,
+      "bytes": 17368,
+      "level": "uf",
+      "sha256": "fa286a225e86ade4e72bba67cc541e73ed5ecd0bd8bcc625e7496586d068f882",
+      "turno": 2
+    },
+    "uf/ma/2018-1.json": {
+      "ano": 2018,
+      "bytes": 24189,
+      "level": "uf",
+      "sha256": "db2c8e7244e72d4e63aba1067ba2145ae3b4cda950c3d201ff3a7533f8fb95cb",
+      "turno": 1
+    },
+    "uf/ma/2018-2.json": {
+      "ano": 2018,
+      "bytes": 16541,
+      "level": "uf",
+      "sha256": "992777444bd7d12037064cc834adb25fa00c9c0bd8641ca72aab6b232d3cb339",
+      "turno": 2
+    },
+    "uf/ma/2022-1.json": {
+      "ano": 2022,
+      "bytes": 22221,
+      "level": "uf",
+      "sha256": "f0e8dcaec9a0d2e13ebd5b60984734ecbf8eed0d2782ed64b8ab26ef46f2740d",
+      "turno": 1
+    },
+    "uf/ma/2022-2.json": {
+      "ano": 2022,
+      "bytes": 16597,
+      "level": "uf",
+      "sha256": "a21f599d332e30c713c221e02c4ab86c92f37b562b0dd228c25ee777046a5747",
+      "turno": 2
+    },
+    "uf/ma/2026-1.json": {
+      "ano": 2026,
+      "bytes": 22869,
+      "level": "uf",
+      "sha256": "a361b014683ee87772e33a2da28e29976fa361cef6c614dbf74efa810c4c2ddc",
+      "turno": 1
+    },
+    "uf/ma/2026-2.json": {
+      "ano": 2026,
+      "bytes": 16617,
+      "level": "uf",
+      "sha256": "b97499edae02f3d417e0b64e98774aeffc748fe7ba42838baece549a3ffc25fa",
+      "turno": 2
+    },
+    "uf/mg/2018-1.json": {
+      "ano": 2018,
+      "bytes": 88009,
+      "level": "uf",
+      "sha256": "106305fd89768aea147a0434e7f999e2a03916e37adf484ae8ee8d3720c42289",
+      "turno": 1
+    },
+    "uf/mg/2018-2.json": {
+      "ano": 2018,
+      "bytes": 59696,
+      "level": "uf",
+      "sha256": "a2135540ab48391bbfd1fae4f48074c271e30619b5a07410d29559c992193fa7",
+      "turno": 2
+    },
+    "uf/mg/2022-1.json": {
+      "ano": 2022,
+      "bytes": 80208,
+      "level": "uf",
+      "sha256": "fe6c9820dae8eae8bc10a9ef98112eeb56f0596f37b45da76d5ca4c92a46c289",
+      "turno": 1
+    },
+    "uf/mg/2022-2.json": {
+      "ano": 2022,
+      "bytes": 59444,
+      "level": "uf",
+      "sha256": "19003c266a9b184a91721369a310f360559c19de242ed804884a2bb465d099a6",
+      "turno": 2
+    },
+    "uf/mg/2026-1.json": {
+      "ano": 2026,
+      "bytes": 82499,
+      "level": "uf",
+      "sha256": "e9e4fbe9d8fca2b36590ab5f1dca60eb77285398d588948b4c40047ee64111b9",
+      "turno": 1
+    },
+    "uf/mg/2026-2.json": {
+      "ano": 2026,
+      "bytes": 59459,
+      "level": "uf",
+      "sha256": "7ba07ffb3978a2e2c47a9849bf88e43d434b29de736a5c27bec1d6762a1d413d",
+      "turno": 2
+    },
+    "uf/ms/2018-1.json": {
+      "ano": 2018,
+      "bytes": 9134,
+      "level": "uf",
+      "sha256": "9e735a6426198169d53e4f845419d804b4a01cbe0c21f9576b3eb4516531518a",
+      "turno": 1
+    },
+    "uf/ms/2018-2.json": {
+      "ano": 2018,
+      "bytes": 5824,
+      "level": "uf",
+      "sha256": "77aa84fe89e0df6ff7d0d0284d37de21072c9eec7a387f3413062f5876a8dce7",
+      "turno": 2
+    },
+    "uf/ms/2022-1.json": {
+      "ano": 2022,
+      "bytes": 8201,
+      "level": "uf",
+      "sha256": "a02a0d066e583c68af740a698c6e1e3e13cbfe86a8a30cb1737bce5c550dbb63",
+      "turno": 1
+    },
+    "uf/ms/2022-2.json": {
+      "ano": 2022,
+      "bytes": 5812,
+      "level": "uf",
+      "sha256": "89cd9804700877d714ec670e3ebbb345162e0f12cfccad3f9cacd8f83bfffac6",
+      "turno": 2
+    },
+    "uf/ms/2026-1.json": {
+      "ano": 2026,
+      "bytes": 8460,
+      "level": "uf",
+      "sha256": "acda89e4536af4db6ca255e64cb685fea0f55b4e9bebe7194a8ed5df7b9af774",
+      "turno": 1
+    },
+    "uf/ms/2026-2.json": {
+      "ano": 2026,
+      "bytes": 5796,
+      "level": "uf",
+      "sha256": "b20a797a12ff022f2585c9fcb5a5b7964c37e58bee56d822bdd37a07033daf21",
+      "turno": 2
+    },
+    "uf/mt/2018-1.json": {
+      "ano": 2018,
+      "bytes": 15578,
+      "level": "uf",
+      "sha256": "85022b20735db5fca3bbab46aa8f846974a003906211604528bebc618bd1fc10",
+      "turno": 1
+    },
+    "uf/mt/2018-2.json": {
+      "ano": 2018,
+      "bytes": 10440,
+      "level": "uf",
+      "sha256": "9a5fca465a5d874ce1fe010fc2ffec8320e938e435b2124fcf289b98de294370",
+      "turno": 2
+    },
+    "uf/mt/2022-1.json": {
+      "ano": 2022,
+      "bytes": 14200,
+      "level": "uf",
+      "sha256": "c491b12c9e1b14b2201f439a536afe91a8b5d1fddf787efc317305a480fb5fa5",
+      "turno": 1
+    },
+    "uf/mt/2022-2.json": {
+      "ano": 2022,
+      "bytes": 10415,
+      "level": "uf",
+      "sha256": "fc40260d286957e62ce3dccc1d307950b26f8661944330d9c52dfe0d72999588",
+      "turno": 2
+    },
+    "uf/mt/2026-1.json": {
+      "ano": 2026,
+      "bytes": 14697,
+      "level": "uf",
+      "sha256": "1713973f9dfc517986df28fa2fe057f2c4bb5acdec3df3c89bf643330022d4c8",
+      "turno": 1
+    },
+    "uf/mt/2026-2.json": {
+      "ano": 2026,
+      "bytes": 10524,
+      "level": "uf",
+      "sha256": "4d4d77d9864e13ff170f82a055ceed4685f943e843e0e542634d85da526db1c7",
+      "turno": 2
+    },
+    "uf/pa/2018-1.json": {
+      "ano": 2018,
+      "bytes": 16597,
+      "level": "uf",
+      "sha256": "db4beaa7ba0dbf32598e366c0ed0c025c1c76d0e7c4ec06cc4534139d2ef81f2",
+      "turno": 1
+    },
+    "uf/pa/2018-2.json": {
+      "ano": 2018,
+      "bytes": 10832,
+      "level": "uf",
+      "sha256": "6efa01a22ea03cb05ffe50ad93e57816ec5321e9b088cd59e725239bfa2486c3",
+      "turno": 2
+    },
+    "uf/pa/2022-1.json": {
+      "ano": 2022,
+      "bytes": 14878,
+      "level": "uf",
+      "sha256": "4a4ff1680c8ddf3f9a4a616cc6a872b3a4fbd28d8029ced6b9535de50c030cb2",
+      "turno": 1
+    },
+    "uf/pa/2022-2.json": {
+      "ano": 2022,
+      "bytes": 10804,
+      "level": "uf",
+      "sha256": "c2db1e6cf62db33df6e94eac7717738a31ec867380db1cd3d5cb85fffef3e5f6",
+      "turno": 2
+    },
+    "uf/pa/2026-1.json": {
+      "ano": 2026,
+      "bytes": 15318,
+      "level": "uf",
+      "sha256": "5295653d2c0b9d35b2f79d30a89f9ccdfd3075ddbb49cd6381c4da75c03ef95f",
+      "turno": 1
+    },
+    "uf/pa/2026-2.json": {
+      "ano": 2026,
+      "bytes": 10811,
+      "level": "uf",
+      "sha256": "9182a356191cb1791002ab31d06d2a77f93236674f0336d8444401711414d98c",
+      "turno": 2
+    },
+    "uf/pb/2018-1.json": {
+      "ano": 2018,
+      "bytes": 22680,
+      "level": "uf",
+      "sha256": "53c263f0c359958324070ccf359584dfae6d5960019d66549b227f6c2730fa67",
+      "turno": 1
+    },
+    "uf/pb/2018-2.json": {
+      "ano": 2018,
+      "bytes": 15252,
+      "level": "uf",
+      "sha256": "c6981d16b45069ebea3403e295f8fff715bf7d14d482669bc45d1e6e92c6d775",
+      "turno": 2
+    },
+    "uf/pb/2022-1.json": {
+      "ano": 2022,
+      "bytes": 20796,
+      "level": "uf",
+      "sha256": "e6f0ee95d562cafe9a9fe08b11599a7584397ae4a64e3f8d9ea47c607f735654",
+      "turno": 1
+    },
+    "uf/pb/2022-2.json": {
+      "ano": 2022,
+      "bytes": 15298,
+      "level": "uf",
+      "sha256": "9656edd90c79dd9af9e1f30ac88de02e738ec63d5526573427e7c51dd3969556",
+      "turno": 2
+    },
+    "uf/pb/2026-1.json": {
+      "ano": 2026,
+      "bytes": 21381,
+      "level": "uf",
+      "sha256": "9586625c0ae9def4ca1c80258d186169df69ee71ba93f7804b5f904cdc9e0437",
+      "turno": 1
+    },
+    "uf/pb/2026-2.json": {
+      "ano": 2026,
+      "bytes": 15282,
+      "level": "uf",
+      "sha256": "529c35da771e823b14b127657aa87bb652ac656b9db444ea4b0f513d01298f8e",
+      "turno": 2
+    },
+    "uf/pe/2018-1.json": {
+      "ano": 2018,
+      "bytes": 19942,
+      "level": "uf",
+      "sha256": "bbd3af2857cd79be6c2e5010f8adc26d6af3ab085336e520d421d2d0bbfc40c0",
+      "turno": 1
+    },
+    "uf/pe/2018-2.json": {
+      "ano": 2018,
+      "bytes": 13022,
+      "level": "uf",
+      "sha256": "992731a5ea265d23f84ca3c35d8849f9f0ff1d0ee0e9f15eeec309facd46a7e5",
+      "turno": 2
+    },
+    "uf/pe/2022-1.json": {
+      "ano": 2022,
+      "bytes": 18018,
+      "level": "uf",
+      "sha256": "4375c4b25495ec3990b22daf4b361c3573bd88f08bc60feab88f8bb3eb242b8e",
+      "turno": 1
+    },
+    "uf/pe/2022-2.json": {
+      "ano": 2022,
+      "bytes": 13069,
+      "level": "uf",
+      "sha256": "0b369695671523601d501028455f4d7b749957a9b12dc872b0f266dc10bc7576",
+      "turno": 2
+    },
+    "uf/pe/2026-1.json": {
+      "ano": 2026,
+      "bytes": 18592,
+      "level": "uf",
+      "sha256": "b24199797cb352d7fb3061a028b31797dafaa6d8191e82abc281f6d7846e2ca7",
+      "turno": 1
+    },
+    "uf/pe/2026-2.json": {
+      "ano": 2026,
+      "bytes": 13061,
+      "level": "uf",
+      "sha256": "a3bfeb778f68d34d9ef671c4c8ca5b43c883d435220081d23b21fb3a1ef4eae6",
+      "turno": 2
+    },
+    "uf/pi/2018-1.json": {
+      "ano": 2018,
+      "bytes": 24122,
+      "level": "uf",
+      "sha256": "7b44d1532cf255c24c04b0ef259a81d9520716fa23c9724ecc95ab2c8f85acf0",
+      "turno": 1
+    },
+    "uf/pi/2018-2.json": {
+      "ano": 2018,
+      "bytes": 16853,
+      "level": "uf",
+      "sha256": "308103fd1af5006693a418ee1c72235453385eb0c511a07027814017c8d793b5",
+      "turno": 2
+    },
+    "uf/pi/2022-1.json": {
+      "ano": 2022,
+      "bytes": 22306,
+      "level": "uf",
+      "sha256": "54e3a4bfbf430952c3e71a7f55037d1f6a0667e617d94383b6b6b177ce176897",
+      "turno": 1
+    },
+    "uf/pi/2022-2.json": {
+      "ano": 2022,
+      "bytes": 16850,
+      "level": "uf",
+      "sha256": "ef0256f7d4cf872caac8e44bbb450be5ffb1ba99b3ef68ae81122afd5a412844",
+      "turno": 2
+    },
+    "uf/pi/2026-1.json": {
+      "ano": 2026,
+      "bytes": 22898,
+      "level": "uf",
+      "sha256": "1bd57c961d7866857b8546f15f1e1afcc08ec77433605bc325f601fb471a2553",
+      "turno": 1
+    },
+    "uf/pi/2026-2.json": {
+      "ano": 2026,
+      "bytes": 16866,
+      "level": "uf",
+      "sha256": "ed14d52faf32410a5ef3a0ce75ecd7b8bee4c357ca6bdc06f4a2f103682562e1",
+      "turno": 2
+    },
+    "uf/pr/2018-1.json": {
+      "ano": 2018,
+      "bytes": 42188,
+      "level": "uf",
+      "sha256": "81602e39c6a2bf651265738876dd141cd15f4f51331ba60a952f75dfe41985d0",
+      "turno": 1
+    },
+    "uf/pr/2018-2.json": {
+      "ano": 2018,
+      "bytes": 28106,
+      "level": "uf",
+      "sha256": "5e28dbf0c7bcff007bbaaa30da5fdfda8e6fcee0f130f0d63c95b9c72dcee715",
+      "turno": 2
+    },
+    "uf/pr/2022-1.json": {
+      "ano": 2022,
+      "bytes": 37993,
+      "level": "uf",
+      "sha256": "28917409d119825c2f51b7613ac2ad2303799ccc7757d13ab8ef66eddd1aacc1",
+      "turno": 1
+    },
+    "uf/pr/2022-2.json": {
+      "ano": 2022,
+      "bytes": 28032,
+      "level": "uf",
+      "sha256": "f818cc90a570528c060a846af32997c76b0e5be0e9a735f9109e5f593dbdb1c9",
+      "turno": 2
+    },
+    "uf/pr/2026-1.json": {
+      "ano": 2026,
+      "bytes": 38992,
+      "level": "uf",
+      "sha256": "d8ce76ca3dfd4423afa4927ab86fc557286701e708b472dfad4ee8b315163879",
+      "turno": 1
+    },
+    "uf/pr/2026-2.json": {
+      "ano": 2026,
+      "bytes": 28021,
+      "level": "uf",
+      "sha256": "48505028ce4b99fb4c00021a7313a4778b80a1c822e920f4edb7392015ceb109",
+      "turno": 2
+    },
+    "uf/rj/2018-1.json": {
+      "ano": 2018,
+      "bytes": 11626,
+      "level": "uf",
+      "sha256": "8e83d08775037bd4f5b018b95a087e363b036aba2db8815e608a80d72e92c643",
+      "turno": 1
+    },
+    "uf/rj/2018-2.json": {
+      "ano": 2018,
+      "bytes": 7255,
+      "level": "uf",
+      "sha256": "f35eba8e7242a0ff3e6aa0706478453323adc84ff0fff5da994c80b50c3d5bb0",
+      "turno": 2
+    },
+    "uf/rj/2022-1.json": {
+      "ano": 2022,
+      "bytes": 10388,
+      "level": "uf",
+      "sha256": "102bbf701ccd116a1a5f109ccca0e9c6326eb37deb273d143a67225ce0839ce9",
+      "turno": 1
+    },
+    "uf/rj/2022-2.json": {
+      "ano": 2022,
+      "bytes": 7217,
+      "level": "uf",
+      "sha256": "67129f1325b296690a52dbe93b633127b3be46710f5c83fb641e71ab999052ed",
+      "turno": 2
+    },
+    "uf/rj/2026-1.json": {
+      "ano": 2026,
+      "bytes": 10723,
+      "level": "uf",
+      "sha256": "fb28ce76b7b51023dc929952b24e94eef4e3311dea2ffde5e364a8b458b8a6c7",
+      "turno": 1
+    },
+    "uf/rj/2026-2.json": {
+      "ano": 2026,
+      "bytes": 7231,
+      "level": "uf",
+      "sha256": "640ce15f19d05678619d0696918ec851fe2e4d12597bc5eed8b13be6040afe2c",
+      "turno": 2
+    },
+    "uf/rn/2018-1.json": {
+      "ano": 2018,
+      "bytes": 17637,
+      "level": "uf",
+      "sha256": "45b063e1a3f05885857764675f31cfa4470efe6ac1e7118f4aaa40135d9d3bb4",
+      "turno": 1
+    },
+    "uf/rn/2018-2.json": {
+      "ano": 2018,
+      "bytes": 11844,
+      "level": "uf",
+      "sha256": "0e3a1c45aeea4760f5f8bb0cd976ae6b2035ccac1e05d578e5d79a8cec6f6465",
+      "turno": 2
+    },
+    "uf/rn/2022-1.json": {
+      "ano": 2022,
+      "bytes": 16042,
+      "level": "uf",
+      "sha256": "00171b992e63c34ff15e005f9f4c97cf188748940bf490223bbe730f586296f8",
+      "turno": 1
+    },
+    "uf/rn/2022-2.json": {
+      "ano": 2022,
+      "bytes": 11815,
+      "level": "uf",
+      "sha256": "4fdb03028938fd933c847255f1fb4988c6e4c5498aead97b31069f8f4d643173",
+      "turno": 2
+    },
+    "uf/rn/2026-1.json": {
+      "ano": 2026,
+      "bytes": 16565,
+      "level": "uf",
+      "sha256": "7784d0f7c8403a7d4baa96e589f4aec1ac6c6dffb2340bee6ba7c6e5dab1ab7e",
+      "turno": 1
+    },
+    "uf/rn/2026-2.json": {
+      "ano": 2026,
+      "bytes": 11849,
+      "level": "uf",
+      "sha256": "6783001562f5cabf893f38aff30be1041ff53258c091d5db3912749a8d1fc598",
+      "turno": 2
+    },
+    "uf/ro/2018-1.json": {
+      "ano": 2018,
+      "bytes": 6743,
+      "level": "uf",
+      "sha256": "d034c9c34f3cf72712b7fa3f079431aa83fefa5db09d977c8f8b0653b44bb5c2",
+      "turno": 1
+    },
+    "uf/ro/2018-2.json": {
+      "ano": 2018,
+      "bytes": 4328,
+      "level": "uf",
+      "sha256": "18d427cd8ed8a535835fe9fb5ee18cec1dd5405d94dd01f5cf732094220e5ec1",
+      "turno": 2
+    },
+    "uf/ro/2022-1.json": {
+      "ano": 2022,
+      "bytes": 6074,
+      "level": "uf",
+      "sha256": "0b7e32ab9f79315129406b88337fd9733f1753f5fcca154fb09b03f9a3987316",
+      "turno": 1
+    },
+    "uf/ro/2022-2.json": {
+      "ano": 2022,
+      "bytes": 4314,
+      "level": "uf",
+      "sha256": "27bb5c145d3160c8f9501a45ab5ee8929451999bd810ef05f1e9c2f8c169e171",
+      "turno": 2
+    },
+    "uf/ro/2026-1.json": {
+      "ano": 2026,
+      "bytes": 6253,
+      "level": "uf",
+      "sha256": "6d033935a012e4bbfffd622636896f5458fb0b58deedf28c8165d0319068a0d9",
+      "turno": 1
+    },
+    "uf/ro/2026-2.json": {
+      "ano": 2026,
+      "bytes": 4305,
+      "level": "uf",
+      "sha256": "60336c2834b24b32b94546227b6a167b78cb60d5e19b7d7c8737eb1b96ac4d87",
+      "turno": 2
+    },
+    "uf/rr/2018-1.json": {
+      "ano": 2018,
+      "bytes": 2546,
+      "level": "uf",
+      "sha256": "781e589828e3d6a7762913ddfd9a1d74fa996a29f0f221fc06197bd2f08e8360",
+      "turno": 1
+    },
+    "uf/rr/2018-2.json": {
+      "ano": 2018,
+      "bytes": 1411,
+      "level": "uf",
+      "sha256": "c161b0071632b4e13779ea970d225058af275bc5c655c44b00682be15d60be84",
+      "turno": 2
+    },
+    "uf/rr/2022-1.json": {
+      "ano": 2022,
+      "bytes": 2268,
+      "level": "uf",
+      "sha256": "4945f4899593c3812f77f8f85c40a2ea77acf52cc415eb76cc3213a4a31dd1b3",
+      "turno": 1
+    },
+    "uf/rr/2022-2.json": {
+      "ano": 2022,
+      "bytes": 1398,
+      "level": "uf",
+      "sha256": "93ae14a14c34eeba7588484341e548501590184fab75ae158f4902e7da5bcc43",
+      "turno": 2
+    },
+    "uf/rr/2026-1.json": {
+      "ano": 2026,
+      "bytes": 2393,
+      "level": "uf",
+      "sha256": "106704e9ae0090c1aab20eec3a09f42bb7328cf05fc53ba4dd264a1eeb2559ba",
+      "turno": 1
+    },
+    "uf/rr/2026-2.json": {
+      "ano": 2026,
+      "bytes": 1408,
+      "level": "uf",
+      "sha256": "460cdae5cb7d3af543fd9201e087d1e71e3eeba93ac83df04f3fc1794c7454b3",
+      "turno": 2
+    },
+    "uf/rs/2018-1.json": {
+      "ano": 2018,
+      "bytes": 50984,
+      "level": "uf",
+      "sha256": "c2eceece5c8e5a0daa241a41154014a03b0f3aa8b79ea337130fa16edb7764e3",
+      "turno": 1
+    },
+    "uf/rs/2018-2.json": {
+      "ano": 2018,
+      "bytes": 34517,
+      "level": "uf",
+      "sha256": "b7770e6c9d11a844db8657d3574d6e9f06f7c0cec88661fe42986f0b591e631e",
+      "turno": 2
+    },
+    "uf/rs/2022-1.json": {
+      "ano": 2022,
+      "bytes": 46422,
+      "level": "uf",
+      "sha256": "df25a869c8d50484c3d6f4f88a3af913b439989fdfc4d7dbff4da31d80e4c436",
+      "turno": 1
+    },
+    "uf/rs/2022-2.json": {
+      "ano": 2022,
+      "bytes": 34405,
+      "level": "uf",
+      "sha256": "ce122d11643528347cb125b04d17549fb91407a3162335b7fb1e62797ce8ffb3",
+      "turno": 2
+    },
+    "uf/rs/2026-1.json": {
+      "ano": 2026,
+      "bytes": 47581,
+      "level": "uf",
+      "sha256": "4fd529c76d82cf0606cb53bbe2fd47968de158cdba694d1641d82296296871b5",
+      "turno": 1
+    },
+    "uf/rs/2026-2.json": {
+      "ano": 2026,
+      "bytes": 34308,
+      "level": "uf",
+      "sha256": "f082b7568b3d050caa0bcfba23f954a09413776d65bac8bfd4fd0a162deea34a",
+      "turno": 2
+    },
+    "uf/sc/2018-1.json": {
+      "ano": 2018,
+      "bytes": 30395,
+      "level": "uf",
+      "sha256": "1797a82a67cb02a15e1382f66b6cb8afdfe916cbd94487f56c72c0b4ba61ddbb",
+      "turno": 1
+    },
+    "uf/sc/2018-2.json": {
+      "ano": 2018,
+      "bytes": 20147,
+      "level": "uf",
+      "sha256": "44796429e62524fce609d63a3d33f0c0e4f95adb04ced5cf29ae73f893c14dd1",
+      "turno": 2
+    },
+    "uf/sc/2022-1.json": {
+      "ano": 2022,
+      "bytes": 27718,
+      "level": "uf",
+      "sha256": "558492708ce4eec63f968e332dc797c972404c6f98ff51aefd5e445ca33257a4",
+      "turno": 1
+    },
+    "uf/sc/2022-2.json": {
+      "ano": 2022,
+      "bytes": 20087,
+      "level": "uf",
+      "sha256": "fde60c661d37ebd78af242187dc0b07bfbe26b79161e689a26e2aecc40d87b15",
+      "turno": 2
+    },
+    "uf/sc/2026-1.json": {
+      "ano": 2026,
+      "bytes": 28395,
+      "level": "uf",
+      "sha256": "e698db683b95ed9a6208dca91f9a7d312fbdf1271fa0cf8f455a881378673a63",
+      "turno": 1
+    },
+    "uf/sc/2026-2.json": {
+      "ano": 2026,
+      "bytes": 20101,
+      "level": "uf",
+      "sha256": "eec018586c344edfb99aa58b1221f7416dcba60df222ca328be308daf8fb8aae",
+      "turno": 2
+    },
+    "uf/se/2018-1.json": {
+      "ano": 2018,
+      "bytes": 8943,
+      "level": "uf",
+      "sha256": "daa292d4eb6712b542cd36816f4257c5eb415fc6130cf62575c6f67e9a246f97",
+      "turno": 1
+    },
+    "uf/se/2018-2.json": {
+      "ano": 2018,
+      "bytes": 5788,
+      "level": "uf",
+      "sha256": "1219f381e84833282aa8e2b0ded48b9195baa50c1acd645a4f4a762e52de6c75",
+      "turno": 2
+    },
+    "uf/se/2022-1.json": {
+      "ano": 2022,
+      "bytes": 8046,
+      "level": "uf",
+      "sha256": "04ae88fc66e78ab2da0f39bba1b59e21dd57def1545622322cb630b675e376f0",
+      "turno": 1
+    },
+    "uf/se/2022-2.json": {
+      "ano": 2022,
+      "bytes": 5770,
+      "level": "uf",
+      "sha256": "906c7bf0c9a69f3d444e0a5abec18a1900a698c3d1be1da627d60ab73cf56cc1",
+      "turno": 2
+    },
+    "uf/se/2026-1.json": {
+      "ano": 2026,
+      "bytes": 8313,
+      "level": "uf",
+      "sha256": "b8f04638dfeb78b349be80768a8bf5027def4196fed7751ff688a42a260f5c48",
+      "turno": 1
+    },
+    "uf/se/2026-2.json": {
+      "ano": 2026,
+      "bytes": 5771,
+      "level": "uf",
+      "sha256": "4b393de0e42a9408756a479d8d738674b1d675cc8f35011dcddadecdb091fc88",
+      "turno": 2
+    },
+    "uf/sp/2018-1.json": {
+      "ano": 2018,
+      "bytes": 67598,
+      "level": "uf",
+      "sha256": "5d9d881a7a83610c2d50b30c216176bdda2c10e6f7d93b16c296ce6f9a6dade6",
+      "turno": 1
+    },
+    "uf/sp/2018-2.json": {
+      "ano": 2018,
+      "bytes": 44284,
+      "level": "uf",
+      "sha256": "942c58903b209b043864334a936b16b65b626bb5f92f62ee24089f4682bc924a",
+      "turno": 2
+    },
+    "uf/sp/2022-1.json": {
+      "ano": 2022,
+      "bytes": 61015,
+      "level": "uf",
+      "sha256": "d389c7e78788524130699daf846877f238ad8041b3c17f03097f7dabf6dbc534",
+      "turno": 1
+    },
+    "uf/sp/2022-2.json": {
+      "ano": 2022,
+      "bytes": 44263,
+      "level": "uf",
+      "sha256": "96268f095cfdb000d0c1d13ebb7c5427882d039e3799ddf84c8a6e83e78ed515",
+      "turno": 2
+    },
+    "uf/sp/2026-1.json": {
+      "ano": 2026,
+      "bytes": 62515,
+      "level": "uf",
+      "sha256": "2b6cc054a62dfd03d8f0f87985acd7f7f350f0857ac89e0b7304085ca5e6572c",
+      "turno": 1
+    },
+    "uf/sp/2026-2.json": {
+      "ano": 2026,
+      "bytes": 44115,
+      "level": "uf",
+      "sha256": "e4bb5ed1baff8e773372723d325f5e49f82bf264fedde4969af747a1dea6e944",
+      "turno": 2
+    },
+    "uf/to/2018-1.json": {
+      "ano": 2018,
+      "bytes": 14973,
+      "level": "uf",
+      "sha256": "d5a725565624b9d239fd3d51c52ea8fc08d2854226a39e12fbd71e09f829cba5",
+      "turno": 1
+    },
+    "uf/to/2018-2.json": {
+      "ano": 2018,
+      "bytes": 10296,
+      "level": "uf",
+      "sha256": "4d9755a708f16451bf83ea080d15d2668a64ce474b36e71c92588fac07b0e3b5",
+      "turno": 2
+    },
+    "uf/to/2022-1.json": {
+      "ano": 2022,
+      "bytes": 13752,
+      "level": "uf",
+      "sha256": "7b81819f4af0d77185b174388ebf0b20a82606f804971dd57d8922faf7e0807b",
+      "turno": 1
+    },
+    "uf/to/2022-2.json": {
+      "ano": 2022,
+      "bytes": 10250,
+      "level": "uf",
+      "sha256": "e90f277b99811f819812dd09778693a69f44ed63dac3b2369a86ef5613a1e763",
+      "turno": 2
+    },
+    "uf/to/2026-1.json": {
+      "ano": 2026,
+      "bytes": 14226,
+      "level": "uf",
+      "sha256": "66da6c96517a02a2b89c6782fb7a6d7a7260a2de176683d0ff3bcfd359765c85",
+      "turno": 1
+    },
+    "uf/to/2026-2.json": {
+      "ano": 2026,
+      "bytes": 10340,
+      "level": "uf",
+      "sha256": "fc9118f02d392533fad0fb9324540928e55f992037c654b6d14ff9c52a50cba7",
+      "turno": 2
+    }
+  }
+}

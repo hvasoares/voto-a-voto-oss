@@ -13,7 +13,7 @@ FIXTURE_DATA = Path(__file__).parent.parent.parent / "web" / "fixtures" / "data"
 @pytest.fixture
 def data_dir(tmp_path) -> Path:
     target = tmp_path / "data"
-    shutil.copytree(FIXTURE_DATA, target)
+    shutil.copytree(FIXTURE_DATA, target, ignore=shutil.ignore_patterns("nerds"))
     return target
 
 
