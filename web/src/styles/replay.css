@@ -7,7 +7,7 @@
 .replay__bar { display: flex; height: 26px; margin-top: 6px; overflow: hidden; border-radius: 4px; }
 .replay__seg { flex: 1 1 0; display: flex; align-items: center; justify-content: center; min-width: 0; overflow: hidden; font: 600 11px/14px var(--font-sans); white-space: nowrap; transition: flex-grow .8s ease; }
 .replay__seg--a { background: var(--c-cand-a); color: var(--c-accent-fg); }
-.replay__seg--b { background: var(--c-cand-b); color: var(--c-ink); }
+.replay__seg--b { background: var(--c-cand-b); color: var(--c-accent-fg); }
 .replay__seg--outros { background: var(--c-cand-outros); color: var(--c-ink); }
 .replay__track { display: block; width: 100%; height: auto; margin-top: 10px; }
 .replay__track line { stroke: var(--c-rule); stroke-width: 2; }

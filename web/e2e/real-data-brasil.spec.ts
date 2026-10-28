@@ -117,7 +117,7 @@ test.describe('brasil on the real dataset', () => {
     // The frame shows the count WITH the share inside the red segment and only the count inside the
     // blue one (both counts are also in each segment's title attribute).
     await expect(bar.getByText(`Lula ${ptNumber.format(both[0]!)} · ${partShare(both[0]!, both, 2)}%`)).toBeVisible()
-    await expect(bar.getByText(`Flavio ${ptNumber.format(both[1]!)}`, { exact: true })).toBeVisible()
+    await expect(bar.getByText(`Flávio ${ptNumber.format(both[1]!)}`, { exact: true })).toBeVisible()
     const titles = await bar.locator('span').evaluateAll((els) => els.map((e) => e.getAttribute('title')))
     expect(titles[1]).toContain(`(${partShare(both[1]!, both, 2)}%)`)
   })
@@ -136,7 +136,7 @@ test.describe('brasil on the real dataset', () => {
       const lula = r.votes.get('13')!
       const flavio = r.votes.get('22')!
       await expect(el.getByText(`Lula ${partShare(lula, [lula, flavio])}%`)).toBeVisible()
-      await expect(el.getByText(`Flavio ${partShare(flavio, [lula, flavio])}%`)).toBeVisible()
+      await expect(el.getByText(`Flávio ${partShare(flavio, [lula, flavio])}%`)).toBeVisible()
       const turnoutParts = [r.comparecimento, r.aptos - r.comparecimento]
       await expect(el.getByText(`Compareceram ${partShare(r.comparecimento, turnoutParts)}%`, { exact: true })).toBeVisible()
       await expect(el.getByText(`Não ${partShare(r.aptos - r.comparecimento, turnoutParts)}%`, { exact: true })).toBeVisible()

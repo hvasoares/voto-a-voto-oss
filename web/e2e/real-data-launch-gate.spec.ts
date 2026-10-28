@@ -36,7 +36,7 @@ const SCREENS: Array<{ route: string; screen: string; figures: Figure[] }> = [
       // the 51,79% share of the two-way valid-vote sum is the page's own largest-remainder rounding,
       // derived in e2e/real-data-brasil.spec.ts from the same dataset
       { text: 'Lula 64.256.232 · 51,79%', citation: 'data/manifest.json national_reference 2026-2 .candidates.13 + ' + LIVE },
-      { text: 'Flavio 59.826.041', citation: 'data/manifest.json national_reference 2026-2 .candidates.22 + ' + LIVE },
+      { text: 'Flávio 59.826.041', citation: 'data/manifest.json national_reference 2026-2 .candidates.22 + ' + LIVE },
       // regions: thoughts/team/data-engineering/2026-10-26-runoff-results-highlights.md "What counted the most"
       { text: 'Sudeste 41,1% dos votos válidos do país', citation: 'note Sudeste 41.1% + data/turnout.csv/votes.csv' },
       { text: 'Nordeste 28,5% dos votos válidos do país', citation: 'note Nordeste 28.5%' },
@@ -79,7 +79,7 @@ const SCREENS: Array<{ route: string; screen: string; figures: Figure[] }> = [
     screen: 'city card São Paulo',
     figures: [
       { text: 'Lula 3.864.354 · 56% dos votos', citation: 'data/votes.csv sp 71072 t2 cand 13 + ' + LIVE },
-      { text: 'Flavio Bolsonaro 3.097.923 · 44% dos votos', citation: 'data/votes.csv sp 71072 t2 cand 22 + ' + LIVE },
+      { text: 'Flávio Bolsonaro 3.097.923 · 44% dos votos', citation: 'data/votes.csv sp 71072 t2 cand 22 + ' + LIVE },
       { text: 'Brancos 104.890 · 5% dos que não votaram', citation: 'identity in the sources plan (7.284.071 = 6.962.277 + 104.890 + 216.904) + data/turnout.csv + ' + LIVE },
       { text: 'Nulos 216.904 · 10% dos que não votaram', citation: 'sources plan + data/turnout.csv + ' + LIVE },
     ],
@@ -89,7 +89,7 @@ const SCREENS: Array<{ route: string; screen: string; figures: Figure[] }> = [
     screen: 'city card Rio de Janeiro',
     figures: [
       { text: 'Lula 1.898.391', citation: 'data/votes.csv rj 60011 t2 cand 13 + ' + LIVE },
-      { text: 'Flavio Bolsonaro 1.785.198', citation: 'data/votes.csv rj 60011 t2 cand 22 + ' + LIVE },
+      { text: 'Flávio Bolsonaro 1.785.198', citation: 'data/votes.csv rj 60011 t2 cand 22 + ' + LIVE },
     ],
   },
   {
@@ -97,7 +97,7 @@ const SCREENS: Array<{ route: string; screen: string; figures: Figure[] }> = [
     screen: 'city card Brasília',
     figures: [
       { text: 'Lula 825.224', citation: 'data/votes.csv df 97012 t2 cand 13 + ' + LIVE },
-      { text: 'Flavio Bolsonaro 979.542', citation: 'data/votes.csv df 97012 t2 cand 22 + ' + LIVE },
+      { text: 'Flávio Bolsonaro 979.542', citation: 'data/votes.csv df 97012 t2 cand 22 + ' + LIVE },
     ],
   },
   {
@@ -111,7 +111,7 @@ const SCREENS: Array<{ route: string; screen: string; figures: Figure[] }> = [
     route: 'relatorios/',
     screen: 'relatorios hub',
     figures: [
-      { text: 'Lula virou 211 cidades; Flavio Bolsonaro virou 1', citation: 'note: Lula flipped 211 cities, Flavio 1' },
+      { text: 'Lula virou 211 cidades; Flávio Bolsonaro virou 1', citation: 'note: Lula flipped 211 cities, Flávio 1' },
     ],
   },
   {
@@ -136,7 +136,7 @@ const SCREENS: Array<{ route: string; screen: string; figures: Figure[] }> = [
     figures: [
       { text: '+3.862.039 votos', citation: 'note: Lula gained 3.862.039 votes nationally (3.428 / 2.132 cities)' },
       { text: '+186.433 votos', citation: 'note "São Paulo +186k"; exact from data/votes.csv 3.864.354-3.677.921' },
-      { text: '+1.591.101 votos', citation: 'note: Flavio vs Bolsonaro 2022 gained 1.591.101 votes' },
+      { text: '+1.591.101 votos', citation: 'note: Flávio vs Bolsonaro 2022 gained 1.591.101 votes' },
     ],
   },
   {

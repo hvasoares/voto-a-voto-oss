@@ -1,4 +1,5 @@
 ---
+import { CANDIDATES } from '@/shared/candidates'
 import Base from '@/layouts/Base.astro'
 import { COMPARE_CYCLES, formatSignedInt, type CompareCycle } from '@/lib/compare'
 import { buildCompareRows, stateStats } from '@/lib/compare-data'
@@ -29,7 +30,7 @@ const rows = (await buildCompareRows(await stateStats(), ciclo)).slice(0, 6)
 const facts = await getFactPage(`comparar/${ciclo}`, 'estados')
 const links = factLinks(facts.facts, `/comparar/${ciclo}/`, base)
 const seal = await sealOf(facts)
-const note2018 = ciclo === 2018 ? ' Candidatos de 2018: o do PT (13) e Bolsonaro (17).' : ''
+const note2018 = ciclo === 2018 ? ` Candidatos de 2018: ${CANDIDATES[2018].map((c) => `${c.name} (${c.numero})`).join(' e ')}.` : ''
 const intro = `Eleição presidencial 2026 (2º turno) comparada com a de ${ciclo} (2º turno), nos mesmos municípios.${note2018} Percentuais = % dos votos válidos; votos = 2026 menos ${ciclo}. Os 6 estados com mais votos válidos.`
 ---
 

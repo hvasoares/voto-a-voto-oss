@@ -1,6 +1,6 @@
 /**
  * The hub headlines, pinned to the repo notes. Real data:
- * - "Lula virou 211 cidades; Flavio Bolsonaro virou 1" (frame 6 + highlights note)
+ * - "Lula virou 211 cidades; Flávio Bolsonaro virou 1" (frame 6 + highlights note)
  * - "Maior variação: Campos dos Goytacazes/RJ, +9,8 pp"
  * - "Lula: +3.862.039 votos no país"
  * - "Marquinho/PR: empate, diferença de 0 votos"
@@ -79,7 +79,7 @@ describe.skipIf(!existsSync(resolve(REAL_DATA, 'cities.csv')))('hub rows (real d
     const input = await realInput()
     const reports = computeReports(input)
     const rows = hubRows(reports, input)
-    expect(rows[0]!.headline).toBe('Lula virou 211 cidades; Flavio Bolsonaro virou 1')
+    expect(rows[0]!.headline).toBe('Lula virou 211 cidades; Flávio Bolsonaro virou 1')
     expect(rows[1]!.headline).toBe('Maior variação: Campos dos Goytacazes/RJ, +9,8 pp')
     expect(rows[2]!.headline).toBe('Lula: +3.862.039 votos no país')
     expect(rows[3]!.headline).toBe('Marquinho/PR: empate, diferença de 0 votos')

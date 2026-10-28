@@ -2,6 +2,7 @@
  * The report list of the hub (frame "6 Relatórios"): seven rows, each with its headline figure,
  * computed at build time (nothing on the hub is a copied constant). Every row is a built report and links through.
  */
+import { candidateName } from '@/shared/candidate-name'
 import { displayName } from '@/shared/city-search'
 import { biggestSwing, closestRaces, citiesWonInRunoff, MIN_BIG_SWING_VALIDOS, MIN_TURNOUT_APTOS, flipsToLula, flipsToFlavio, turnoutExtremes, type ComputedReports, type MarginInput } from './compute'
 import { formatFixedPct, formatInt, formatSignedInt, formatSignedPp } from './format'
@@ -28,8 +29,8 @@ export interface OutlierHub {
 
 export function hubRows(reports: ComputedReports, input: MarginInput, outliers?: OutlierHub): HubRow[] {
   const { margins, netVotes, pair } = reports
-  const lula = displayName(pair.nomePrimeiro)
-  const flavio = displayName(pair.nomeSegundo)
+  const lula = candidateName(pair.nomePrimeiro)
+  const flavio = candidateName(pair.nomeSegundo)
 
   const biggest = biggestSwing(margins, MIN_BIG_SWING_VALIDOS)
   const race = closestRaces(margins)[0]

@@ -9,7 +9,8 @@
  * - Every percentage shown as an integer comes from largestRemainder, so the parts of a bar add up to exactly 100.
  */
 import type { Candidate, Turnout, Turno, Vote } from '../data'
-import { displayName } from './city-search'
+import { candidateName } from './candidate-name'
+import { sideTone } from './candidates'
 
 /** The three presidential cycles of the product, in tab order. */
 export const CYCLES: readonly number[] = [2018, 2022, 2026]
@@ -61,11 +62,16 @@ export interface Segment {
   pct: number
   /** Candidate number of a/b (keyed with the year and round the result is for). */
   numero?: number
+  /** The colour of a/b: the candidate's own side in the identity table (#84), `outros` for a round 1 runner-up beside a runoff candidate. */
+  tone?: SegmentKey
+  /** The short form of the candidate's name (the table's, #84) for the tight places. */
+  short?: string
 }
 
 export interface CandidateTally {
   numero: number
   nome: string
+  short?: string
   votos: number
 }
 
@@ -106,7 +112,7 @@ const share = (n: number, d: number) => (d <= 0 ? 0 : (n / d) * 100)
 export function buildCityResult({ turnout: t, votes, candidates }: CityResultInput): CityResult {
   const tally = new Map<number, CandidateTally>()
   for (const c of candidates)
-    if (c.ano === t.ano && c.turno === t.turno) tally.set(c.candidatoNumero, { numero: c.candidatoNumero, nome: displayName(c.nomeUrna), votos: 0 })
+    if (c.ano === t.ano && c.turno === t.turno) tally.set(c.candidatoNumero, { numero: c.candidatoNumero, nome: candidateName(c.nomeUrna), short: candidateName(c.nomeUrna, 'short'), votos: 0 })
   for (const v of votes) {
     const row = tally.get(v.candidatoNumero) ?? { numero: v.candidatoNumero, nome: `Candidato nº ${v.candidatoNumero}`, votos: 0 }
     row.votos += v.votos
@@ -117,8 +123,8 @@ export function buildCityResult({ turnout: t, votes, candidates }: CityResultInp
   const outrosVotos = rest.reduce((n, c) => n + c.votos, 0)
 
   const leaders: Segment[] = []
-  if (a) leaders.push({ key: 'a', label: a.nome, votos: a.votos, numero: a.numero, pct: 0 })
-  if (b) leaders.push({ key: 'b', label: b.nome, votos: b.votos, numero: b.numero, pct: 0 })
+  if (a) leaders.push({ key: 'a', label: a.nome, votos: a.votos, numero: a.numero, short: a.short, tone: sideTone(t.ano, a.numero, b?.numero, 'a'), pct: 0 })
+  if (b) leaders.push({ key: 'b', label: b.nome, votos: b.votos, numero: b.numero, short: b.short, tone: sideTone(t.ano, b.numero, a?.numero, 'b'), pct: 0 })
   const voted: Segment[] = rest.length ? [...leaders, { key: 'outros', label: `Outros candidatos (${rest.length})`, votos: outrosVotos, pct: 0 }] : leaders
   largestRemainder(voted.map((s) => s.votos)).forEach((p, i) => (voted[i]!.pct = p))
 

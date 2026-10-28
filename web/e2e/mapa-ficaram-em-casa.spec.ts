@@ -34,7 +34,7 @@ test.describe('Ficaram em casa: content', () => {
     await expect(tiles).toHaveCount(3)
     for (const [uf, text] of Object.entries(want)) await expect(page.locator(`a[data-uf="${uf}"]`)).toContainText(text)
     await expect(page.locator('[data-uf="zz"]')).toHaveCount(0)
-    await expect(page.locator('main')).not.toContainText(/Candidato|Lula|Flavio|Exterior:/)
+    await expect(page.locator('main')).not.toContainText(/Candidato|Lula|Flávio|Exterior:/)
   })
 
   test('the legend prints the six edges, the table repeats every state, the selected panel starts on the largest electorate', async ({ page }) => {

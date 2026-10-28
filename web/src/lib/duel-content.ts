@@ -3,7 +3,7 @@
  * share text and link (the address reproduces the card: level, the two places, nothing else), the short address the picture prints and the
  * file name. The page's island (browser) and the tests use the same function, so a card and its recomputation are one picture.
  */
-import { displayName } from '@/shared/city-search'
+import { candidateName } from '@/shared/candidate-name'
 import { duelCardSvg } from './duel-card'
 import { buildMeasures, duelQuery, type DuelData, type DuelPlace, type Level, type Measure } from './duel-model'
 import { DEFAULT_LOCALE, REGISTERS, type Locale, type Register } from './sentences/catalog'
@@ -36,7 +36,7 @@ export const duelPageUrl = (origin: string, base: string) => `${origin}${base.en
 
 /** The names the signed measure's note uses for the two candidates ("Lula", "Flavio Bolsonaro"; the fixture's "Candidato A"). */
 export function pairLabels(data: Pick<DuelData, 'pair'>): [string, string] {
-  return [displayName(data.pair.a.nome), displayName(data.pair.b.nome)]
+  return [candidateName(data.pair.a.nome), candidateName(data.pair.b.nome)]
 }
 
 export function duelContent(level: Level, a: DuelPlace, b: DuelPlace, data: DuelData, o: DuelContentOptions): DuelContent {

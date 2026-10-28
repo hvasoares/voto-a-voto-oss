@@ -65,9 +65,9 @@ describe('percent and volume formatting of the compare screens', () => {
 
   it('labels the frame candidates the way the frames do; anything else generically', () => {
     expect(shortName('LULA')).toBe('Lula')
-    expect(shortName('FERNANDO HADDAD')).toBe('Lula')
+    expect(shortName('FERNANDO HADDAD')).toBe('Haddad')
     expect(shortName('JAIR BOLSONARO')).toBe('Bolsonaro')
-    expect(shortName('FLAVIO BOLSONARO')).toBe('Flavio')
+    expect(shortName('FLAVIO BOLSONARO')).toBe('Flávio')
     expect(shortName('Candidato A')).toBe('A')
     expect(shortName('CIRO GOMES')).toBe('Ciro')
   })
@@ -75,7 +75,7 @@ describe('percent and volume formatting of the compare screens', () => {
 
 describe('the compare row (2026 vs a cycle), from the frames and the real tallies', () => {
   it('pairs 2026 with 2022 and keeps the exact integer vote difference', () => {
-    const row = buildCompareRow({ uf: 'sp', c: SP_2026, old: SP_2022, labels: { left: 'Lula', rival: 'Flavio' } })
+    const row = buildCompareRow({ uf: 'sp', c: SP_2026, old: SP_2022, labels: { left: 'Lula', rival: 'Flávio' } })
     expect(row.validos).toBe(26258452)
     expect(row.left.label).toBe('Lula')
     expect(row.left.pct26).toBe('46,2')
@@ -83,7 +83,7 @@ describe('the compare row (2026 vs a cycle), from the frames and the real tallie
     expect(row.left.diffVotes).toBe(599392)
     expect(row.left.votos26).toBe(12119274)
     expect(row.left.votosOld).toBe(11519882)
-    expect(row.rival.label).toBe('Flavio')
+    expect(row.rival.label).toBe('Flávio')
     expect(row.rival.pct26).toBe('53,8')
     expect(row.rival.pctOld).toBe('55,2')
     expect(row.rival.diffVotes).toBe(14139178 - 14216587)
@@ -91,7 +91,7 @@ describe('the compare row (2026 vs a cycle), from the frames and the real tallie
   })
 
   it('pairs 2026 with 2018: the 2018 side is the PT candidate (13) against Bolsonaro (17)', () => {
-    const row = buildCompareRow({ uf: 'sp', c: SP_2026, old: SP_2018, labels: { left: 'Lula', rival: 'Flavio' } })
+    const row = buildCompareRow({ uf: 'sp', c: SP_2026, old: SP_2018, labels: { left: 'Lula', rival: 'Flávio' } })
     expect(row.left.pct26).toBe('46,2')
     expect(row.left.pctOld).toBe('32,0')
     expect(row.left.diffVotes).toBe(12119274 - 7212132)
@@ -104,10 +104,10 @@ describe('the compare row (2026 vs a cycle), from the frames and the real tallie
 
   it('sorts deterministically: big states by 2026 valid votes first, ties by UF', () => {
     const rows: CompareRow[] = [
-      buildCompareRow({ uf: 'ap', c: { ...SP_2026, validos: 100 }, old: SP_2022, labels: { left: 'Lula', rival: 'Flavio' } }),
-      buildCompareRow({ uf: 'rs', c: { ...SP_2026, validos: 100 }, old: SP_2022, labels: { left: 'Lula', rival: 'Flavio' } }),
-      buildCompareRow({ uf: 'mg', c: { ...SP_2026, validos: 100 }, old: SP_2022, labels: { left: 'Lula', rival: 'Flavio' } }),
-      buildCompareRow({ uf: 'sp', c: SP_2026, old: SP_2022, labels: { left: 'Lula', rival: 'Flavio' } }),
+      buildCompareRow({ uf: 'ap', c: { ...SP_2026, validos: 100 }, old: SP_2022, labels: { left: 'Lula', rival: 'Flávio' } }),
+      buildCompareRow({ uf: 'rs', c: { ...SP_2026, validos: 100 }, old: SP_2022, labels: { left: 'Lula', rival: 'Flávio' } }),
+      buildCompareRow({ uf: 'mg', c: { ...SP_2026, validos: 100 }, old: SP_2022, labels: { left: 'Lula', rival: 'Flávio' } }),
+      buildCompareRow({ uf: 'sp', c: SP_2026, old: SP_2022, labels: { left: 'Lula', rival: 'Flávio' } }),
     ]
     expect(sortCompareRows(rows).map((r) => r.uf)).toEqual(['sp', 'ap', 'mg', 'rs'])
   })
@@ -122,14 +122,14 @@ describe('the compare row (2026 vs a cycle), from the frames and the real tallie
       labels: {
         2018: { left: 'Lula', rival: 'Bolsonaro' },
         2022: { left: 'Lula', rival: 'Bolsonaro' },
-        2026: { left: 'Lula', rival: 'Flavio' },
+        2026: { left: 'Lula', rival: 'Flávio' },
       },
     })
     expect(blocks.map((b) => b.ano)).toEqual(CYCLES)
     expect(blocks.map((b) => b.status)).toEqual(['data', 'data', 'data'])
     expect(blocks.map((b) => b.left!.pct)).toEqual(['32,0', '44,8', '46,2'])
     expect(blocks.map((b) => b.rival!.pct)).toEqual(['68,0', '55,2', '53,8'])
-    expect(blocks.map((b) => b.rival!.label)).toEqual(['Bolsonaro', 'Bolsonaro', 'Flavio'])
+    expect(blocks.map((b) => b.rival!.label)).toEqual(['Bolsonaro', 'Bolsonaro', 'Flávio'])
     expect(blocks[0]!.changePp).toBeUndefined()
     expect(blocks[1]!.changePp).toBe('+12,7')
     expect(blocks[1]!.changeVs).toBe(2018)
@@ -140,7 +140,7 @@ describe('the compare row (2026 vs a cycle), from the frames and the real tallie
   it('renders "sem dados" for cycles the state does not have, never zeros, and starts the change at the first data cycle', () => {
     const blocks = buildCycleBlocks({
       tallies: new Map<number, RunoffTally>([[2026, SP_2026]]),
-      labels: { 2026: { left: 'Lula', rival: 'Flavio' } },
+      labels: { 2026: { left: 'Lula', rival: 'Flávio' } },
     })
     expect(blocks.map((b) => b.status)).toEqual(['no-data', 'no-data', 'data'])
     expect(blocks[0]!.left).toBeUndefined()
@@ -149,7 +149,7 @@ describe('the compare row (2026 vs a cycle), from the frames and the real tallie
     // the only change line is against the first cycle WITH data; here there is none before 2026
     expect(blocks[2]!.changePp).toBeUndefined()
     expect(blocks[2]!.changeVs).toBeUndefined()
-    const first = buildCycleBlock({ ano: 2026, tally: SP_2026, labels: { left: 'Lula', rival: 'Flavio' }, previous: { ano: 2022, tally: SP_2022 } })
+    const first = buildCycleBlock({ ano: 2026, tally: SP_2026, labels: { left: 'Lula', rival: 'Flávio' }, previous: { ano: 2022, tally: SP_2022 } })
     expect(first.changePp).toBe('+1,4')
     expect(first.changeVs).toBe(2022)
   })

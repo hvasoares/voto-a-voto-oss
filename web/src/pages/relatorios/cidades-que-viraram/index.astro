@@ -2,6 +2,7 @@
 // "Cidades que viraram no 2º turno" (frame "7", ticket #12): the ranked list of the viradas toward
 // the first candidate of the runoff, with the minimum-size filter and the volume next to every rate
 // (Lean Analytics). Every figure is computed at build time from the dataset (web/src/lib/reports).
+import { candidateName } from '@/shared/candidate-name'
 import Base from '@/layouts/Base.astro'
 import { MIN_FLIP_VALIDOS, computeReports, rankedFlipsToLula } from '@/lib/reports/compute'
 import { formatInt, formatSignedPp } from '@/lib/reports/format'
@@ -19,8 +20,8 @@ const base = normalizeBase(import.meta.env.BASE_URL)
 const href = (path: string) => withBase(base, path)
 const input = await loadReportsData()
 const { margins, pair } = computeReports(input)
-const lula = displayName(pair.nomePrimeiro)
-const flavio = displayName(pair.nomeSegundo)
+const lula = candidateName(pair.nomePrimeiro)
+const flavio = candidateName(pair.nomeSegundo)
 const rows = rankedFlipsToLula(margins)
 // Fact records (#62): every listed figure links to its record; the seal is written from the build's checks.
 const facts = await getFactPage('relatorios/cidades-que-viraram', 'cidades')

@@ -5,11 +5,11 @@
  * `public/geo/municipios-<uf>.json`. Everything else is pure (`margins-city.ts`, `margins.ts`,
  * `scale.ts`); no election number is hard-coded here. #17 (the other UFs) reuses this loader as is.
  */
+import { candidateName } from '@/shared/candidate-name'
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { createStore } from '@/data/store'
 import { diskSource } from '@/data/node'
-import { displayName } from '@/shared/city-search'
 import type { City, Turnout, Vote } from '@/data'
 import { computeMargins, type Margins } from './margins'
 import { computeCityMargins, type CityMarginRow } from './margins-city'
@@ -55,8 +55,8 @@ export function cityMapData(turnout: readonly Turnout[], votes: readonly Vote[],
     uf,
     ladoANome: shortName(m.ladoA.nome),
     ladoBNome: shortName(m.ladoB.nome),
-    ladoANomeCompleto: displayName(m.ladoA.nome),
-    ladoBNomeCompleto: displayName(m.ladoB.nome),
+    ladoANomeCompleto: candidateName(m.ladoA.nome),
+    ladoBNomeCompleto: candidateName(m.ladoB.nome),
     rows: cityRowsFor(m, uf, citiesOfUf, turnout, votes, ano),
   }
 }

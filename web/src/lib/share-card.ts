@@ -27,7 +27,7 @@ import { DEFAULT_LOCALE, message, type Locale, type MessageKey } from './sentenc
 
 /** The fields of a CityResult the picture and the share text read. A CityResult is one. */
 export interface PictureResult extends Pick<CityResult, 'ano' | 'turno' | 'aptos' | 'validos' | 'votedPct' | 'notVotedPct'> {
-  voted: Pick<Segment, 'key' | 'label' | 'pct'>[]
+  voted: Pick<Segment, 'key' | 'label' | 'pct' | 'tone'>[]
   notVoted: Pick<Segment, 'key' | 'label' | 'pct'>[]
 }
 type Seg = PictureResult['voted'][number]
@@ -164,7 +164,7 @@ function bar(segs: Seg[], y: number, h: number, others: string): string {
     .map((s) => {
       const w = s.pct * unit
       const label = segmentLabel(s, w, others)
-      const out = rect(x, y, w, h, FILL[s.key]) + (label ? text(x + w / 2, y + h / 2 + 15, LABEL, label, { weight: 600, fill: TEXT_ON[s.key], anchor: 'middle' }) : '')
+      const out = rect(x, y, w, h, FILL[s.tone ?? s.key]) + (label ? text(x + w / 2, y + h / 2 + 15, LABEL, label, { weight: 600, fill: TEXT_ON[s.tone ?? s.key], anchor: 'middle' }) : '')
       x += w + GAP
       return out
     })

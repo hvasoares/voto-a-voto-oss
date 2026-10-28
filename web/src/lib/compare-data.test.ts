@@ -166,9 +166,9 @@ describe('state aggregation (build time)', () => {
 
   it('labels the sides from candidates.csv the way the frames draw them', async () => {
     const s = (await stat('sp'))
-    expect(labelsOf(s, 2026)).toEqual({ left: 'Lula', rival: 'Flavio' })
+    expect(labelsOf(s, 2026)).toEqual({ left: 'Lula', rival: 'Flávio' })
     expect(labelsOf(s, 2022)).toEqual({ left: 'Lula', rival: 'Bolsonaro' })
-    expect(labelsOf(s, 2018)).toEqual({ left: 'Lula', rival: 'Bolsonaro' }) // the 2018 rows are "o do PT (13)" against Bolsonaro (17)
+    expect(labelsOf(s, 2018)).toEqual({ left: 'Haddad', rival: 'Bolsonaro' }) // the 2018 pair is Haddad (13) and Bolsonaro (17): the table's short forms (#84)
   })
 
   it('answers "sem dados" for a cycle the state does not have, and builds its three blocks', async () => {
@@ -177,7 +177,7 @@ describe('state aggregation (build time)', () => {
     expect(tallyOf(mt, 2026, 2)).toEqual({ validos: 1234, left: 600, rival: 634 })
     const blocks = buildCycleBlocks({
       tallies: new Map<number, RunoffTally>([[2026, tallyOf(mt, 2026, 2)!]]),
-      labels: { 2026: { left: 'Lula', rival: 'Flavio' } },
+      labels: { 2026: { left: 'Lula', rival: 'Flávio' } },
     })
     expect(blocks.map((b) => b.status)).toEqual(['no-data', 'no-data', 'data'])
     expect(blocks[0]!.left).toBeUndefined()

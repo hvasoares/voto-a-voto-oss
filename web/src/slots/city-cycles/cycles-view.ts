@@ -10,7 +10,7 @@ const sideBar = (b: Extract<CycleBlock, { status: 'data' }>): Raw =>
     ? html`<div class="bar" role="img" aria-label="Votaram, por candidato: nenhum voto válido"><span class="bar__seg bar__seg--empty">Nenhum voto válido</span></div>`
     : html`<div class="bar" role="img" aria-label="Votaram, por candidato">${b.sides
         .filter((s: Side) => s.pct > 0)
-        .map((s: Side) => html`<span class="bar__seg bar__seg--${s.key}" style="flex-grow:${s.pct}" data-numero="${s.numero ?? ''}" data-votos="${s.votos}" data-pct="${s.pct}" title="${s.label}: ${s.pct}% dos votos (${formatInt(s.votos)} votos)">${sideText(s)}</span>`)}</div>`
+        .map((s: Side) => html`<span class="bar__seg bar__seg--${s.tone ?? s.key}" style="flex-grow:${s.pct}" data-numero="${s.numero ?? ''}" data-votos="${s.votos}" data-pct="${s.pct}" title="${s.label}: ${s.pct}% dos votos (${formatInt(s.votos)} votos)">${sideText(s)}</span>`)}</div>`
 
 const notVotedBar = (segs: Segment[]): Raw =>
   html`<div class="bar" role="img" aria-label="Não votaram, por tipo">${segs

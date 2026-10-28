@@ -14,7 +14,7 @@ test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
 test.describe('mapa/rj on the real dataset', () => {
   test('the pair comes from the data and the page names all 92 municipalities', async ({ page }) => {
     await page.goto(`${base}mapa/rj/`)
-    await expect(page.getByText(/Margem de Lula sobre Flavio no 2º turno de 2026, em pontos percentuais \(pp\), nos 92 municípios/)).toBeVisible()
+    await expect(page.getByText(/Margem de Lula sobre Flávio no 2º turno de 2026, em pontos percentuais \(pp\), nos 92 municípios/)).toBeVisible()
     const rows = await page.locator('[data-slot="city-map"] nav a[data-cd]').evaluateAll((els) => els.map((el) => el.getAttribute('data-cd')!))
     expect(rows).toHaveLength(92)
     expect(new Set(rows).size).toBe(92)
@@ -31,7 +31,7 @@ test.describe('mapa/rj on the real dataset', () => {
     // Barra do Piraí flips: -5,1 -> +4,2 in the panel of the tapped row
     await page.locator('a[data-cd-ibge="3300308"]').click()
     const panel = page.locator('[data-slot="mapa-selecionado"]')
-    await expect(panel).toContainText(/Margem \(Lula − Flavio Bolsonaro\): \+4,2 pp\. Na eleição anterior: -5,1 pp\. Variação: \+9,3 pp\./)
+    await expect(panel).toContainText(/Margem \(Lula − Flávio Bolsonaro\): \+4,2 pp\. Na eleição anterior: -5,1 pp\. Variação: \+9,3 pp\./)
   })
 
   test('the default selection is Rio de Janeiro with the note figures in the panel', async ({ page }) => {
@@ -39,7 +39,7 @@ test.describe('mapa/rj on the real dataset', () => {
     const panel = page.locator('[data-slot="mapa-selecionado"]')
     await expect(panel).toContainText('Rio de Janeiro · selecionado')
     await expect(panel).toContainText('Votos válidos (2º turno): 3.683.589')
-    await expect(panel).toContainText(/Margem \(Lula − Flavio Bolsonaro\): \+3,1 pp\. Na eleição anterior: -4,0 pp\. Variação: \+7,0 pp\./)
+    await expect(panel).toContainText(/Margem \(Lula − Flávio Bolsonaro\): \+3,1 pp\. Na eleição anterior: -4,0 pp\. Variação: \+7,0 pp\./)
     await expect(panel.getByRole('link', { name: 'Abrir cidade' })).toHaveAttribute('href', `${base}rj/rio-de-janeiro/`)
   })
 

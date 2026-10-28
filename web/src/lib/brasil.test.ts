@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { createStore } from '@/data/store'
 import { diskSource } from '@/data/node'
 import type { Candidate, State, Turnout, Vote } from '@/data'
-import { buildBrasil, pctText, regionOfUf, shortLabels, splitShares, type BrasilInput } from './brasil'
+import { buildBrasil, pctText, regionOfUf, splitShares, type BrasilInput } from './brasil'
 
 /*
  * Pure aggregation for screen 8 (ticket #10), tested in vitest against:
@@ -79,7 +79,7 @@ describe('buildBrasil: tiny hand-made scope', () => {
     const first = view.nationalCandidates[0]!
     const second = view.nationalCandidates[1]!
     expect(first).toMatchObject({ numero: 13, labelFull: 'Lula', label: 'Lula', votos: 430 })
-    expect(second).toMatchObject({ numero: 22, labelFull: 'Flavio Bolsonaro', label: 'Flavio', votos: 370 })
+    expect(second).toMatchObject({ numero: 22, labelFull: 'Flávio Bolsonaro', label: 'Flávio', votos: 370 })
     expect([first.pctScaled, second.pctScaled]).toEqual([5375, 4625])
     expect(first.pctText).toBe('53,75')
     expect(second.pctText).toBe('46,25')
@@ -110,10 +110,6 @@ describe('buildBrasil: tiny hand-made scope', () => {
     expect(view.regions).toHaveLength(0)
   })
 
-  it('shortLabels: shared first words fall back to the distinctive last word', () => {
-    expect(shortLabels(['Lula', 'Flavio Bolsonaro'])).toEqual(['Lula', 'Flavio'])
-    expect(shortLabels(['Candidato A', 'Candidato B'])).toEqual(['A', 'B'])
-  })
 })
 
 describe('buildBrasil: the committed fixture dataset (fixtures/data, 2026 round 2)', () => {
@@ -193,7 +189,7 @@ describe('buildBrasil: the real dataset (../data), cross-checked against TSE pub
     expect(second.votos).toBe(ref.candidates['22']!)
     expect(first.votos + second.votos).toBe(ref.validos)
     expect(first.labelFull).toBe('Lula')
-    expect(second.labelFull).toBe('Flavio Bolsonaro')
+    expect(second.labelFull).toBe('Flávio Bolsonaro')
   })
 
   it.runIf(hasReal)('the five regions appear in valid-vote order and exclude the overseas posts', async () => {

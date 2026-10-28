@@ -58,7 +58,7 @@ describeReal('state comparisons on the real dataset (the own numbers of the fram
       // os 6 estados com mais votos válidos, nesta ordem:
       expect(rows.slice(0, 6).map((r) => r.uf)).toEqual(['sp', 'mg', 'rj', 'ba', 'pr', 'rs'])
       expect(rows.map((r) => r.uf)).toHaveLength(27)
-      // SP: "26.258.452 votos válidos"; Lula 46,2% · 2022: 44,8% · +599.392 votos; Flavio 53,8% · 55,2% · -77.409
+      // SP: "26.258.452 votos válidos"; Lula 46,2% · 2022: 44,8% · +599.392 votos; Flávio 53,8% · 55,2% · -77.409
       expect(rows[0]).toMatchObject({ uf: 'sp', validos: 26258452 })
       expect(rows[0]!.left.pct26).toBe('46,2')
       expect(rows[0]!.left.pctOld).toBe('44,8')
@@ -118,7 +118,7 @@ describeReal('state comparisons on the real dataset (the own numbers of the fram
   it(
     'matches the frame "11b Comparar com 2018" for the six largest states',
     async () => {
-      // SP: Lula 46,2% · 2018: 32,0% · +4.907.142 votos; Flavio 53,8% · 2018: 68,0% · -1.166.845
+      // SP: Lula 46,2% · 2018: 32,0% · +4.907.142 votos; Flávio 53,8% · 2018: 68,0% · -1.166.845
       const sp = await row('sp', 2018)
       expect(sp.validos).toBe(26258452)
       expect(sp.left.pct26).toBe('46,2')
@@ -174,7 +174,7 @@ describeReal('state comparisons on the real dataset (the own numbers of the fram
         labels: {
           2018: { left: 'Lula', rival: 'Bolsonaro' },
           2022: { left: 'Lula', rival: 'Bolsonaro' },
-          2026: { left: 'Lula', rival: 'Flavio' },
+          2026: { left: 'Lula', rival: 'Flávio' },
         },
       })
       expect(blocks.map((b) => b.left!.pct)).toEqual(['32,0', '44,8', '46,2'])
@@ -192,7 +192,7 @@ describeReal('state comparisons on the real dataset (the own numbers of the fram
       expect(roundOf(sp, 2026, 1)).toBeDefined()
       // labels: the 2018 rival is the 2018 Bolsonaro, not the 2026 Flavio
       expect(labelsOf(sp, 2018).rival).toBe('Bolsonaro')
-      expect(labelsOf(sp, 2026).rival).toBe('Flavio')
+      expect(labelsOf(sp, 2026).rival).toBe('Flávio')
     },
     30_000,
   )

@@ -22,6 +22,7 @@
  *   the site-wide convention shown in /sobre-os-dados/). The Sketch frame was drawn with plain
  *   rounding and its first card sums to 99.9; with the convention the card reads 94,9/5,1.
  */
+import { identityOf } from '@/shared/candidates'
 import { largestRemainder } from '@/shared/city-model'
 
 export type Cycle = 2018 | 2022 | 2026
@@ -132,17 +133,18 @@ export interface CohortReport {
  * 13 FERNANDO HADDAD, PT; 17 JAIR BOLSONARO, PSL; 2022: 13 LULA, PT; 22 JAIR BOLSONARO, PL;
  * 2026: 13 LULA, PT; 22 FLAVIO BOLSONARO, PL). The frame 12 cards name the 2018 winner "PT" (his
  * candidate in 2018 was Haddad) and every later candidate by name ("Lula", "Bolsonaro"); the bars
- * of 2026 say "Lula" and "Flavio" (the ballot name is Flavio Bolsonaro). Keys are "ano|numero".
+ * of 2026 say "Lula" and "Flávio" (the ballot name is Flavio Bolsonaro; the spelling is the identity table's, #84). Keys are "ano|numero".
  * Anything not listed falls back to the candidates.csv fields (party as the group word, ballot name
  * as the person), which is what the fixture dataset renders (Candidato A/B, parties PA/PB).
  */
+const shortOf = (ano: 2018 | 2022 | 2026, numero: number): string => identityOf(ano, numero)!.short
 const DISPLAY: Record<string, { group: string; person: string; camp: string }> = {
-  '2018|13': { group: 'PT', person: 'Haddad', camp: 'PT' },
-  '2018|17': { group: 'Bolsonaro', person: 'Bolsonaro', camp: 'Bolsonaro' },
-  '2022|13': { group: 'Lula', person: 'Lula', camp: 'PT' },
-  '2022|22': { group: 'Bolsonaro', person: 'Bolsonaro', camp: 'Bolsonaro' },
-  '2026|13': { group: 'Lula', person: 'Lula', camp: 'PT' },
-  '2026|22': { group: 'Flavio', person: 'Flavio', camp: 'Bolsonaro' },
+  '2018|13': { group: 'PT', person: shortOf(2018, 13), camp: 'PT' },
+  '2018|17': { group: shortOf(2018, 17), person: shortOf(2018, 17), camp: 'Bolsonaro' },
+  '2022|13': { group: shortOf(2022, 13), person: shortOf(2022, 13), camp: 'PT' },
+  '2022|22': { group: shortOf(2022, 22), person: shortOf(2022, 22), camp: 'Bolsonaro' },
+  '2026|13': { group: shortOf(2026, 13), person: shortOf(2026, 13), camp: 'PT' },
+  '2026|22': { group: shortOf(2026, 22), person: shortOf(2026, 22), camp: 'Bolsonaro' },
 }
 
 const titleCase = (name: string): string =>
@@ -170,7 +172,7 @@ export function candidateLabels(candidates: readonly CandidateRowLike[]): Record
 /**
  * Segment colours of the 2026 bars (Sketch swatches in site/src/shared/tokens.ts): candidate 13 gets
  * the Lula red, 22 the Bolsonaro blue. A candidate outside the map (the fixed fixture pair
- * Candidato A/B) gets the neutral pair cand-a / cand-b by election order. No bar relies on colour
+ * Candidato A/B) gets the pair's own colours by election order (cand-a is the red, cand-b the blue, since #84). No bar relies on colour
  * alone: every segment is named and counted in text next to the swatch.
  */
 export function segmentColor(candidateNumber: number, pairIndex: number): string {

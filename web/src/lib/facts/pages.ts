@@ -3,6 +3,7 @@
  * state three-cycles pages, each through the same gate. The seal of a page is made here from the build's own checks: a page whose facts name a
  * check that did not pass for its rounds does not build.
  */
+import { candidateName } from '@/shared/candidate-name'
 import { buildCompareRows, cycleBlocksFor, stateOrder, stateStats } from '../compare-data'
 import { COMPARE_CYCLES } from '../compare'
 import { isFixtureDataset, loadBrasil } from '../brasil-load'
@@ -84,7 +85,7 @@ export function loadFactPages(): Promise<FactPage[]> {
     const reportsData = await loadReportsData()
     const reports = computeReports(reportsData)
     const { margins, pair } = reports
-    const names = { primeiro: displayName(pair.nomePrimeiro), segundo: displayName(pair.nomeSegundo) }
+    const names = { primeiro: candidateName(pair.nomePrimeiro), segundo: candidateName(pair.nomeSegundo) }
     const label = (nome: string, uf: string) => `${displayName(nome)}/${uf.toUpperCase()}`
     out.push(raceFacts(closestRaces(margins).slice(0, RACES_SHOWN), names, displayName, fixture))
     out.push(swingFacts(rankedFlipsToLula(margins), names, label, fixture, { slug: 'cidades-que-viraram', name: 'Cidades que viraram no 2º turno', min: MIN_FLIP_VALIDOS }))

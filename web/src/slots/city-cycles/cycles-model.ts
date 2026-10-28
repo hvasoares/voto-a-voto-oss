@@ -10,7 +10,8 @@
  * - A cycle without data is a "no-data" block with a one-sentence reason, never zeros.
  */
 import type { Turno } from '../../data'
-import { type CityResult, type Segment } from '../../shared/city-model'
+import { sideTone } from '../../shared/candidates'
+import type { CityResult, Segment } from '../../shared/city-model'
 
 export const DEFAULT_TURNO: Turno = 2
 
@@ -29,6 +30,10 @@ export interface Side {
   /** Whole percent of the valid votes; the sides of one bar add up to 100. */
   pct: number
   numero?: number
+  /** Colour side from the identity table (#84): `outros` for a round 1 runner-up beside a runoff candidate. */
+  tone?: 'a' | 'b' | 'outros'
+  /** The table's short form of the name: the step before the share alone. */
+  short?: string
 }
 
 /** Leaders by ballot number (lower first), then "Outros". Percentages are the shared model's, only the order changes. */
@@ -36,7 +41,7 @@ export function orderedSides(r: CityResult): Side[] {
   const leaders = r.voted.filter((s) => s.key === 'a' || s.key === 'b')
   const outros = r.voted.find((s) => s.key === 'outros')
   const sorted = [...leaders].sort((x, y) => (x.numero ?? 0) - (y.numero ?? 0))
-  const sides: Side[] = sorted.map((s, i) => ({ key: i === 0 ? 'a' : 'b', label: s.label, votos: s.votos, pct: s.pct, numero: s.numero }))
+  const sides: Side[] = sorted.map((s, i) => ({ key: i === 0 ? 'a' : 'b', label: s.label, votos: s.votos, pct: s.pct, numero: s.numero, short: s.short, tone: sideTone(r.ano, s.numero, sorted[1 - i]?.numero, i === 0 ? 'a' : 'b') }))
   if (outros) sides.push({ key: 'outros', label: 'Outros', votos: outros.votos, pct: outros.pct })
   return sides
 }
@@ -73,14 +78,12 @@ const BAR_PX = 318
 const GLYPH_PX = 6.4
 const PAD_PX = 12
 
-/** "Candidato A" is shown as "A" (the frame's wording); real names are shown as they are. */
-const short = (label: string) => /^Candidato [A-Z]$/.test(label) ? label.slice(-1) : label
-
 /** The text that fits a candidate segment: "Lula 55%", "Flavio 40%", "20%", or '' in a sliver. The full name is always in `title`. */
-export function sideText(s: Pick<Side, 'key' | 'label' | 'pct'>): string {
+export function sideText(s: Pick<Side, 'key' | 'label' | 'pct' | 'short'>): string {
   const room = Math.floor(((s.pct / 100) * BAR_PX - PAD_PX) / GLYPH_PX)
-  const name = short(s.label)
-  const tries = [`${name} ${s.pct}%`, `${name.split(' ')[0]} ${s.pct}%`, `${s.pct}%`]
+  // the middle step is the table's short form ("Haddad", "Flávio"), never an arbitrary first word, so a narrow bar names the
+  // candidate the way every other screen does (#84)
+  const tries = [`${s.label} ${s.pct}%`, `${s.short ?? s.label.split(' ')[0]} ${s.pct}%`, `${s.pct}%`]
   return tries.find((t) => t.length <= room) ?? ''
 }
 

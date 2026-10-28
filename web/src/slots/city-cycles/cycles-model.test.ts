@@ -106,10 +106,14 @@ describe('noDataReason', () => {
 describe('sideText: the text that fits the segment', () => {
   const side = (label: string, pct: number, key: 'a' | 'b' | 'outros' = 'a') => ({ key, label, votos: 1, pct })
   it('name and percent in a wide segment', () => expect(sideText(side('Lula', 55))).toBe('Lula 55%'))
-  it('percent only when the name does not fit', () => expect(sideText(side('Flavio Bolsonaro', 20))).toBe('20%'))
-  it('first name when the full name does not fit but the first does', () => expect(sideText(side('Flavio Bolsonaro', 40))).toBe('Flavio 40%'))
+  it('percent only when the name does not fit', () => expect(sideText(side('Flávio Bolsonaro', 20))).toBe('20%'))
+  it('the table\'s short name when the full name does not fit but it does', () => expect(sideText({ ...side('Flávio Bolsonaro', 40), short: 'Flávio' })).toBe('Flávio 40%'))
+  it('2018: a narrow Haddad bar says "Haddad", never the first name "Fernando" beside the full "Jair Bolsonaro" (#84)', () => expect(sideText({ ...side('Fernando Haddad', 30), short: 'Haddad' })).toBe('Haddad 30%'))
   it('nothing in a sliver', () => expect(sideText(side('Lula', 3))).toBe(''))
-  it('"Candidato A" is shown as the frame does: "A 55%"', () => expect(sideText(side('Candidato A', 55))).toBe('A 55%'))
+  it('"Candidato A" keeps the spelling of the card (#84), "A" only when it must give way', () => {
+    expect(sideText(side('Candidato A', 55))).toBe('Candidato A 55%')
+    expect(sideText({ ...side('Candidato A', 30), short: 'A' })).toBe('A 30%')
+  })
 })
 
 describe('notVotedText: compact, the heading already says "% dos que não votaram"', () => {

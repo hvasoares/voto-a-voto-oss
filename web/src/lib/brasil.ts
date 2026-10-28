@@ -15,8 +15,8 @@
  * - Every shown percentage that belongs to a composition (candidate bar, turnout bar, the five region
  *   shares) comes from largest-remainder rounding, so the parts of one bar add up to exactly 100.
  */
+import { candidateName } from '@/shared/candidate-name'
 import { formatInt } from '@/shared/city-model'
-import { displayName } from '@/shared/city-search'
 import type { Candidate, State, Turno, Turnout, Vote } from '@/data'
 
 /** Largest-remainder split of 100 among the parts' shares of their sum, kept with `decimals` decimal
@@ -48,20 +48,10 @@ export function pctText(scaled: number, decimals: number): string {
   return formatInt(Number(digits.slice(0, cut))) + (decimals > 0 ? ',' + digits.slice(cut) : '')
 }
 
-/** Short bar labels: the first word of the urna name is usually unique ("Lula", "Flavio"); when both
- * candidates share their first word ("Candidato A" / "Candidato B" of the fixture dataset) the LAST
- * word is distinctive instead ("A" / "B"). */
-export function shortLabels(full: string[]): string[] {
-  const words = (nome: string) => nome.split(/[\s-]+/).filter(Boolean)
-  const first = full.map((nome) => words(nome)[0] ?? nome)
-  const uniqueFirst = new Set(first).size === full.length
-  return first.map((w, i) => (uniqueFirst ? w : (words(full[i] ?? '').at(-1) ?? (full[i] ?? ''))))
-}
-
 export interface BrasilCandidate {
   /** Urna name in title case ("Lula", "Flavio Bolsonaro", "Candidato A"). */
   labelFull: string
-  /** Short form for bar labels, see shortLabels. */
+  /** Short form for bar labels (the identity table's: "Lula", "Flávio"; "A" for the example data). */
   label: string
   numero: number
   votos: number
@@ -155,21 +145,20 @@ const addVotes = (a: Agg, v: Vote) => a.votes.set(String(v.candidatoNumero), (a.
  * Every frame draws the candidates in ballot-number order (13 before 22, Sudeste included, even where
  * Flavio Bolsonaro wins the region), so the returned list is re-sorted ascending by numero. */
 function candidatesOf(votes: Map<string, number>, candidates: Candidate[], decimals: number): BrasilCandidate[] {
-  const urnaName = new Map(candidates.map((c) => [String(c.candidatoNumero), displayName(c.nomeUrna)]))
+  const urnaName = new Map(candidates.map((c) => [String(c.candidatoNumero), c.nomeUrna]))
+  const urna = (numero: number) => urnaName.get(String(numero)) ?? String(numero)
   const sorted = [...votes.entries()]
     .map(([numero, votos]) => ({ numero: Number(numero), votos }))
     .filter((c) => c.votos > 0)
     .sort((a, b) => (b.votos !== a.votos ? b.votos - a.votos : a.numero - b.numero))
     .slice(0, 2)
     .sort((a, b) => a.numero - b.numero)
-  const fulls = sorted.map((c) => urnaName.get(String(c.numero)) ?? String(c.numero))
   const pcts = splitShares(sorted.map((c) => c.votos), decimals)
-  const shorts = shortLabels(fulls)
   return sorted.map((c, i): BrasilCandidate => ({
     numero: c.numero,
     votos: c.votos,
-    labelFull: fulls[i] ?? String(c.numero),
-    label: shorts[i] ?? String(c.numero),
+    labelFull: candidateName(urna(c.numero)),
+    label: candidateName(urna(c.numero), 'short'),
     pctScaled: pcts[i] ?? 0,
     pctText: pctText(pcts[i] ?? 0, decimals),
   }))

@@ -71,7 +71,7 @@ describe('buildCityResult', () => {
     expect(r.votedPct + r.notVotedPct).toBe(100)
     expect(r.votedPct).toBe(76)
     expect(r.naoVotaram).toBe(9145969 - 6962277)
-    expect(r.voted.map((s) => [s.label, s.votos, s.pct])).toEqual([['Lula', 3864354, 56], ['Flavio Bolsonaro', 3097923, 44]])
+    expect(r.voted.map((s) => [s.label, s.votos, s.pct])).toEqual([['Lula', 3864354, 56], ['Flávio Bolsonaro', 3097923, 44]])
     expect(r.notVoted.map((s) => s.votos)).toEqual([1861898, 104890, 216904])
     expect(sum(r.notVoted.map((s) => s.pct))).toBe(100)
     expect(r.outrosCount).toBe(0)

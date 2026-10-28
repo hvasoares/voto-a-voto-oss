@@ -18,9 +18,9 @@ test.beforeEach(async ({ page }) => {
 test('frame 13: the three SP blocks with the frame rates and the change lines', async ({ page }) => {
   const cycles = page.locator('[data-component="cycles"]')
   const bar = (ano: string) => cycles.locator(`[data-cycle="${ano}"] [role="img"]`)
-  await expect(bar('2018')).toHaveAccessibleName(/Lula 32,0%.*Bolsonaro 68,0%/)
+  await expect(bar('2018')).toHaveAccessibleName(/Haddad 32,0%.*Bolsonaro 68,0%/)
   await expect(bar('2022')).toHaveAccessibleName(/Lula 44,8%.*Bolsonaro 55,2%/)
-  await expect(bar('2026')).toHaveAccessibleName(/Lula 46,2%.*Flavio 53,8%/)
+  await expect(bar('2026')).toHaveAccessibleName(/Lula 46,2%.*Flávio 53,8%/)
   await expect(cycles.getByText('Ponto de partida da série')).toBeVisible()
   await expect(cycles.getByText('Lula: +12,7 pp vs 2018')).toBeVisible()
   await expect(cycles.getByText('Lula: +1,4 pp vs 2022')).toBeVisible()

@@ -5,10 +5,10 @@
  * thing under the title and the share text. One static page per state and minimum (the filters are links, so the list works without JavaScript); every row
  * shows the valid-vote count next to the rate, links to the city card and has its fact record ("ver cálculo") and the page its "conferido" seal.
  */
+import { candidateName } from '@/shared/candidate-name'
 import Base from '@/layouts/Base.astro'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { displayName } from '@/shared/city-search'
 import { normalizeBase, withBase } from '@/paths'
 import { siteOrigin } from '@/lib/share-url'
 import { outlierPath } from '@/lib/reports/outliers'
@@ -29,7 +29,7 @@ const href = (path: string) => withBase(base, path)
 const set = await loadOutliers()
 const filter = { uf, min }
 const picked = set.pick(filter)
-const view = outlierView({ filter, shown: picked.shown, compared: picked.compared, names: { primeiro: displayName(set.pair.nomePrimeiro), segundo: displayName(set.pair.nomeSegundo) }, states: set.states, base })
+const view = outlierView({ filter, shown: picked.shown, compared: picked.compared, names: { primeiro: candidateName(set.pair.nomePrimeiro), segundo: candidateName(set.pair.nomeSegundo) }, states: set.states, base })
 const facts = await getOutlierFacts()
 const links = factLinks(facts.facts, '/relatorios/cidades-fora-da-curva/', base)
 const seal = await sealOf(facts)

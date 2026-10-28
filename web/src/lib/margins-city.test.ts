@@ -224,9 +224,9 @@ describe('computeCityMargins (real dataset, RJ figures pinned per city)', () => 
     expect(assembled.uf).toBe('rj')
     expect(assembled.ano).toBe(2026)
     expect(assembled.ladoANome).toBe('Lula')
-    expect(assembled.ladoBNome).toBe('Flavio')
+    expect(assembled.ladoBNome).toBe('Flávio')
     expect(assembled.ladoANomeCompleto).toBe('Lula')
-    expect(assembled.ladoBNomeCompleto).toBe('Flavio Bolsonaro')
+    expect(assembled.ladoBNomeCompleto).toBe('Flávio Bolsonaro')
     const rows2 = cityRowsFor(m, 'rj', r.cities.filter((c) => c.uf === 'rj'), r.turnout, r.votes, ano)
     expect(rows2).toEqual(assembled.rows)
     // A UF the dataset does not list has no rows (nothing invented).

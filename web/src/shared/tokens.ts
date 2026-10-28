@@ -3,6 +3,9 @@
  * frames). Source of truth for the CSS custom properties written to assets/app.css at build time.
  * Change a value here and every screen follows; screens must never hard-code colours or sizes.
  */
+const LULA = '#b02b27' // the red of the pair's left side (candidate with the lower number), see shared/candidates.ts
+const BOLSONARO = '#0c54a0' // the blue of the pair's right side
+
 export const colors = {
   ink: '#1c1b18', // v2/ink
   paper: '#faf7f0', // v2/paper (page background)
@@ -13,21 +16,21 @@ export const colors = {
   accent: '#14505c', // v2/accent (links, active tab, primary button)
   'accent-fg': '#faf7f0', // v2/accent-fg (text on accent)
   flag: '#d9a21b', // v2/flag ("EXEMPLO" banner)
-  'cand-a': '#2a2926', // v2/cand-a
-  'cand-b': '#8b8274', // v2/cand-b
+  'cand-a': LULA, // side a of a bar: the pair's red (#84; it was a neutral black before)
+  'cand-b': BOLSONARO, // side b of a bar: the pair's blue
   'cand-outros': '#b6ae9d', // round 1: all candidates but the two leaders (added by #5; not a Sketch swatch)
   abstencao: '#d5cfbf', // v2/abstencao
   brancos: '#e3decf', // v2/brancos
   nulos: '#ede9db', // v2/nulos
-  lula: '#b02b27', // v2/lula
-  bolsonaro: '#0c54a0', // v2/bolsonaro
+  lula: LULA, // v2/lula
+  bolsonaro: BOLSONARO, // v2/bolsonaro
   'div-zero': '#efebe0',
   'div-pos-1': '#f0a9a0',
   'div-pos-2': '#d15c53',
-  'div-pos-3': '#9b1f1d',
+  'div-pos-3': LULA, // the strongest step of the map is the pair's own red
   'div-neg-1': '#99c1f4',
   'div-neg-2': '#4087de',
-  'div-neg-3': '#0052ab',
+  'div-neg-3': BOLSONARO, // ... and the pair's own blue
 } as const
 
 export const fonts = {

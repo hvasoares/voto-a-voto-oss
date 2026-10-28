@@ -2,13 +2,15 @@
  * in the browser. Nothing is fetched and nothing is computed: the static blocks below stay as the card for visitors who prefer reduced motion, for scripts that do not run and for chat previews.
  * Only the latest request wins (a round switch or a tap while a step is waiting never lets an old step draw). Marks `data-replay` (ready) and `data-replay-year` (the cycle on show) for the e2e specs. Browser only. */
 // The replay's stylesheet travels with its script and is added to the page when a replay is drawn: inlined in each of the 5.570 pages it was 1.9 KB a page (10 MB of the site).
+import { identityOfUrna } from '@/shared/candidates'
 import css from '@/styles/replay.css?inline'
 import { buildReplay, missingText, replayAlt, say, type Replay, type ReplaySide } from '@/lib/replay'
 
 const STEP_MS = 1700
 const SVG = 'http://www.w3.org/2000/svg'
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string) => Object.assign(document.createElement(tag), { className: className ?? '', textContent: text ?? '' })
-const short = (label: string) => label.replace(/^Candidato /, '')
+/** The replay's segments are narrow: the table's short form ("Haddad", "Flávio"), "A" for the example data's "Candidato A". */
+const short = (label: string) => identityOfUrna(label)?.short ?? label.replace(/^Candidato /, '')
 
 /** The shares the static block of the round on show carries, cycle by cycle (a block with no result has none). */
 export function readCycles(panel: Element): { ano: number; sides?: ReplaySide[] }[] {

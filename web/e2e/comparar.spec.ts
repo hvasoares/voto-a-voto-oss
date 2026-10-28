@@ -23,7 +23,7 @@ test.describe('compare pages (fixture build)', () => {
       await expect(intro).toContainText(`votos = 2026 menos ${c}.`)
       await expect(intro).toContainText('Os 6 estados com mais votos válidos.')
       if (c === '2018') {
-        await expect(intro).toContainText('Candidatos de 2018: o do PT (13) e Bolsonaro (17).')
+        await expect(intro).toContainText('Candidatos de 2018: Fernando Haddad (13) e Jair Bolsonaro (17).')
       } else {
         await expect(intro).not.toContainText('Candidatos de 2018')
       }

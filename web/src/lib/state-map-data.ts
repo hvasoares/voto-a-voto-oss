@@ -4,9 +4,9 @@
  * `src/lib/uf-polygons.ts`). The cycle is the newest one the dataset has; no election number is
  * hard-coded here.
  */
+import { candidateName } from '@/shared/candidate-name'
 import { createStore } from '@/data/store'
 import { diskSource } from '@/data/node'
-import { displayName } from '@/shared/city-search'
 import type { Candidate, Turnout, Vote } from '@/data'
 import { computeMargins, formatSwing, type NationalMargin, type PairMember, type StateMargin } from './margins'
 import { dataDir } from './data-dir'
@@ -32,10 +32,8 @@ export interface StateMapData {
   national: NationalMargin
 }
 
-/** First word of the display name: the frames say "Lula", "Flavio" (not the full urna name). */
-export function shortName(nomeUrna: string): string {
-  return displayName(nomeUrna).split(' ')[0]!
-}
+/** The short form of the table (#84): "Lula", "Flávio" (not the full urna name). */
+export const shortName = (nomeUrna: string): string => candidateName(nomeUrna, 'short')
 
 export async function loadStateMapData(): Promise<StateMapData> {
   const store = createStore(diskSource(dataDir()))
@@ -51,8 +49,8 @@ export function stateMapData(turnout: readonly Turnout[], votes: readonly Vote[]
     ano,
     ladoANome: shortName(m.ladoA.nome),
     ladoBNome: shortName(m.ladoB.nome),
-    ladoANomeCompleto: displayName(m.ladoA.nome),
-    ladoBNomeCompleto: displayName(m.ladoB.nome),
+    ladoANomeCompleto: candidateName(m.ladoA.nome),
+    ladoBNomeCompleto: candidateName(m.ladoB.nome),
     rows: m.states.map((s: StateMargin) => ({ uf: s.uf, validos1: s.validos1, validos2: s.validos2, margin1: s.margin1, margin2: s.margin2, swing: s.swing })),
     national: m.national,
   }

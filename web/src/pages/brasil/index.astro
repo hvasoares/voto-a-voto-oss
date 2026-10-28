@@ -6,6 +6,7 @@
  * web/src/lib/brasil.ts over the chosen DATA_DIR. National totals include the overseas posts, the
  * regions exclude them and say so.
  */
+import { sideTone } from '@/shared/candidates'
 import { formatInt } from '@/shared/city-model'
 import { normalizeBase, withBase } from '@/paths'
 import Base from '@/layouts/Base.astro'
@@ -38,6 +39,9 @@ const seal = await sealOf(facts)
 // carries its own text size.
 const candidateSeg = 'bg-[var(--c-lula)] text-[var(--c-accent-fg)] text-[10px] font-semibold'
 const secondSeg = 'bg-[var(--c-bolsonaro)] text-[var(--c-accent-fg)] text-[10px] font-semibold'
+const neutralSeg = 'bg-[var(--c-cand-outros)] text-[var(--c-ink)] text-[10px] font-semibold'
+// The colour is the candidate's own (identity table, #84): the pair's red or blue; anyone else (a round 1 runner-up) is neutral.
+const segOf = (cs: readonly { numero: number }[], i: number) => ({ a: candidateSeg, b: secondSeg, outros: neutralSeg })[sideTone(view.ano, cs[i]!.numero, cs[1 - i]?.numero, i === 0 ? 'a' : 'b')]
 const turnoutSeg = 'bg-[var(--c-ring)] text-[var(--c-ink)] text-[10px] font-semibold leading-[13px]'
 const notTurnoutSeg = 'bg-[var(--c-abstencao)] text-[var(--c-ink)] text-[10px] font-semibold leading-[13px]'
 const segBase = 'flex min-w-0 items-center justify-center overflow-hidden whitespace-nowrap'
@@ -65,7 +69,7 @@ const segBase = 'flex min-w-0 items-center justify-center overflow-hidden whites
       <div class="mx-4 mt-2 flex h-7 gap-[2px]" role="img" aria-label="Votos válidos no Brasil, por candidato" data-brasil-bar>
         {view.nationalCandidates.map((c, i) => (
           <span
-            class={cn(segBase, i === 0 ? candidateSeg : secondSeg)}
+            class={cn(segBase, segOf(view.nationalCandidates, i))}
             style={`flex-grow:${c.pctScaled};flex-basis:0`}
             title={`${c.labelFull}: ${formatInt(c.votos)} votos (${c.pctText}%)`}
           >
@@ -96,7 +100,7 @@ const segBase = 'flex min-w-0 items-center justify-center overflow-hidden whites
             <div class="mt-1 flex h-6 gap-[2px]" role="img" aria-label={`${r.label}: votos válidos, por candidato`}>
               {r.candidates.map((c, i) => (
                 <span
-                  class={cn(segBase, i === 0 ? candidateSeg : secondSeg)}
+                  class={cn(segBase, segOf(r.candidates, i))}
                   style={`flex-grow:${c.pctScaled};flex-basis:0`}
                   title={`${c.labelFull}: ${c.pctText}% dos votos válidos da região`}
                 >

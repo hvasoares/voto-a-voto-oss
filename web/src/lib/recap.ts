@@ -4,7 +4,8 @@
  *
  * The numbers are the three-cycle screen's (`compare.ts` `buildCycleBlocks`): shares of the cycle's own valid votes, percents
  * in tenths by largest remainder so the two sides of a bar add up to 100,0, and every change computed from the UNROUNDED shares.
- * What this file adds is the recap's labels (the 2018 pair is "PT" and "Bolsonaro") and the row shape the picture and the words read.
+ * What this file adds is the row shape the picture and the words read; the labels are the identity table's (#84: "Haddad" and "Bolsonaro" in 2018),
+ * the same words as every other screen.
  */
 import { formatOneDecimal, type CycleBlock } from './compare'
 
@@ -31,19 +32,11 @@ export interface Recap {
   rows: RecapRow[]
 }
 
-export interface RecapLabels {
-  /** The 2018 runoff was run by the PT candidate (number 13) and number 17: the recap names them "PT" and "Bolsonaro". */
-  pt2018: boolean
-}
-
-export const PT = 'PT'
-
-export function buildRecap(uf: string, blocks: readonly CycleBlock[], labels: RecapLabels): Recap {
+export function buildRecap(uf: string, blocks: readonly CycleBlock[]): Recap {
   const rows = blocks.map<RecapRow>((b) => {
     if (b.status !== 'data' || !b.left || !b.rival) return { ano: b.ano, status: 'no-data' }
     const side = (s: NonNullable<CycleBlock['left']>, label = s.label): RecapSide => ({ label, pct: formatOneDecimal(s.tenths), tenths: s.tenths })
-    const pt = b.ano === 2018 && labels.pt2018
-    return { ano: b.ano, status: 'data', left: side(b.left, pt ? PT : b.left.label), rival: side(b.rival), changePp: b.changePp, changeVs: b.changeVs }
+    return { ano: b.ano, status: 'data', left: side(b.left), rival: side(b.rival), changePp: b.changePp, changeVs: b.changeVs }
   })
   return { uf, rows }
 }

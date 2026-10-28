@@ -89,7 +89,7 @@ describe('the card picture and content', () => {
       expect(c.svg).toContain(`<title id="card-title">${c.variants.standard.alt}</title>`)
       for (const place of set) expect(t).toContain(`${place.name} · ${place.ufLabel}`)
       expect(t.filter((x) => /^20(18|22|26)$/.test(x))).toHaveLength(3 * n)
-      expect(t.join(' ')).toContain('Escuro = candidato de menor número')
+      expect(t.join(' ')).toContain('Vermelho = candidato de menor número')
       expect(t).toContain('votoavoto.exemplo.br/meu-brasil')
       expect(c.url).toBe(`https://votoavoto.exemplo.br/meu-brasil/${placesQuery(set.map((p) => p.ref))}`)
     }

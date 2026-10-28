@@ -44,7 +44,7 @@ function PlaceColumn({ card }: { card: PlaceCard }) {
           </div>
           {b.status === 'data' && b.validos > 0 ? (
             <div className="mt-1 flex h-[26px] w-full overflow-hidden">
-              {b.sides.filter((x) => x.pct > 0).map((x) => <span key={x.key} className={SIDE_FILL[x.key]} style={{ width: `${x.pct}%` }} />)}
+              {b.sides.filter((x) => x.pct > 0).map((x) => <span key={x.key} className={SIDE_FILL[x.tone ?? x.key]} style={{ width: `${x.pct}%` }} />)}
             </div>
           ) : (
             <div className="mt-1 h-[26px] w-full bg-secondary" />

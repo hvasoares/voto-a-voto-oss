@@ -1,3 +1,4 @@
+import { candidateName } from '@/shared/candidate-name'
 import { displayName } from '@/shared/city-search'
 import { int, pct1 } from './format'
 import type { PanelRecord, Shards, TableColumn, TableRow, TableSpec } from './panels'
@@ -99,7 +100,7 @@ export function detalheCandidatos(record: PanelRecord, shards: Shards, known: { 
   const nameOf = (n: number) => turnos.flatMap((t) => shards[t]!.candidatos).find((c) => c.numero === n)!
   const columns: TableColumn[] = [
     { key: 'nome', label: 'Nome', numeric: false },
-    ...numbers.flatMap((n) => ([1, 2] as const).map((t): TableColumn => ({ key: `cand-${n}-${t}`, label: `Candidato nº ${n} (${displayName(nameOf(n).nome)}), ${t}º turno`, short: `Nº ${n} ${t}º`, numeric: true }))),
+    ...numbers.flatMap((n) => ([1, 2] as const).map((t): TableColumn => ({ key: `cand-${n}-${t}`, label: `Candidato nº ${n} (${candidateName(nameOf(n).nome)}), ${t}º turno`, short: `Nº ${n} ${t}º`, numeric: true }))),
   ]
   const share = (row: Row | undefined, shard: LevelShard | undefined, n: number): string | null => {
     const i = shard?.candidatos.findIndex((c) => c.numero === n) ?? -1

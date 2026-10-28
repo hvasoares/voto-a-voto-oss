@@ -55,7 +55,7 @@ describe('headline: same wording and treatment for every candidate', () => {
     expect(y).toBe(x)
   })
   it('uses the article only for labels that already say "Candidato"', () => {
-    expect(say(result(1000, [500, 400], { comparecimento: 900, nomes: ['LULA', 'FLAVIO BOLSONARO'] }))).toContain('menos do que Flavio Bolsonaro, o segundo mais votado')
+    expect(say(result(1000, [500, 400], { comparecimento: 900, nomes: ['LULA', 'FLAVIO BOLSONARO'] }))).toContain('menos do que Flávio Bolsonaro, o segundo mais votado')
   })
   it.each(['vence', 'venceu', 'ganha', 'ganhou', 'derrota', 'eleito', 'liderou', 'porque', 'devido'])('never says "%s"', (word) => {
     for (const r of [result(1000, [500, 400], { comparecimento: 900 }), result(1000, [250, 250], { comparecimento: 500 }), result(1000, [450, 150], { comparecimento: 600 })])

@@ -121,9 +121,8 @@ h2, .section-title { font: 400 var(--fs-section) var(--font-serif); }
 }
 .bar__seg--a, .bar__seg--b, .bar__seg--outros { font-size: 11px; }
 .bar__seg--a { background: var(--c-cand-a); color: var(--c-accent-fg); }
-/* The taupe of candidate B is too light for the paper ink (2.9:1 < 4.5): the dark ink wins on it,
- * exactly the contrast-max choice the map labels make since #16 (issue #19). */
-.bar__seg--b { background: var(--c-cand-b); color: var(--c-ink); }
+/* Side B is the pair's blue (#84): paper text on it, 7.9:1 (the old taupe needed the dark ink). */
+.bar__seg--b { background: var(--c-cand-b); color: var(--c-accent-fg); }
 .bar__seg--outros { background: var(--c-cand-outros); color: var(--c-ink); }
 .bar__seg--abstencao { background: var(--c-abstencao); }
 .bar__seg--brancos { background: var(--c-brancos); }

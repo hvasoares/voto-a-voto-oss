@@ -26,7 +26,7 @@ export interface TurnoutBarProps {
   /** 100 - votedPct, split into abstention / blank / null (each % of the non-voters, summing to 100). */
   notVoted: { abstencaoPct: number; brancosPct: number; nulosPct: number }
   /** Split of the voted bar between the two candidates (% of valid votes). */
-  candidates: { a: { label: string; pct: number; votos?: number }; b: { label: string; pct: number; votos?: number } }
+  candidates: { a: { label: string; pct: number; votos?: number; tone?: CandidateKind; short?: string }; b: { label: string; pct: number; votos?: number; tone?: CandidateKind; short?: string } }
   /** Round 1 only: everyone but the two leaders as one segment ("Outros candidatos (N)"); the three shares add up to 100. */
   others?: { label: string; pct: number; votos?: number }
   /** Where "ver cálculo" goes for the two titles (#61); the titles carry no link when absent (the other screens that draw the bars). */
@@ -41,12 +41,6 @@ const TIERS: Record<Exclude<CandidateKind, 'a' | 'b'>, { min: number; text: (pct
   nulos: [{ min: 66, text: (p) => `Nulos ${p}% dos que não votaram` }, { min: 30, text: (p) => `Nulos ${p}%` }, { min: 20, text: () => 'Nulos' }, { min: 8, text: () => 'Nu' }],
 }
 
-/**
- * The name the card prints for a candidate's side (#82). The one place the bars read a name from, so a single table of
- * candidate names (#84) can replace it without touching the layout; until then it is the label the card already has.
- */
-export const sideName = (label: string): string => label
-
 /** Width of the card's bar at 390 px, rough bold 11px glyph width and the segment's padding: how much text fits a segment. */
 const BAR_PX = 318
 const GLYPH_PX = 6.4
@@ -56,10 +50,10 @@ const PAD_PX = 8
  * The text of a candidate segment (#82): name and share, never the share alone unless the segment is a sliver. It gives way in
  * steps, wrapping before it shortens: "Flavio Bolsonaro 48%", "Flavio" over "Bolsonaro 48%", "Flavio Bolsonaro" over "48%", "Flavio" over "48%", "48%", ''.
  */
-export function candidateText(name: string, pct: number): string {
+export function candidateText(name: string, pct: number, short?: string): string {
   const room = Math.floor(((pct / 100) * BAR_PX - PAD_PX) / GLYPH_PX)
   const [first = '', ...rest] = name.split(' ')
-  const tries = [`${name} ${pct}%`, ...(rest.length ? [`${first}\n${rest.join(' ')} ${pct}%`] : []), `${name}\n${pct}%`, `${first}\n${pct}%`, `${pct}%`]
+  const tries = [`${name} ${pct}%`, ...(rest.length ? [`${first}\n${rest.join(' ')} ${pct}%`] : []), `${name}\n${pct}%`, `${short ?? first}\n${pct}%`, `${pct}%`]
   return tries.find((t) => Math.max(...t.split('\n').map((l) => l.length)) <= room) ?? ''
 }
 
@@ -75,13 +69,17 @@ interface BarSegment {
   title: string
   /** The candidate's name (the two sides): the segment prints it beside the share. */
   name?: string
+  /** A named candidate (the two sides): its text is the name and share, whatever colour kind it wears. */
+  named?: true
+  /** The table's short form of the name, for the narrowest step before the share alone. */
+  short?: string
 }
 
 const bar = (label: string, segs: BarSegment[]) =>
   html`<div class="bar" role="img" aria-label="${label}">${segs
     .filter((s) => s.pct > 0)
     .map((s) => {
-      const text = segmentText(s.kind, s.pct, s.name)
+      const text = s.named ? candidateText(s.name!, s.pct, s.short) : segmentText(s.kind, s.pct, s.name)
       // the title only says more than the text when the text had to give way
       return html`<span class="bar__seg bar__seg--${s.kind}" style="flex-grow:${s.pct}"${text === `${s.name} ${s.pct}%` ? '' : html` title="${s.title}"`}>${text}</span>`
     })}</div>`
@@ -89,8 +87,9 @@ const bar = (label: string, segs: BarSegment[]) =>
 export function turnoutBar(p: TurnoutBarProps): Raw {
   const { a, b } = p.candidates
   const voted: BarSegment[] = [
-    { kind: 'a', pct: a.pct, title: `${sideName(a.label)}: ${a.pct}% dos votos`, name: sideName(a.label) },
-    { kind: 'b', pct: b.pct, title: `${sideName(b.label)}: ${b.pct}% dos votos`, name: sideName(b.label) },
+    // the label is already the identity table's spelling (#84, shared/candidates.ts); the colour is the candidate's own side
+    { kind: a.tone ?? 'a', pct: a.pct, title: `${a.label}: ${a.pct}% dos votos`, name: a.label, short: a.short, named: true },
+    { kind: b.tone ?? 'b', pct: b.pct, title: `${b.label}: ${b.pct}% dos votos`, name: b.label, short: b.short, named: true },
     ...(p.others ? [{ kind: 'outros' as const, pct: p.others.pct, title: `${p.others.label}: ${p.others.pct}% dos votos`, name: p.others.label }] : []),
   ]
   const n = p.notVoted

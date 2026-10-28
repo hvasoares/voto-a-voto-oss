@@ -1,4 +1,5 @@
 ---
+import { CANDIDATES } from '@/shared/candidates'
 import Base from '@/layouts/Base.astro'
 import { formatBytes, sourceRow } from '@/lib/about'
 import {
@@ -74,7 +75,7 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
         <li><strong>Votaram / Não votaram:</strong> "Votaram" divide os votos válidos pelo eleitorado apto do turno; "Não votaram" é o resto do eleitorado, repartido em abstenção, brancos e nulos. Nulos incluem os que o TSE anota à parte como anulados em apuração separada.</li>
         <li><strong>Porcentagens inteiras:</strong> as fatias de cada barra são arredondadas de forma que somem exatamente 100%. Por isso uma fatia pode ficar uma décima acima ou abaixo do exato.</li>
         <li><strong>Margem (pp):</strong> a diferença entre as porcentagens de votos válidos dos dois candidatos do 2º turno, em pontos percentuais. Com 33,6% e 30,0% dos votos válidos, a margem é 3,6 pp.</li>
-        <li><strong>Virada:</strong> a mudança da margem entre dois resultados, em pontos percentuais — do 1º para o 2º turno de 2026, ou de 2026 contra 2022. Na comparação com 2022, Lula é comparado com Lula e Flavio Bolsonaro com Bolsonaro, que foi o candidato de número 22 nos dois anos.</li>
+        <li><strong>Virada:</strong> a mudança da margem entre dois resultados, em pontos percentuais — do 1º para o 2º turno de 2026, ou de 2026 contra 2022. Na comparação com 2022, {CANDIDATES[2026][0].name} é comparado com {CANDIDATES[2022][0].name} e {CANDIDATES[2026][1].name} com {CANDIDATES[2022][1].short}, que foi o candidato de número 22 nos dois anos.</li>
         <li><strong>Grupos:</strong> cidades agrupadas pelo vencedor do 2º turno de 2018 e de 2022; cada grupo mostra o resultado de 2026 pela porcentagem de cidades. Venceu quem teve mais votos que o outro candidato do 2º turno; empates ficam fora das barras e aparecem como nota.</li>
         <li><strong>Exterior:</strong> os postos de votação fora do Brasil (UF <code>zz</code>) entram nos totais nacionais e não entram nos agregados por região e por estado.</li>
       </ul>
@@ -85,7 +86,7 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
       <ul class="mt-[5px] list-disc space-y-1 pl-5">
         <li>Em cada município e turno: votos válidos + brancos + nulos + anulados em apuração separada = comparecimento.</li>
         <li>No 2º turno de cada ciclo: a soma dos votos dos dois candidatos iguala os votos válidos de cada município.</li>
-        <li>Os totais do Brasil são os totais oficiais do TSE, com o exterior incluído: no 2º turno de 2026, Lula {fmt(NATIONAL_2026_R2.lula)}, Flavio Bolsonaro {fmt(NATIONAL_2026_R2.flavio)}, {fmt(NATIONAL_2026_R2.validos)} votos válidos — os mesmos números do arquivo nacional do próprio TSE, não uma soma parcial.</li>
+        <li>Os totais do Brasil são os totais oficiais do TSE, com o exterior incluído: no 2º turno de 2026, {CANDIDATES[2026][0].name} {fmt(NATIONAL_2026_R2.lula)}, {CANDIDATES[2026][1].name} {fmt(NATIONAL_2026_R2.flavio)}, {fmt(NATIONAL_2026_R2.validos)} votos válidos — os mesmos números do arquivo nacional do próprio TSE, não uma soma parcial.</li>
         <li>A votação por município de 2018 e 2022 bateu, município por município, com os arquivos da etapa anterior de análise deste projeto.</li>
         <li>Rodar <code>make data</code> duas vezes deixa cada arquivo byte a byte igual: UTF-8, mesma ordem de linhas, sem carimbo de hora dentro dos dados (as datas ficam no manifesto).</li>
         <li><code>make data-check</code> revalida sem rede: tamanho e SHA-256 de cada tabela, contagem de linhas e as regras de soma acima.</li>

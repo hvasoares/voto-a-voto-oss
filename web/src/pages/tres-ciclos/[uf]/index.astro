@@ -32,8 +32,15 @@ const blocks = cycleBlocksFor(state)
 const facts = await getFactPage(`estado/${uf}`, 'tres-ciclos')
 const links = factLinks(facts.facts, `/tres-ciclos/${uf}/`, base)
 const seal = await sealOf(facts)
-// The legend follows the dataset's names (never invented): 2026 left, the 2018 rival, the 2026 rival.
-const legend = { left: labelsOf(state, 2026).left, old: labelsOf(state, 2018).rival, left26: labelsOf(state, 2026).rival }
+// The legend follows the dataset's names through the identity table (never invented): each colour names its candidate of every cycle,
+// "Haddad (2018) e Lula (2022 e 2026)" for the red, the same candidate-and-years form for the blue.
+const years = (anos: number[]) => (anos.length > 1 ? `${anos.slice(0, -1).join(', ')} e ${anos.at(-1)}` : String(anos[0]))
+const legendFor = (side: 'left' | 'rival') => {
+  const byName = new Map<string, number[]>()
+  for (const ano of CYCLES) byName.set(labelsOf(state, ano)[side], [...(byName.get(labelsOf(state, ano)[side]) ?? []), ano])
+  return [...byName].map(([name, anos]) => `${name} (${years(anos)})`).join(' e ')
+}
+const legend = { red: legendFor('left'), blue: legendFor('rival') }
 const sides = (b: CycleBlock) => [{ s: b.left!, token: 'lula' }, { s: b.rival!, token: 'bolsonaro' }] as const
 // The season (#42): the pivot between episodes 2 and 3 from the city arcs of the state (#41), with its fact record.
 const arcsFile = await loadArcsFile()
@@ -103,7 +110,7 @@ const miniRows = (st: StateStats) => Array.from({ length: CYCLES.length }, (_, i
     <p class="season-note" data-season-note data-chrono={seasonSay('season.order.note.chrono')} data-reverse={seasonSay('season.order.note.reverse')}>{seasonSay('season.order.note.chrono')}</p>
 
     <p class="mt-1 text-tiny leading-[12px] text-muted-foreground" data-component="legend">
-      Vermelho = {legend.left}. Azul = {legend.old} (2018 e 2022) e {legend.left26} (2026).
+      Vermelho = {legend.red}. Azul = {legend.blue}.
     </p>
     <p class="mt-1 text-tiny leading-[12px] text-muted-foreground">
       As barras mostram só os votos válidos do 2º turno: abstenção, brancos e nulos ficam de fora. Variações calculadas sem arredondar os percentuais.

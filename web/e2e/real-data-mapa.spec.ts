@@ -11,9 +11,9 @@ import { base } from './helpers'
 test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
 
 test.describe('mapa on the real dataset', () => {
-  test('the pair comes from the data: Lula 13 x Flavio 22 in 2026, named in the subtitle', async ({ page }) => {
+  test('the pair comes from the data: Lula 13 x Flávio 22 in 2026, named in the subtitle', async ({ page }) => {
     await page.goto(`${base}mapa/`)
-    await expect(page.getByText(/Margem de Lula sobre Flavio no 2º turno de 2026/)).toBeVisible()
+    await expect(page.getByText(/Margem de Lula sobre Flávio no 2º turno de 2026/)).toBeVisible()
   })
 
   test('27 state tiles, no overseas, values on the tiles', async ({ page }) => {

@@ -1,5 +1,5 @@
+import { candidateName } from '@/shared/candidate-name'
 import { int } from './format'
-import { displayName } from '@/shared/city-search'
 import { GROUP_CANDIDATOS, measureOptions, rateOf, type MeasureOption, type Rate } from './rates'
 import { pct1 } from './format'
 import type { PanelData, PanelRecord } from './panels'
@@ -61,7 +61,7 @@ function candidatesOf(all: ReadonlyMap<string, LevelShard>): Record<1 | 2, Candi
         // ballot-number order (the shard's own order), never sorted by result
         bars: shard.candidatos.map((c, i) => {
           const text = pct1(shard.total.votos[i]!, shard.total.validos) ?? '—'
-          return { numero: c.numero, nome: displayName(c.nome), partido: c.partido, share: Number(text.replace('%', '').replace(',', '.')) || 0, text, votos: int(shard.total.votos[i]!) }
+          return { numero: c.numero, nome: candidateName(c.nome), partido: c.partido, share: Number(text.replace('%', '').replace(',', '.')) || 0, text, votos: int(shard.total.votos[i]!) }
         }),
       })
     }

@@ -56,7 +56,7 @@ export function meuBrasilCardSvg(cards: readonly PlaceCard[], o: MeuBrasilCardOp
         let sx = x
         for (const s of b.sides.filter((s) => s.pct > 0)) {
           const w = (s.pct / 100) * COL
-          out.push(rect(sx, y + 44, w, 56, FILL[s.key]))
+          out.push(rect(sx, y + 44, w, 56, FILL[s.tone ?? s.key]))
           sx += w
         }
       } else out.push(rect(x, y + 44, COL, 56, colors['paper-2']))

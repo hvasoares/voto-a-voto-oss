@@ -172,7 +172,7 @@ describe('rounding and labels', () => {
     expect(fixed['2022|13']).toEqual({ group: 'Lula', person: 'Lula', camp: 'PT' })
     expect(fixed['2022|22']).toEqual({ group: 'Bolsonaro', person: 'Bolsonaro', camp: 'Bolsonaro' })
     expect(fixed['2026|13']).toEqual({ group: 'Lula', person: 'Lula', camp: 'PT' })
-    expect(fixed['2026|22']).toEqual({ group: 'Flavio', person: 'Flavio', camp: 'Bolsonaro' })
+    expect(fixed['2026|22']).toEqual({ group: 'Flávio', person: 'Flávio', camp: 'Bolsonaro' })
     const fixture = candidateLabels([
       { ano: 2026, turno: 2, candidatoNumero: 91, nomeUrna: 'Candidato A', partido: 'PA' },
       { ano: 2026, turno: 1, candidatoNumero: 91, nomeUrna: 'Candidato A (1º turno, nunca usado aqui)', partido: 'PA' },
@@ -225,7 +225,7 @@ describe('real data (data/, committed): the reference cohort table', () => {
       'Venceu em 2018: Bolsonaro. Em 2022: Lula',
       'Venceu em 2018: PT. Em 2022: Bolsonaro',
     ])
-    expect(r.groups.flatMap((g) => g.parts.map((p) => p.label)).every((l) => l === 'Lula' || l === 'Flavio')).toBe(true)
+    expect(r.groups.flatMap((g) => g.parts.map((p) => p.label)).every((l) => l === 'Lula' || l === 'Flávio')).toBe(true)
   })
 
   it('the tie city sits in the PT group, and both earlier ties are the reference cities, both won by Flavio in 2026', async () => {

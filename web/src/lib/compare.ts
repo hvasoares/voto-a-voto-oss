@@ -9,11 +9,11 @@
  * - Changes are computed from the UNROUNDED percentages: "+12,7 pp" is printed from the exact
  *   shares; "+599.392 votos" is the exact integer vote difference over the compared municipalities.
  * - A cycle without data is "sem dados", never zero (Boa Esperança do Norte/MT is 2026-only).
- * - Side labels follow the frames: candidate 13 is drawn as "Lula" in every cycle (the note of screen
- *   11b names the 2018 candidates: "o do PT (13) e Bolsonaro (17)"), the rival is "Bolsonaro" in
- *   2018/2022 and "Flavio" in 2026. Names come from candidates.csv; the short label is presentation
- *   text for the frame candidates and the site's generic shortening for anything else.
+ * - Side labels are the short names of the identity table (#84, shared/candidates.ts): "Haddad" and
+ *   "Bolsonaro" in 2018, "Lula" and "Bolsonaro" in 2022, "Lula" and "Flávio" in 2026, the same words
+ *   as every other screen. Names come from candidates.csv; the table spells them.
  */
+import { candidateName } from '@/shared/candidate-name'
 import { formatInt, largestRemainder } from '@/shared/city-model'
 
 /** The two cycles the compare screens show next to 2026 (routes /comparar/2018/ and /comparar/2022/). */
@@ -72,27 +72,8 @@ export function formatPpChange(currentExact: number, previousExact: number): str
   return `${sign}${formatOneDecimal(Math.abs(tenths))}`
 }
 
-/**
- * Short name a candidate is drawn with. The frame candidates of the pairing get the frames' wording
- * (screens 11, 11b, 13; the 11b note explains that 2018 rows are "o do PT (13)"); anything else
- * (the fixture dataset's "Candidato A/B") gets the site's generic shortening.
- */
-const FRAME_SHORT: Record<string, string> = {
-  LULA: 'Lula',
-  'FERNANDO HADDAD': 'Lula',
-  'JAIR BOLSONARO': 'Bolsonaro',
-  'FLAVIO BOLSONARO': 'Flavio',
-}
-
-/** Short label for one urna name ("FLAVIO BOLSONARO" -> "Flavio", "JAIR BOLSONARO" -> "Bolsonaro"). */
-export function shortName(nomeUrna: string): string {
-  const frame = FRAME_SHORT[nomeUrna.trim().toUpperCase()]
-  if (frame) return frame
-  const single = /^(?:Candidato|CANDIDATO)\s+([A-Za-z])$/.exec(nomeUrna.trim())
-  if (single) return single[1]!.toUpperCase()
-  const first = nomeUrna.trim().split(/\s+/)[0] ?? nomeUrna.trim()
-  return first.slice(0, 1).toUpperCase() + first.slice(1).toLowerCase()
-}
+/** Short label for one urna name ("FLAVIO BOLSONARO" -> "Flávio", "JAIR BOLSONARO" -> "Bolsonaro"): the identity table's short form (#84). */
+export const shortName = (nomeUrna: string): string => candidateName(nomeUrna, 'short')
 
 export interface CompareSide {
   label: string

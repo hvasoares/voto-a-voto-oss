@@ -7,7 +7,7 @@ import { allowedOrigins, base, collectRequests, violations } from './helpers'
  * Real-data checks of the report screens (tickets #12 and #13), run with `npm run test:real` (builds
  * with DATA_DIR=../data). The figures are pinned to the source of truth
  * thoughts/team/data-engineering/2026-10-26-runoff-results-highlights.md: Lula flipped 211 cities,
- * Flavio Bolsonaro 1; the top of the list is Itabirito/MG, Barra do Piraí/RJ and João Monlevade/MG;
+ * Flávio Bolsonaro 1; the top of the list is Itabirito/MG, Barra do Piraí/RJ and João Monlevade/MG;
  * the four reports of #13 pin Campos dos Goytacazes, São Paulo/Itaituba, Maricá/Rio, Marquinho/
  * Apiacá/Anhangüera and Santa Maria do Herval/Itaubal. Real-data screenshots (390x844) are saved
  * to .captures/reports/real/.
@@ -18,7 +18,7 @@ test.describe('reports hub on the real dataset', () => {
   test('announces the 211 viradas of the highlights note', async ({ page, baseURL }) => {
     const seen = collectRequests(page)
     await page.goto(base + 'relatorios/')
-    await expect(page.getByRole('link', { name: /Cidades que viraram no 2º turno/ })).toContainText('Lula virou 211 cidades; Flavio Bolsonaro virou 1')
+    await expect(page.getByRole('link', { name: /Cidades que viraram no 2º turno/ })).toContainText('Lula virou 211 cidades; Flávio Bolsonaro virou 1')
     await expect(page.locator('nav[aria-label="Relatórios"] > ul > li')).toHaveCount(8)
     expect(violations(seen, await allowedOrigins(baseURL!))).toEqual([])
   })
@@ -128,7 +128,7 @@ test.describe('disputas mais apertadas on the real dataset', () => {
     expect(second).toContain('Diferença de 1 voto — Lula à frente (2.366 a 2.365)')
     // The row id is the city slug: the raw name "ANHANGÜERA" lowercases with "ü", the slug is accent-free.
     const anhanguera = await page.locator('[data-race="anhanguera"]').textContent()
-    expect(anhanguera).toContain('Diferença de 1 voto — Flavio Bolsonaro à frente (523 a 522)')
+    expect(anhanguera).toContain('Diferença de 1 voto — Flávio Bolsonaro à frente (523 a 522)')
   })
 
   test('saves the real-data screenshot of the report', async ({ page }) => {

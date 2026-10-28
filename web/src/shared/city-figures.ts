@@ -6,7 +6,7 @@
 import type { CityResult, Segment } from './city-model'
 import type { CandidateRowProps, TurnoutBarProps } from './components'
 
-const seg = (s: Segment | undefined) => ({ label: s?.label ?? '—', pct: s?.pct ?? 0, votos: s?.votos ?? 0 })
+const seg = (s: Segment | undefined) => ({ label: s?.label ?? '—', pct: s?.pct ?? 0, votos: s?.votos ?? 0, tone: s?.tone, short: s?.short })
 
 /** Props of the shared voted / not-voted bars. */
 export function toTurnoutBarProps(r: CityResult, calc?: TurnoutBarProps['calc']): TurnoutBarProps {
@@ -24,7 +24,7 @@ export function toTurnoutBarProps(r: CityResult, calc?: TurnoutBarProps['calc'])
 /** Legend rows of the card: A, B, (Outros), Abstenção, Brancos, Nulos. */
 export function toLegendRows(r: CityResult, calcFor?: (key: string) => string): CandidateRowProps[] {
   return [...r.voted, ...r.notVoted].map((s) => ({
-    kind: s.key,
+    kind: s.tone ?? s.key,
     calc: calcFor?.(s.key),
     label: s.label,
     votes: s.votos,
