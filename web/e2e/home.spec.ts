@@ -3,14 +3,14 @@ import { activateSearch, allowedOrigins, base, collectRequests, violations } fro
 
 /* Home page at 390x844, fixture dataset (9 cities, states rj, sp, mt). Behaviour spec: site/src/slots/home/CONTRACT.md */
 test.describe('home: content', () => {
-  test('shows the title, tagline, search prompt, state hint, "Para explorar" and the TSE footer', async ({ page }) => {
+  test('shows the title, tagline, search prompt, state hint, the task block and the TSE footer', async ({ page }) => {
     await page.goto(base)
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Voto a Voto')
     await expect(page.getByText('Eleição presidencial 2026, cidade por cidade.')).toBeVisible()
     await expect(page.getByText('Compare com 2018 e 2022.')).toBeVisible()
     await expect(page.locator('[data-city-search="main"]').getByPlaceholder('Busque sua cidade')).toBeVisible()
     await expect(page.getByText('Ou escolha um estado. Toque para ver os municípios.')).toBeVisible()
-    await expect(page.getByRole('heading', { level: 2 })).toHaveText('Para explorar')
+    await expect(page.getByRole('heading', { level: 2 })).toHaveText('O que você quer fazer?')
     await expect(page.locator('footer')).toContainText('Dados oficiais do TSE · Sobre os dados ›')
     await expect(page.locator('#consent-banner')).toHaveCount(1)
   })
@@ -25,7 +25,7 @@ test.describe('home: content', () => {
     await expect(page.locator('[data-uf="zz"]')).toHaveCount(0)
   })
 
-  test('"Para explorar" and the footer link to the right paths', async ({ page }) => {
+  test('the task block destinations and the footer link to the right paths', async ({ page }) => {
     await page.goto(base)
     for (const [label, href] of [
       ['Brasil e regiões', 'brasil/'],
@@ -51,7 +51,7 @@ test.describe('home: content', () => {
 
 test.describe('home without JavaScript', () => {
   test.use({ javaScriptEnabled: false })
-  test('the pre-rendered page still offers the state tiles and the explore links as plain anchors', async ({ page }) => {
+  test('the pre-rendered page still offers the state tiles and the task links as plain anchors', async ({ page }) => {
     await page.goto(base)
     await expect(page.getByRole('link', { name: /RJ · Rio de Janeiro/ })).toHaveAttribute('href', `${base}rj/`)
     await expect(page.getByRole('link', { name: /Brasil e regiões/ })).toHaveAttribute('href', `${base}brasil/`)

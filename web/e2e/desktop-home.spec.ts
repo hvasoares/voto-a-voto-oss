@@ -113,9 +113,9 @@ test.describe('"/" shortcut', () => {
 })
 
 test.describe('layout', () => {
-  test('at 1440 the state picker sits right of the title, search and "Para explorar"', async ({ page }) => {
+  test('at 1440 the state picker sits right of the title, search and the task block', async ({ page }) => {
     await page.goto(base)
-    const left = await page.getByRole('heading', { name: 'Para explorar' }).boundingBox()
+    const left = await page.getByRole('heading', { name: 'O que você quer fazer?' }).boundingBox()
     const picker = await page.locator('[data-uf-map-frame]').boundingBox()
     const title = await page.getByText('Eleição presidencial 2026, cidade por cidade.').boundingBox()
     expect(picker!.x).toBeGreaterThan(left!.x + 560)
@@ -136,7 +136,7 @@ test.describe('layout', () => {
       await page.setViewportSize({ width, height: 900 })
       await page.goto(base)
       const grid = await page.locator('[data-uf-grid]').boundingBox()
-      const explore = await page.getByRole('heading', { name: 'Para explorar' }).boundingBox()
+      const explore = await page.getByRole('heading', { name: 'O que você quer fazer?' }).boundingBox()
       expect(grid!.y).toBeLessThan(explore!.y)
       await expect(page.locator('[data-uf-grid]')).toBeVisible()
       await expect(page.locator('[data-uf-map-frame]')).toBeHidden()

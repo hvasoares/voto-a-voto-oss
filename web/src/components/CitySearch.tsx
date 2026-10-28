@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Command, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 import { loadSearchCities } from '@/lib/search-data'
 import { savePlace } from '@/lib/place-store'
+import { DESTINATIONS, readDestination, type Destination } from '@/lib/destinations'
 
 /** One `search` event once typing pauses, not one per keystroke (same as the vanilla home). */
 const DEBOUNCE_MS = 600
@@ -30,15 +31,18 @@ const BAR_LIST = 'absolute inset-x-0 top-full z-30'
 export default function CitySearch({ base, bar = false, initialText = '', autoFocus = false }: { base: string; bar?: boolean; initialText?: string; autoFocus?: boolean }) {
   const [text, setText] = useState(initialText)
   const [cities, setCities] = useState<Awaited<ReturnType<typeof loadSearchCities>>>()
+  const [destination, setDestination] = useState<Destination>()
   const root = useRef<HTMLDivElement>(null)
 
   // First interaction = first render in the browser: load the cities now, and keep what was typed before React took over.
   useEffect(() => {
+    // The destination (#99) is read before the cities arrive, so a result can never be drawn without it. Only the page's own search takes it.
+    if (!bar) setDestination(readDestination(location.search))
     void loadSearchCities(base).then(setCities)
     const typed = root.current?.querySelector('input')?.value || root.current?.closest('astro-island')?.getAttribute('data-pending')
     if (typed) setText(typed)
     if (autoFocus) root.current?.querySelector('input')?.focus()
-  }, [base, autoFocus])
+  }, [base, bar, autoFocus])
 
   const controller = useMemo(() => (cities ? createSearchController(cities, getAnalytics()) : undefined), [cities])
   const view = useMemo(() => controller?.search(text, false) ?? SHORT, [controller, text])
@@ -49,10 +53,10 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
     return () => clearTimeout(t)
   }, [controller, text])
 
-  const href = (uf: string, slug: string) => withBase(base, `/${uf}/${slug}/`)
+  const href = (uf: string, slug: string) => withBase(base, `/${uf}/${slug}/${destination ? DESTINATIONS[destination] : ''}`)
 
   return (
-    <div ref={root} className={bar ? 'relative' : 'relative mt-2'} data-city-search={bar ? 'bar' : 'main'}>
+    <div ref={root} className={bar ? 'relative' : 'relative mt-2'} data-city-search={bar ? 'bar' : 'main'} data-ready={cities ? 'search' : undefined} data-destination={destination}>
       <svg className={`pointer-events-none absolute left-[14px] z-10 text-muted-foreground ${bar ? 'top-[10px]' : 'top-[12px] lg:hidden'}`} viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="6.5" cy="6.5" r="6" fill="none" stroke="currentColor" strokeWidth="1.9" /><path d="M16.2 12.2 12.4 16.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
       <Command
         shouldFilter={false}
@@ -104,6 +108,7 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
         </CommandList>
       </Command>
       <div aria-live="polite" className={bar ? BAR_LIST : undefined}>
+        {destination === 'compartilhar' && <p className="mt-2 text-step-1 text-muted-foreground" data-destination-note>Ao escolher a cidade, você vai direto para Compartilhar.</p>}
         {view.state === 'empty' && <p className="mt-2 text-step-1 text-muted-foreground">Nenhuma cidade encontrada. Confira a grafia ou escolha um estado abaixo.</p>}
         {view.state === 'results' && view.total > view.hits.length && (
           <p className="mt-2 text-step-1 text-muted-foreground">Mostrando {view.hits.length} de {view.total}. Digite mais letras para refinar.</p>
