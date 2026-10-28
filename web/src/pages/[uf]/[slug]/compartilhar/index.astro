@@ -69,7 +69,7 @@ const closeHref = href(`/${uf}/${slug}/`)
       <h1 class="font-serif text-step-4 font-normal">Compartilhar resultado</h1>
       <a class="min-h-11 px-1 pt-1 text-step-2 font-bold" href={closeHref} data-close>Fechar<span class="hidden md:inline" aria-hidden="true"> ×</span></a>
     </div>
-    <ShareSheet client:idle uf={city.uf} slug={city.slug} view={view} initial={content} origin={siteOrigin()} base={base} fixture={fixture} edition={edition} question={pickQuestion(shard)} cityName={city.nome} />
+    <ShareSheet client:load uf={city.uf} slug={city.slug} view={view} initial={content} origin={siteOrigin()} base={base} fixture={fixture} edition={edition} question={pickQuestion(shard)} cityName={city.nome} />
     {/* Mostrar QR floats this city's canonical link scannably (route /:uf/:slug/qr/); it does not depend on
       * the round, so it renders even when the view has no result. */}
     <a class="mt-2 flex min-h-11 w-full items-center justify-center rounded-md border border-border bg-background text-step-2 font-bold text-foreground" href={href(`/${uf}/${slug}/qr/`)} data-qr-link>

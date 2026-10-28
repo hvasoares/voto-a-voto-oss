@@ -85,6 +85,8 @@ test.describe('panel actions (1440 px)', () => {
       test(`CSV of ${panel} at ${path || 'brasil'}: the provenance block first (with the four footer fields), then rows equal to the screen`, async ({ page }) => {
         await ready(page, path)
         await page.locator(`[data-ciclo-block="2026"] [data-panel="${panel}"], #painel-${panel}`).first().scrollIntoViewIfNeeded()
+        // the map says it has drawn with `data-drawn` on its panel: a CSV asked before that exports the unenhanced panel
+        if (panel === 'mapa') await expect(page.locator(`[data-ciclo-block="2026"] [data-panel="${panel}"], #painel-${panel}`).first()).toHaveAttribute('data-drawn', /.+/)
         const download = page.waitForEvent('download')
         await page.locator(`[data-ciclo-block="2026"] [data-panel="${panel}"] [data-action="csv"], #painel-${panel} [data-action="csv"]`).first().click()
         const { block, table } = parseCsv(readFileSync(await (await download).path(), 'utf8'))

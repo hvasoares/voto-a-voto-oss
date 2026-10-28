@@ -62,6 +62,16 @@ test.describe('share sheet: the guess card', () => {
     await ready(page, 'city')
   })
 
+  test('the sheet does not wait for the browser to be idle: with an idle callback that never fires the card is still drawn from the kept guess', async ({ page }) => {
+    // A busy runner delays idle time without bound; the sheet is the reason the visitor came, so it hydrates on load (this was a 5 s "pending" on slow runners).
+    await page.addInitScript(() => {
+      window.requestIdleCallback = () => 0
+      localStorage.setItem('voto-a-voto:guess', '{"rj/cidade-exemplo":"yes"}')
+    })
+    await page.goto(sheet)
+    await ready(page, 'guess')
+  })
+
   test('the card needs no request of its own: only GETs of the site, none carrying the guess', async ({ page, baseURL }) => {
     const seen = collectRequests(page)
     await page.addInitScript(() => localStorage.setItem('voto-a-voto:guess', '{"rj/cidade-exemplo":"yes"}'))
