@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { CATALOG } from './catalog'
 import { buildEscada } from './escada'
+import { buildMapa } from './mapa'
 import { detalhe } from './detalhe'
 import { placar } from './panels'
 import { placesWithShards, readPlace } from './shards'
@@ -49,6 +50,16 @@ const CONTRACTS: Record<string, () => void> = {
     const want = sumOf(2022, 1, (c) => c.uf === 'sp')
     expect(spec.rows.at(-1)!.cells[1]).toBe(int(want.aptos))
     expect(spec.rows.filter((r) => !r.total)).toHaveLength(want.rows)
+  },
+  mapa: () => {
+    const spec = buildMapa(CATALOG.find((r) => r.id === 'mapa')!, { cycle: {}, all: readPlace('brasil', null, resolve(dir, 'nerds')) }, 'brasil', known.ufs)
+    for (const turno of [1, 2] as const) {
+      const view = spec.views[`2022-${turno}-comparecimento`]!
+      for (const [uf, cell] of Object.entries(view.cells)) {
+        const want = sumOf(2022, turno, (c) => c.uf === uf)
+        expect(cell.text, `${uf} ${turno}º`).toBe(pct(want.comp, want.aptos))
+      }
+    }
   },
   sinais: () => {
     // The strip prints no number of its own: its coverage counts the rows the CSV has, and the conference delta is 0 when the CSV sums close.

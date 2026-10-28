@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { execFileSync } from 'node:child_process'
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { base } from './helpers'
@@ -53,10 +53,27 @@ test.describe('a corrupted shard shows on the page', () => {
     const file = resolve(tmp, 'fixtures/data/nerds/uf/rj/2022-1.json')
     const shard = JSON.parse(readFileSync(file, 'utf8')) as { columns: string[]; municipios: number[][] | unknown[][] }
     const at = shard.columns.indexOf('comparecimento')
-    ;(shard.municipios[0] as number[])[at] += 7
+    const first = shard.municipios[0] as number[]
+    first[at] = first[at]! + 7
     writeFileSync(file, JSON.stringify(shard))
     out = resolve(tmp, 'dist')
-    execFileSync('npx', ['astro', 'build'], { env: { ...process.env, DATA_DIR: resolve(tmp, 'fixtures/data'), OUT_DIR: out, SITE_BASE: base }, stdio: 'pipe', timeout: 200_000 })
+    // Builds write public/data of this project: one at a time, however many workers (or repeats) run this file.
+    const lock = resolve(tmpdir(), 'voto-nerds-corrupt-build.lock')
+    const until = Date.now() + 200_000
+    for (;;) {
+      try {
+        mkdirSync(lock)
+        break
+      } catch {
+        if (Date.now() > until) throw new Error('could not take the build lock')
+        execFileSync('sleep', ['1'])
+      }
+    }
+    try {
+      execFileSync('npx', ['astro', 'build'], { env: { ...process.env, DATA_DIR: resolve(tmp, 'fixtures/data'), OUT_DIR: out, SITE_BASE: base }, stdio: 'pipe', timeout: 200_000 })
+    } finally {
+      rmSync(lock, { recursive: true, force: true })
+    }
   })
   test.afterAll(() => rmSync(resolve(out, '..'), { recursive: true, force: true }))
 

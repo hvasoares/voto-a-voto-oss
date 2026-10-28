@@ -23,8 +23,10 @@ interface Props {
   cells?: Record<string, MapCell>
   /** #54: the state the panel shows first. */
   selected?: string
+  /** The dashboard (#78) links a state to its own page; the default is the state page. */
+  hrefFor?: (uf: string) => string
 }
-const { available, base, label = 'Mapa do Brasil por estado', target, cells, selected } = Astro.props
+const { available, base, label = 'Mapa do Brasil por estado', target, cells, selected, hrefFor } = Astro.props
 const map = loadUfMap()
 const KEY = 15
 ---
@@ -56,7 +58,7 @@ const KEY = 15
     )
     return linked ? (
       <a
-        href={withBase(base, `/${s.uf}/`)}
+        href={hrefFor ? hrefFor(s.uf) : withBase(base, `/${s.uf}/`)}
         target={target}
         data-map-uf={s.uf}
         aria-label={cell?.label ?? ufFullLabel(s.uf)}

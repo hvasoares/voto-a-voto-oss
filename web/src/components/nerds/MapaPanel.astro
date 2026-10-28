@@ -1,0 +1,57 @@
+---
+/**
+ * The map kind (#78), pre-rendered at build time as static inline SVG (the 27 outlines of #53, the same geometry the Home map draws): the shading, the printed value of every
+ * state and the five-step numeric legend come from the level shards; every state is a link to its estado page (a region chip, on Brasil, to its região page), with a title and a
+ * text label, working with scripts off. From 1024 px, in view, a small island adds the measure and turno pickers and recolours the map. Estado: a slot that points at the
+ * municipality map; the numbers are in the table below.
+ */
+import UfMap from '@/components/UfMap.astro'
+import { STEP_FGS, STEP_FILLS, type MapSpec } from '@/lib/nerds/mapa'
+import { nerdsPath } from '@/lib/nerds/paths'
+import { regionLabel } from '@/lib/brasil'
+import { UF_NOME } from '@/lib/uf-names'
+import MapaEnhancer from './MapaEnhancer'
+import { withBase } from '@/paths'
+
+interface Props {
+  spec: MapSpec
+  base: string
+  placeName: string
+  /** `/mapa/<uf>/` when that page exists. */
+  muniMap?: string
+}
+const { spec, base, placeName, muniMap } = Astro.props
+const initial = spec.views[spec.initial.key]
+const cells = Object.fromEntries(
+  Object.entries(initial?.cells ?? {}).map(([uf, c]) => [uf, { uf, fill: STEP_FILLS[c.step]!, fg: STEP_FGS[c.step]!, text: c.text, big: c.text, name: UF_NOME[uf] ?? uf, label: `${uf.toUpperCase()} · ${UF_NOME[uf] ?? uf}: ${c.text}, faixa ${initial!.shading.legend[c.step]}`, lines: ['', ''] as [string, string] }]),
+)
+const linked = new Set(spec.linked.filter((uf) => cells[uf]))
+const views = Object.fromEntries(Object.entries(spec.views).map(([k, v]) => [k, { legend: v.shading.legend, cells: Object.fromEntries(Object.entries(v.cells).map(([uf, c]) => [uf, [c.text, c.step]])), chips: v.chips && Object.fromEntries(Object.entries(v.chips).map(([r, c]) => [r, c.text])) }]))
+const names = Object.fromEntries(Object.keys(UF_NOME).map((uf) => [uf, UF_NOME[uf]!]))
+const label = spec.options.find((o) => o.id === spec.initial.measure)?.label ?? ''
+---
+{spec.level === 'estado' ? (
+  <div class="nerds-slot" data-map-slot>
+    <h3>Mapa dos municípios</h3>
+    <p>O mapa de cada município de {placeName} fica na página própria; aqui, os números de todos os municípios estão na tabela.</p>
+    <p class="nerds-slot__links">{muniMap && <a href={withBase(base, muniMap)} data-muni-map>Abrir o mapa dos municípios ›</a>} <a href="#c2026-detalhe-t" data-to-table>Ver os municípios na tabela ›</a></p>
+  </div>
+) : (
+  <div class="nerds-map" data-map data-map-level={spec.level}>
+    <MapaEnhancer client:panel views={views} options={spec.options} cycles={spec.cycles} initial={spec.initial} names={names} />
+    <p class="nerds-map__caption" data-map-caption>{label}, {spec.initial.turno}º turno de {spec.initial.ano}</p>
+    <UfMap available={linked} base={base} label={`Mapa do Brasil por estado: ${label}`} cells={cells} hrefFor={(uf) => withBase(base, nerdsPath({ level: 'estado', id: uf }))} />
+    <ul class="nerds-legend5" data-legend aria-label="Faixas de cor">
+      {(initial?.shading.legend ?? []).map((text, i) => (
+        <li data-step={i}><span class="nerds-swatch" style={`background:${STEP_FILLS[i]}`} aria-hidden="true" /><span class="nerds-legend5__label">{text}</span></li>
+      ))}
+    </ul>
+    {spec.level === 'brasil' && initial?.chips && (
+      <ul class="nerds-chips" data-chips aria-label="Regiões">
+        {Object.entries(initial.chips).map(([regiao, c]) => (
+          <li data-chip={regiao}><a href={withBase(base, nerdsPath({ level: 'regiao', id: regiao }))} title={`Abrir os dados da região ${regionLabel(regiao)}`}>{regionLabel(regiao)} <span data-chip-value>{c.text}</span></a></li>
+        ))}
+      </ul>
+    )}
+  </div>
+)}

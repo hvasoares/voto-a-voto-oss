@@ -86,6 +86,23 @@ export const INVARIANTES: PanelRecord = {
   },
 }
 
-export const CATALOG: readonly PanelRecord[] = [SINAIS, PLACAR, ESCADA, DETALHE, INVARIANTES]
+export const MAPA: PanelRecord = {
+  id: 'mapa',
+  level: 'todos',
+  shard: 'ciclos',
+  transform: 'mapa',
+  kind: 'map',
+  measure: { family: 'participacao', id: 'comparecimento', options: ['comparecimento', 'abstencao', 'brancos_nulos', 'validos'] },
+  series: 'turno',
+  title: 'Qual foi o comparecimento em cada lugar?',
+  footer: {
+    definicao: 'A medida escolhida em cada estado, no turno escolhido; cinco faixas de cor, com a faixa e o valor escritos.',
+    fonte: 'TSE, {edicao}; contornos do IBGE.',
+    calculo: 'Comparecimento e abstenção = votantes e não votantes ÷ eleitorado; brancos + nulos e votos válidos = parte do comparecimento. As faixas dividem os valores mostrados em cinco passos iguais.',
+    naoMede: 'Motivo, perfil de eleitor nem ranking entre lugares; a cor não ordena.',
+  },
+}
+
+export const CATALOG: readonly PanelRecord[] = [SINAIS, PLACAR, MAPA, ESCADA, DETALHE, INVARIANTES]
 
 assertCatalog(CATALOG)

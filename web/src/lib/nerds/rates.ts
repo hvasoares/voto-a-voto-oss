@@ -1,5 +1,5 @@
 import { int, pct1 } from './format'
-import type { LevelShard, Metric } from './types'
+import type { LevelShard, Metric, Row } from './types'
 
 /**
  * The rate measures of the participação family and how each is calculated (the same definitions the Placar and the Escada print and the footers state):
@@ -39,4 +39,12 @@ export function rateOf(shard: LevelShard | undefined, id: string): Rate | null {
   const text = pct1(shard.total[def.part], shard.total[def.whole])
   if (text === null) return null
   return { value: Number(text.replace('%', '').replace(',', '.')), text, sub: int(shard.total[def.part]) }
+}
+
+/** The rate of any row (a UF row of a Brasil or região shard), same definition as the totals'. */
+export function rateOfRow(row: Row | undefined, id: string): Rate | null {
+  if (!row) return null
+  const def = rateDef(id)
+  const text = pct1(row[def.part], row[def.whole])
+  return text === null ? null : { value: Number(text.replace('%', '').replace(',', '.')), text, sub: int(row[def.part]) }
 }

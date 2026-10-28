@@ -13,6 +13,10 @@ import { CATALOG } from '@/lib/nerds/catalog'
 import { nerdsPath, type Level } from '@/lib/nerds/paths'
 import { specFor, type PanelData } from '@/lib/nerds/panels'
 import EscadaPanel from './EscadaPanel'
+import MapaPanel from './MapaPanel.astro'
+import '@/styles/uf-map.css'
+import { existsSync } from 'node:fs'
+import { resolve } from 'node:path'
 import TablePanel from './TablePanel.astro'
 import DetalheEnhancer from './DetalheEnhancer'
 import { placesWithShards } from '@/lib/nerds/shards'
@@ -119,10 +123,11 @@ const title = `Dados para nerds: ${place.name} · Voto a Voto`
     })}
     <div class="nerds-series" data-series>
       {seriesPanels.map((record) => {
-        const spec = specFor(record, { cycle: {}, all: place.shards, reference: place.reference })
+        const spec = specFor(record, { cycle: {}, all: place.shards, reference: place.reference, level, known })
         return (
-          <PanelFrame record={record} edicao={edicao} scope="serie" weight={spec.kind === 'bar' ? weightText(spec.weight) : undefined} unchecked={unchecked()}>
+          <PanelFrame record={record} edicao={edicao} scope="serie" weight={spec.kind === 'bar' || spec.kind === 'map' ? weightText(spec.weight) : undefined} unchecked={unchecked()}>
             {spec.kind === 'bar' && <EscadaPanel client:panel spec={spec} titleId={`serie-${record.id}-t`} />}
+            {spec.kind === 'map' && <MapaPanel spec={spec} base={base} placeName={place.name} muniMap={level === 'estado' && existsSync(resolve('./public/geo', `municipios-${id}.json`)) ? `/mapa/${id}/` : undefined} />}
           </PanelFrame>
         )
       })}

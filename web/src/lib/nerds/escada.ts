@@ -123,7 +123,7 @@ export function fichaCsv(f: Ficha): string {
 }
 
 /** `6 arquivos, 5,1 kB comprimidos`. */
-export function weightText(weight: BarSpec['weight']): string {
+export function weightText(weight: { files: number; gzipBytes: number }): string {
   const kb = (Math.round(weight.gzipBytes / 100) / 10).toFixed(1).replace('.', ',')
   return `Lê ${int(weight.files)} ${weight.files === 1 ? 'arquivo' : 'arquivos'} de dados, ${kb} kB comprimidos`
 }

@@ -90,7 +90,8 @@ describe('Sinais and Invariantes as panel specs', () => {
     expect('strip' in strip && strip.strip.map((s) => s.key)).toEqual(['cobertura', 'conferencia', 'edicao'])
     const list = specFor(invariantes, { cycle: {}, all: place('uf', 'rj'), signals })
     expect(list.kind).toBe('table')
-    expect('rows' in list && list.rows.map((r) => r.cells[0])).toContain('✓ Passou')
-    expect('rows' in list && list.rows.find((r) => r.id === 'secoes')).toBeUndefined() // the seções rule is listed on Brasil only
+    if (list.kind !== 'table') return
+    expect(list.rows.map((r) => r.cells[0])).toContain('✓ Passou')
+    expect(list.rows.find((r) => r.id === 'secoes')).toBeUndefined() // the seções rule is listed on Brasil only
   })
 })
