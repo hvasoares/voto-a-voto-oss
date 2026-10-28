@@ -60,7 +60,7 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
       <svg className={`pointer-events-none absolute left-[14px] z-10 text-muted-foreground ${bar ? 'top-[10px]' : 'top-[12px] lg:hidden'}`} viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="6.5" cy="6.5" r="6" fill="none" stroke="currentColor" strokeWidth="1.9" /><path d="M16.2 12.2 12.4 16.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
       <Command
         shouldFilter={false}
-        label="Busque sua cidade"
+        label={bar ? 'Ver minha cidade' : 'Busque sua cidade'}
         className={`h-auto overflow-visible rounded-none bg-transparent p-0 ${FIELD} ${bar ? BAR_FIELD : ''}`}
         onKeyDown={(e) => {
           if (e.key !== 'Enter') return
@@ -73,7 +73,7 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
           onValueChange={setText}
           className={`h-full pl-[39px]! text-step-2! placeholder:text-muted-foreground ${bar ? 'pr-10!' : 'pb-1 lg:pl-[22px]!'}`}
           placeholder={bar ? 'Ver minha cidade' : 'Busque sua cidade'}
-          aria-label="Busque sua cidade"
+          aria-label={bar ? 'Ver minha cidade' : 'Busque sua cidade'}
           autoComplete="off"
           autoCapitalize="off"
           spellCheck={false}

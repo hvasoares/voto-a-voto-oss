@@ -65,7 +65,7 @@ test.describe('top bar', () => {
     const box = page.locator('[data-component="top-bar"] [data-city-search="bar"] input')
     await box.click()
     // The existing CitySearch (React, cmdk) takes the field over: it is a combobox now, focused, and the cities were fetched.
-    const live = page.locator('[data-component="top-bar"]').getByRole('combobox', { name: 'Busque sua cidade' })
+    const live = page.locator('[data-component="top-bar"]').getByRole('combobox', { name: 'Ver minha cidade' })
     await expect(live).toBeFocused()
     expect(seen.some((r) => /search\.json/.test(r.url))).toBe(true)
     await live.fill('cidade')

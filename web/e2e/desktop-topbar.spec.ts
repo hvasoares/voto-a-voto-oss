@@ -34,7 +34,7 @@ test.describe('the task-named bar', () => {
       await expect(bar(page)).toBeVisible()
       seen[name] = { links: await barLinks(page), placeholder: await bar(page).locator('input').getAttribute('placeholder'), label: await bar(page).locator('input').getAttribute('aria-label') }
     }
-    const expected = { links: [['Voto a Voto', base], ...TASKS], placeholder: 'Ver minha cidade', label: 'Busque sua cidade' }
+    const expected = { links: [['Voto a Voto', base], ...TASKS], placeholder: 'Ver minha cidade', label: 'Ver minha cidade' }
     for (const [name, got] of Object.entries(seen)) expect(got, name).toEqual(expected)
   })
 
@@ -102,7 +102,7 @@ test.describe('the task-named bar', () => {
     await page.waitForLoadState('networkidle')
     expect(seen.filter((r) => /CitySearch|search\.json/.test(r.url))).toEqual([])
     await page.keyboard.press('/')
-    const live = bar(page).getByRole('combobox', { name: 'Busque sua cidade' })
+    const live = bar(page).getByRole('combobox', { name: 'Ver minha cidade' })
     await expect(live).toBeFocused()
     await expect(live).toHaveAttribute('placeholder', 'Ver minha cidade')
     expect(seen.some((r) => /search\.json/.test(r.url))).toBe(true)
