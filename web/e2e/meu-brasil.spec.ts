@@ -27,8 +27,8 @@ test.describe('Meu Brasil', () => {
     test(`${n} place(s): one card with the three cycles of each and the generated headline as its text alternative`, async ({ page }) => {
       await open(page, q)
       await ready(page)
-      const texts = await page.locator('[data-card-picture] svg text').allTextContents()
-      expect(texts.filter((t) => /^20(18|22|26)$/.test(t))).toHaveLength(3 * n)
+      // `ready` holds as soon as the first place has loaded: wait for every place's years before counting them
+      await expect.poll(async () => (await page.locator('[data-card-picture] svg text').allTextContents()).filter((t) => /^20(18|22|26)$/.test(t)).length).toBe(3 * n)
       await expect(title(page)).toContainText('a parcela do eleitorado que não votou foi de')
       expect(await page.locator('[data-card-picture] svg').getAttribute('data-view')).toBe('meu-brasil')
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
