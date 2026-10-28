@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import PlacePicker, { type PickedPlace } from '@/components/PlacePicker'
+import { useCityShards } from '@/components/use-city-shards'
+import { displayName } from '@/shared/city-search'
 import { BACKGROUNDS, DEFAULT_OVERLAY, MEASURES, OVERLAY_CYCLES, OVERLAY_SIZES, overlayQuery, overlaySize, parseOverlay, type OverlayConfig } from '@/lib/overlay'
 import { DEFAULT_VOICE, message, type MessageKey } from '@/lib/sentences/catalog'
 import '@/lib/sentences/catalog-overlay'
@@ -52,11 +54,26 @@ export default function OverlayBuilder({ base, origin }: OverlayBuilderProps) {
     setPlace(p)
     update({ city: `${p.uf}/${p.slug}` })
   }
+  const shards = useCityShards(base, place ? [`${place.uf}/${place.slug}`] : [])
+  const placeShard = place ? shards[`${place.uf}/${place.slug}`] : undefined
+  const shownPlace = place && placeShard && placeShard !== 'loading' && placeShard !== 'failed' ? { ...place, nome: displayName(placeShard.city.nome) } : place
   const query = overlayQuery(config)
   const path = `overlay/tela/${query}`
   const address = `${origin}${base.endsWith('/') ? base : `${base}/`}${path}`
   const size = overlaySize(config.size)
-  const previewScale = useMemo(() => Math.min(1, 640 / size.width, 360 / size.height), [size.width, size.height])
+  // The preview is the real overlay at its real size, scaled to the width the screen gives it (a phone has about 330 px, a desktop 640).
+  const frame = useRef<HTMLDivElement>(null)
+  const [room, setRoom] = useState(640)
+  useEffect(() => {
+    const el = frame.current
+    if (!el) return
+    const measure = () => setRoom(Math.max(120, Math.min(640, el.clientWidth - 32)))
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  const previewScale = Math.min(1, room / size.width, 360 / size.height)
 
   useEffect(() => {
     try {
@@ -76,9 +93,8 @@ export default function OverlayBuilder({ base, origin }: OverlayBuilderProps) {
   return (
     <div data-builder className="mt-3 lg:grid lg:grid-cols-[460px_1fr] lg:gap-10">
       <div>
-        <p className="text-tiny uppercase leading-[14px] text-muted-foreground">{say('overlay.place')}</p>
-        <div className="mt-1">
-          <PlacePicker base={base} label={say('overlay.place')} value={place} onPick={pick} />
+        <div>
+          <PlacePicker base={base} label={say('overlay.place')} value={shownPlace} onPick={pick} />
         </div>
         <Group label={say('overlay.measure')} options={MEASURES} value={config.measure} name={(m) => say(`overlay.m.${m}`)} onChange={(measure) => update({ measure })} />
         <Group label={say('overlay.cycle')} options={OVERLAY_CYCLES} value={config.ano} name={String} onChange={(ano) => update({ ano })} />
@@ -91,7 +107,7 @@ export default function OverlayBuilder({ base, origin }: OverlayBuilderProps) {
       </div>
       <div className="mt-6 min-w-0 lg:mt-0">
         <p className="text-tiny uppercase leading-[14px] text-muted-foreground">{say(config.background === 'transparente' ? 'overlay.preview' : 'overlay.preview.other')}</p>
-        <div className="mt-1 flex min-h-[200px] items-center justify-center overflow-hidden rounded-md border border-border bg-[length:40px_40px] bg-[linear-gradient(45deg,var(--c-paper-2)_25%,transparent_25%,transparent_75%,var(--c-paper-2)_75%),linear-gradient(45deg,var(--c-paper-2)_25%,#fff_25%,#fff_75%,var(--c-paper-2)_75%)] [background-position:0_0,20px_20px] py-4" data-checker>
+        <div ref={frame} className="mt-1 flex min-h-[200px] items-center justify-center overflow-hidden rounded-md border border-border bg-[length:40px_40px] bg-[linear-gradient(45deg,var(--c-paper-2)_25%,transparent_25%,transparent_75%,var(--c-paper-2)_75%),linear-gradient(45deg,var(--c-paper-2)_25%,#fff_25%,#fff_75%,var(--c-paper-2)_75%)] [background-position:0_0,20px_20px] py-4" data-checker>
           {config.city ? (
             <div style={{ width: size.width * previewScale, height: size.height * previewScale, maxWidth: '100%' }} data-preview-box>
               <iframe title={say('overlay.title')} src={withBase(base, path)} width={size.width} height={size.height} style={{ border: 0, transform: `scale(${previewScale})`, transformOrigin: '0 0', background: 'transparent' }} data-preview />
