@@ -17,6 +17,7 @@ import './catalog-press'
 import './catalog-guide'
 import './catalog-overlay'
 import '../question'
+import '../guess-card'
 
 const SRC = join(import.meta.dirname, '..', '..')
 const files = (dir: string): string[] =>
@@ -44,7 +45,7 @@ describe('sentences outside the catalog', () => {
     expect(copies).toEqual([])
   })
 
-  const BUILDERS = ['slots/city/card.ts', 'lib/sentences/headline.ts', 'lib/sentences/margin.ts', 'lib/sentences/arc.ts', 'slots/city/curiosities.ts', 'lib/share-text.ts', 'lib/share-model.ts', 'scripts/city-card.ts', 'scripts/city-guess.ts', 'lib/question.ts', 'lib/sentences/register-store.ts', 'lib/sentences/stat.ts', 'lib/sentences/recap.ts', 'lib/stat-card.ts', 'lib/stat-content.ts', 'lib/recap-card.ts', 'lib/recap-content.ts', 'lib/card-keys.ts', 'lib/sentences/meu-brasil.ts', 'lib/meu-brasil.ts', 'lib/meu-brasil-card.ts', 'lib/meu-brasil-content.ts', 'lib/sticker-card.ts', 'lib/sticker-content.ts', 'lib/duel-model.ts', 'lib/duel-card.ts', 'lib/duel-content.ts', 'lib/duel-data.ts', 'lib/sentences/duel.ts', 'components/Duel.tsx', 'lib/sentences/stayhome.ts', 'lib/stay-home.ts', 'lib/stay-home-view.ts', 'lib/stay-home-card.ts', 'lib/stay-home-content.ts', 'lib/city-texts.ts', 'lib/number-words.ts', 'lib/press-kit.ts', 'lib/creator-phrases.ts', 'components/CreatorGuide.tsx', 'lib/overlay.ts', 'components/OverlayView.tsx', 'components/OverlayBuilder.tsx']
+  const BUILDERS = ['slots/city/card.ts', 'lib/sentences/headline.ts', 'lib/sentences/margin.ts', 'lib/sentences/arc.ts', 'slots/city/curiosities.ts', 'lib/share-text.ts', 'lib/share-model.ts', 'scripts/city-card.ts', 'scripts/city-guess.ts', 'lib/question.ts', 'lib/guess-card.ts', 'lib/sentences/register-store.ts', 'lib/sentences/stat.ts', 'lib/sentences/recap.ts', 'lib/stat-card.ts', 'lib/stat-content.ts', 'lib/recap-card.ts', 'lib/recap-content.ts', 'lib/card-keys.ts', 'lib/sentences/meu-brasil.ts', 'lib/meu-brasil.ts', 'lib/meu-brasil-card.ts', 'lib/meu-brasil-content.ts', 'lib/sticker-card.ts', 'lib/sticker-content.ts', 'lib/duel-model.ts', 'lib/duel-card.ts', 'lib/duel-content.ts', 'lib/duel-data.ts', 'lib/sentences/duel.ts', 'components/Duel.tsx', 'lib/sentences/stayhome.ts', 'lib/stay-home.ts', 'lib/stay-home-view.ts', 'lib/stay-home-card.ts', 'lib/stay-home-content.ts', 'lib/city-texts.ts', 'lib/number-words.ts', 'lib/press-kit.ts', 'lib/creator-phrases.ts', 'components/CreatorGuide.tsx', 'lib/overlay.ts', 'components/OverlayView.tsx', 'components/OverlayBuilder.tsx']
   const WORDS = /\b(de|do|da|dos|das|o|a|os|as|que|em|no|na|não|e|com|para|por|um|uma)\b/i
   const literals = (src: string) => [...src.matchAll(/'((?:[^'\\\n]|\\.)*)'|"((?:[^"\\\n]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g)].map((m) => m[1] ?? m[2] ?? m[3] ?? '')
 

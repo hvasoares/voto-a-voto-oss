@@ -3,6 +3,9 @@ import { parseView, type View } from '@/slots/city/city-view'
 import { cityShardResult, type CityShard } from '@/lib/city-shard'
 import { pictureSvg, shareContent, type ShareContent } from '@/lib/share-model'
 import { readRegister } from '@/lib/sentences/register-store'
+import { browserStorage, readGuess, type Guess } from '@/lib/guess-store'
+import { guessContent } from '@/lib/guess-card'
+import type { Question } from '@/lib/question'
 import { DEFAULT_LOCALE, message, type Register } from '@/lib/sentences/catalog'
 import { SHARD_VERSION } from 'virtual:data-shards'
 import ShareActions from './ShareActions'
@@ -29,14 +32,21 @@ export interface ShareSheetProps {
   fixture: boolean
   /** The id of the data edition: the picture carries it with its other keys (#38). */
   edition: string
+  /** The question of the city and its name (#44, #45): with a guess kept in this browser the sheet shows the guess card instead of the bars. */
+  question: Question
+  cityName: string
 }
 
-export default function ShareSheet({ uf, slug, view, initial, origin, base, fixture, edition }: ShareSheetProps) {
+export default function ShareSheet({ uf, slug, view, initial, origin, base, fixture, edition, question, cityName }: ShareSheetProps) {
   const [content, setContent] = useState<ShareContent | null>(initial)
   const [viewId, setViewId] = useState(`${view.ano}-${view.turno}`)
   // The register the reader chose on the city card (remembered in this browser only); the server renders the standard one.
   const [register, setRegister] = useState<Register>('standard')
   useEffect(() => setRegister(readRegister()), [])
+  // The guess to the city's question (#44), read from this browser only. With none, the normal card; with one, the guess card (#45). Nothing is fetched for it.
+  // `undefined` until the browser has been asked (the server cannot know), then the guess or `null`: the picture says so in `data-card`, so a test waits for the real answer.
+  const [guess, setGuess] = useState<Guess | null>()
+  useEffect(() => setGuess(readGuess(`${uf}/${slug}`, browserStorage()) ?? null), [uf, slug])
 
   useEffect(() => {
     // Only the build-time view is known up front; a query view is validated against CYCLES by parseView (whose
@@ -63,28 +73,32 @@ export default function ShareSheet({ uf, slug, view, initial, origin, base, fixt
     }
   }, [uf, slug, view.ano, view.turno, initial, origin, base, fixture, edition])
 
+  const guessCard = guess ? guessContent(question, guess, { uf, slug, nome: cityName }, { origin, base, fixture }) : undefined
+  const shown = guessCard ?? content
+
   // The sheet frame states the view it draws (the [data-view] and [data-filename] contract of the page).
   useEffect(() => {
     const sheet = document.querySelector('[data-share-sheet]')
     sheet?.setAttribute('data-view', viewId)
-    sheet?.setAttribute('data-filename', content?.filename ?? '')
-  }, [viewId, content?.filename])
+    sheet?.setAttribute('data-filename', shown?.filename ?? '')
+  }, [viewId, shown?.filename])
 
   return (
     <>
-      {content ? (
+      {shown ? (
         <div
           className="mx-auto mt-2 flex-none md:max-w-[240px] [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
           data-share-picture
-          dangerouslySetInnerHTML={{ __html: pictureSvg(content, register) }}
+          data-card={guess === undefined ? 'pending' : guessCard ? 'guess' : 'city'}
+          dangerouslySetInnerHTML={{ __html: pictureSvg(shown, register) }}
         />
       ) : (
         <p className="mt-4 text-body" data-nodata>
           {message({ locale: DEFAULT_LOCALE, register }, 'noData')}
         </p>
       )}
-      {content && <p className="mt-3 text-small leading-[17px] text-muted-foreground" data-note>{NOTE}</p>}
-      {content && <ShareActions text={content.variants[register].text} svg={pictureSvg(content, register)} filename={content.filename} link={content.url} />}
+      {shown && <p className="mt-3 text-small leading-[17px] text-muted-foreground" data-note>{NOTE}</p>}
+      {shown && <ShareActions text={shown.variants[register].text} svg={pictureSvg(shown, register)} filename={shown.filename} link={shown.url} />}
     </>
   )
 }

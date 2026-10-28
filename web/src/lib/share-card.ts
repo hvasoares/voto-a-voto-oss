@@ -49,6 +49,16 @@ export interface ShareCardOptions {
   /** Display size of the SVG element; the drawing itself stays 1080x1070. */
   width?: number
   height?: number
+  /** The guess card (#45): the question, the result of the visitor's guess and the answer, in place of the two bars. The words come ready from the catalog. */
+  guess?: GuessCard
+}
+
+/** What the guess card says (#45): `sub` replaces the "{ano} · {turno}º turno · {UF}" line, which would pin the card to one round. */
+export interface GuessCard {
+  sub: string
+  question: string
+  result: string
+  answer: string
 }
 
 const W = SHARE_CARD_SIZE.width
@@ -172,6 +182,20 @@ function addressLines(address: string): { size: number; lines: string[] } {
   return { size: 36, lines: [a.slice(0, cut), fit(a.slice(cut), 36, INNER)] }
 }
 
+/** The question (up to three lines), the result of the guess in the serif (the biggest size that fits one line) and the answer (up to two lines). Nothing is cut with "…" unless the words cannot be made to fit. */
+function guessBlock(g: GuessCard, top: number): string {
+  const out: string[] = []
+  const qSize = [46, 42, 38].find((sz) => wrap(g.question, sz, INNER, 3)) ?? 38
+  const q = wrap(g.question, qSize, INNER, 3) ?? [fit(g.question, qSize, INNER)]
+  q.forEach((line, i) => out.push(text(LEFT, top + 46 + i * 58, qSize, line, { weight: 700 })))
+  const rSize = [96, 84, 72, 60].find((sz) => textWidth(g.result, sz) <= INNER) ?? 60
+  out.push(text(LEFT, top + 46 + 3 * 58 + 70, rSize, fit(g.result, rSize, INNER), { serif: true, fill: colors.accent }))
+  const aSize = [42, 38, 34].find((sz) => wrap(g.answer, sz, INNER, 2)) ?? 34
+  const a = wrap(g.answer, aSize, INNER, 2) ?? [fit(g.answer, aSize, INNER)]
+  a.forEach((line, i) => out.push(text(LEFT, top + 46 + 3 * 58 + 70 + 64 + i * 50, aSize, line, { fill: colors.muted })))
+  return out.join('')
+}
+
 export function shareCardSvg(r: PictureResult, o: ShareCardOptions): string {
   const say = (key: MessageKey, params: Record<string, string | number> = {}) => message({ locale: o.locale ?? DEFAULT_LOCALE, register: 'standard' }, key, params)
   const out: string[] = []
@@ -192,11 +216,13 @@ export function shareCardSvg(r: PictureResult, o: ShareCardOptions): string {
   const baseline1 = two ? 270 : 311
   lines.forEach((line, i) => out.push(text(LEFT, baseline1 + i * 76, size, line, { serif: true })))
   const sub = two ? 406 : 390
-  out.push(text(LEFT, sub, 44, say('card.round', { ano: r.ano, turno: r.turno, uf: fit(o.ufLabel, 44, 400) }), { fill: colors.muted }))
+  out.push(text(LEFT, sub, 44, o.guess ? fit(o.guess.sub, 44, INNER) : say('card.round', { ano: r.ano, turno: r.turno, uf: fit(o.ufLabel, 44, 400) }), { fill: colors.muted }))
   const d = two ? 8 : 0
   out.push(rect(LEFT, 430 + d, INNER, 4, colors.rule))
 
-  if (r.aptos <= 0) {
+  if (o.guess) {
+    out.push(guessBlock(o.guess, 500 + d))
+  } else if (r.aptos <= 0) {
     out.push(text(LEFT, 540 + d, 46, say('card.noElectorate'), { weight: 700 }))
   } else {
     out.push(text(LEFT, 517 + d, 46, say('card.voted', { pct: r.votedPct }), { weight: 700 }))
