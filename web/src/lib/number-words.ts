@@ -3,6 +3,8 @@
  * "trinta e três vírgula seis por cento". Used by the read-aloud bulletin (#65), where a figure is read, not seen. Masculine forms only
  * (the bulletin counts "votos" and "eleitores"). Whole numbers up to 999.999.999.
  */
+const DECIMAL_POINT = 'vírgula'
+const PERCENT = 'por cento'
 const UNITS = ['zero', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove', 'dez', 'onze', 'doze', 'treze', 'catorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove']
 const TENS = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa']
 const HUNDREDS = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos']
@@ -40,5 +42,6 @@ export function spellPercent(x: number): string {
   const v = Math.round(x * 10) / 10
   const whole = Math.trunc(v)
   const tenth = Math.round((v - whole) * 10)
-  return `${spell(whole)}${tenth ? ` vírgula ${spell(tenth)}` : ''} por cento`
+  const decimal = tenth ? [DECIMAL_POINT, spell(tenth)] : []
+  return [spell(whole), ...decimal, PERCENT].join(' ')
 }

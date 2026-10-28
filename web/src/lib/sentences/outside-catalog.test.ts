@@ -12,6 +12,7 @@ import './catalog-facts'
 import './catalog-duel'
 import './catalog-stayhome'
 import './catalog-outliers'
+import './catalog-texts'
 
 const SRC = join(import.meta.dirname, '..', '..')
 const files = (dir: string): string[] =>
@@ -19,7 +20,7 @@ const files = (dir: string): string[] =>
     const p = join(dir, f)
     return statSync(p).isDirectory() ? files(p) : /\.(ts|tsx|astro)$/.test(f) && !/\.test\./.test(f) ? [p] : []
   })
-const sources = files(SRC).filter((p) => !p.endsWith(join('sentences', 'catalog.ts')) && !p.endsWith(join('sentences', 'catalog-facts.ts')) && !p.endsWith(join('sentences', 'catalog-duel.ts')) && !p.endsWith(join('sentences', 'catalog-stayhome.ts')) && !p.endsWith(join('sentences', 'catalog-outliers.ts')))
+const sources = files(SRC).filter((p) => !p.endsWith(join('sentences', 'catalog.ts')) && !p.endsWith(join('sentences', 'catalog-facts.ts')) && !p.endsWith(join('sentences', 'catalog-duel.ts')) && !p.endsWith(join('sentences', 'catalog-stayhome.ts')) && !p.endsWith(join('sentences', 'catalog-outliers.ts')) && !p.endsWith(join('sentences', 'catalog-texts.ts')))
 const text = new Map(sources.map((p) => [relative(SRC, p), readFileSync(p, 'utf8')]))
 /** Code without its comments (a comment may quote a sentence to explain it). */
 const code = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1')
@@ -39,7 +40,7 @@ describe('sentences outside the catalog', () => {
     expect(copies).toEqual([])
   })
 
-  const BUILDERS = ['slots/city/card.ts', 'lib/sentences/headline.ts', 'lib/sentences/margin.ts', 'lib/sentences/arc.ts', 'slots/city/curiosities.ts', 'lib/share-text.ts', 'lib/share-model.ts', 'scripts/city-card.ts', 'lib/sentences/register-store.ts', 'lib/sentences/stat.ts', 'lib/sentences/recap.ts', 'lib/stat-card.ts', 'lib/stat-content.ts', 'lib/recap-card.ts', 'lib/recap-content.ts', 'lib/card-keys.ts', 'lib/sentences/meu-brasil.ts', 'lib/meu-brasil.ts', 'lib/meu-brasil-card.ts', 'lib/meu-brasil-content.ts', 'lib/sticker-card.ts', 'lib/sticker-content.ts', 'lib/duel-model.ts', 'lib/duel-card.ts', 'lib/duel-content.ts', 'lib/duel-data.ts', 'lib/sentences/duel.ts', 'components/Duel.tsx', 'lib/sentences/stayhome.ts', 'lib/stay-home.ts', 'lib/stay-home-view.ts', 'lib/stay-home-card.ts', 'lib/stay-home-content.ts']
+  const BUILDERS = ['slots/city/card.ts', 'lib/sentences/headline.ts', 'lib/sentences/margin.ts', 'lib/sentences/arc.ts', 'slots/city/curiosities.ts', 'lib/share-text.ts', 'lib/share-model.ts', 'scripts/city-card.ts', 'lib/sentences/register-store.ts', 'lib/sentences/stat.ts', 'lib/sentences/recap.ts', 'lib/stat-card.ts', 'lib/stat-content.ts', 'lib/recap-card.ts', 'lib/recap-content.ts', 'lib/card-keys.ts', 'lib/sentences/meu-brasil.ts', 'lib/meu-brasil.ts', 'lib/meu-brasil-card.ts', 'lib/meu-brasil-content.ts', 'lib/sticker-card.ts', 'lib/sticker-content.ts', 'lib/duel-model.ts', 'lib/duel-card.ts', 'lib/duel-content.ts', 'lib/duel-data.ts', 'lib/sentences/duel.ts', 'components/Duel.tsx', 'lib/sentences/stayhome.ts', 'lib/stay-home.ts', 'lib/stay-home-view.ts', 'lib/stay-home-card.ts', 'lib/stay-home-content.ts', 'lib/city-texts.ts', 'lib/number-words.ts']
   const WORDS = /\b(de|do|da|dos|das|o|a|os|as|que|em|no|na|não|e|com|para|por|um|uma)\b/i
   const literals = (src: string) => [...src.matchAll(/'((?:[^'\\\n]|\\.)*)'|"((?:[^"\\\n]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g)].map((m) => m[1] ?? m[2] ?? m[3] ?? '')
 
