@@ -120,6 +120,7 @@ const segBase = 'flex min-w-0 items-center justify-center overflow-hidden whites
 
     <nav class="mt-5 flex items-center justify-between border-t border-border pt-2" aria-label="Próximo">
       <a class="inline-flex min-h-11 items-center text-body font-bold text-foreground" href={href('/mapa/')}>Ver mapa por estado ›</a>
+      <a class="inline-flex min-h-11 items-center text-body font-bold text-foreground" data-link="compare" href={href('/cara-a-cara/?nivel=regiao')}>Comparar regiões ›</a>
       <PageDataDownload href={href('/brasil/dados.json')} filename="brasil.json" placement="row" />
     </nav>
   </main>

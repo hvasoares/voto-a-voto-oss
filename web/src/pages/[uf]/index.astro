@@ -82,6 +82,7 @@ const showMap = cityMap.rows.length > 0
         <a data-link="map" href={href('/mapa/')}>Ver mapa por estado ›</a>
         <a data-link="map-municipio" href={href(`/mapa/${uf}/`)}>Ver mapa por município ›</a>
         <a data-link="cycles" href={href(`/tres-ciclos/${uf}/`)}>Ver os três ciclos do estado ›</a>
+        <a data-link="compare" href={href(`/cara-a-cara/?nivel=estado&a=${uf}`)}>Comparar com outro estado ›</a>
         {hasRecap && <a data-link="recap" href={href(`/${uf}/resumo/`)}>Resumo do estado ›</a>}
       </nav>
     <Seal lines={seal} />
