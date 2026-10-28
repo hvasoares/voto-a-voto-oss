@@ -22,7 +22,8 @@ import DetalheEnhancer from './DetalheEnhancer'
 import { placesWithShards } from '@/lib/nerds/shards'
 import { SHARD_VERSION } from 'virtual:data-shards'
 import { weightText } from '@/lib/nerds/escada'
-import { childLinks, childNoun, loadPlace } from '@/lib/nerds/view'
+import { childLinks, childNoun, childPlural, loadPlace } from '@/lib/nerds/view'
+import DistribuicaoPanel from './DistribuicaoPanel'
 import { editionLabel, editionPath } from '@/lib/editions'
 import { currentEdition, loadEditions } from '@/lib/editions-load'
 import { buildSignals } from '@/lib/nerds/signals'
@@ -107,13 +108,14 @@ const title = `Dados para nerds: ${place.name} · Voto a Voto`
         <div class="nerds-cycle" data-ciclo-block={ciclo} data-latest={ciclo === latest ? '' : undefined}>
           <h2 class="nerds-cycle__title">Presidente {ciclo}</h2>
           {cyclePanels.map((record) => {
-            const spec = specFor(record, { cycle: shards, all: place.shards, known })
+            const spec = specFor(record, { cycle: shards, all: place.shards, known, reference: place.reference, placeName: place.name, parent: place.parent && { name: place.parent.name, cycle: { 1: place.parent.shards.get(`${ciclo}-1`), 2: place.parent.shards.get(`${ciclo}-2`) } } })
             return (
-              <PanelFrame record={record} edicao={edicao} scope={scope} vars={{ filhos: childNoun(place) }} unchecked={unchecked(ciclo)}>
+              <PanelFrame record={record} edicao={edicao} scope={scope} vars={{ filhos: childNoun(place), filhos_plural: childPlural(place) }} unchecked={unchecked(ciclo)}>
                 {spec.kind === 'stat' && <StatPanel spec={spec} />}
                 {spec.kind === 'table' && record.transform === 'detalhe' && (
                   <DetalheEnhancer client:panel shardsUrl={shardsUrl} base={base} provenance={{ source: `TSE, ${edicao}`, edition: edition.id, date: edition.date, calculo: record.footer.calculo, licence: 'CC BY 4.0 (conjunto de dados), com atribuição ao TSE' }} />
                 )}
+                {spec.kind === 'histogram' && <DistribuicaoPanel client:panel spec={spec} titleId={`${scope}-${record.id}-t`} />}
                 {spec.kind === 'table' && <TablePanel spec={spec} base={base} />}
               </PanelFrame>
             )

@@ -20,6 +20,8 @@ export interface PlaceView {
   shards: Map<string, LevelShard>
   /** The Brasil shards, for the reference line of a região or estado; empty on Brasil. */
   reference: Map<string, LevelShard>
+  /** The next level up (Brasil for a região, the região for an estado): Par's reference row. */
+  parent?: { name: string; shards: Map<string, LevelShard> }
   /** `brasil`, `regiao`, `uf`: the key the shard files use. */
   shardLevel: ShardLevel
 }
@@ -44,7 +46,8 @@ export function loadPlace(level: Level, id: string | null, root?: string): Place
     crumbs.push({ label: placeName(level, id) })
   }
   const reference = level === 'brasil' ? new Map<string, LevelShard>() : readPlace('brasil', null, root)
-  return { level, id, name: placeName(level, id), crumbs, cycles: [...cycles], shards, reference, shardLevel }
+  const parent = level === 'regiao' ? { name: 'Brasil', shards: reference } : level === 'estado' && regiao ? { name: regionLabel(regiao), shards: readPlace('regiao', regiao, root) } : undefined
+  return { level, id, name: placeName(level, id), crumbs, cycles: [...cycles], shards, reference, parent, shardLevel }
 }
 
 export interface ChildLinks {
@@ -74,4 +77,11 @@ export function childNoun(place: Pick<PlaceView, 'level' | 'name'>): string {
   if (place.level === 'brasil') return 'região do Brasil'
   if (place.level === 'regiao') return `estado da região ${place.name}`
   return `município de ${place.name}`
+}
+
+/** "UFs", "estados da região Sudeste", "municípios de São Paulo": what the Distribuição counts, for its title. */
+export function childPlural(place: Pick<PlaceView, 'level' | 'name'>): string {
+  if (place.level === 'brasil') return 'estados do Brasil'
+  if (place.level === 'regiao') return `estados da região ${place.name}`
+  return `municípios de ${place.name}`
 }

@@ -5,6 +5,8 @@ import { buildEscada, type BarSpec } from './escada'
 import { detalhe } from './detalhe'
 import type { MapSpec } from './mapa'
 import { buildMapa } from './mapa'
+import { buildDistribuicao, type DistribuicaoSpec } from './distribuicao'
+import { par } from './par'
 import { claimProblems } from './claims'
 import type { Signals } from './signals'
 import { invariantesTable, sinaisStrip } from './signals-spec'
@@ -21,7 +23,7 @@ export const PANEL_KINDS = ['stat', 'bar', 'line', 'histogram', 'heatmap', 'tabl
 export type PanelKind = (typeof PANEL_KINDS)[number]
 
 /** Kinds that have a renderer. Each later ticket adds its own: bar (#75), histogram (#78), map (#77) ... */
-export const RENDERERS: ReadonlySet<PanelKind> = new Set<PanelKind>(['stat', 'table', 'bar', 'map'])
+export const RENDERERS: ReadonlySet<PanelKind> = new Set<PanelKind>(['stat', 'table', 'bar', 'map', 'histogram'])
 
 /** The measure families: participação (turno series) and candidatos (candidate series). */
 export const MEASURE_FAMILIES = {
@@ -141,13 +143,15 @@ export interface TableSpec {
   /** The cycle of the shards behind it, and the unit its rows are called ("municípios"), for the enhancer and the CSV. */
   ano?: number
   unit?: string
+  /** A short fixed note printed under the table. */
+  note?: string
 }
 /** The Sinais strip: three stats, each a label, a value and a note (not a turno pair). */
 export interface StripSpec {
   kind: 'stat'
   strip: { key: string; label: string; value: string; note: string; ok?: boolean }[]
 }
-export type Spec = StatSpec | StripSpec | TableSpec | BarSpec | MapSpec
+export type Spec = StatSpec | StripSpec | TableSpec | BarSpec | MapSpec | DistribuicaoSpec
 
 /** The shards a panel reads: one per turno of the chosen cycle (a turno that did not happen is absent). */
 export type Shards = Partial<Record<1 | 2, LevelShard>>
@@ -213,6 +217,9 @@ export interface PanelData {
   reference?: ReadonlyMap<string, LevelShard>
   /** The regiões and UFs that have a page of their own (a name links, and a row opens, only for those). */
   known?: { regioes: readonly string[]; ufs: readonly string[] }
+  /** The name of the place shown, and of its next level up with the shards of that cycle (Par's reference rows). */
+  placeName?: string
+  parent?: { name: string; cycle: Shards }
   /** Where the panel is (the map draws a different thing at each level). */
   level?: 'brasil' | 'regiao' | 'estado'
   /** The checks of the place, for Sinais and Invariantes. */
@@ -224,6 +231,8 @@ export const TRANSFORMS: Record<string, Transform> = {
   placar: (d) => placar(d.cycle),
   'candidatos-tabela': (d) => candidatosTabela(d.cycle),
   detalhe: (d, r) => detalhe(r, d.cycle, d.known),
+  par: (d, r) => par(r, { own: { name: d.placeName ?? '', shards: d.cycle }, parent: d.parent && { name: d.parent.name, shards: d.parent.cycle }, brasil: d.reference && { 1: d.reference.get(`${(d.cycle[1] ?? d.cycle[2])!.ano}-1`), 2: d.reference.get(`${(d.cycle[1] ?? d.cycle[2])!.ano}-2`) } }),
+  distribuicao: (d, r) => buildDistribuicao(r, d),
   mapa: (d, r) => buildMapa(r, d, d.level ?? 'brasil', d.known?.ufs ?? []),
   sinais: (d) => sinaisStrip(d.signals!),
   invariantes: (d) => invariantesTable(d.signals!),

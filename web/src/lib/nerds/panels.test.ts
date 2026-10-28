@@ -14,9 +14,9 @@ const csv = (name: string) => {
 const record = (patch: Partial<PanelRecord> = {}): PanelRecord => ({ ...PLACAR, ...patch })
 
 describe('the closed registry of panel kinds', () => {
-  it('declares the seven kinds, and renders stat, table, bar and map so far', () => {
+  it('declares the seven kinds, and renders stat, table, bar, map and histogram so far', () => {
     expect([...PANEL_KINDS]).toEqual(['stat', 'bar', 'line', 'histogram', 'heatmap', 'table', 'map'])
-    expect([...RENDERERS].sort()).toEqual(['bar', 'map', 'stat', 'table'])
+    expect([...RENDERERS].sort()).toEqual(['bar', 'histogram', 'map', 'stat', 'table'])
   })
 
   it('fails the build for a record that names a kind with no renderer, with a clear message', () => {

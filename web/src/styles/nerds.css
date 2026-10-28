@@ -149,8 +149,11 @@
 .nerds-panel[data-panel='placar'] { order: 11; }
 .nerds-panel[data-panel='mapa'] { order: 12; }
 .nerds-panel[data-panel='escada'] { order: 13; }
-.nerds-panel[data-panel='detalhe'] { order: 14; }
-[data-invariantes] { order: 15; }
+.nerds-panel[data-panel='par'] { order: 14; }
+.nerds-panel[data-panel='distribuicao'] { order: 14; }
+.nerds-panel[data-panel='detalhe'] { order: 16; }
+[data-invariantes] { order: 17; }
+
 .nerds-map { margin-top: 12px; }
 .nerds-map__caption { margin: 0 0 4px; font-size: 13px; color: var(--c-muted); }
 .nerds-map .uf-map { max-width: 520px; margin: 0 auto; }
@@ -167,3 +170,20 @@
 .nerds-slot p { margin: 6px 0 0; max-width: 60ch; }
 .nerds-slot__links { display: flex; flex-wrap: wrap; gap: 8px 24px; }
 .nerds .uf-map a:focus-visible path, .nerds .uf-map a:focus-visible rect { stroke: var(--c-accent); stroke-width: 3; }
+
+/* Par and Distribuição (#79) */
+.nerds-dist__turno { margin-top: 12px; }
+.nerds-dist__turno h3 { margin: 0 0 4px; font: 700 13px/16px var(--font-sans); }
+.nerds-five { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 8px 0 0; padding: 0; list-style: none; font-size: 13px; font-variant-numeric: tabular-nums; }
+.nerds-five b { font-weight: 700; }
+.nerds-hist { display: block; width: 100%; max-width: 720px; height: auto; margin-top: 8px; }
+.nerds-hist text { font: 400 11px var(--font-sans); fill: var(--c-ink); }
+.nerds-hist .nerds-count-label { font-weight: 700; }
+.nerds-box { fill: var(--c-paper-2); stroke: var(--c-ink); stroke-width: 1; }
+.nerds-median { stroke: #a8641a; stroke-width: 2.5; }
+.nerds-whisker { stroke: var(--c-ink); stroke-width: 1; }
+@media (min-width: 1024px) {
+  .nerds-panel[data-panel='par'], .nerds-panel[data-panel='distribuicao'] { grid-column: auto; }
+  .nerds-panel[data-panel='par'] { grid-column: 1 / 2; }
+  .nerds-panel[data-panel='distribuicao'] { grid-column: 2 / 3; }
+}

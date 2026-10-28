@@ -4,6 +4,8 @@ import { describe, expect, it } from 'vitest'
 import { CATALOG } from './catalog'
 import { buildEscada } from './escada'
 import { buildMapa } from './mapa'
+import { buildDistribuicao, fiveNumber } from './distribuicao'
+import { par } from './par'
 import { detalhe } from './detalhe'
 import { placar } from './panels'
 import { placesWithShards, readPlace } from './shards'
@@ -60,6 +62,22 @@ const CONTRACTS: Record<string, () => void> = {
         expect(cell.text, `${uf} ${turno}º`).toBe(pct(want.comp, want.aptos))
       }
     }
+  },
+  par: () => {
+    const all = readPlace('uf', 'sp', resolve(dir, 'nerds'))
+    const spec = par(CATALOG.find((r) => r.id === 'par')!, { own: { name: 'São Paulo', shards: { 1: all.get('2022-1'), 2: all.get('2022-2') } } })
+    for (const turno of [1, 2] as const) {
+      const want = sumOf(2022, turno, (c) => c.uf === 'sp')
+      expect(spec.rows[0]!.cells[turno]).toBe(pct(want.comp, want.aptos))
+    }
+  },
+  distribuicao: () => {
+    const all = readPlace('uf', 'sp', resolve(dir, 'nerds'))
+    const spec = buildDistribuicao(CATALOG.find((r) => r.id === 'distribuicao')!, { cycle: { 1: all.get('2022-1'), 2: all.get('2022-2') }, all })
+    const sp = new Set(cities.filter((c) => c.uf === 'sp').map((c) => c.cd_municipio))
+    const rates = turnout.filter((r) => r.ano === '2022' && r.turno === '2' && sp.has(r.cd_municipio!)).map((r) => (Number(r.validos) / Number(r.comparecimento)) * 100)
+    expect(spec.byKey['2-validos']!.five).toEqual(fiveNumber(rates))
+    expect(spec.byKey['2-validos']!.n).toBe(rates.length)
   },
   sinais: () => {
     // The strip prints no number of its own: its coverage counts the rows the CSV has, and the conference delta is 0 when the CSV sums close.

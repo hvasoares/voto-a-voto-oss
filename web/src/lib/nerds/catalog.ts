@@ -103,6 +103,40 @@ export const MAPA: PanelRecord = {
   },
 }
 
-export const CATALOG: readonly PanelRecord[] = [SINAIS, PLACAR, MAPA, ESCADA, DETALHE, INVARIANTES]
+export const PAR_RECORD: PanelRecord = {
+  id: 'par',
+  level: 'todos',
+  shard: 'ciclo',
+  transform: 'par',
+  kind: 'table',
+  measure: { family: 'participacao', id: 'comparecimento' },
+  series: 'turno',
+  title: 'Quanto votou, turno a turno?',
+  footer: {
+    definicao: 'O comparecimento do lugar e das linhas de referência, por turno.',
+    fonte: 'TSE, {edicao}.',
+    calculo: 'Votantes ÷ eleitorado, em cada turno.',
+    naoMede: 'Motivo nem perfil de eleitor; nenhuma diferença entre os turnos é calculada.',
+  },
+}
+
+export const DISTRIBUICAO: PanelRecord = {
+  id: 'distribuicao',
+  level: 'todos',
+  shard: 'ciclo',
+  transform: 'distribuicao',
+  kind: 'histogram',
+  measure: { family: 'participacao', id: 'comparecimento', options: ['comparecimento', 'abstencao', 'brancos_nulos', 'validos'] },
+  series: 'turno',
+  title: 'Como os {filhos_plural} se distribuem?',
+  footer: {
+    definicao: 'A medida escolhida em cada lugar do nível abaixo, contada em faixas de 2 pontos.',
+    fonte: 'TSE, {edicao}.',
+    calculo: 'Faixas fixas de 2 pontos; quartis por interpolação entre os valores ordenados; atípico além de 1,5 × a amplitude interquartil.',
+    naoMede: 'Motivo nem perfil; não classifica nem nomeia lugares.',
+  },
+}
+
+export const CATALOG: readonly PanelRecord[] = [SINAIS, PLACAR, MAPA, ESCADA, PAR_RECORD, DISTRIBUICAO, DETALHE, INVARIANTES]
 
 assertCatalog(CATALOG)
