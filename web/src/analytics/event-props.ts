@@ -27,6 +27,7 @@ export const EVENT_PROPS: Readonly<Record<string, readonly string[]>> = {
   image_downloaded: ['how'],
   recap_opened: ['uf'],
   recap_shared: ['uf'],
+  game_result_shared: [],
   stayhome_opened: ['ciclo', 'turno'],
   stayhome_shared: ['ciclo', 'turno'],
   meu_brasil_place_added: ['role', 'places'],

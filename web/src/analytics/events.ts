@@ -173,6 +173,12 @@ export const EVENTS: EventDoc[] = [
     emitted: ['src/components/RecapShare.tsx'],
   },
   {
+    name: 'game_result_shared',
+    description: 'The result grid of the daily game "Adivinhe a cidade" was shared or copied. No property: nothing about the city, the guesses or the player.',
+    props: {},
+    emitted: ['src/components/Game.tsx'],
+  },
+  {
     name: 'stayhome_opened',
     description: 'The stay-at-home map (/mapa/ficaram-em-casa/, the third option of the Mapa por estado) was opened, for one cycle and round (counted on page load).',
     props: { ciclo: 'Election year of the view', turno: 'Round of the view (1 or 2)' },

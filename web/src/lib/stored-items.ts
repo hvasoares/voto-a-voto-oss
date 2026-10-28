@@ -1,10 +1,11 @@
-import { NOTICE_STORAGE_KEY, PLACE_KEY, REGISTER_KEY, STORED_KEYS } from './storage-keys'
+import { GAME_KEY, NOTICE_STORAGE_KEY, PLACE_KEY, REGISTER_KEY, STORED_KEYS } from './storage-keys'
 
 /** What is kept on the device, key by key, in the words the privacy section of the data page shows. */
 export const STORED_ITEMS: { key: string; what: string }[] = [
   { key: PLACE_KEY, what: 'a cidade ou o estado que você escolheu na página inicial, para o atalho "Sua cidade"' },
   { key: REGISTER_KEY, what: 'a linguagem escolhida no cartão da cidade (padrão ou simples)' },
   { key: NOTICE_STORAGE_KEY, what: 'o aviso de medição já visto (o botão "Prosseguir")' },
+  { key: GAME_KEY, what: 'o jogo Adivinhe a cidade: os palpites de hoje e o histórico das partidas (só o número do dia e o resultado, nunca o nome da cidade), que você pode apagar na própria página do jogo' },
 ]
 
 // The text and the control cannot drift apart: every key has its sentence, and no sentence is for a key that is not cleared.

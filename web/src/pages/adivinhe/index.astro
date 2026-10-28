@@ -1,0 +1,28 @@
+---
+/**
+ * "Adivinhe a cidade" (#69, #70; the Sketch frame "C1 Adivinhe a cidade"): a daily mystery city, six guesses, five clues that open one by one, the distance and the direction from
+ * the municipality centres, and at the end a result grid that never shows the city, a countdown to the next city and a browser-only history. The game is one React island over one data
+ * file (`dados.json`); nothing about a guess leaves the browser. Nothing links here yet except the creator guide: the address is the way in.
+ */
+import Base from '@/layouts/Base.astro'
+import Game from '@/components/Game'
+import { normalizeBase, withBase } from '@/paths'
+import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
+import '@/lib/sentences/catalog-game'
+import { siteOrigin } from '@/lib/share-url'
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const say = (key: string) => message(DEFAULT_VOICE, key as never)
+---
+<Base title={`${say('game.title')} · Voto a Voto`} description={say('game.rules')}>
+  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[720px] lg:max-w-[1200px] lg:pt-8" id="main" data-page="adivinhe">
+    <a class="inline-flex min-h-11 items-center text-body font-bold text-primary" href={href('/')}>‹ Início</a>
+    <h1 class="mt-1 font-serif text-title font-normal leading-[30px] lg:text-[34px] lg:leading-[40px]">{say('game.title')}</h1>
+    <Game client:load base={base} origin={siteOrigin()} />
+    <noscript><p class="mt-2 text-small leading-[17px]" data-nojs>{say('game.nojs')}</p></noscript>
+    <footer class="mt-4 border-t border-border pt-2 text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+      {say('game.source')} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+    </footer>
+  </main>
+</Base>

@@ -7,4 +7,6 @@ export const PLACE_KEY = 'voto-a-voto:place'
 export const REGISTER_KEY = 'voto-a-voto:register'
 export const NOTICE_STORAGE_KEY = 'voto-a-voto:notice'
 
-export const STORED_KEYS: readonly string[] = [PLACE_KEY, REGISTER_KEY, NOTICE_STORAGE_KEY]
+export const GAME_KEY = 'voto-a-voto:game'
+
+export const STORED_KEYS: readonly string[] = [PLACE_KEY, REGISTER_KEY, NOTICE_STORAGE_KEY, GAME_KEY]
