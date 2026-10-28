@@ -24,7 +24,7 @@ test('at 768 and 1440 the content is one centered column of about 720 px', async
 
 test('the existing sections are all there on desktop', async ({ page }) => {
   await page.goto(url)
-  for (const heading of ['De onde vêm os números', 'Como os números do site são calculados', 'Privacidade']) {
+  for (const heading of ['Este resultado é final?', 'De onde vêm os números', 'Como os números do site são calculados', 'Confira você mesmo', 'Privacidade']) {
     await expect(page.getByRole('heading', { name: new RegExp(heading) })).toBeVisible()
   }
   await expect(page.locator('[data-component="manifest-list"] > li').first()).toBeVisible()

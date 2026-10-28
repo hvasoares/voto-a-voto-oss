@@ -57,10 +57,10 @@ test.describe('editions', () => {
   test('the data page explains what an edition is and how to cite one', async ({ page }) => {
     await page.goto(base + 'sobre-os-dados/')
     const section = page.locator('[data-component="editions"]')
-    await expect(section.locator('h2')).toHaveText('Edições dos dados')
+    await expect(section.locator('h2')).toHaveText('Qual edição estou vendo?')
     await expect(section).toContainText('nunca muda depois de publicado')
     await expect(section.locator('[data-current-edition]')).toHaveAttribute('href', base + 'edicoes/2026-10-26/')
-    await expect(section.locator('[data-component="citation"]')).toContainText('edição de 26/10/2026')
+    await expect(page.locator('section[aria-labelledby="como-citar"] [data-component="citation"]')).toContainText('edição de 26/10/2026')
   })
 
   test('the data page states the Final, não ao vivo rule in plain words', async ({ page }) => {

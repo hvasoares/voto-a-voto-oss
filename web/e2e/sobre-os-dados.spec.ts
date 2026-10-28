@@ -9,16 +9,33 @@ import { allowedOrigins, base, collectRequests, violations } from './helpers'
  */
 const path = base + 'sobre-os-dados/'
 
-const SECTIONS = [
-  'De onde vêm os números',
-  'Como os números do site são calculados',
-  'O que foi conferido',
-  'O que ainda não temos',
-  'Limites',
-  'Confira você mesmo',
-  'Código aberto',
-  'Fontes e licença',
-  'Privacidade',
+/** The five task sections in the visitor's order (#98): stable public anchors, do not rename. */
+const TASKS = [
+  { id: 'e-final', heading: 'Este resultado é final?' },
+  { id: 'qual-edicao', heading: 'Qual edição estou vendo?' },
+  { id: 'de-onde-vem', heading: 'De onde vêm os números' },
+  { id: 'confira-voce-mesmo', heading: 'Confira você mesmo' },
+  { id: 'como-citar', heading: 'Como citar uma edição' },
+]
+
+/** Every heading the page had before #98: its id (kept, linked from other pages) and the task section it now sits in. */
+const OLD_HEADINGS = [
+  { text: 'De onde vêm os números', id: 'de-onde-vem', in: 'de-onde-vem' },
+  { text: 'Como os números do site são calculados', id: 'calculo', in: 'de-onde-vem' },
+  { text: 'O que foi conferido', id: 'conferido', in: 'confira-voce-mesmo' },
+  { text: 'O que ainda não temos', id: 'pendencias', in: 'de-onde-vem' },
+  { text: 'Limites', id: 'limites', in: 'de-onde-vem' },
+  { text: 'Confira você mesmo', id: 'confira', in: 'confira-voce-mesmo' },
+  { text: 'Edições dos dados', id: 'edicoes', in: 'qual-edicao' },
+  { text: 'Final, não ao vivo', id: 'final-nao-ao-vivo', in: 'e-final' },
+  { text: 'Dados abertos de cada edição', id: 'dados-abertos', in: 'qual-edicao' },
+  { text: 'Como citar uma edição', id: 'como-citar', in: 'como-citar' },
+  { text: 'Para jornalistas e associações', id: 'jornalistas', in: 'jornalistas' },
+  { text: 'Código aberto', id: 'codigo', in: 'codigo' },
+  { text: 'Fontes e licença', id: 'licenca', in: 'de-onde-vem' },
+  { text: 'Licenças do código e dos dados', id: 'licencas', in: 'licencas' },
+  { text: 'Privacidade', id: 'privacidade', in: 'privacidade' },
+  { text: 'O que fica guardado no seu aparelho', id: 'guardado-no-aparelho', in: 'privacidade' },
 ]
 
 test.describe('sobre os dados page', () => {
@@ -26,8 +43,55 @@ test.describe('sobre os dados page', () => {
     await page.goto(path)
     await expect(page, 'h1').toHaveTitle(/Sobre os dados/)
     await expect(page.locator('#main h1')).toHaveText('Sobre os dados')
-    for (const heading of SECTIONS) await expect(page.locator('#main h2').filter({ hasText: heading }), heading).toHaveCount(1)
-    await expect(page.locator('footer[data-component="source-footer"]')).toHaveText('Fonte: TSE, dados finais')
+    for (const { heading } of TASKS) await expect(page.locator('#main h2').filter({ hasText: heading }), heading).toHaveCount(1)
+    await expect(page.locator('footer[data-component="source-footer"]')).toContainText('Fonte: TSE, dados finais')
+  })
+
+  test('the five task sections come first, in the visitor\'s order, each with its stable anchor', async ({ page }) => {
+    await page.goto(path)
+    const h2s = await page.locator('#main h2').evaluateAll((els) => els.map((e) => ({ id: e.id, text: e.textContent })))
+    expect(h2s.slice(0, 5)).toEqual(TASKS.map((t) => ({ id: t.id, text: t.heading })))
+    for (const t of TASKS) {
+      await page.goto(`${path}#${t.id}`)
+      await expect(page.locator(`#${t.id}`)).toBeInViewport()
+    }
+  })
+
+  test('no heading or anchor of the old page was lost: each old heading is found, and its old address lands in the right section', async ({ page }) => {
+    await page.goto(path)
+    const text = await page.locator('#main').innerText()
+    for (const old of OLD_HEADINGS) {
+      // the old id still exists and lies inside the task section that now holds it
+      const holder = page.locator(`section[aria-labelledby="${old.in}"]`)
+      await expect(holder.locator(`#${old.id}`), `#${old.id}`).toHaveCount(1)
+      // the old heading text is still on the page, except "Edições dos dados", which became the question "Qual edição estou vendo?"
+      if (old.text !== 'Edições dos dados') expect(text, old.text).toContain(old.text)
+    }
+  })
+
+  test('the licence, the stored items, the no-ads line and the sources are still on the page', async ({ page }) => {
+    await page.goto(path)
+    const main = page.locator('#main')
+    await expect(main).toContainText('Código: licença MIT')
+    await expect(main).toContainText('Creative Commons Atribuição 4.0 (CC BY 4.0)')
+    await expect(main.locator('[data-component="stored-items"] li').first()).toBeVisible()
+    await expect(main.locator('[data-support-text]')).toHaveText('Doações e análise de uso são separadas. Não há anúncios em nenhuma página.')
+    await expect(main.locator('[data-component="manifest-list"] [data-source]')).toHaveCount(6)
+    await expect(main.locator('[data-component="citation"]')).toContainText('ediç')
+    await expect(main.getByRole('heading', { level: 2, name: 'Confira você mesmo' }).locator('xpath=..').getByRole('listitem')).not.toHaveCount(0)
+  })
+
+  test('the "Final, não ao vivo" chip sits in the page footer, right above the edition line, and shows without scripts', async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false })
+    const page = await context.newPage()
+    await page.goto(path)
+    const chip = page.locator('footer[data-component="source-footer"] [data-component="final-chip"]')
+    await expect(chip).toBeVisible()
+    await expect(chip).toHaveText('Final, não ao vivo')
+    const [c, e] = await Promise.all([chip.boundingBox(), page.locator('[data-edition-link]').boundingBox()])
+    expect(e!.y - (c!.y + c!.height)).toBeLessThan(40)
+    expect(await chip.evaluate((el) => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(13)
+    await context.close()
   })
 
   test('backs to the home page and links the GitHub repo without leaving the page', async ({ page }) => {

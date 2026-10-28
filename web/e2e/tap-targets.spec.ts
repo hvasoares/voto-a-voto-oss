@@ -131,6 +131,16 @@ test.describe('tap targets (390x844)', () => {
     expect(small(await hitAreas(page, scope))).toEqual([])
   })
 
+  test('Sobre os dados (#98): the back link, the edition links, the widget link, the footer lines have a 44 px hit height; only links inside running text are exempt', async ({ page }) => {
+    await page.goto(`${base}sobre-os-dados/`)
+    await page.locator('[data-consent-continue]').click()
+    const found = await hitAreas(page)
+    // Anchors that sit inside a sentence (a finger can still use the browser's text zoom): the manifest and repository links, the licence link, the manifest rows' text.
+    const running = (t: Target) => /manifesto do repositório|data\/manifest\.json|github\.com\/hvasoares|Creative Commons|Detalhes em Sobre os dados/.test(t.what)
+    expect(found.length).toBeGreaterThan(8)
+    expect(small(found.filter((t) => !running(t)))).toEqual([])
+  })
+
   test('axe, target-size included: no violations on the Home with the notice open and on the hydrated map view', async ({ page }) => {
     for (const path of ['', 'mapa/?vista=mapa']) {
       await page.goto(`${base}${path}`)
