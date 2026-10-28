@@ -15,13 +15,15 @@ interface Props {
   weight?: string
   /** Values for `{...}` in the title. */
   vars?: Record<string, string>
+  /** The checks of #77 failed for what this panel shows: it says "não conferido". */
+  unchecked?: boolean
 }
-const { record, edicao, scope, weight, vars } = Astro.props
+const { record, edicao, scope, weight, vars, unchecked } = Astro.props
 const f = record.footer
 ---
 <section class="nerds-panel" data-panel={record.id} data-kind={record.kind} aria-labelledby={`${scope}-${record.id}-t`}>
   <header class="nerds-panel__head">
-    <h2 id={`${scope}-${record.id}-t`}>{titleText(record, vars)}</h2>
+    <h2 id={`${scope}-${record.id}-t`}>{titleText(record, vars)}{unchecked && <span class="nerds-unchecked" data-unchecked> não conferido</span>}</h2>
     <div class="nerds-panel__actions" data-panel-actions><slot name="actions" /></div>
   </header>
   <slot />

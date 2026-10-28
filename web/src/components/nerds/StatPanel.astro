@@ -1,10 +1,21 @@
 ---
 /** The stat kind (#73): printed values, one card per measure, the turnos as a pair; "sem 2º turno" where there was none, never a zero. */
-import { SEM_SEGUNDO_TURNO, type StatSpec } from '@/lib/nerds/panels'
+import { SEM_SEGUNDO_TURNO, type StatSpec, type StripSpec } from '@/lib/nerds/panels'
 
-interface Props { spec: StatSpec }
+interface Props { spec: StatSpec | StripSpec }
 const { spec } = Astro.props
 ---
+{'strip' in spec ? (
+  <ul class="nerds-strip" data-strip>
+    {spec.strip.map((s) => (
+      <li class="nerds-signal" data-signal={s.key} data-ok={s.ok === undefined ? undefined : String(s.ok)}>
+        <h3>{s.label}</h3>
+        <p class="nerds-signal__value">{s.value}</p>
+        <p class="nerds-signal__note">{s.note}</p>
+      </li>
+    ))}
+  </ul>
+) : (
 <ul class="nerds-stats" data-stats>
   {spec.cards.map((card) => (
     <li class="nerds-stat" data-stat={card.key}>
@@ -25,3 +36,4 @@ const { spec } = Astro.props
     </li>
   ))}
 </ul>
+)}

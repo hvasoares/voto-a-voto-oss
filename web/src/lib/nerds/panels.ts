@@ -3,6 +3,9 @@ import type { Candidate, LevelShard, Metric } from './types'
 import type { Level } from './paths'
 import { buildEscada, type BarSpec } from './escada'
 import { detalhe } from './detalhe'
+import { claimProblems } from './claims'
+import type { Signals } from './signals'
+import { invariantesTable, sinaisStrip } from './signals-spec'
 
 /**
  * The panel catalogue machinery of "Dados para nerds" (#73). A panel is a RECORD: `{ id, level, shard, transform, kind, measure, series, title, footer }`; a pure function turns
@@ -69,6 +72,7 @@ export function validatePanel(record: PanelRecord, renderers: ReadonlySet<PanelK
   }
   for (const extra of Object.keys(footer ?? {})) if (!(FOOTER_FIELDS as readonly string[]).includes(extra)) problems.push(`${name}: footer field "${extra}" is not allowed (a footer has the four provenance fields and no interpretation)`)
   if (typeof footer?.fonte === 'string' && !footer.fonte.includes('{edicao}')) problems.push(`${name}: footer field "fonte" must name the edition and its date ({edicao})`)
+  problems.push(...claimProblems(record.id, record.footer as unknown as Record<string, string>))
   return problems
 }
 
@@ -136,7 +140,12 @@ export interface TableSpec {
   ano?: number
   unit?: string
 }
-export type Spec = StatSpec | TableSpec | BarSpec
+/** The Sinais strip: three stats, each a label, a value and a note (not a turno pair). */
+export interface StripSpec {
+  kind: 'stat'
+  strip: { key: string; label: string; value: string; note: string; ok?: boolean }[]
+}
+export type Spec = StatSpec | StripSpec | TableSpec | BarSpec
 
 /** The shards a panel reads: one per turno of the chosen cycle (a turno that did not happen is absent). */
 export type Shards = Partial<Record<1 | 2, LevelShard>>
@@ -202,6 +211,8 @@ export interface PanelData {
   reference?: ReadonlyMap<string, LevelShard>
   /** The regiões and UFs that have a page of their own (a name links, and a row opens, only for those). */
   known?: { regioes: readonly string[]; ufs: readonly string[] }
+  /** The checks of the place, for Sinais and Invariantes. */
+  signals?: Signals
 }
 export type Transform = (data: PanelData, record: PanelRecord) => Spec
 export const TRANSFORMS: Record<string, Transform> = {
@@ -209,6 +220,8 @@ export const TRANSFORMS: Record<string, Transform> = {
   placar: (d) => placar(d.cycle),
   'candidatos-tabela': (d) => candidatosTabela(d.cycle),
   detalhe: (d, r) => detalhe(r, d.cycle, d.known),
+  sinais: (d) => sinaisStrip(d.signals!),
+  invariantes: (d) => invariantesTable(d.signals!),
 }
 
 /** (record, data) -> spec. */

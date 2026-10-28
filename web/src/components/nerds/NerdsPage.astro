@@ -20,7 +20,8 @@ import { SHARD_VERSION } from 'virtual:data-shards'
 import { weightText } from '@/lib/nerds/escada'
 import { childLinks, childNoun, loadPlace } from '@/lib/nerds/view'
 import { editionLabel, editionPath } from '@/lib/editions'
-import { currentEdition } from '@/lib/editions-load'
+import { currentEdition, loadEditions } from '@/lib/editions-load'
+import { buildSignals } from '@/lib/nerds/signals'
 import { normalizeBase, withBase } from '@/paths'
 
 interface Props {
@@ -43,9 +44,13 @@ const latest = Math.max(...place.cycles)
 const down = childLinks(place)
 const known = placesWithShards()
 const shardsUrl = href(`data/v${SHARD_VERSION}/nerds/`)
+const signals = buildSignals(place.shards, place.reference, { level, name: place.name }, edition, loadEditions()[0]?.id === edition.id)
+const unchecked = (ano?: number) => signals.failed.length > 0 && (ano === undefined || signals.uncheckedCycles.includes(ano))
 const here = CATALOG.filter((r) => r.level === 'todos' || r.level === level)
 const cyclePanels = here.filter((r) => r.shard === 'ciclo')
-const seriesPanels = here.filter((r) => r.shard === 'ciclos')
+const strip = here.find((r) => r.id === 'sinais')!
+const seriesPanels = here.filter((r) => r.shard === 'ciclos' && r.id !== 'sinais' && r.id !== 'invariantes')
+const invariantes = here.find((r) => r.id === 'invariantes')!
 const up = place.crumbs.length > 1 ? place.crumbs[place.crumbs.length - 2]! : undefined
 const title = `Dados para nerds: ${place.name} · Voto a Voto`
 ---
@@ -65,6 +70,7 @@ const title = `Dados para nerds: ${place.name} · Voto a Voto`
       <p class="nerds-head__links"><a href={href(editionPath(edition.id))} data-edition-link>Edição {editionLabel(edition)} ›</a></p>
     </header>
 
+    {signals.banner && <p class="nerds-banner" role="alert" data-banner>{signals.banner}</p>}
     <details class="nerds-how" data-how>
       <summary>Como ler</summary>
       <p>Esta página mostra, para {place.name}, os números oficiais do TSE para Presidente: eleitorado, comparecimento, abstenção, brancos, nulos e votos válidos, em cada ciclo (2018, 2022 e 2026) e turno. O resultado é final, não ao vivo.</p>
@@ -72,6 +78,9 @@ const title = `Dados para nerds: ${place.name} · Voto a Voto`
       <p>O ciclo vem do endereço da página (<code>?ciclo=2022</code>), e o turno aparece lado a lado quando o painel mostra os dois. Se houve só um turno, o outro aparece como “sem 2º turno”, nunca como zero.</p>
     </details>
 
+    <PanelFrame record={strip} edicao={edicao} scope="sinais" unchecked={false}>
+      <StatPanel spec={specFor(strip, { cycle: {}, all: place.shards, signals })} />
+    </PanelFrame>
     {down.length > 0 && (
       <nav class="nerds-down" aria-label="Abrir um lugar de dentro" data-down>
         {down.map((g) => (
@@ -96,7 +105,7 @@ const title = `Dados para nerds: ${place.name} · Voto a Voto`
           {cyclePanels.map((record) => {
             const spec = specFor(record, { cycle: shards, all: place.shards, known })
             return (
-              <PanelFrame record={record} edicao={edicao} scope={scope} vars={{ filhos: childNoun(place) }}>
+              <PanelFrame record={record} edicao={edicao} scope={scope} vars={{ filhos: childNoun(place) }} unchecked={unchecked(ciclo)}>
                 {spec.kind === 'stat' && <StatPanel spec={spec} />}
                 {spec.kind === 'table' && record.transform === 'detalhe' && (
                   <DetalheEnhancer client:panel shardsUrl={shardsUrl} base={base} provenance={{ source: `TSE, ${edicao}`, edition: edition.id, date: edition.date, calculo: record.footer.calculo, licence: 'CC BY 4.0 (conjunto de dados), com atribuição ao TSE' }} />
@@ -112,11 +121,17 @@ const title = `Dados para nerds: ${place.name} · Voto a Voto`
       {seriesPanels.map((record) => {
         const spec = specFor(record, { cycle: {}, all: place.shards, reference: place.reference })
         return (
-          <PanelFrame record={record} edicao={edicao} scope="serie" weight={spec.kind === 'bar' ? weightText(spec.weight) : undefined}>
+          <PanelFrame record={record} edicao={edicao} scope="serie" weight={spec.kind === 'bar' ? weightText(spec.weight) : undefined} unchecked={unchecked()}>
             {spec.kind === 'bar' && <EscadaPanel client:panel spec={spec} titleId={`serie-${record.id}-t`} />}
           </PanelFrame>
         )
       })}
+      <div id="invariantes" data-invariantes>
+        <PanelFrame record={invariantes} edicao={edicao} scope="invariantes">
+          <TablePanel spec={specFor(invariantes, { cycle: {}, all: place.shards, signals })} base={base} />
+          {level !== 'brasil' && <p class="nerds-more"><a href={href(`${nerdsPath({ level: 'brasil' })}#invariantes`)} data-all-rules>Ver a lista completa de conferências, no Brasil ›</a></p>}
+        </PanelFrame>
+      </div>
     </div>
     <noscript><style is:inline set:html="[data-ciclo-block]{display:block!important}"></style></noscript>
   </main>

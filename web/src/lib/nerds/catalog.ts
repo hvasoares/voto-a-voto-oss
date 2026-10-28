@@ -52,6 +52,40 @@ export const DETALHE: PanelRecord = {
   },
 }
 
-export const CATALOG: readonly PanelRecord[] = [PLACAR, ESCADA, DETALHE]
+export const SINAIS: PanelRecord = {
+  id: 'sinais',
+  level: 'todos',
+  shard: 'ciclos',
+  transform: 'sinais',
+  kind: 'stat',
+  measure: { family: 'participacao', id: 'comparecimento' },
+  series: 'turno',
+  title: 'Estes números fecham?',
+  footer: {
+    definicao: 'Três sinais da edição: a cobertura dos dados, a conferência dos números e a edição mostrada.',
+    fonte: 'TSE, {edicao}; conferências do voto-a-voto.',
+    calculo: 'A conferência roda as regras da lista de conferências sobre os dados deste lugar; a diferença esperada é 0.',
+    naoMede: 'Se o resultado oficial está correto; só se os números fecham entre si.',
+  },
+}
+
+export const INVARIANTES: PanelRecord = {
+  id: 'invariantes',
+  level: 'todos',
+  shard: 'ciclos',
+  transform: 'invariantes',
+  kind: 'table',
+  measure: { family: 'participacao', id: 'comparecimento' },
+  series: 'turno',
+  title: 'Que conferências estes números passaram?',
+  footer: {
+    definicao: 'Regras que todo número publicado precisa cumprir.',
+    fonte: 'TSE, {edicao}; regras do voto-a-voto.',
+    calculo: 'Cada regra é uma soma ou um limite sobre as linhas desta página.',
+    naoMede: 'Se o resultado oficial está correto; só se os números fecham entre si.',
+  },
+}
+
+export const CATALOG: readonly PanelRecord[] = [SINAIS, PLACAR, ESCADA, DETALHE, INVARIANTES]
 
 assertCatalog(CATALOG)
