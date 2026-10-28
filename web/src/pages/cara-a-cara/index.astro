@@ -1,0 +1,36 @@
+---
+/**
+ * Cara a cara (the Sketch frames "19 Cara a cara" and, on the desktop page, "19 Cara a cara, por cidade/estado/região/modo duelo", ticket #30):
+ * two cities, two states or two regions side by side. The level and the two places live in the address, so reloading or forwarding the
+ * link reproduces the card; it shares through the existing share flow. The states and regions come with the page; a city is read from its
+ * own shard. Reached from the "Comparar com outra cidade" link of the city card (and, by address, from a shared card: #39).
+ */
+import Base from '@/layouts/Base.astro'
+import PhoneHeader from '@/components/PhoneHeader.astro'
+import Duel from '@/components/Duel'
+import { normalizeBase, withBase } from '@/paths'
+import { datasetFixture } from '@/lib/shard-files'
+import { siteOrigin } from '@/lib/share-url'
+import { currentEdition } from '@/lib/editions-load'
+import { editionLabel } from '@/lib/editions'
+import { loadDuelData } from '@/lib/duel-data'
+import { duelSay } from '@/lib/sentences/duel'
+import '@/styles/duel.css'
+
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const fixture = await datasetFixture()
+const edition = await currentEdition()
+const data = await loadDuelData()
+---
+<Base title={`${duelSay({}, 'duel.title')} · Voto a Voto`} description={duelSay({}, 'duel.sub.cidade', { ano: data.ano })}>
+  <PhoneHeader />
+  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:max-w-[1240px] lg:pt-4" id="main" data-page="cara-a-cara">
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal lg:text-primary" href={href('/')}>‹ Início</a>
+    <Duel client:load base={base} origin={siteOrigin()} fixture={fixture} editionDate={editionLabel(edition)} data={data} />
+    <noscript><p class="mt-2 text-small leading-[17px]" data-nojs>O cara a cara monta o cartão no seu navegador e precisa de JavaScript.</p></noscript>
+    <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+      {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+    </footer>
+  </main>
+</Base>

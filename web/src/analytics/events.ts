@@ -185,6 +185,36 @@ export const EVENTS: EventDoc[] = [
     emitted: ['src/components/MeuBrasil.tsx'],
   },
   {
+    name: 'duel_pair_chosen',
+    description: 'Two places were chosen in the head-to-head (Cara a cara). Never the places: only the level of the comparison.',
+    props: { level: 'cidade | estado | regiao' },
+    emitted: ['src/components/Duel.tsx'],
+  },
+  {
+    name: 'duel_shared',
+    description: 'The head-to-head card was shared (the native sheet reported "shared").',
+    props: { level: 'cidade | estado | regiao' },
+    emitted: ['src/components/Duel.tsx'],
+  },
+  {
+    name: 'duel_mode_opened',
+    description: 'The duel mode (the chrome-free, large-type view of the head-to-head card) was opened.',
+    props: { level: 'cidade | estado | regiao' },
+    emitted: ['src/components/Duel.tsx'],
+  },
+  {
+    name: 'duel_reply_started',
+    description: 'The head-to-head was opened from a "E a sua cidade?" button: the sender\'s city is filled in and the visitor is asked for theirs.',
+    props: {},
+    emitted: ['src/components/Duel.tsx'],
+  },
+  {
+    name: 'duel_reply_completed',
+    description: 'The visitor chose their city after "E a sua cidade?": the reply card is there to share back.',
+    props: {},
+    emitted: ['src/components/Duel.tsx'],
+  },
+  {
     name: 'card_generator_opened',
     description: 'The card generator (/gerador/) was opened.',
     props: { has_city: 'Whether the address already named a city (the link from the share dialog does)' },
