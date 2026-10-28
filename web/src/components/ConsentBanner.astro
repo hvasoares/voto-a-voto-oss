@@ -1,7 +1,7 @@
 ---
 /**
- * The metrics banner (Base.astro, every page): a fixed, quiet bottom bar, following the screen tokens
- * (text-small, border-border, min-h-11 tap targets). The Notice model, 2026-10-27 — g1/Globo style:
+ * The metrics banner (Base.astro, every page): a fixed, quiet bottom bar in the SECONDARY tone (#90: light
+ * secondary background, bordered, outline "Prosseguir": a note, not the page's call to action; min-h-11 tap targets). The Notice model, 2026-10-27 — g1/Globo style:
  * the text is informational ("ao utilizar nossos serviços, você está ciente dessa funcionalidade") and
  * the single "Prosseguir" button only records the acknowledgment (localStorage) so it does not
  * reappear; the boot script (src/scripts/analytics-boot.ts) reveals it to fresh visitors only.
@@ -20,7 +20,7 @@ const { privacyHref } = Astro.props
   data-consent-banner
   role="region"
   aria-label="Aviso sobre métricas de uso"
-  class="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background"
+  class="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-secondary"
   hidden
 >
   <div class="mx-auto flex w-full max-w-[430px] flex-col gap-4 px-5 py-3">
@@ -33,7 +33,7 @@ const { privacyHref } = Astro.props
       <button
         type="button"
         data-consent-continue
-        class="flex-1 rounded-md bg-primary px-4 text-step-2 text-primary-foreground min-h-11"
+        class="rounded-md border border-primary bg-background px-5 text-step-1 font-bold text-primary min-h-11 focus-visible:outline-2 focus-visible:outline-ring"
       >Prosseguir</button>
     </div>
   </div>
