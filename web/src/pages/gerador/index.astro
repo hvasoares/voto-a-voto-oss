@@ -27,6 +27,7 @@ const edition = await currentEdition()
     <div class="mt-3">
       <CardGenerator client:load base={base} origin={siteOrigin()} fixture={fixture} edition={edition.id} />
     </div>
+    <p class="mt-2 text-center text-small leading-[17px]" data-open-card>Já tem um cartão? <a href={href('/abrir-cartao/')}>Abrir cartão ›</a></p>
     <noscript><p class="mt-2 text-small leading-[17px]" data-nojs>O gerador desenha a imagem no seu navegador e precisa de JavaScript.</p></noscript>
     <p class="mt-2 text-center text-[11px] leading-[14px] text-muted-foreground" data-note>A imagem é desenhada no seu navegador. Nada é enviado. Funciona também sem compartilhamento de arquivos: baixe e anexe.</p>
     <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
