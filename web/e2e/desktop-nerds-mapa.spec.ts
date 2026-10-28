@@ -102,7 +102,7 @@ test.describe('map panel, island (1440 px)', () => {
 
   test('the island loads only from 1024 px up and only when in view; the inline SVG costs a recorded amount of HTML', async ({ page }) => {
     const chunks: string[] = []
-    page.on('request', (r) => /\/_astro\/.*(MapaEnhancer|client)\.[^/]*\.js/.test(r.url()) && chunks.push(r.url()))
+    page.on('request', (r) => /\/_astro\/.*(MapaEnhancer)\.[^/]*\.js/.test(r.url()) && chunks.push(r.url()))
     await page.setViewportSize({ width: 1440, height: 300 })
     await page.goto(url())
     await page.waitForLoadState('networkidle')

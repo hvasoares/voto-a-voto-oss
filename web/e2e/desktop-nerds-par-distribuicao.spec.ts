@@ -60,7 +60,7 @@ test.describe('with the island', () => {
 
   test('the histogram island is not loaded until the panel is in view, and never below 1024 px', async ({ page }) => {
     const chunks: string[] = []
-    page.on('request', (r) => /\/_astro\/.*(DistribuicaoPanel|client)\.[^/]*\.js/.test(r.url()) && chunks.push(r.url()))
+    page.on('request', (r) => /\/_astro\/.*(DistribuicaoPanel)\.[^/]*\.js/.test(r.url()) && chunks.push(r.url()))
     await page.setViewportSize({ width: 1440, height: 300 })
     await page.goto(url())
     await page.waitForLoadState('networkidle')

@@ -82,7 +82,7 @@ export function enhanceTable(root: HTMLElement, options: EnhanceOptions): Enhanc
   // --- controls ---
   const bar = doc.createElement('div')
   bar.className = 'nerds-tools'
-  bar.innerHTML = `<label>Filtrar por nome <input type="search" data-filter autocomplete="off"></label><span class="nerds-count" data-count role="status" aria-live="polite"></span><button type="button" class="nerds-link" data-csv>Baixar CSV</button>`
+  bar.innerHTML = `<label>Filtrar por nome <input type="search" data-filter autocomplete="off"></label><span class="nerds-count" data-count role="status" aria-live="polite"></span>`
   root.insertBefore(bar, root.firstChild)
   const pager = doc.createElement('div')
   pager.className = 'nerds-pager'
@@ -313,16 +313,6 @@ export function enhanceTable(root: HTMLElement, options: EnhanceOptions): Enhanc
     else return
     render()
   })
-  on(bar, 'click', (e) => {
-    if (!(e.target as HTMLElement).closest('[data-csv]')) return
-    const blob = new Blob([`﻿${csv()}`], { type: 'text/csv;charset=utf-8' })
-    const a = doc.createElement('a')
-    a.href = URL.createObjectURL(blob)
-    a.download = `${unit.replace(/\s+/g, '-')}-${ano}.csv`
-    a.click()
-    URL.revokeObjectURL(a.href)
-  })
-
   render()
   root.dataset.ready = 'yes'
 

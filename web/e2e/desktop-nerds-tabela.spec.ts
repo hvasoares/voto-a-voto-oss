@@ -69,28 +69,9 @@ test.describe('Tabela de detalhe (1440 px)', () => {
     await expect(wrap(page).locator('tr[data-child-of="rj"]')).toHaveCount(6)
   })
 
-  for (const level of LEVELS) {
-    test(`CSV at ${level.path || 'brasil'}: starts with the provenance block and its rows equal the on-screen values`, async ({ page }) => {
-      await enhanced(page, level.path)
-      const download = page.waitForEvent('download')
-      await wrap(page).locator('[data-csv]').click()
-      const text = readFileSync(await (await download).path(), 'utf8').replace(/^﻿/, '')
-      const lines = text.trim().split('\n')
-      expect(lines.slice(0, 5).map((l) => l.split(':')[0])).toEqual(['# Fonte', '# Edição', '# Data', '# Cálculo', '# Licença'])
-      expect(lines[2]).toMatch(/^# Data: \d{4}-\d{2}-\d{2}$/)
-      expect(lines[4]).toContain('CC BY 4.0')
-      const body = lines.slice(5).map((l) => l.split(';'))
-      const header = await wrap(page).locator('thead th').evaluateAll((ths) => ths.map((th) => (th as HTMLElement).dataset.label!))
-      expect(body[0]).toEqual(header)
-      const screen = await wrap(page).locator('tbody tr[data-row]:not([hidden])').evaluateAll((trs) => trs.map((tr) => [...(tr as HTMLTableRowElement).cells].map((c) => ((c as HTMLElement).dataset.name ?? c.textContent ?? '').trim())))
-      expect(body.slice(1)).toEqual(screen)
-      expect(body.at(-1)![0]).toBe(await wrap(page).locator('tr[data-total] th').innerText())
-    })
-  }
-
   test('the table chunk loads only from 1024 px up and only when the panel is in view', async ({ page }) => {
     const chunks: string[] = []
-    page.on('request', (r) => /\/_astro\/.*(DetalheEnhancer|client)\.[^/]*\.js/.test(r.url()) && chunks.push(r.url()))
+    page.on('request', (r) => /\/_astro\/.*(DetalheEnhancer)\.[^/]*\.js/.test(r.url()) && chunks.push(r.url()))
     await page.setViewportSize({ width: 1440, height: 300 })
     await page.goto(url('estado/rj/'))
     await page.waitForLoadState('networkidle')

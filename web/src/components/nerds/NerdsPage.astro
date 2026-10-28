@@ -27,6 +27,9 @@ import DistribuicaoPanel from './DistribuicaoPanel'
 import { editionLabel, editionPath } from '@/lib/editions'
 import { currentEdition, loadEditions } from '@/lib/editions-load'
 import { buildSignals } from '@/lib/nerds/signals'
+import { exportJson, exportOf } from '@/lib/nerds/export-spec'
+import PanelActions from './PanelActions'
+import { siteOrigin } from '@/lib/share-url'
 import { normalizeBase, withBase } from '@/paths'
 
 interface Props {
@@ -61,6 +64,7 @@ const title = `Dados para nerds: ${place.name} · Voto a Voto`
 ---
 <Base title={title} description={`Os números de ${place.name} nas eleições presidenciais de 2018, 2022 e 2026, painel a painel, com a fonte de cada um.`}>
   <main class="nerds" id="main" data-page="nerds" data-level={level} data-place={place.id ?? 'brasil'} data-cycles={place.cycles.join(',')}>
+    <PanelActions client:panel origin={siteOrigin()} base={base} path={nerdsPath({ level, id })} edition={{ id: edition.id, label: editionLabel(edition) }} editionId={edition.id} place={place.name} cycles={place.cycles} siteUrl={`${siteOrigin()}${base}`} />
     <nav class="nerds-crumbs" aria-label="Onde você está">
       {up ? <a href={href(up.path!)}>‹ {up.label}</a> : <a href={href('brasil/')}>‹ Brasil e regiões</a>}
       <ol>
@@ -83,7 +87,7 @@ const title = `Dados para nerds: ${place.name} · Voto a Voto`
       <p>O ciclo vem do endereço da página (<code>?ciclo=2022</code>), e o turno aparece lado a lado quando o painel mostra os dois. Se houve só um turno, o outro aparece como “sem 2º turno”, nunca como zero.</p>
     </details>
 
-    <PanelFrame record={strip} edicao={edicao} scope="sinais" unchecked={false}>
+    <PanelFrame record={strip} edicao={edicao} scope="sinais" unchecked={false} exportJson={exportJson(exportOf(specFor(strip, { cycle: {}, all: place.shards, signals }))!)}>
       <StatPanel spec={specFor(strip, { cycle: {}, all: place.shards, signals })} />
     </PanelFrame>
     {down.length > 0 && (
@@ -110,7 +114,7 @@ const title = `Dados para nerds: ${place.name} · Voto a Voto`
           {cyclePanels.map((record) => {
             const spec = specFor(record, { cycle: shards, all: place.shards, known, reference: place.reference, placeName: place.name, parent: place.parent && { name: place.parent.name, cycle: { 1: place.parent.shards.get(`${ciclo}-1`), 2: place.parent.shards.get(`${ciclo}-2`) } } })
             return (
-              <PanelFrame record={record} edicao={edicao} scope={scope} vars={{ filhos: childNoun(place), filhos_plural: childPlural(place) }} unchecked={unchecked(ciclo)}>
+              <PanelFrame record={record} edicao={edicao} scope={scope} vars={{ filhos: childNoun(place), filhos_plural: childPlural(place) }} unchecked={unchecked(ciclo)} exportJson={record.transform === 'detalhe' ? undefined : (exportOf(spec) && exportJson(exportOf(spec)!))}>
                 {spec.kind === 'stat' && <StatPanel spec={spec} />}
                 {spec.kind === 'table' && record.transform === 'detalhe' && (
                   <DetalheEnhancer client:panel shardsUrl={shardsUrl} base={base} provenance={{ source: `TSE, ${edicao}`, edition: edition.id, date: edition.date, calculo: record.footer.calculo, licence: 'CC BY 4.0 (conjunto de dados), com atribuição ao TSE' }} />
@@ -127,14 +131,14 @@ const title = `Dados para nerds: ${place.name} · Voto a Voto`
       {seriesPanels.map((record) => {
         const spec = specFor(record, { cycle: {}, all: place.shards, reference: place.reference, level, known })
         return (
-          <PanelFrame record={record} edicao={edicao} scope="serie" weight={spec.kind === 'bar' || spec.kind === 'map' ? weightText(spec.weight) : undefined} unchecked={unchecked()}>
+          <PanelFrame record={record} edicao={edicao} scope="serie" weight={spec.kind === 'bar' || spec.kind === 'map' ? weightText(spec.weight) : undefined} unchecked={unchecked()} exportJson={exportOf(spec) && exportJson(exportOf(spec)!)}>
             {spec.kind === 'bar' && <EscadaPanel client:panel spec={spec} titleId={`serie-${record.id}-t`} />}
             {spec.kind === 'map' && <MapaPanel spec={spec} base={base} placeName={place.name} muniMap={level === 'estado' && existsSync(resolve('./public/geo', `municipios-${id}.json`)) ? `/mapa/${id}/` : undefined} />}
           </PanelFrame>
         )
       })}
       <div id="invariantes" data-invariantes>
-        <PanelFrame record={invariantes} edicao={edicao} scope="invariantes">
+        <PanelFrame record={invariantes} edicao={edicao} scope="invariantes" exportJson={exportJson(exportOf(specFor(invariantes, { cycle: {}, all: place.shards, signals }))!)}>
           <TablePanel spec={specFor(invariantes, { cycle: {}, all: place.shards, signals })} base={base} />
           {level !== 'brasil' && <p class="nerds-more"><a href={href(`${nerdsPath({ level: 'brasil' })}#invariantes`)} data-all-rules>Ver a lista completa de conferências, no Brasil ›</a></p>}
         </PanelFrame>
