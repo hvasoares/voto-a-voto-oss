@@ -37,7 +37,7 @@ describe('Escada: golden data (printed values equal the shard values, across thr
     const s = spec(level, id)
     for (const row of s.rows) {
       for (const turno of [1, 2] as const) {
-        const rows = csvRows('turnout.csv').filter((r) => r.ano === String(row.ciclo) && r.turno === String(turno) && keep(r.cd_municipio))
+        const rows = csvRows('turnout.csv').filter((r) => r.ano === String(row.ciclo) && r.turno === String(turno) && keep(r.cd_municipio!))
         const aptos = rows.reduce((t, r) => t + Number(r.aptos), 0)
         const comp = rows.reduce((t, r) => t + Number(r.comparecimento), 0)
         const want = `${(Math.round((comp / aptos) * 1000) / 10).toFixed(1).replace('.', ',')}%`

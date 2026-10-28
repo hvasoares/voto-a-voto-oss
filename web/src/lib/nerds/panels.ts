@@ -2,6 +2,7 @@ import { int, pct1 } from './format'
 import type { Candidate, LevelShard, Metric } from './types'
 import type { Level } from './paths'
 import { buildEscada, type BarSpec } from './escada'
+import { detalhe } from './detalhe'
 
 /**
  * The panel catalogue machinery of "Dados para nerds" (#73). A panel is a RECORD: `{ id, level, shard, transform, kind, measure, series, title, footer }`; a pure function turns
@@ -78,6 +79,9 @@ export function assertCatalog(records: readonly PanelRecord[], renderers?: Reado
   if (problems.length) throw new Error(`Dados para nerds: the panel catalogue fails its gates:\n${problems.map((p) => `  - ${p}`).join('\n')}`)
 }
 
+/** The title as shown: `{filhos}` names the places a level's table lists ("município de São Paulo"). */
+export const titleText = (record: PanelRecord, vars: Record<string, string> = {}): string => record.title.replace(/\{(\w+)\}/g, (all, key: string) => vars[key] ?? all)
+
 /** `fonte` with the edition written in: "TSE, edição 26/10/2026 (2026-10-26)". */
 export function fonteText(record: PanelRecord, edicao: string): string {
   return record.footer.fonte.replace('{edicao}', edicao)
@@ -106,20 +110,31 @@ export interface StatSpec {
 }
 export interface TableColumn {
   key: string
+  /** The full name (the CSV header and the accessible name). */
   label: string
+  /** What the header shows when the full name is too long for a column ("COMPAR. 1º"). */
+  short?: string
   numeric: boolean
 }
 export interface TableRow {
   id: string
   cells: (string | null)[]
+  /** The child level's page (or the city card): what a name degrades to without scripts. */
   href?: string
   total?: boolean
+  /** The number behind each printed cell (null = "sem 2º turno"), for sorting: the first (name) cell has none. */
+  values?: (number | null)[]
+  /** The row opens into the places of the next level down (a shard to fetch). */
+  open?: { level: 'regiao' | 'uf'; id: string }
 }
 export interface TableSpec {
   kind: 'table'
   caption: string
   columns: TableColumn[]
   rows: TableRow[]
+  /** The cycle of the shards behind it, and the unit its rows are called ("municípios"), for the enhancer and the CSV. */
+  ano?: number
+  unit?: string
 }
 export type Spec = StatSpec | TableSpec | BarSpec
 
@@ -185,12 +200,15 @@ export interface PanelData {
   cycle: Shards
   all: ReadonlyMap<string, LevelShard>
   reference?: ReadonlyMap<string, LevelShard>
+  /** The regiões and UFs that have a page of their own (a name links, and a row opens, only for those). */
+  known?: { regioes: readonly string[]; ufs: readonly string[] }
 }
 export type Transform = (data: PanelData, record: PanelRecord) => Spec
 export const TRANSFORMS: Record<string, Transform> = {
   escada: (d, r) => buildEscada(r, d),
   placar: (d) => placar(d.cycle),
   'candidatos-tabela': (d) => candidatosTabela(d.cycle),
+  detalhe: (d, r) => detalhe(r, d.cycle, d.known),
 }
 
 /** (record, data) -> spec. */

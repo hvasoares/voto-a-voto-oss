@@ -35,6 +35,23 @@ export const ESCADA: PanelRecord = {
   },
 }
 
-export const CATALOG: readonly PanelRecord[] = [PLACAR, ESCADA]
+export const DETALHE: PanelRecord = {
+  id: 'detalhe',
+  level: 'todos',
+  shard: 'ciclo',
+  transform: 'detalhe',
+  kind: 'table',
+  measure: { family: 'participacao', id: 'comparecimento' },
+  series: 'turno',
+  title: 'Quais são os números de cada {filhos}?',
+  footer: {
+    definicao: 'Uma linha por lugar do nível abaixo, em ordem alfabética; a última linha é o total do lugar mostrado.',
+    fonte: 'TSE, {edicao}, resultado final.',
+    calculo: 'Eleitorado em pessoas; comparecimento e abstenção = votantes e não votantes ÷ eleitorado; brancos + nulos = parte do comparecimento. O total é a soma das linhas.',
+    naoMede: 'Motivo, perfil de eleitor nem ranking entre lugares.',
+  },
+}
+
+export const CATALOG: readonly PanelRecord[] = [PLACAR, ESCADA, DETALHE]
 
 assertCatalog(CATALOG)

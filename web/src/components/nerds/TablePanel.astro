@@ -1,26 +1,37 @@
 ---
-/** The table kind (#73): a real table with a header row and right-aligned numbers, complete without scripts. #76 enhances it (sort, filter, open rows) in an island. */
+/**
+ * The table kind: a real table with a header row, right-aligned numbers and a name column of links, complete without scripts. The Tabela de detalhe (#76) adds the
+ * attributes its enhancer reads (`data-v` = the number behind a printed cell, `data-open-*` = the shard a row opens into) and the enhancer (sort, filter, page, open rows, CSV)
+ * upgrades it in place from 1024 px, only when in view.
+ */
 import { SEM_SEGUNDO_TURNO, type TableSpec } from '@/lib/nerds/panels'
+import { withBase } from '@/paths'
 
-interface Props { spec: TableSpec }
-const { spec } = Astro.props
+interface Props {
+  spec: TableSpec
+  base?: string
+  /** The path under the base that row hrefs are relative to (the city card links are `<uf>/<slug>/`). */
+  hrefBase?: string
+}
+const { spec, base = '/' } = Astro.props
+const link = (href: string) => withBase(base, href.startsWith('dados-para-nerds') ? href : `/${href}`)
 ---
 <div class="nerds-tablewrap" tabindex="0" role="region" aria-label={spec.caption}>
-  <table class="nerds-table" data-table>
+  <table class="nerds-table" data-table data-ano={spec.ano} data-unit={spec.unit}>
     <caption>{spec.caption}</caption>
     <thead>
-      <tr>{spec.columns.map((c) => <th scope="col" class={c.numeric ? 'is-num' : undefined}>{c.label}</th>)}</tr>
+      <tr>{spec.columns.map((c) => <th scope="col" class={c.numeric ? 'is-num' : undefined} data-label={c.label} title={c.short ? c.label : undefined}>{c.short ?? c.label}</th>)}</tr>
     </thead>
     <tbody>
       {spec.rows.map((r) => (
-        <tr data-row={r.id} data-total={r.total ? '' : undefined}>
+        <tr data-row={r.id} data-total={r.total ? '' : undefined} data-open-level={r.open?.level} data-open-id={r.open?.id}>
           {r.cells.map((cell, i) => {
             const col = spec.columns[i]!
             const content = cell ?? <span class="nerds-none">{SEM_SEGUNDO_TURNO}</span>
             return i === 0 ? (
-              <th scope="row">{r.href ? <a href={r.href}>{content}</a> : content}</th>
+              <th scope="row" data-name={cell ?? ''}>{r.href ? <a href={link(r.href)}>{content}</a> : content}</th>
             ) : (
-              <td class={col.numeric ? 'is-num' : undefined}>{content}</td>
+              <td class={col.numeric ? 'is-num' : undefined} data-v={r.values?.[i] ?? undefined}>{content}</td>
             )
           })}
         </tr>

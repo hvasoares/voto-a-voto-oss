@@ -13,8 +13,12 @@ import { CATALOG } from '@/lib/nerds/catalog'
 import { nerdsPath, type Level } from '@/lib/nerds/paths'
 import { specFor, type PanelData } from '@/lib/nerds/panels'
 import EscadaPanel from './EscadaPanel'
+import TablePanel from './TablePanel.astro'
+import DetalheEnhancer from './DetalheEnhancer'
+import { placesWithShards } from '@/lib/nerds/shards'
+import { SHARD_VERSION } from 'virtual:data-shards'
 import { weightText } from '@/lib/nerds/escada'
-import { childLinks, loadPlace } from '@/lib/nerds/view'
+import { childLinks, childNoun, loadPlace } from '@/lib/nerds/view'
 import { editionLabel, editionPath } from '@/lib/editions'
 import { currentEdition } from '@/lib/editions-load'
 import { normalizeBase, withBase } from '@/paths'
@@ -37,6 +41,8 @@ for (const shard of place.shards.values()) {
 }
 const latest = Math.max(...place.cycles)
 const down = childLinks(place)
+const known = placesWithShards()
+const shardsUrl = href(`data/v${SHARD_VERSION}/nerds/`)
 const here = CATALOG.filter((r) => r.level === 'todos' || r.level === level)
 const cyclePanels = here.filter((r) => r.shard === 'ciclo')
 const seriesPanels = here.filter((r) => r.shard === 'ciclos')
@@ -88,10 +94,14 @@ const title = `Dados para nerds: ${place.name} · Voto a Voto`
         <div class="nerds-cycle" data-ciclo-block={ciclo} data-latest={ciclo === latest ? '' : undefined}>
           <h2 class="nerds-cycle__title">Presidente {ciclo}</h2>
           {cyclePanels.map((record) => {
-            const spec = specFor(record, { cycle: shards, all: place.shards })
+            const spec = specFor(record, { cycle: shards, all: place.shards, known })
             return (
-              <PanelFrame record={record} edicao={edicao} scope={scope}>
+              <PanelFrame record={record} edicao={edicao} scope={scope} vars={{ filhos: childNoun(place) }}>
                 {spec.kind === 'stat' && <StatPanel spec={spec} />}
+                {spec.kind === 'table' && record.transform === 'detalhe' && (
+                  <DetalheEnhancer client:panel shardsUrl={shardsUrl} base={base} provenance={{ source: `TSE, ${edicao}`, edition: edition.id, date: edition.date, calculo: record.footer.calculo, licence: 'CC BY 4.0 (conjunto de dados), com atribuição ao TSE' }} />
+                )}
+                {spec.kind === 'table' && <TablePanel spec={spec} base={base} />}
               </PanelFrame>
             )
           })}

@@ -68,3 +68,10 @@ export function childLinks(place: PlaceView, root?: string): ChildLinks[] {
   }
   return groups.filter((g) => g.links.length)
 }
+
+/** "região do Brasil", "estado da região Sudeste", "município de São Paulo": the places a level's table lists, for the question in its title. */
+export function childNoun(place: Pick<PlaceView, 'level' | 'name'>): string {
+  if (place.level === 'brasil') return 'região do Brasil'
+  if (place.level === 'regiao') return `estado da região ${place.name}`
+  return `município de ${place.name}`
+}

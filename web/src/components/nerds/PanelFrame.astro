@@ -3,7 +3,7 @@
  * The frame every panel of "Dados para nerds" shares (#73): the title is the question, the footer is the provenance block (definição, fonte with edition and date, cálculo,
  * "não mede") written from the panel RECORD, and the body is a slot. There is no interpretation field. Actions (Citar, CSV, Imagem) arrive in #79.
  */
-import { fonteText, type PanelRecord } from '@/lib/nerds/panels'
+import { fonteText, titleText, type PanelRecord } from '@/lib/nerds/panels'
 
 interface Props {
   record: PanelRecord
@@ -13,13 +13,15 @@ interface Props {
   scope: string
   /** "Lê 6 arquivos de dados, 5,1 kB comprimidos": what the panel reads, printed under the footer. */
   weight?: string
+  /** Values for `{...}` in the title. */
+  vars?: Record<string, string>
 }
-const { record, edicao, scope, weight } = Astro.props
+const { record, edicao, scope, weight, vars } = Astro.props
 const f = record.footer
 ---
 <section class="nerds-panel" data-panel={record.id} data-kind={record.kind} aria-labelledby={`${scope}-${record.id}-t`}>
   <header class="nerds-panel__head">
-    <h2 id={`${scope}-${record.id}-t`}>{record.title}</h2>
+    <h2 id={`${scope}-${record.id}-t`}>{titleText(record, vars)}</h2>
     <div class="nerds-panel__actions" data-panel-actions><slot name="actions" /></div>
   </header>
   <slot />

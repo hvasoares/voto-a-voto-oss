@@ -2,6 +2,7 @@ import type { AstroIntegration } from 'astro'
 import { resolve } from 'node:path'
 import { writeEditions } from './editions'
 import { generateShards, shardsModule } from './shards'
+import { copyNerdsShards } from './nerds-shards'
 
 /**
  * The dataset side of the build: writes the shards of the chosen dataset under `public/data` (wiping older
@@ -15,7 +16,8 @@ export function dataset(): AstroIntegration {
     hooks: {
       'astro:config:setup': ({ config }) => {
         const root = new URL(config.root).pathname
-        generateShards(resolve(root, 'public/data'), process.env, root)
+        const fingerprint = generateShards(resolve(root, 'public/data'), process.env, root)
+        copyNerdsShards(resolve(root, 'public/data'), fingerprint, process.env, root)
         // The editions (#59) are served beside the shards: committed in editions/, copied unchanged.
         writeEditions(resolve(root, 'public'))
       },
