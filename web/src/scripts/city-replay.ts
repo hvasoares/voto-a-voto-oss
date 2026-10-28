@@ -1,6 +1,8 @@
 /** The city replay (#46) of the three-cycle page: one short sequence 2018 -> 2022 -> 2026 drawn from the numbers the page's own static blocks already carry (the shares of each cycle's bar),
  * in the browser. Nothing is fetched and nothing is computed: the static blocks below stay as the card for visitors who prefer reduced motion, for scripts that do not run and for chat previews.
  * Only the latest request wins (a round switch or a tap while a step is waiting never lets an old step draw). Marks `data-replay` (ready) and `data-replay-year` (the cycle on show) for the e2e specs. Browser only. */
+// The replay's stylesheet travels with its script and is added to the page when a replay is drawn: inlined in each of the 5.570 pages it was 1.9 KB a page (10 MB of the site).
+import css from '@/styles/replay.css?inline'
 import { buildReplay, missingText, replayAlt, say, type Replay, type ReplaySide } from '@/lib/replay'
 
 const STEP_MS = 1700
@@ -29,6 +31,11 @@ export function mountReplay(panel: HTMLElement, city: string, turno: number): Re
   const replay: Replay = buildReplay(readCycles(panel))
   if (!replay.frames.length) return undefined
   const years = [...new Set(replay.frames.flatMap((f) => f.sides.map((s) => s.key)))]
+  if (!document.querySelector('style[data-replay-css]')) {
+    const style = el('style', undefined, css)
+    style.dataset.replayCss = ''
+    document.head.append(style)
+  }
   const box = el('section', 'replay')
   box.setAttribute('role', 'group')
   box.setAttribute('aria-label', replayAlt(replay, city, turno))

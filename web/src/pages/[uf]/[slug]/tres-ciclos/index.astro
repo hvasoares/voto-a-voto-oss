@@ -17,7 +17,6 @@ import { displayName } from '@/shared/city-search'
 import { CYCLES } from '@/shared/city-model'
 import { DEFAULT_TURNO, buildCycleBlock } from '@/slots/city-cycles/cycles-model'
 import { roundPanel } from '@/slots/city-cycles/cycles-view'
-import '@/styles/replay.css'
 
 export async function getStaticPaths() {
   return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug } }))
