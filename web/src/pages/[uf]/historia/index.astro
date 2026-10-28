@@ -1,0 +1,54 @@
+---
+/**
+ * The state story (the Sketch frame "13d Sequência de Stories do estado", ticket #47): six to eight vertical cards for a state, one idea and one number each, the most surprising fact on the
+ * second card and the share card last, as a row you swipe (the `StorySequence` island) that is a stacked list without scripts. Each card is a standalone picture with the address of its position
+ * (`/<uf>/historia/#2`). Built for the states whose sequence has six to eight cards (`story-data.ts`). No entry point links here yet: the page is reached by its address.
+ */
+import Base from '@/layouts/Base.astro'
+import PhoneHeader from '@/components/PhoneHeader.astro'
+import StorySequence from '@/components/StorySequence'
+import Seal from '@/components/Seal.astro'
+import { normalizeBase, withBase } from '@/paths'
+import { loadStory, storyUfs } from '@/lib/story-data'
+import { storyCalc } from '@/lib/story-content'
+import { storySay } from '@/lib/story'
+import { datasetFixture } from '@/lib/shard-files'
+import { calcLink } from '@/lib/facts/link'
+import { factLinks } from '@/lib/facts/gate'
+import { getFactPage, sealOf } from '@/lib/facts/pages'
+import '@/styles/story.css'
+
+export async function getStaticPaths() {
+  const base = normalizeBase(import.meta.env.BASE_URL)
+  return (await storyUfs(base)).map((uf) => ({ params: { uf } }))
+}
+
+const { uf } = Astro.params
+const base = normalizeBase(import.meta.env.BASE_URL)
+const href = (path: string) => withBase(base, path)
+const fixture = await datasetFixture()
+const story = (await loadStory(uf!, base))!
+// Fact records (#62): the number of a card has its record ("ver cálculo"); a card whose number has none does not build.
+const pages = { municipios: await getFactPage(`estado/${uf}`, 'municipios'), 'tres-ciclos': await getFactPage(`estado/${uf}`, 'tres-ciclos') }
+const linksOf = (page: 'municipios' | 'tres-ciclos') => factLinks(pages[page].facts, `/${uf}/historia/`, base)
+const cards = story.cards.map((c) => {
+  const where = c.kind === 'recap' || c.kind === 'share' ? undefined : storyCalc(c.kind)
+  return { n: c.n, svg: c.svg, text: c.variants.standard.text, link: c.url, filename: c.filename, caption: c.caption, address: c.address, calc: where ? calcLink(linksOf(where.page as 'municipios' | 'tres-ciclos')(where.anchor)) : undefined }
+})
+const seal = await sealOf(pages['tres-ciclos'])
+const words = { region: storySay('story.region', {}, { name: story.stateName }), dots: storySay('story.dots'), dot: storySay('story.dot', {}, {}), share: storySay('story.share'), linkNote: storySay('story.link.note'), nojs: storySay('story.nojs') }
+---
+<Base title={`${storySay('story.title', {}, { name: story.stateName })} · Voto a Voto`} description={story.cards[1]!.variants.standard.alt}>
+  <PhoneHeader />
+  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:pt-8" id="main" data-page="historia" data-uf={uf}>
+    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-body font-bold leading-[18px] lg:min-h-8 lg:border-0 lg:px-0 lg:text-[14px] lg:font-normal lg:text-primary" href={href('/')}>‹ Início</a>
+    <h1 class="mt-2 font-serif text-title font-normal leading-[30px]">{story.stateName}</h1>
+    <p class="mt-1 text-small leading-[14px] text-muted-foreground" data-subtitle>{storySay('story.sub', {}, { n: cards.length })}</p>
+    <StorySequence client:load cards={cards} words={words} />
+    <p class="mt-2 text-center text-small leading-[17px] text-muted-foreground">{storySay('story.note')}</p>
+    <Seal lines={seal} />
+    <footer class="mt-2 border-t border-border pt-2 text-center text-[12.3px] leading-[15px] text-primary" data-component="source-footer">
+      {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
+    </footer>
+  </main>
+</Base>

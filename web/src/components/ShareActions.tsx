@@ -24,6 +24,8 @@ export interface ShareActionsProps {
   link: string
   /** The label of the native share button ("Compartilhar" by default; the recap says "Compartilhar o resumo"). */
   primaryLabel?: string
+  /** Hides the message text block only (the story's frame shows the two actions and no text); `compact` also drops the download where the system sheet exists. */
+  textHidden?: boolean
   /** One primary action only: no message text, and "Baixar imagem" only where the browser has no system share sheet (the recap's frame). */
   compact?: boolean
   /** The label of the download button ("Baixar imagem" by default). */
@@ -50,7 +52,7 @@ const BTN = 'min-h-11 w-full rounded-md text-body font-bold'
 const BTN_PRIMARY = `${BTN} text-primary-foreground`
 const BTN_OUTLINE = `${BTN} border border-border bg-background text-foreground`
 
-export default function ShareActions({ text, svg, filename, link, primaryLabel = 'Compartilhar', downloadLabel = 'Baixar imagem', downloadFirst = false, compact = false, onOpened, onShared }: ShareActionsProps) {
+export default function ShareActions({ text, svg, filename, link, primaryLabel = 'Compartilhar', downloadLabel = 'Baixar imagem', downloadFirst = false, compact = false, textHidden = false, onOpened, onShared }: ShareActionsProps) {
   const [mounted, setMounted] = useState(false)
   // Feature-detected after hydration (the server cannot know): where the browser has no Web Share API (most desktop
   // browsers) the native share button is hidden and "Copiar link" takes its place (#52).
@@ -166,7 +168,7 @@ export default function ShareActions({ text, svg, filename, link, primaryLabel =
         </p>
       </div>
       {/* Without a system share sheet the desktop dialog is just the three actions of the frame; a narrow screen keeps the message text. */}
-      <div className={`mt-1 border-t border-border pt-2 ${canShare ? '' : 'lg:hidden'}`} hidden={compact} data-share-text data-text={text}>
+      <div className={`mt-1 border-t border-border pt-2 ${canShare ? '' : 'lg:hidden'}`} hidden={compact || textHidden} data-share-text data-text={text}>
         <h2 className="text-small font-bold leading-[17px]">Texto da mensagem</h2>
         <p className="mt-1 text-body leading-[18px] wrap-anywhere" data-text-body>
           {text}

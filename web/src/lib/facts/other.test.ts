@@ -81,6 +81,8 @@ describe('facts of the state three-cycles page', async () => {
     expect(turned.shown).toBe('1 de 5')
     expect(turned.sentences.standard).toBe('Em RJ, entre 2022 e 2026, o lado com mais votos no 2º turno mudou em 1 das 5 cidades com os três ciclos.')
     expect(turned.calculation!.worked).toEqual(['1 de 5 cidades'])
+    const more = by(withArcs.facts)
+    expect([more['2022-viradas']!.shown, more['voltaram']!.shown, more['sem-mudanca']!.shown]).toEqual(['1 de 5', '0 de 5', '3 de 5'])
     expect(withArcs.facts.find((x) => x.anchor === '2026-viradas')!.method).toBeDefined()
   })
   it('a cycle with no data has no record (never a zero) and the seal rounds are the cycles with data', async () => {

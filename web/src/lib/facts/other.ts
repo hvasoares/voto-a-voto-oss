@@ -161,6 +161,19 @@ export function stateCyclesFacts(uf: string, blocks: readonly CycleBlock[], fixt
         [{ label: std('fact.in.turned'), value: int(n) }, { label: std('fact.in.kept'), value: int(total - n) }], std('fact.f.turned'), [std('fact.w.turned', { n: int(n), total: int(total) })],
         { name: std(METHOD_DOCS.arcs.key), href: METHOD_DOCS.arcs.href }),
     )
+    // The story of the state (#47) counts the other arcs the same way: each is a count of cities over the same base, with its own record.
+    const method = { name: std(METHOD_DOCS.arcs.key), href: METHOD_DOCS.arcs.href }
+    for (const [anchor, key, count] of [
+      ['2022-viradas', 'fact.arc.turned22', arcs.switched2022 + arcs.returned + arcs.switchedTwice],
+      ['voltaram', 'fact.arc.returned', arcs.returned],
+      ['sem-mudanca', 'fact.arc.steady', arcs.same],
+    ] as const) {
+      const what = std(key)
+      facts.push(
+        rec(c, anchor, std('fact.in.arc', { what }), `${count} de ${total}`, Object.fromEntries(REGISTERS.map((r) => [r, say({ locale: DEFAULT_LOCALE, register: r }, 'fact.state.arc', { name, what: say({ locale: DEFAULT_LOCALE, register: r }, key), n: int(count), total: int(total) })])) as Record<Register, string>,
+          [{ label: std('fact.in.arc', { what }), value: int(count) }, { label: std('fact.in.arcTotal'), value: int(total) }], std('fact.f.arc'), [std('fact.w.arc', { n: int(count), total: int(total) })], method),
+      )
+    }
   }
   const rounds = blocks.filter((b) => b.status === 'data').map((b) => ({ ano: b.ano, turno: 2 }))
   return { scope: c.scope, page: c.page, title: name, subtitle: std('fact.sub.state', { name }), back: { path: `tres-ciclos/${uf}/`, label: std('fact.back.state') }, fixture, facts, rounds }

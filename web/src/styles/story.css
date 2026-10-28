@@ -1,0 +1,22 @@
+/* The story sequence (#47, #97): only the pages that hold one load this file (the shared stylesheet is at its budget). Without scripts the cards are a stacked list. */
+.story__track { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.story__card { scroll-margin-top: 12px; }
+.story__pic { border: 1px solid var(--c-rule, #d9d3c3); border-radius: 14px; overflow: hidden; }
+.story__pic > svg { display: block; width: 100%; height: auto; }
+.story__cap { margin: 6px 0 0; font: 400 13px/17px var(--font-sans, sans-serif); color: var(--c-muted, #6a6558); text-align: center; }
+.story__calc { margin: 2px 0 0; text-align: center; }
+.story__link { display: block; text-align: center; font: 400 13px/17px var(--font-sans, sans-serif); }
+.story__now, .story__note { margin: 8px 0 0; text-align: center; font: 400 13px/17px var(--font-sans, sans-serif); color: var(--c-muted, #6a6558); }
+.story__now { color: var(--c-ink, #1c1b18); font-weight: 600; }
+.story[data-enhanced="true"] .story__track { flex-direction: row; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 12%; margin: 12px -20px 0; scrollbar-width: none; }
+.story[data-enhanced="true"] .story__track::-webkit-scrollbar { display: none; }
+.story[data-enhanced="true"] .story__card { flex: 0 0 64%; max-width: 280px; scroll-snap-align: center; opacity: .55; transition: opacity .2s; }
+.story[data-enhanced="true"] .story__card[aria-current="true"] { opacity: 1; }
+.story__track:focus-visible { outline: 2px solid var(--c-accent, #14505c); outline-offset: 2px; }
+.story[data-enhanced="true"] .story__cap { display: none; }
+.story__dots { display: flex; justify-content: center; margin-top: 4px; }
+.story__dot { box-sizing: border-box; width: 24px; min-height: 44px; border: 0; background: none; padding: 0; position: relative; cursor: pointer; }
+.story__dot::before { content: ""; position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: var(--c-rule, #d9d3c3); }
+.story__dot[aria-current="true"]::before { background: var(--c-accent, #14505c); }
+.story__dot:focus-visible { outline: 2px solid var(--c-accent, #14505c); outline-offset: -2px; }
+@media (prefers-reduced-motion: reduce) { .story__card { transition: none !important; } .story__track { scroll-behavior: auto; } }
