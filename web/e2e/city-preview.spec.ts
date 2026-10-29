@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
+import { EXAMPLE_URLS, NO_PREVIEW_EXCLUSIONS } from './routes-inventory'
 
 /*
  * The link-preview head of every city page (ticket #8), over the fixture dataset: the title, the meta
@@ -74,5 +75,40 @@ test.describe('city page head: the preview tags', () => {
     // nothing is fetched from the shards either: the tags, the card and everything is in the HTML
     expect(violations(seen, [new URL(baseURL!).origin])).toEqual([])
     expect(seen.filter((r) => r.url.includes('/data/'))).toEqual([])
+  })
+})
+
+test.describe('every public route carries the preview tags (#151)', () => {
+  const tags = ['og:title', 'og:description', 'og:type', 'og:url', 'og:image']
+  const names = ['twitter:card', 'twitter:title', 'twitter:description', 'twitter:image']
+  const content = (html: string, attr: string, key: string) =>
+    new RegExp(`<meta (?:${attr}="${key}" content="([^"]*)"|content="([^"]*)" ${attr}="${key}")`).exec(html)?.slice(1).find(Boolean) ?? ''
+
+  for (const [template, url] of Object.entries(EXAMPLE_URLS)) {
+    if (template in NO_PREVIEW_EXCLUSIONS) continue
+    test(`${template} has title, description, type, url and an absolute image`, async ({ request }) => {
+      const html = await (await request.get(`${base}${url}`)).text()
+      expect(html, 'the page asks not to be indexed but is not in NO_PREVIEW_EXCLUSIONS').not.toContain('content="noindex"')
+      const missing = [...tags.map((t) => [t, content(html, 'property', t)]), ...names.map((n) => [n, content(html, 'name', n)])].filter(([, v]) => !v).map(([k]) => k)
+      expect(missing, `${template} lacks ${missing.join(', ')}`).toEqual([])
+      expect(content(html, 'property', 'og:image')).toMatch(/^https?:\/\/.+\.png$/)
+      expect(content(html, 'property', 'og:url')).toMatch(/^https?:\/\//)
+    })
+  }
+
+  test('the two demo pages stay noindex and carry no preview', async ({ request }) => {
+    for (const url of ['compartilhar/', 'qr/']) {
+      const html = await (await request.get(`${base}${url}`)).text()
+      expect(html).toContain('content="noindex"')
+      expect(html).not.toContain('og:title')
+    }
+  })
+
+  test('the generic picture is 1200x630, under 300 KB and served from the site', async ({ request }) => {
+    const res = await request.get(`${base}preview.png`)
+    expect(res.ok()).toBe(true)
+    const png = await res.body()
+    expect(png.length).toBeLessThan(300 * 1024)
+    expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([1200, 630])
   })
 })

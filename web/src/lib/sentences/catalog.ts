@@ -325,6 +325,9 @@ export const KEYS = [
   'preview.noValidVotes',
   'preview.default',
   'preview.pair',
+  /** The generic preview of every other public page (#151): the description a page with none of its own gets, and the picture's alt. */
+  'preview.site',
+  'preview.siteAlt',
   /** The head-to-head (#30, #39): the sentences live in `catalog-duel.ts`, loaded only by the head-to-head's own modules. */
   'duel.title',
   'duel.sub.cidade',
