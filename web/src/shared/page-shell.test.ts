@@ -15,10 +15,10 @@ const OLD_MAINS: [string, string, MainShell][] = [
   ['press', 'mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[880px] lg:pt-8', { md: '880' }],
   ['guide', 'mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[720px] lg:pt-8', { md: '720' }],
   ['guess and overlay', 'mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[720px] lg:max-w-[1200px] lg:pt-8', { md: '720', lg: '1200' }],
-  ['the bar clearance, md 760', 'mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8', { top: 'bar', md: '760' }],
-  ['the map pages', 'mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16 md:max-w-[720px] lg:grid lg:max-w-[1240px] lg:pt-8', { top: 'bar', md: '720', grid: true, lg: '1240' }],
-  ['the state map', 'mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16', { top: 'bar', deskTop: false }],
-  ['Brasil e regiões', 'mx-auto w-full min-w-0 max-w-[430px] flex-1 px-5 pt-16 pb-2 md:max-w-[760px] lg:pt-8', { top: 'bar', md: '760', padBottom: true }],
+  ['the plain page, md 760', 'mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-3 lg:pt-8', { md: '760' }],
+  ['the map pages', 'mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[720px] lg:grid lg:max-w-[1240px] lg:pt-8', { md: '720', grid: true, lg: '1240' }],
+  ['the state map', 'mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3', { deskTop: false }],
+  ['Brasil e regiões', 'mx-auto w-full min-w-0 max-w-[430px] flex-1 px-5 pt-3 pb-2 md:max-w-[760px] lg:pt-8', { md: '760', padBottom: true }],
 ]
 
 const OLD_FOOTERS: [string, string, FooterShell][] = [
@@ -35,7 +35,7 @@ describe('mainClass', () => {
   })
 
   it('writes the tokens in one fixed order, whatever the choices', () => {
-    expect(mainClass({ top: 'bar', md: '720', grid: true, lg: '1240' })).toBe(OLD_MAINS[7]![1])
+    expect(mainClass({ md: '720', grid: true, lg: '1240' })).toBe(OLD_MAINS[7]![1])
     expect(mainClass({ extra: 'duel-main', lg: '1240', md: '480' })).toBe(OLD_MAINS[2]![1])
   })
 

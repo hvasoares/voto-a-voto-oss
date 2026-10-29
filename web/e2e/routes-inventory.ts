@@ -206,6 +206,39 @@ export const FOOTER_EXCLUSIONS: Readonly<Record<string, string>> = {
 }
 
 /**
+ * Page templates that do NOT carry the app header (#153; e2e/app-header.spec.ts checks every other template at the phone and at the desktop
+ * frame, at its EXAMPLE_URLS URL). Every public page carries it, so each entry here is a page that is not a plain public page.
+ */
+export const APP_HEADER_EXCLUSIONS: Readonly<Record<string, string>> = {
+  '/': "Home: its own city search stands where the header's would (Base `header=\"none\"`); the desktop top bar still carries the wordmark and the search",
+  '/:uf/:slug/compartilhar/': 'a full-screen share sheet over an inert backdrop (the approved frame); the backdrop card keeps its own inert header',
+  '/brasil/compartilhar/': 'a full-screen share sheet over an inert backdrop (the approved frame)',
+  '/compartilhar/': 'the demo of the share sheet: noindex, linked from nowhere, a full-screen sheet',
+  '/:uf/:slug/qr/': 'a full-screen QR screen (the approved frame)',
+  '/brasil/qr/': 'a full-screen QR screen (the approved frame)',
+  '/qr/': 'the demo of the QR screen: noindex, linked from nowhere, a full-screen sheet',
+  '/embed/:uf/:slug/': 'an EmbedDoc document made to be framed by another site: noindex, no shell at all',
+  '/overlay/tela/': 'an EmbedDoc broadcast overlay: noindex, no shell at all',
+  '/fragmentos/mapa-por-estado/ficaram-em-casa/:ciclo/': 'a FragmentDoc fragment framed by a page: no shell at all',
+  '/fragmentos/mapa-por-estado/margem/': 'a FragmentDoc fragment framed by a page: no shell at all',
+  '/fragmentos/mapa-por-estado/virada/': 'a FragmentDoc fragment framed by a page: no shell at all',
+  '/fragmentos/mapa-uf/': 'a FragmentDoc fragment framed by a page: no shell at all',
+}
+
+/** The pages that must carry the app header: every template not excluded above, at its fixture URL. */
+export function appHeaderPages(pages: readonly PageFile[]): string[] {
+  return pageTemplates(pages)
+    .filter((t) => !(t in APP_HEADER_EXCLUSIONS))
+    .map((t) => EXAMPLE_URLS[t]!)
+    .sort()
+}
+
+/** The pages the app-header spec walks, from the tree on disk. */
+export function appHeaderPagesOnDisk(webRoot: string): string[] {
+  return appHeaderPages(pagesFromFs(pageFilesOnDisk(webRoot)))
+}
+
+/**
  * The sample of the a11y audit (e2e/a11y.spec.ts): axe is slow, so the audited routes are chosen by hand —
  * no completeness rule, only staleness (the guard fails when a listed route no longer exists).
  */
@@ -326,6 +359,11 @@ export function checkTypeScaleScreens(pages: readonly PageFile[], screenPaths: r
 /** FOOTER_PAGES is derived; the exclusion map is the hand-kept part, guarded as a list of reasons. */
 export function checkFooterExclusions(pages: readonly PageFile[]): string[] {
   return checkExclusions('FOOTER_PAGES (e2e/tap-targets.spec.ts)', FOOTER_EXCLUSIONS, pageTemplates(pages))
+}
+
+/** The app-header list is derived; the exclusion map is the hand-kept part, guarded as a list of reasons. */
+export function checkAppHeaderExclusions(pages: readonly PageFile[]): string[] {
+  return checkExclusions('APP_HEADER_PAGES (e2e/app-header.spec.ts)', APP_HEADER_EXCLUSIONS, pageTemplates(pages))
 }
 
 /** The sampled lists fail only on staleness: a listed URL must open a page that still exists. */

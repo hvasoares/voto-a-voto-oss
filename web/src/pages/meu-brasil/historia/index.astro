@@ -5,7 +5,6 @@
  * button of the Meu Brasil card. The sequence is built in the browser from the shards of the picked places (as Meu Brasil itself is), so without scripts there is only the notice.
  */
 import Base from '@/layouts/Base.astro'
-import PhoneHeader from '@/components/PhoneHeader.astro'
 import MeuBrasilStory from '@/components/MeuBrasilStory'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { siteBase, siteHref } from '@/paths'
@@ -34,7 +33,6 @@ const words = {
 }
 ---
 <Base title={`${storySay('mbstory.title')} · Voto a Voto`} description={storySay('mbstory.none')}>
-  <PhoneHeader />
   <PageMain md="480" data-page="meu-brasil-historia">
     <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/meu-brasil/')} data-back-meu-brasil>{storySay('mbstory.back')}</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{storySay('mbstory.title')}</h1>

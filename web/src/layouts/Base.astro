@@ -5,9 +5,10 @@ import '../styles/global.css'
 import { siteHref } from '@/paths'
 import type { PreviewHead } from '@/lib/link-preview'
 import ConsentBanner from '@/components/ConsentBanner.astro'
-import { DESKTOP_SHELL_FILE } from '../../integrations/desktop-shell'
 import DocHead from '@/components/DocHead.astro'
 import TopBar from '@/components/TopBar.astro'
+import AppHeader from '@/components/AppHeader.astro'
+import ShellScript from '@/components/ShellScript.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
 
 interface Props {
@@ -18,13 +19,17 @@ interface Props {
   preview?: PreviewHead
   /** The page asks not to be indexed (the two demo screens, #137). */
   noindex?: boolean
+  /**
+   * The app header of the phone (#153): `phone` (default) draws it here, above the page; `screen` when the page draws the screen-stylesheet variant
+   * of the same component inside its own `.screen` wrapper (the city card, the state page, the three-cycles page, the fact record, the share sheet);
+   * `none` only for Home, whose own search stands where the header's would.
+   */
+  header?: 'phone' | 'screen' | 'none'
 }
-const { title, description, preview, noindex } = Astro.props
+const { title, description, preview, noindex, header = 'phone' } = Astro.props
 // The footer's "Privacidade" link (and the in-banner detail link) open the privacy section of /sobre-os-dados/,
 // which discloses the metrics notice (the notice-only model of 2026-10-27) and the browser-level opt-out.
 const privacyHref = siteHref('sobre-os-dados/#privacidade')
-// Dev serves the source module; a build serves the entry integrations/desktop-shell.ts emits under the site base.
-const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : siteHref(DESKTOP_SHELL_FILE)
 ---
 <!doctype html>
 <html lang="pt-BR">
@@ -36,6 +41,7 @@ const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : siteHref(D
     <a class="sr-only focus:not-sr-only focus:z-50 focus:fixed focus:top-2 focus:left-2 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-step-2 font-bold focus:text-foreground focus:outline-2 focus:outline-primary" href="#main">Pular para o conteúdo</a>
     <div class="flex min-h-screen min-w-0 flex-col">
       <TopBar />
+      {header === 'phone' && <AppHeader />}
       <slot />
       {/* The global lines (edition #59, privacy #20, donation #36, finality chip #122, Relatórios/Mapa #103): the shared footer component, no <footer> element. */}
       <SiteFooter />
@@ -45,9 +51,7 @@ const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : siteHref(D
     <script>
       import '@/scripts/analytics-boot'
     </script>
-    {/* Desktop shell (#51: the "/" shortcut and the top bar's search): a 1024 px viewport loads its module, a phone downloads nothing for it. */}
-    <script is:inline define:vars={{ shell }}>
-      if (matchMedia('(min-width: 1024px)').matches) import(shell)
-    </script>
+    {/* Desktop shell (#51: the "/" shortcut and the header search): loaded at once from 1024 px, on a phone at the first touch of the search. */}
+    <ShellScript />
   </body>
 </html>

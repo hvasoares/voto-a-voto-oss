@@ -6,7 +6,6 @@
  * from the catalog, so the text alternative, the share text and the headline are one sentence. Reached from the state page.
  */
 import Base from '@/layouts/Base.astro'
-import PhoneHeader from '@/components/PhoneHeader.astro'
 import RecapShare from '@/components/RecapShare'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { siteBase, siteHref } from '@/paths'
@@ -46,7 +45,6 @@ const seal = await sealOf(facts)
 const calcCycles = recap.rows.filter((r) => r.status === 'data').map((r) => ({ ano: r.ano, link: calcLink(links(`${r.ano}-variacao`)) }))
 ---
 <Base title={`${recapTitle()} · ${stateName} · Voto a Voto`} description={content.variants.standard.alt}>
-  <PhoneHeader />
   <PageMain md="480" data-page="resumo" data-uf={uf}>
     <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{recapTitle()}</h1>

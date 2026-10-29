@@ -33,10 +33,10 @@ const sources = [...new Map(facts.map((f) => [f.source!.url + f.source!.name, f.
 const methods = [...new Map(facts.flatMap((f) => (f.method ? [[f.method.href, f.method] as const] : []))).values()]
 const title = `${std('fact.title')} · ${fp.title} · Voto a Voto`
 ---
-<Base title={title}>
+<Base title={title} header="screen">
   <div class="screen fact-page">
     <script is:inline set:html={registerBootScript} />
-    <AppHeader />
+    <AppHeader variant="screen" />
     <FixtureBanner show={fp.fixture} class="banner" role="note" wideSeparator />
     <main class="page__main" id="main">
       <a class="back" href={href(fp.back.path)}>{fp.back.label}</a>

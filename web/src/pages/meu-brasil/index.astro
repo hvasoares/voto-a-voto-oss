@@ -5,7 +5,6 @@
  * shares through the existing share flow. Reached from the "Comparar" chooser of the home.
  */
 import Base from '@/layouts/Base.astro'
-import PhoneHeader from '@/components/PhoneHeader.astro'
 import MeuBrasil from '@/components/MeuBrasil'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { siteBase, siteHref } from '@/paths'
@@ -24,7 +23,6 @@ const fixture = await datasetFixture()
 const edition = await currentEdition()
 ---
 <Base title={`${message(DEFAULT_VOICE, 'mb.title')} · Voto a Voto`} description={message(DEFAULT_VOICE, 'mb.sub')}>
-  <PhoneHeader />
   <PageMain md="480" lg="1240" data-page="meu-brasil">
     <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{message(DEFAULT_VOICE, 'mb.title')}</h1>

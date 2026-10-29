@@ -1,17 +1,18 @@
 /**
- * The desktop shell's behaviour (#51). Base.astro imports this module only when the viewport is 1024 px or wider, so a
- * phone never downloads it, and it is tiny: it wires two things and loads nothing heavy before the first interaction.
+ * The desktop shell's behaviour (#51). components/ShellScript.astro loads this module at once on a viewport of 1024 px or wider; a phone
+ * loads it only on the first touch of a header search field (#153). It is tiny: it wires two things and loads nothing heavy before the first interaction.
  *
- * 1. The top bar's city search. The bar draws a plain pre-rendered field (components/TopBar.astro); on its first focus
- *    this mounts the existing CitySearch component (React + cmdk, the same one Home uses) in its place and hands it
+ * 1. The header's city search. The top bar and the phone header draw a plain pre-rendered field (components/HeaderSearch.astro);
+ *    on its first focus this mounts the existing CitySearch component (React + cmdk, the same one Home uses) in its place and hands it
  *    what was typed, so the cost is paid only by the visitors who search.
  * 2. "/" focuses the city search: the page's own (Home) when it is visible, otherwise the top bar's. Typing "/" inside
  *    any field is left alone.
  */
-const host = document.querySelector<HTMLElement>('[data-topbar-search]')
+const hosts = document.querySelectorAll<HTMLElement>('[data-topbar-search]')
+const events = ['focusin', 'pointerdown', 'keydown']
 
-if (host) {
-  const events = ['focusin', 'pointerdown', 'keydown']
+/** Mounts the real search in one header field; a field already touched (a phone: the loader asked for this module on that touch) mounts at once. */
+const wire = (host: HTMLElement): void => {
   const mount = async (): Promise<void> => {
     for (const e of events) host.removeEventListener(e, mount)
     try {
@@ -25,8 +26,10 @@ if (host) {
       console.error('top bar search failed to load', error)
     }
   }
-  for (const e of events) host.addEventListener(e, mount, { once: true })
+  if (host.contains(document.activeElement)) void mount()
+  else for (const e of events) host.addEventListener(e, mount, { once: true })
 }
+hosts.forEach(wire)
 
 const visible = (el: HTMLInputElement) => el.getClientRects().length > 0
 
