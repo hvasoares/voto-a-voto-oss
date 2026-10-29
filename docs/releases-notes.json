@@ -100,7 +100,8 @@
   "1.14.1": {
     "milestone": "Bugs and the header (milestone 1.14.0: #147-#158) with the region page (#183) and every UF and region as a link (#184)",
     "rollback": "Redeploy the commit of `1.13.2`",
-    "known_issues": "Deploy run not yet recorded; the WhatsApp link-preview check of #151 is open until this deploy; \"Ver os cartões da região\" is not on the region page (no region cards route yet); the nerds chips and breadcrumbs still link a region or state to its nerds page; the place-link guard reads built HTML only, so text rewritten at runtime can drop a link; the share page's JS grew 2448 B to about 109 KB, accepted by the owner; the \"Início\" link is removed everywhere (the name is the way home, #154)",
-    "deploy_run": null
+    "known_issues": "The first deploy run (push of c31dca4) failed on a 5 s test timeout in the place-links guard; the run shown was started by hand on a604052, which carries the timeout fix. The WhatsApp link-preview check of #151 is still open; \"Ver os cartões da região\" is not on the region page (no region cards route yet); the nerds chips and breadcrumbs still link a region or state to its nerds page; the place-link guard reads built HTML only, so text rewritten at runtime can drop a link; the share page's JS grew 2448 B to about 109 KB, accepted by the owner; the \"Início\" link is removed everywhere (the name is the way home, #154)",
+    "deploy_run": 40952128325,
+    "deploy_sha": "a604052"
   }
 }
