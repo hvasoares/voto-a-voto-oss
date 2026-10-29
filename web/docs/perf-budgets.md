@@ -66,14 +66,16 @@ As quatro rotas atendem aos orçamentos. Em K gzip:
 
 | Rota | html | css | eagerJs | islandJs | **No carregamento** (html+css+eagerJs) |
 |---|---|---|---|---|---|
-| home | 5.9K | 12.2K | 0.2K | 82.7K (CitySearch 19.3K + client 63.4K) | **18.3K** |
-| cartão da cidade | 2.3K | 12.2K | 0.7K | 0 | **15.2K** |
-| mapa | 5.1K | 12.2K | 0.1K | 75.6K (StateMapMap 12.2K + client 63.4K) | **17.4K** |
-| relatório | 1.9K | 12.2K | 0.1K | 0 | **14.2K** |
+| home | 8.7K | 13.9K | 3.0K | 1.0K (CitySearch 0.1K + client 0.9K) | **25.6K** |
+| cartão da cidade | 6.4K | 13.9K | 2.9K | 0 | **23.2K** |
+| mapa | 6.9K | 13.9K | 1.6K | 4.8K (StateMapMap 3.8K + client 0.9K) | **22.4K** |
+| relatório | 3.8K | 13.9K | 1.6K | 0 | **19.3K** |
+
+Proveniência: `npm run build && npm run check:perf` (em `web/`); commit: f2f16b5 (base, com as mudanças deste ticket, que só tocam docs e testes); dados: fixture; data: 2026-10-29. As somas usam os valores já arredondados (±0.1K).
 
 Duas notas que o orçamento não esconde:
 
-- **react-dom (o `client.` de 63.4K) é o custo fixo das páginas com ilha.** As ilhas desta base são
+- **react-dom (o `client.` de 0.9K na medição acima) é o custo fixo das páginas com ilha.** As ilhas desta base são
   todas `client:interaction`, então esse download só sai quando o campo de busca da home ou a
   malha/troca de vista do mapa é tocado; está contabilizado no "total" e separado acima.
 - A home carrega **um único shard** de dados (`search.json`) e **só quando o campo ganha foco** —

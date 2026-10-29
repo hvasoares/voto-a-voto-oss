@@ -97,7 +97,7 @@ perf:
 typecheck:
 	npm --prefix web run typecheck
 
-# ci.yml: npm test (os 500 testes unitários)
+# ci.yml: npm test (os testes unitários)
 web-test:
 	npm --prefix web test
 
@@ -122,7 +122,7 @@ e2e-port:
 e2e-pages:
 	SITE_BASE=/voto-a-voto-oss/ E2E_PORT_OFFSET=1 PUBLIC_DONATION_URL=https://doacao.example.test/apoie npm --prefix web run test:e2e
 
-# Não está no CI (caro): os 87 testes sobre o dataset REAL (≡ test:real). Rodar antes de qualquer deploy de dados.
+# Não está no CI (caro): os testes sobre o dataset REAL (≡ test:real). Rodar antes de qualquer deploy de dados.
 e2e-real:
 	DATA_DIR=../data npm --prefix web run test:real
 

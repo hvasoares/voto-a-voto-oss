@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { RULES } from './type-guard-rules'
 
 /*
  * The contract of the type scale (#86, #87): the UI code carries NO one-off typographic value. Sizes, line heights and weights come from
@@ -10,6 +11,7 @@ import { describe, expect, it } from 'vitest'
  * ALLOW-LIST (each entry says why; nothing else is allowed):
  *  - src/lib/share-card.ts, src/lib/press-kit.ts: they WRITE the 1080-wide print pictures (share poster, link preview, press seal) as SVG files;
  *    those pictures have their own scale in picture units and are saved and shared, never read as page text.
+ *  - src/shared/type-guard-rules.ts: it IS the list of forbidden patterns, so it names them (#130).
  *  - `mm` and viewport units (`vh`, `vw`, `vmin`) are not px values: the print sheets (`/imprensa/cartaz/`, `/imprensa/folha/`) are sized in
  *    millimetres, the broadcast overlay and the duel stage in viewport units; the rules below only look for px/rem/em one-offs.
  *  - `clamp(...vh...)` sizes: the duel stage (`styles/duel.css`) is a full-screen display for a projector, sized by the screen height, like the overlay;
@@ -26,19 +28,6 @@ function files(dir: string): string[] {
   })
 }
 
-const RULES: { what: string; re: RegExp }[] = [
-  { what: 'an arbitrary text size (text-[13px])', re: /\btext-\[\s*\d[\d.]*(px|rem|em)\s*\]/ },
-  { what: 'an arbitrary line height (leading-[18px])', re: /\bleading-(\[\s*\d[\d.]*(px|rem|em)\s*\]|none\b|tight\b|snug\b|normal\b|relaxed\b|loose\b|\d)/ },
-  { what: 'a Tailwind named size (text-sm, text-xl...)', re: /(?<![\w-])text-(xs|sm|base|lg|xl|[2-9]xl)(?![\w-])/ },
-  { what: 'an old named size (text-title, text-body...)', re: /(?<![\w-])text-(title|section|lead|body|small|tiny)(?![\w-])/ },
-  { what: 'a weight other than 400 and 700 (font-medium, font-semibold...)', re: /(?<![\w-])font-(thin|extralight|light|medium|semibold|extrabold|black)(?![\w-])/ },
-  { what: 'font-weight 300, 500, 600, 800 or 900', re: /font-?[wW]eight:?\s*['"]?\s*[0-9]*(300|500|600|800|900)\b/ },
-  { what: 'a pixel font size in CSS (font-size: 13px)', re: /font-size:\s*\d[\d.]*(px|rem|em)/ },
-  { what: 'a px/rem size in a font shorthand (font: 700 13px ...)', re: /\bfont:\s*['\"]?\d+\s+\d[\d.]*(px|rem|em)\b/ },
-  { what: 'a px line height in CSS (line-height: 18px)', re: /line-height:\s*\d[\d.]*(px|rem|em)/ },
-  { what: 'a literal font size on an SVG text (fontSize={12}, font-size="12")', re: /fontSize=\{\s*\d|font-size="\d|fontSize:\s*\d/ },
-  { what: 'an old size token (--fs-*, --sketch-text-*)', re: /--fs-|--sketch-text-/ },
-]
 
 describe('no one-off typography in the UI code (type scale contract, #87)', () => {
   const all = files(SRC).map((path) => ({ rel: relative(SRC, path), text: readFileSync(path, 'utf8') }))
@@ -50,7 +39,7 @@ describe('no one-off typography in the UI code (type scale contract, #87)', () =
   for (const { what, re } of RULES) {
     it(`no source file has ${what}`, () => {
       const hits = all
-        .filter(({ rel }) => !PICTURE_WRITERS.includes(rel) && !rel.endsWith('shared/tokens.ts'))
+        .filter(({ rel }) => !PICTURE_WRITERS.includes(rel) && !rel.endsWith('shared/tokens.ts') && !rel.endsWith('shared/type-guard-rules.ts'))
         .flatMap(({ rel, text }) => text.split('\n').flatMap((line, i) => (re.test(line) && !line.includes('clamp(') ? [`${rel}:${i + 1}: ${line.trim().slice(0, 100)}`] : [])))
       expect(hits).toEqual([])
     })

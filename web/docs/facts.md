@@ -5,7 +5,7 @@ Votos ganhos e perdidos, Disputas mais apertadas, Como cada grupo votou), the Re
 
 Every number the site publishes on a page that has a record is a **fact record**: an id, a sentence (standard and plain register, from the catalog),
 the numbers it is made of (each with the dataset field it is read from, `turnout.csv · aptos`), the **source**, and the **calculation** (the rule in
-words and the same rule with the numbers in it). Code: `src/lib/facts/` (model, gate, loader, link), page: `src/pages/fato/[uf]/[slug]/[page]/`,
+words and the same rule with the numbers in it). Code: `src/lib/facts/` (model, gate, loader, link), page: `src/pages/fato/[...path]/index.astro`,
 styles: `src/styles/fact.css` (only that page loads it), site-level gate: `integrations/facts-gate.ts`, data-level check: `npm run check:facts`.
 
 ## Addresses and ids

@@ -105,7 +105,7 @@ matches the stamp refuses to start and names the field — build again (`npm run
   inside the island. Nothing of the island is downloaded before that; text typed meanwhile is kept (`data-pending`) and picked up by the component.
   Use Astro's `client:visible` / `client:idle` only where eager enough is wanted. Tests wait for `astro-island` to lose its `ssr` attribute (`activateSearch` in `e2e/helpers.ts`).
 - **Theme**: Sketch tokens live in `src/shared/tokens.ts`; `src/theme.ts` maps them to the shadcn variables
-  (`--background`, `--primary`, ...) and `--sketch-*`; `src/styles/global.css` only wires variables to Tailwind utilities (`text-title`, `font-serif`, `bg-muted`...). No custom CSS beyond that. No dark mode.
+  (`--background`, `--primary`, ...) and `--sketch-*`; `src/styles/global.css` only wires variables to Tailwind utilities. Type sizes are the `text-step-n` scale (`--step-n`, `--lh-n`); the rule that keeps any other size out is `src/shared/type-guard.test.ts`. No custom CSS beyond that. No dark mode.
 - **Donation link (#36)**: `PUBLIC_DONATION_URL` (an https address, build time; the deploy reads the repository variable of the same name)
   draws "Apoie o projeto" in the footer line of every page and as a button in the data page's section; unset or not https, nothing is drawn
   and the build passes. `npm run test:e2e:donation` runs `e2e/donation.spec.ts` with a placeholder address. There is no ad network anywhere (`src/lib/donation.test.ts`).
@@ -127,7 +127,7 @@ matches the stamp refuses to start and names the field — build again (`npm run
   Layout, fields, sizes and budgets: `docs/shards.md`. Verify any dataset with `npm run check:shards[:real]`.
 - **404 fallback**: `src/pages/404.astro` + `src/scripts/fallback.ts` + `src/lib/fallback.ts` (route table of the whole site). A valid route (state or city exists in
   the data) that is not pre-rendered shows "Página em construção"; anything else "Página não encontrada".
-- **Analytics**: through `@/analytics` (no-op). Events: `search {results, query_length}` after typing pauses 600 ms, `search_result_tap {position, uf}`, `state_tile_tap {uf}`. `#consent-slot` is kept in `Base.astro`.
+- **Analytics**: a notice, not a consent gate (D-002 in `docs/decisions.md`): the metrics banner (`src/components/ConsentBanner.astro`) says the site uses Google Analytics for pages seen, searches and shares (general data only) and that using the service means being aware of it; "Prosseguir" only records that it was read. GA4 installs when `PUBLIC_GA_MEASUREMENT_ID` is set and is a no-op otherwise (`src/analytics/ga4.ts`, `id.ts`). The event list, with properties, is `src/analytics/events.ts`.
 - **Tests**: vitest for logic and the island (jsdom); Playwright projects `phone` (fixture, includes `network.spec.ts` allow-list, `fallback.spec.ts`, no-JS case), `real`
   (real data, shard paths), `capture` (screenshot for review). Baselines are not stored. Screenshot review: `docs/screenshot-review-protocol.md`, reviewer in a fresh context.
 - **Network rule**: every request must be a GET to the site origin; allowed extra origins are in `e2e/helpers.ts` (`ANALYTICS_ORIGINS`, and the approved CDN origins in production mode only).
