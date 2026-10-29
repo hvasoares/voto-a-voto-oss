@@ -9,12 +9,13 @@ import UfMap from '@/components/UfMap.astro'
 import { loadStayHome, stayHomePath } from '@/lib/stay-home-data'
 import { parseViewSlug } from '@/lib/stay-home-view'
 import type { MapCell } from '@/lib/state-map-panel'
-import { normalizeBase, withBase } from '@/paths'
+import { normalizeBase, siteHref } from '@/paths'
 
 interface Props {
   slug: string
 }
 const { slug } = Astro.props
+// The #113 base-path helper (`base` stays for the UfMap prop and the data-base attribute).
 const base = normalizeBase(import.meta.env.BASE_URL)
 const set = await loadStayHome()
 const view = parseViewSlug(slug)!
@@ -32,12 +33,12 @@ const pathOf = (s: string) => stayHomePath(parseViewSlug(s)!, set.defaultView)
   <div class="mf__grid">
     <div class="mf__left">
     <nav class="mf__tabs" aria-label="Margem, virada ou ficaram em casa">
-      <a href={withBase(base, '/mapa/')} target="_top">Margem</a>
-      <a href={withBase(base, '/mapa/virada/')} target="_top">Virada</a>
-      <a href={withBase(base, '/mapa/ficaram-em-casa/')} target="_top" aria-current="page">Ficaram em casa</a>
+      <a href={siteHref('/mapa/')} target="_top">Margem</a>
+      <a href={siteHref('/mapa/virada/')} target="_top">Virada</a>
+      <a href={siteHref('/mapa/ficaram-em-casa/')} target="_top" aria-current="page">Ficaram em casa</a>
     </nav>
     <nav class="mf__tabs mf__views" aria-label={model.viewsLabel} data-slot="stayhome-views">
-      {model.views.map((v) => <a href={withBase(base, pathOf(v.slug))} target="_top" aria-current={v.current ? 'page' : undefined}>{v.label}</a>)}
+      {model.views.map((v) => <a href={siteHref(pathOf(v.slug))} target="_top" aria-current={v.current ? 'page' : undefined}>{v.label}</a>)}
     </nav>
     {model.empty && <p class="mf__note" data-nodata>{model.empty}</p>}
     <UfMap available={available} base={base} target="_top" cells={cells} selected={selected} label={model.alt} />
@@ -52,7 +53,7 @@ const pathOf = (s: string) => stayHomePath(parseViewSlug(s)!, set.defaultView)
           <p class="mf__line" data-sel-line1>{first.lines[0]}</p>
           <p class="mf__line" data-sel-line2>{first.lines[1]}</p>
           <p class="mf__hint">{hint}</p>
-          <a class="mf__open" href={withBase(base, `/${selected}/`)} target="_top" data-abrir-estado="1" data-base={base}>{model.ui.open}</a>
+          <a class="mf__open" href={siteHref(`/${selected}/`)} target="_top" data-abrir-estado="1" data-base={base}>{model.ui.open}</a>
         </section>
       )}
       <figure class="mf__scale" data-slot="mapa-escala">
@@ -83,7 +84,7 @@ const pathOf = (s: string) => stayHomePath(parseViewSlug(s)!, set.defaultView)
       <tbody>
         {model.order.map((uf) => (
           <tr>
-            <td><a href={withBase(base, `/${uf}/`)} target="_top" aria-label={model.cells[uf]!.label}>{uf.toUpperCase()}</a></td>
+            <td><a href={siteHref(`/${uf}/`)} target="_top" aria-label={model.cells[uf]!.label}>{uf.toUpperCase()}</a></td>
             <td>{model.cells[uf]!.aptos}</td>
             <td>{model.cells[uf]!.share}</td>
           </tr>

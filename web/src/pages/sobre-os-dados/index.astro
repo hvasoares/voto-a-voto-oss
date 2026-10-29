@@ -26,14 +26,15 @@ import DonationLink from '@/components/DonationLink.astro'
 import { citation, editionLabel, editionPath, FEED_PATH } from '@/lib/editions'
 import { currentEdition } from '@/lib/editions-load'
 import { siteOrigin } from '@/lib/share-url'
-import { normalizeBase, withBase } from '@/paths'
+import { siteHref } from '@/paths'
+import SiteFooter from '@/components/SiteFooter.astro'
 
-const base = normalizeBase(import.meta.env.BASE_URL)
 // Section and heading looks: type-scale tokens (#86); the unlayered h2 rule of screens.css needs the `!`.
 const sec = 'mt-2 border-t border-border pt-[7px]'
 const h2 = 'font-serif text-step-3! font-normal'
 const h3 = 'mt-2 text-step-2 font-bold'
-const href = (path: string) => withBase(base, path)
+// The #113 base-path helper.
+const href = siteHref
 const rows = SOURCES.map(sourceRow)
 const fmt = formatInt
 const tables = Object.entries(OUTPUT_ROWS)
@@ -238,9 +239,10 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
     </section>
   </main>
 
-  <footer class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-2 pt-2 text-center text-step-1 text-primary" data-component="source-footer">
-    Fonte: TSE, dados finais
-    {/* The finality chip sits right above the edition line of the page footer (Base.astro), readable without scripts. */}
-    <span class="ml-2 inline-flex items-center whitespace-nowrap rounded-md border border-border bg-secondary px-2 font-bold text-foreground" data-component="final-chip">Final, não ao vivo</span>
-  </footer>
+  {/* The #113 shared footer with this page's variant (#116): the finality chip instead of the about link (this IS the about page). */}
+  <SiteFooter
+    source="Fonte: TSE, dados finais"
+    finalChip
+    class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-2 pt-2 text-center text-step-1 text-primary"
+  />
 </Base>

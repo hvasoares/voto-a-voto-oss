@@ -6,7 +6,7 @@
  */
 import Base from '@/layouts/Base.astro'
 import PhoneHeader from '@/components/PhoneHeader.astro'
-import { normalizeBase, withBase } from '@/paths'
+import { siteHref } from '@/paths'
 import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
 import '@/lib/sentences/catalog-press'
 import { recapUfs } from '@/lib/recap-data'
@@ -16,8 +16,8 @@ import { editionLabel } from '@/lib/editions'
 import { loadCityRoutes } from '@/lib/city-routes'
 import { displayName } from '@/shared/city-search'
 
-const base = normalizeBase(import.meta.env.BASE_URL)
-const href = (path: string) => withBase(base, path)
+// The #113 base-path helper.
+const href = siteHref
 const say = (key: string, params: Record<string, string | number> = {}) => message(DEFAULT_VOICE, key as never, params)
 const edition = await currentEdition()
 const ufs = await recapUfs()

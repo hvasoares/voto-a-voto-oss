@@ -11,8 +11,9 @@
  */
 import { displayName } from '@/shared/city-search'
 import { CYCLES } from '@/shared/city-model'
-import { normalizeBase, withBase } from '@/paths'
+import { normalizeBase, siteHref } from '@/paths'
 import Base from '@/layouts/Base.astro'
+import SiteFooter from '@/components/SiteFooter.astro'
 import ShareActions from '@/components/ShareActions'
 import { datasetFixture, fixtureCityShards } from '@/lib/shard-files'
 import { cityShardResult } from '@/lib/city-shard'
@@ -22,7 +23,8 @@ import { siteOrigin } from '@/lib/share-url'
 import { currentEdition } from '@/lib/editions-load'
 
 const base = normalizeBase(import.meta.env.BASE_URL)
-const href = (path: string) => withBase(base, path)
+// The #113 base-path helper (`base` stays for `shareContent`, which takes the base argument).
+const href = siteHref
 
 // --- fixture state (the demo shell; the real route is /:uf/:slug/compartilhar/) -------------------------------------
 // The demo always draws the fixture city, whichever DATA_DIR the build uses (a real-data build has no
@@ -90,9 +92,13 @@ const NOTE = 'O link vai no texto da mensagem; a imagem leva só o endereço cur
           Criar um cartão com uma medida ›
         </a>
       )}
-      <footer class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary" data-component="source-footer">
-        {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
-      </footer>
+      {/* The #113 shared footer with this page's variant (#116): the " · " separator and the plain about link. */}
+      <SiteFooter
+        source={fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'}
+        separator=" · "
+        aboutClass=""
+        class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary"
+      />
     </section>
   </main>
 </Base>

@@ -13,7 +13,7 @@ import { defaultUf, mapCells, valueOf } from '@/lib/state-map-panel'
 import type { MapKind } from '@/lib/state-map-panel'
 import { BIN_COLOR, marginLegend, swingLegend } from '@/lib/scale'
 import { formatInt } from '@/shared/city-model'
-import { normalizeBase, withBase } from '@/paths'
+import { normalizeBase, siteHref } from '@/paths'
 import { ufFullLabel } from '@/lib/uf-names'
 import { formatSwing } from '@/lib/margins'
 
@@ -21,6 +21,7 @@ interface Props {
   kind: MapKind
 }
 const { kind } = Astro.props
+// The #113 base-path helper (`base` stays for the UfMap prop and the data-base attribute).
 const base = normalizeBase(import.meta.env.BASE_URL)
 const data = await loadStateMapData()
 const cells = mapCells(kind, data)
@@ -36,9 +37,9 @@ const hint = 'Passe o mouse ou use as setas para trocar de estado. Cada valor ta
     <div class="mf__left">
     {/* The page's own heading sits over the top of this document (src/pages/mapa/): the tabs start below it (150 px, see map-fragment.css). */}
     <nav class="mf__tabs" aria-label="Margem, virada ou ficaram em casa">
-      <a href={withBase(base, '/mapa/')} target="_top" aria-current={kind === 'margin' ? 'page' : undefined}>Margem (2º turno)</a>
-      <a href={withBase(base, '/mapa/virada/')} target="_top" aria-current={kind === 'swing' ? 'page' : undefined}>Virada (1º→2º)</a>
-      <a href={withBase(base, '/mapa/ficaram-em-casa/')} target="_top">Ficaram em casa</a>
+      <a href={siteHref('/mapa/')} target="_top" aria-current={kind === 'margin' ? 'page' : undefined}>Margem (2º turno)</a>
+      <a href={siteHref('/mapa/virada/')} target="_top" aria-current={kind === 'swing' ? 'page' : undefined}>Virada (1º→2º)</a>
+      <a href={siteHref('/mapa/ficaram-em-casa/')} target="_top">Ficaram em casa</a>
     </nav>
     <UfMap
       available={available}
@@ -58,7 +59,7 @@ const hint = 'Passe o mouse ou use as setas para trocar de estado. Cada valor ta
         <p class="mf__line" data-sel-line1>{first?.lines[0]}</p>
         <p class="mf__line" data-sel-line2>{first?.lines[1]}</p>
         <p class="mf__hint">{hint}</p>
-        <a class="mf__open" href={withBase(base, `/${selected}/`)} target="_top" data-abrir-estado="1" data-base={base}>Abrir estado</a>
+        <a class="mf__open" href={siteHref(`/${selected}/`)} target="_top" data-abrir-estado="1" data-base={base}>Abrir estado</a>
       </section>
       <figure class="mf__scale" data-slot="mapa-escala">
         <figcaption>
@@ -87,7 +88,7 @@ const hint = 'Passe o mouse ou use as setas para trocar de estado. Cada valor ta
       <tbody>
         {sorted.map((row) => (
           <tr>
-            <td><a href={withBase(base, `/${row.uf}/`)} target="_top" aria-label={`${ufFullLabel(row.uf)}: ${formatSwing(valueOf(row, kind))} pp`}>{row.uf.toUpperCase()}</a></td>
+            <td><a href={siteHref(`/${row.uf}/`)} target="_top" aria-label={`${ufFullLabel(row.uf)}: ${formatSwing(valueOf(row, kind))} pp`}>{row.uf.toUpperCase()}</a></td>
             <td>{formatInt(row.validos2)}</td>
             <td>{formatSwing(valueOf(row, kind))}</td>
           </tr>

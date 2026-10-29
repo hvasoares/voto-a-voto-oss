@@ -6,7 +6,7 @@
  * 320 px column.
  */
 import EmbedDoc from '@/layouts/EmbedDoc.astro'
-import { normalizeBase, withBase } from '@/paths'
+import { siteHref } from '@/paths'
 import { loadCityRoutes } from '@/lib/city-routes'
 import { datasetFixture, loadCityShard } from '@/lib/shard-files'
 import { cityShardResult } from '@/lib/city-shard'
@@ -21,7 +21,6 @@ export async function getStaticPaths() {
 }
 
 const { uf, slug } = Astro.params
-const base = normalizeBase(import.meta.env.BASE_URL)
 const shard = (await loadCityShard(uf!, slug!))!
 const name = displayName(shard.city.nome)
 const fixture = await datasetFixture()
@@ -29,7 +28,8 @@ const edition = await currentEdition()
 const view = defaultView((ano, turno) => !!cityShardResult(shard, ano, turno))
 const result = cityShardResult(shard, view.ano, view.turno)
 const sentence = headline(result, { cityName: name, overseas: shard.city.uf === 'zz' })
-const cardHref = withBase(base, `/${uf}/${slug}/?ciclo=${view.ano}&turno=${view.turno}`)
+// The #113 base-path helper (it keeps the query tail after the base prefix).
+const cardHref = siteHref(`/${uf}/${slug}/?ciclo=${view.ano}&turno=${view.turno}`)
 ---
 <EmbedDoc title={`Resultado de ${name} · Voto a Voto`}>
   <article class="box-border min-w-0 border border-foreground bg-background p-3 font-sans text-foreground" data-widget data-uf={uf} data-slug={slug} lang="pt-BR">

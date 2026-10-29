@@ -7,6 +7,7 @@
  */
 import Base from '@/layouts/Base.astro'
 import '@/styles/nerds.css'
+import SiteFooter from '@/components/SiteFooter.astro'
 import PanelFrame from './PanelFrame.astro'
 import StatPanel from './StatPanel.astro'
 import { CATALOG } from '@/lib/nerds/catalog'
@@ -30,7 +31,7 @@ import { buildSignals } from '@/lib/nerds/signals'
 import { exportJson, exportOf } from '@/lib/nerds/export-spec'
 import PanelActions from './PanelActions'
 import { siteOrigin } from '@/lib/share-url'
-import { normalizeBase, withBase } from '@/paths'
+import { normalizeBase, siteHref } from '@/paths'
 
 interface Props {
   level: Level
@@ -38,7 +39,8 @@ interface Props {
 }
 const { level, id } = Astro.props
 const base = normalizeBase(import.meta.env.BASE_URL)
-const href = (path: string) => withBase(base, path)
+// The #113 base-path helper (`base` stays for the PanelActions/TablePanel/MapaPanel islands and the site URL).
+const href = siteHref
 const place = loadPlace(level, id ?? null)
 const edition = await currentEdition()
 const edicao = `edição ${editionLabel(edition)} (${edition.id})`
@@ -164,7 +166,8 @@ const title = `Dados para nerds: ${place.name} · Voto a Voto`
     </div>
     <noscript><style is:inline set:html="[data-ciclo-block]{display:block!important}"></style></noscript>
   </main>
-  <footer class="nerds-source" data-component="source-footer">Fonte: TSE, dados finais · <a href={href('sobre-os-dados/')}>Sobre os dados ›</a></footer>
+  {/* The #113 shared footer with this page's variant (#116): the " · " separator and the plain about link, in the nerds dress. */}
+  <SiteFooter source="Fonte: TSE, dados finais" separator=" · " aboutClass="" class="nerds-source" />
   <script>
     import '@/scripts/nerds-state'
   </script>

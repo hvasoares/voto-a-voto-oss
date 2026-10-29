@@ -1,6 +1,8 @@
 ---
 import { UF_TILES } from '@/slots/home/uf-grid'
-import { normalizeBase, withBase } from '@/paths'
+import { normalizeBase, siteHref } from '@/paths'
+import { FOOTER_LINK } from '@/shared/link-classes'
+import SiteFooter from '@/components/SiteFooter.astro'
 import CitySearch from '@/components/CitySearch'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -16,7 +18,8 @@ import Base from '@/layouts/Base.astro'
 const base = normalizeBase(import.meta.env.BASE_URL)
 const available = new Set(await loadStateCodes())
 const ufMap = loadUfMap()
-const href = (path: string) => withBase(base, path)
+// The #113 base-path helper (`base` stays for the CitySearch island and the data-base attributes).
+const href = siteHref
 // "Três ciclos por estado" needs a state: the first one the dataset has (as in the vanilla home).
 const firstUf = [...available].sort()[0] ?? 'rj'
 const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md border-border text-step-2! font-bold text-foreground pb-0.5')
@@ -98,9 +101,13 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
     </section>
     </div>
   </main>
-  <footer class="mx-5 mt-2 border-t border-border pb-2 text-center text-step-1 text-primary md:mx-auto md:w-full md:max-w-[680px] lg:mt-16 lg:max-w-[1200px] lg:border-t-0 lg:text-left" data-component="source-footer">
-    Dados oficiais do TSE · <a class="inline-flex min-h-11 items-center" href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
-  </footer>
+  {/* The #113 shared footer with this page's variant (#116): the " · " separator and the tap-target about link. */}
+  <SiteFooter
+    source="Dados oficiais do TSE"
+    separator=" · "
+    aboutClass={FOOTER_LINK}
+    class="mx-5 mt-2 border-t border-border pb-2 text-center text-step-1 text-primary md:mx-auto md:w-full md:max-w-[680px] lg:mt-16 lg:max-w-[1200px] lg:border-t-0 lg:text-left"
+  />
   <script>
     import '@/scripts/tile-analytics'
     import '@/scripts/home-place'
