@@ -15,6 +15,7 @@
  *   voted as they did, never a winner label.
  */
 import { DEFAULT_REGISTER, REGISTERS, type Register } from './register'
+import { DEFAULT_LOCALE } from './voice'
 
 export const KEYS = [
   /** Shown instead of a sentence when the city has no data in the cycle, on the card and in the share and generator islands. */
@@ -470,7 +471,7 @@ export const KEYS = [
 
 export type Key = (typeof KEYS)[number]
 export type Locale = 'pt-BR' | 'en' | 'es'
-export const DEFAULT_LOCALE: Locale = 'pt-BR'
+export { DEFAULT_LOCALE }
 export { DEFAULT_REGISTER, REGISTERS, type Register }
 
 /** Keys that read the same in both registers, so they have no plain version: the register switch's own labels and the page-head description for crawlers. */
