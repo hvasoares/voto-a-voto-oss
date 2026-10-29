@@ -28,6 +28,7 @@ import type { CityMarginRow } from '@/lib/margins-city'
 import type { CityMapData } from '@/lib/city-map-data'
 import { BIN_COLOR, marginBin, marginLegend, fgOf, type DivBin } from '@/lib/scale'
 import { meshShapes, parseMunicipalityMesh, type MunicipalityMesh } from '@/lib/municipality-geo'
+import { useIslandReady } from './use-island-ready'
 
 export interface CityMapProps {
   data: CityMapData
@@ -159,6 +160,7 @@ export default function CityMapMap({ data, base, geoUrl, ufNome, semContorno }: 
   )
   const [selected, setSelected] = useState(defaultCd)
   const sectionRef = useRef<HTMLElement | null>(null)
+  const island = useIslandReady('city-map', { host: sectionRef, storage: ['pendingCd', 'pendingVista'] })
 
   const withBase_ = (path: string) => base.replace(/\/$/, '') + path
   const cityHref = (slug: string) => withBase_(`/${uf}/${slug}/`)
@@ -203,27 +205,29 @@ export default function CityMapMap({ data, base, geoUrl, ufNome, semContorno }: 
     return () => controller.abort()
   }, [vista, mesh, meshError, geoUrl])
 
-  // Honour a pre-hydration tap (data-pending-cd on the island host, written by the page script) and
-  // the ?vista=mapa deep link: the never-lost-tap model of the state map, at city granularity.
+  // Replay the pre-hydration taps (kept by the page script on the island host) and honour the
+  // ?vista=mapa deep link - the never-lost-tap model of the state map, at city granularity - then
+  // report data-ready=yes in the same commit.
   useEffect(() => {
-    const host = sectionRef.current?.closest('astro-island') as HTMLElement | null
-    const pending = host?.dataset.pendingCd
-    const pendingVista = host?.dataset.pendingVista
-    delete host?.dataset.pendingCd
-    delete host?.dataset.pendingVista
+    island.markReady((tap) => {
+      if (tap.storage === 'pendingVista' && tap.value === 'mapa') {
+        const deepLink = new URLSearchParams(window.location.search).get('vista') === 'mapa'
+        if (!deepLink) {
+          const url = new URL(window.location.href)
+          url.searchParams.set('vista', 'mapa')
+          window.history.replaceState(null, '', url)
+        }
+        setVista('mapa')
+      }
+      if (tap.storage === 'pendingCd') setSelected(tap.value)
+    })
     const deepLink = new URLSearchParams(window.location.search).get('vista') === 'mapa'
-    if (pendingVista === 'mapa' && !deepLink) {
-      const url = new URL(window.location.href)
-      url.searchParams.set('vista', 'mapa')
-      window.history.replaceState(null, '', url)
-    }
-    if (deepLink || pendingVista === 'mapa') setVista('mapa')
-    if (pending) setSelected(pending)
+    if (deepLink) setVista('mapa')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
-    <section ref={sectionRef} data-slot="city-map" data-uf={uf} aria-label={`Mapa por município: margem de ${ladoANome} sobre ${ladoBNome} em ${ufNome}`}>
+    <section ref={sectionRef} data-slot="city-map" data-uf={uf} data-ready={island.dataReady} data-error={island.dataError} aria-label={`Mapa por município: margem de ${ladoANome} sobre ${ladoBNome} em ${ufNome}`}>
       {/* Lista | Mapa: a lista é a vista padrão (e a única sem JavaScript). */}
       <div className="ml-auto flex w-fit gap-1 rounded-md bg-secondary p-1" role="group" aria-label="Lista ou mapa">
         {(['lista', 'mapa'] as const).map((v) => (

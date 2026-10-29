@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useIslandReady } from '@/components/use-island-ready'
 import { candidatosFicha, CANDIDATOS, ficha, printedRow, QUESTIONS, SEM_2, sortFicha, type BarSpec, type SortDir } from '@/lib/nerds/escada'
 import { GROUP_PARTICIPACAO } from '@/lib/nerds/rates'
 
@@ -29,6 +30,8 @@ export default function EscadaPanel({ spec, titleId }: Props) {
   const [measure, setMeasure] = useState(spec.measure)
   const [turno, setTurno] = useState<1 | 2>(1)
   const [sort, setSort] = useState<{ column: number; dir: SortDir } | null>(null)
+  // data-ready (#122): yes once the island has run (the spec is a prop, so the upgrade to the chart is its data).
+  const island = useIslandReady('escada-panel')
 
   useEffect(() => {
     const wanted = new URLSearchParams(location.search).get('medida')
@@ -36,6 +39,8 @@ export default function EscadaPanel({ spec, titleId }: Props) {
     if (new URLSearchParams(location.search).get('turno') === '2') setTurno(2)
     setEnhanced(true)
     setView('chart')
+    island.markReady()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spec])
 
   const choose = (id: string) => {
@@ -64,7 +69,7 @@ export default function EscadaPanel({ spec, titleId }: Props) {
   const reference = spec.reference?.byMeasure[measure]
 
   return (
-    <div className="nerds-escada" data-escada data-view={view} data-measure={measure} data-turno={turno} data-drawn={view === 'chart' ? 'chart' : 'ficha'}>
+    <div className="nerds-escada" data-escada data-view={view} data-measure={measure} data-turno={turno} data-drawn={view === 'chart' ? 'chart' : 'ficha'} data-ready={island.dataReady}>
       {enhanced && (
         <div className="nerds-map-controls" data-picker>
           {[...new Set(spec.options.map((o) => o.group))].map((group) => (

@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getAnalytics } from '@/analytics'
 import PlacePicker, { type PickedPlace } from '@/components/PlacePicker'
 import ShareActions from '@/components/ShareActions'
+import { useIslandReady } from '@/components/use-island-ready'
 import { usePlaceCards } from '@/components/use-place-cards'
 import type { CycleBlock } from '@/slots/city-cycles/cycles-model'
 import { placesQuery, ROLES, type PlaceCard, type Role } from '@/lib/meu-brasil'
@@ -26,7 +27,6 @@ export interface MeuBrasilProps {
 }
 
 const say = (key: MessageKey) => message(DEFAULT_VOICE, key)
-
 const SIDE_FILL = { a: 'bg-[var(--c-cand-a)]', b: 'bg-[var(--c-cand-b)]', outros: 'bg-[var(--c-cand-outros)]' } as const
 /** "Candidato A" reads "A" (the frame's wording); real names stay. */
 const shortLabel = (label: string) => (/^Candidato [A-Z]$/.test(label) ? label.slice(-1) : label)
@@ -64,10 +64,20 @@ function PlaceColumn({ card }: { card: PlaceCard }) {
 }
 
 export default function MeuBrasil({ base, origin, fixture, edition }: MeuBrasilProps) {
-  const { refs, setRefs, cards, failed } = usePlaceCards(base)
+  const { refs, setRefs, cards, failed, parsed } = usePlaceCards(base)
+  const island = useIslandReady('meu-brasil')
   const [picked, setPicked] = useState<Partial<Record<Role, PickedPlace>>>({})
   const content = useMemo(() => (cards.length ? meuBrasilContent(cards, { origin, base, fixture, edition }) : undefined), [cards, origin, base, fixture, edition])
   const register = typeof window === 'undefined' ? 'standard' : readRegister()
+
+  // data-ready (#122): no while a fetch can still come back; yes once the first card is drawn — or right
+  // away when the address names no place (the island's answer is its picker; data-places stays "0"); a
+  // shard that cannot be read is the terminal failure, unless yes was already reported.
+  useEffect(() => {
+    if (!parsed) return
+    if (failed) return island.markFailed('city shard')
+    if (content || refs.length === 0) island.markReady()
+  }, [parsed, failed, content, refs.length, island.markReady, island.markFailed])
 
   const setPlace = (role: Role, p: PickedPlace | undefined) => {
     const next = [...refs.filter((r) => r.role !== role), ...(p ? [{ role, uf: p.uf, slug: p.slug }] : [])]
@@ -87,7 +97,7 @@ export default function MeuBrasil({ base, origin, fixture, edition }: MeuBrasilP
   }
 
   return (
-    <div data-meu-brasil data-places={refs.length} data-drawn={cards.length} data-ready={content ? 'yes' : 'no'}>
+    <div data-meu-brasil data-places={refs.length} data-drawn={cards.length} data-ready={island.dataReady} data-error={island.dataError}>
       {/* From 1024 px (the desktop frame) the headline sits over the fields and each place is a column; the picture below is the one that is shared. */}
       {content && <p className="mt-4 hidden font-serif text-step-4 lg:block" data-headline>{content.variants.standard.alt}</p>}
       <div className="mt-3 grid gap-2 lg:grid-cols-3 lg:gap-[30px]">

@@ -7,6 +7,7 @@ import { Command, CommandInput, CommandItem, CommandList } from '@/components/ui
 import { loadSearchCities } from '@/lib/search-data'
 import { savePlace } from '@/lib/place-store'
 import { DESTINATIONS, cityTarget, readDestination, type Destination } from '@/lib/destinations'
+import { useIslandReady } from './use-island-ready'
 
 /** One `search` event once typing pauses, not one per keystroke (same as the vanilla home). */
 const DEBOUNCE_MS = 600
@@ -33,15 +34,24 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
   const [cities, setCities] = useState<Awaited<ReturnType<typeof loadSearchCities>>>()
   const [destination, setDestination] = useState<Destination>()
   const root = useRef<HTMLDivElement>(null)
+  const island = useIslandReady('city-search')
 
   // First interaction = first render in the browser: load the cities now, and keep what was typed before React took over.
   useEffect(() => {
     // The destination (#99) is read before the cities arrive, so a result can never be drawn without it. Only the page's own search takes it.
     if (!bar) setDestination(readDestination(location.search))
-    void loadSearchCities(base).then(setCities)
+    // data-ready: yes once the search index answered; a search.json that cannot be read is the terminal failure.
+    loadSearchCities(base).then(
+      (loadedCities) => {
+        setCities(loadedCities)
+        island.markReady()
+      },
+      () => island.markFailed('search.json'),
+    )
     const typed = root.current?.querySelector('input')?.value || root.current?.closest('astro-island')?.getAttribute('data-pending')
     if (typed) setText(typed)
     if (autoFocus) root.current?.querySelector('input')?.focus()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [base, bar, autoFocus])
 
   const controller = useMemo(() => (cities ? createSearchController(cities, getAnalytics()) : undefined), [cities])
@@ -56,7 +66,7 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
   const href = (uf: string, slug: string) => withBase(base, cityTarget(uf, slug, destination))
 
   return (
-    <div ref={root} className={bar ? 'relative' : 'relative mt-2'} data-city-search={bar ? 'bar' : 'main'} data-ready={cities ? 'search' : undefined} data-destination={destination}>
+    <div ref={root} className={bar ? 'relative' : 'relative mt-2'} data-city-search={bar ? 'bar' : 'main'} data-ready={island.dataReady} data-error={island.dataError} data-destination={destination}>
       <svg className={`pointer-events-none absolute left-[14px] z-10 text-muted-foreground ${bar ? 'top-[10px]' : 'top-[12px] lg:hidden'}`} viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="6.5" cy="6.5" r="6" fill="none" stroke="currentColor" strokeWidth="1.9" /><path d="M16.2 12.2 12.4 16.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
       <Command
         shouldFilter={false}

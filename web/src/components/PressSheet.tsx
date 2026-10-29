@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useIslandReady } from '@/components/use-island-ready'
 import { usePlaceCards } from '@/components/use-place-cards'
 import { DEFAULT_VOICE, message, type MessageKey } from '@/lib/sentences/catalog'
 import '@/lib/sentences/catalog-press'
@@ -24,7 +25,8 @@ export interface PressSheetProps {
 const say = (key: string, params: Record<string, string | number> = {}) => message(DEFAULT_VOICE, key as MessageKey, params)
 
 export default function PressSheet({ base, origin, fixture, edition, example }: PressSheetProps) {
-  const { refs, cards, failed } = usePlaceCards(base)
+  const { refs, cards, failed, parsed } = usePlaceCards(base)
+  const island = useIslandReady('press-sheet')
   const card = cards[0]
   const sheet = useMemo(() => {
     if (!card) return undefined
@@ -38,8 +40,16 @@ export default function PressSheet({ base, origin, fixture, edition, example }: 
     }
   }, [card, origin, base, fixture, edition])
 
+  // data-ready (#122): yes once the sheet is drawn, or right away when the address names no place
+  // (data-places stays "0"); a shard that cannot be read is the terminal failure.
+  useEffect(() => {
+    if (!parsed) return
+    if (failed) return island.markFailed('city shard')
+    if (sheet || refs.length === 0) island.markReady()
+  }, [parsed, failed, sheet, refs.length, island.markReady, island.markFailed])
+
   return (
-    <div data-sheet data-ready={sheet ? 'yes' : 'no'}>
+    <div data-sheet data-ready={island.dataReady} data-error={island.dataError} data-places={refs.length}>
       <div className="print:hidden" data-screen>
         {!sheet && (
           <p className="mt-3 rounded bg-[var(--c-paper-2)] px-3 py-2 text-step-1" role="status" data-placeholder>

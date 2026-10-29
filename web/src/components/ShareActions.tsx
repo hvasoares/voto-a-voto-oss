@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { getAnalytics } from '@/analytics'
 import { Button } from '@/components/ui/button'
+import { useIslandReady } from '@/components/use-island-ready'
 import { performShare, type ShareNavigator } from '@/lib/share-flow'
 import { saveBlob, svgToPng } from '@/lib/share-raster'
 
@@ -63,9 +64,13 @@ export default function ShareActions({ text, svg, filename, link, primaryLabel =
   const readyRef = useRef<Promise<File | undefined>>(Promise.resolve(undefined))
   // The picture can change under the actions (Meu Brasil redraws it for every place): the opening is counted once.
   const opened = useRef(false)
+  // data-ready (#122): yes once the island runs and the web-share feature check is done (the buttons answer
+  // a tap right away); the picture's own pace stays in the island's data-png.
+  const island = useIslandReady('share-actions')
 
   useEffect(() => {
     setMounted(true)
+    island.markReady()
     setCanShare(typeof navigator.share === 'function')
     if (!opened.current) {
       opened.current = true
@@ -148,7 +153,7 @@ export default function ShareActions({ text, svg, filename, link, primaryLabel =
 
   return (
     <>
-      <div className="mt-3 grid gap-2" data-share-actions data-png={pngState}>
+      <div className="mt-3 grid gap-2" data-share-actions data-png={pngState} data-ready={island.dataReady}>
         {!canShare && (
           <p className="text-step-1 text-muted-foreground" data-no-share>
             Este navegador não oferece o compartilhamento do sistema. Copie o link ou baixe a imagem.

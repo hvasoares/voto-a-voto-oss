@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { SHARD_VERSION } from 'virtual:data-shards'
 import { Button } from '@/components/ui/button'
 import PlacePicker, { type PickedPlace } from '@/components/PlacePicker'
+import { useIslandReady } from '@/components/use-island-ready'
 import { withBase } from '@/paths'
 import type { CityShard } from '@/lib/city-shard'
 import { widgetSnippet, widgetUrl, WIDGET_HEIGHT } from '@/lib/widget'
@@ -53,6 +54,13 @@ export default function WidgetBuilder({ base, origin }: WidgetBuilderProps) {
   const snippet = city && name ? widgetSnippet({ url: widgetUrl(origin, base, city.uf, city.slug), cityName: name }) : undefined
   const src = city ? withBase(base, `embed/${city.uf}/${city.slug}/`) : undefined
 
+  // data-ready (#122): no until the snippet is ready; a city whose shard fails keeps its inline message
+  // (a new pick recovers) instead of the terminal failed.
+  const island = useIslandReady('widget-builder')
+  useEffect(() => {
+    if (snippet) island.markReady()
+  }, [snippet, island.markReady])
+
   const copy = () => {
     if (!snippet) return
     void navigator.clipboard.writeText(snippet).then(
@@ -63,7 +71,7 @@ export default function WidgetBuilder({ base, origin }: WidgetBuilderProps) {
 
   const label = 'mt-3 text-step-1 uppercase tracking-[0.04em] text-muted-foreground'
   return (
-    <div data-widget-builder data-ready={snippet ? 'yes' : 'no'}>
+    <div data-widget-builder data-ready={island.dataReady} data-error={island.dataError}>
       <div className="mt-3">
         <PlacePicker base={base} label="Cidade" value={city && name ? { ...city, nome: name } : undefined} onPick={pick} />
       </div>

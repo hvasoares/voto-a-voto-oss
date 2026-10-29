@@ -14,6 +14,7 @@ import { performShare, type ShareNavigator } from '@/lib/share-flow'
 import { saveBlob, svgToPng } from '@/lib/share-raster'
 import { STAT_SIZES, STAT_SIZE_IDS, type StatSize } from '@/lib/stat-card'
 import { displayName } from '@/shared/city-search'
+import { useIslandReady } from './use-island-ready'
 
 /**
  * The card generator (#25): pick a city, one measure and a size; the picture is drawn here, in the browser, by `statCardSvg`
@@ -21,7 +22,8 @@ import { displayName } from '@/shared/city-search'
  *
  * Like the share sheet, the PNG is made ahead of the tap (whenever the picture changes), because `navigator.share` must be
  * reached inside the user gesture. Where files cannot be shared the same button downloads the image, and the alt text can always
- * be copied.
+ * be copied. `data-ready` follows the shared island vocabulary (#122): no until a card is drawn, yes once and for all; a city
+ * whose shard fails keeps its inline message (a new pick recovers) instead of the terminal `failed`.
  */
 export interface CardGeneratorProps {
   base: string
@@ -149,11 +151,15 @@ export default function CardGenerator({ base, origin, fixture, edition }: CardGe
   }
 
   const ready = !!card?.svg
+  const island = useIslandReady('card-generator')
+  useEffect(() => {
+    if (ready) island.markReady()
+  }, [ready, island.markReady])
   const BTN = 'min-h-11 w-full rounded-md text-step-2 font-bold'
   const chip = (on: boolean) => `min-h-11 flex-none whitespace-nowrap rounded-full border px-2 text-step-1 font-bold ${on ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-background text-foreground'}`
 
   return (
-    <div data-card-generator data-ready={ready ? 'yes' : 'no'} data-size={choice.size} data-measure={choice.measure} data-hydrated={mounted ? 'yes' : 'no'}>
+    <div data-card-generator data-ready={island.dataReady} data-size={choice.size} data-measure={choice.measure} data-hydrated={mounted ? 'yes' : 'no'}>
       <PlacePicker base={base} label="Cidade" value={place ?? (card ? { uf: card.city.uf, slug: card.city.slug, nome: displayName(card.city.nome) } : undefined)} onPick={pickCity} placeholder="Busque uma cidade" />
 
       <p className="mt-3 text-step-1 uppercase tracking-[0.04em] text-muted-foreground" id="gen-measure">Medida</p>

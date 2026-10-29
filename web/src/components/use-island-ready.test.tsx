@@ -13,7 +13,7 @@ function Probe({
   onGate,
   fail,
 }: {
-  storage?: Parameters<typeof useIslandReady>[1]['storage']
+  storage?: NonNullable<Parameters<typeof useIslandReady>[1]>['storage']
   taps: string[]
   onGate?: (g: IslandReady) => void
   fail?: string

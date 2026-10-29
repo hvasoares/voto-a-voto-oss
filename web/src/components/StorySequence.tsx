@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import ShareActions from '@/components/ShareActions'
+import { useIslandReady } from '@/components/use-island-ready'
 
 /**
  * The swipeable sequence of vertical cards (#47, reused by #97): the cards are pre-rendered as a stacked list in the page (complete without scripts, each with its anchor `#1`, `#2`...), and
@@ -44,7 +45,7 @@ const fromHash = (max: number) => {
 export default function StorySequence({ cards, words, onOpened, onReached, onShared, onClose }: StorySequenceProps) {
   const [enhanced, setEnhanced] = useState(false)
   const [current, setCurrent] = useState(1)
-  const [ready, setReady] = useState(false)
+  const island = useIslandReady('story-sequence')
   const track = useRef<HTMLOListElement>(null)
   const settle = useRef<number | undefined>(undefined)
   /** While a move made by a tap or a key is still scrolling, where the row happens to be is not an answer (an older scroll must never replace the newer choice). */
@@ -85,9 +86,11 @@ export default function StorySequence({ cards, words, onOpened, onReached, onSha
     centre(n, 'auto')
     requestAnimationFrame(() => {
       centre(n, 'auto')
-      setReady(true)
+      island.markReady()
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enhanced, last])
+  const ready = island.dataReady === 'yes'
 
   // The card on show is in the address; a counter hears it when it is reached.
   const reached = useRef(0)
@@ -135,7 +138,7 @@ export default function StorySequence({ cards, words, onOpened, onReached, onSha
 
   const shown = cards[current - 1]!
   return (
-    <section className="story" data-story data-enhanced={enhanced} data-ready={ready} data-current={current} data-count={last}>
+    <section className="story" data-story data-enhanced={enhanced} data-ready={island.dataReady} data-current={current} data-count={last}>
       <ol ref={track} className="story__track" tabIndex={enhanced ? 0 : undefined} role={enhanced ? 'region' : undefined} aria-roledescription={enhanced ? 'carousel' : undefined} aria-label={enhanced ? words.region : undefined} onScroll={onScroll} onKeyDown={onKeyDown}>
         {cards.map((c) => (
           <li key={c.n} id={String(c.n)} className="story__card" data-card={c.n} aria-current={enhanced ? c.n === current : undefined} aria-label={c.caption}>

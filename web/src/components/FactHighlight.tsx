@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useIslandReady } from '@/components/use-island-ready'
 import { parseFactPage, type FactCard } from '@/lib/facts/parse'
 
 /**
@@ -29,17 +30,28 @@ const KEYS = [['a', 'Parcela A'], ['b', 'Parcela B'], ['variacao', 'Variação']
 export default function FactHighlight({ href, calcLabel }: FactHighlightProps) {
   const [cards, setCards] = useState<FactCard[]>([])
   const [active, setActive] = useState<string | undefined>()
+  const island = useIslandReady('fact-highlight')
   const plain = typeof document !== 'undefined' && document.documentElement.dataset.register === 'plain'
 
   useEffect(() => {
     let live = true
     fetch(href)
-      .then((r) => (r.ok ? r.text() : ''))
-      .then((html) => live && setCards(html ? parseFactPage(html) : []))
-      .catch(() => live && setCards([]))
+      .then((r) => {
+        if (!r.ok) throw new Error(`fact page: HTTP ${r.status}`)
+        return r.text()
+      })
+      .then((html) => {
+        if (!live) return
+        // data-ready (#122): yes once the calculation's page answered (its records are the island's data);
+        // a page that cannot be read is the terminal failure - the island simply draws nothing, as before.
+        setCards(parseFactPage(html))
+        island.markReady()
+      })
+      .catch(() => live && island.markFailed('fact page'))
     return () => {
       live = false
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [href])
 
   // The bar segments are the page's own markup: light the one that matches, put the others back.
@@ -63,7 +75,7 @@ export default function FactHighlight({ href, calcLabel }: FactHighlightProps) {
 
   const choose = (anchor: string) => setActive((a) => (a === anchor ? undefined : anchor))
   return (
-    <section aria-label="Frases e números do estado" data-fact-highlight onKeyDown={(e) => e.key === 'Escape' && setActive(undefined)} style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24 }}>
+    <section aria-label="Frases e números do estado" data-fact-highlight data-ready={island.dataReady} data-error={island.dataError} onKeyDown={(e) => e.key === 'Escape' && setActive(undefined)} style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 24 }}>
       <div>
         <h2 style={{ font: '400 var(--step-3)/var(--lh-3) var(--font-serif)', margin: 0 }}>Frases e números</h2>
         <p style={{ font: '400 var(--step-1)/var(--lh-1) var(--font-sans)', color: MUTED, margin: '4px 0 0' }}>Escolha uma frase para ver a barra, a célula da tabela e o cálculo.</p>

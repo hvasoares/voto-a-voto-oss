@@ -66,7 +66,9 @@ describe('Meu Brasil', () => {
     await vi.waitFor(() => expect(root.getAttribute('data-places')).toBe('1'))
     expect(location.search).toBe('?mora=rj/cidade-exemplo')
     fireEvent.click(screen.getByRole('button', { name: 'Remover onde mora' }))
-    await vi.waitFor(() => expect(root.getAttribute('data-ready')).toBe('no'))
+    // data-ready never reverts (#122): the empty card answers as yes with zero places.
+    await vi.waitFor(() => expect(root.getAttribute('data-places')).toBe('0'))
+    expect(root.getAttribute('data-ready')).toBe('yes')
     expect(screen.getByText('Escolha ao menos um lugar para ver o cartão.')).toBeTruthy()
     expect(location.search).toBe('')
   })

@@ -8,6 +8,7 @@ import { guessContent } from '@/lib/guess-card'
 import type { Question } from '@/lib/question'
 import { DEFAULT_LOCALE, message, type Register } from '@/lib/sentences/catalog'
 import { SHARD_VERSION } from 'virtual:data-shards'
+import { useIslandReady } from './use-island-ready'
 import ShareActions from './ShareActions'
 
 const NOTE = 'O link vai no texto da mensagem; a imagem leva só o endereço curto, sem QR.'
@@ -46,7 +47,13 @@ export default function ShareSheet({ uf, slug, view, initial, origin, base, fixt
   // The guess to the city's question (#44), read from this browser only. With none, the normal card; with one, the guess card (#45). Nothing is fetched for it.
   // `undefined` until the browser has been asked (the server cannot know), then the guess or `null`: the picture says so in `data-card`, so a test waits for the real answer.
   const [guess, setGuess] = useState<Guess | null>()
-  useEffect(() => setGuess(readGuess(`${uf}/${slug}`, browserStorage()) ?? null), [uf, slug])
+  // data-ready (#122): yes once the browser storage answered (the picture drawn is final; a query view can
+  // still re-fetch the city's own shard, which today falls back to the pre-rendered content).
+  const island = useIslandReady('share-sheet')
+  useEffect(() => {
+    setGuess(readGuess(`${uf}/${slug}`, browserStorage()) ?? null)
+    island.markReady()
+  }, [uf, slug])
 
   useEffect(() => {
     // Only the build-time view is known up front; a query view is validated against CYCLES by parseView (whose
@@ -89,11 +96,12 @@ export default function ShareSheet({ uf, slug, view, initial, origin, base, fixt
         <div
           className="mx-auto mt-2 flex-none md:max-w-[240px] [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
           data-share-picture
+          data-ready={island.dataReady}
           data-card={guess === undefined ? 'pending' : guessCard ? 'guess' : 'city'}
           dangerouslySetInnerHTML={{ __html: pictureSvg(shown, register) }}
         />
       ) : (
-        <p className="mt-4 text-step-2" data-nodata>
+        <p className="mt-4 text-step-2" data-nodata data-ready={island.dataReady}>
           {message({ locale: DEFAULT_LOCALE, register }, 'noData')}
         </p>
       )}

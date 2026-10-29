@@ -7,6 +7,7 @@ import { performShare, type ShareNavigator } from '@/lib/share-flow'
 import { DEFAULT_VOICE, message, type MessageKey } from '@/lib/sentences/catalog'
 import '@/lib/sentences/catalog-game'
 import { withBase } from '@/paths'
+import { useIslandReady } from '@/components/use-island-ready'
 
 /**
  * "Adivinhe a cidade" (#69) and its end (#70): six guesses at a daily city, with clues that open one by one, the distance and direction from the municipality centres and
@@ -34,6 +35,7 @@ export default function Game({ base, origin }: GameProps) {
   const [note, setNote] = useState('')
   const [status, setStatus] = useState('')
   const [left, setLeft] = useState(0)
+  const island = useIslandReady('game')
 
   useEffect(() => {
     const today = brazilDate(new Date())
@@ -53,6 +55,13 @@ export default function Game({ base, origin }: GameProps) {
   const feedbacks: Feedback[] = secret ? guessed.map((g) => feedback(g, secret)) : []
   const result = outcome(feedbacks)
   const n = day ? dayNumber(day) + 1 : 0
+
+  // data-ready (#122): no while the game's own file is on the way, yes once the daily city is on screen;
+  // adivinhe/dados.json that cannot be read is the terminal failure.
+  useEffect(() => {
+    if (failed) return island.markFailed('adivinhe/dados.json')
+    if (secret) island.markReady()
+  }, [failed, !!secret, island.markReady, island.markFailed])
 
   // The countdown to the next city runs only after the game ends.
   useEffect(() => {
@@ -108,15 +117,15 @@ export default function Game({ base, origin }: GameProps) {
     setStatus(say('game.history.cleared'))
   }
 
-  if (failed) return <p className="mt-4 text-step-2" role="status" data-status>{say('game.failed')}</p>
-  if (!data || !day) return <p className="mt-4 text-step-2" role="status" data-status>{say('game.loading')}</p>
-  if (!secret) return <p className="mt-4 text-step-2" role="status" data-status>{say('game.failed')}</p>
+  if (failed) return <p className="mt-4 text-step-2" role="status" data-status data-ready={island.dataReady} data-error={island.dataError}>{say('game.failed')}</p>
+  if (!data || !day) return <p className="mt-4 text-step-2" role="status" data-status data-ready={island.dataReady}>{say('game.loading')}</p>
+  if (!secret) return <p className="mt-4 text-step-2" role="status" data-status data-ready={island.dataReady}>{say('game.failed')}</p>
 
   const shown = unlockedClues(guessed.length)
   const rows = Array.from({ length: MAX_GUESSES }, (_, i) => guessed[i])
 
   return (
-    <div data-game data-n={n} data-finished={result.finished ? 'yes' : 'no'} className="mt-2 lg:grid lg:grid-cols-[1fr_620px] lg:gap-10">
+    <div data-game data-n={n} data-finished={result.finished ? 'yes' : 'no'} data-ready={island.dataReady} className="mt-2 lg:grid lg:grid-cols-[1fr_620px] lg:gap-10">
       <div>
         <p className="text-step-1 text-muted-foreground" data-sub>{say('game.sub', { n, date: dateLabel(day) })}</p>
         <p className="mt-4 text-step-1 uppercase text-muted-foreground">{say('game.clues')}</p>

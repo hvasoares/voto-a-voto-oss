@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useCityShards } from '@/components/use-city-shards'
+import { useIslandReady } from '@/components/use-island-ready'
 import PlacePicker, { type PickedPlace } from '@/components/PlacePicker'
 import { creatorPhrases } from '@/lib/creator-phrases'
 import { DEFAULT_VOICE, message, type MessageKey, type Register } from '@/lib/sentences/catalog'
@@ -29,6 +30,8 @@ export default function CreatorGuide({ base, origin, edition, children }: Creato
   const [place, setPlace] = useState<PickedPlace>()
   const [register, setRegister] = useState<Register>('standard')
   const [status, setStatus] = useState('')
+  const [parsed, setParsed] = useState(false)
+  const island = useIslandReady('creator-guide')
   const code = place ? `${place.uf}/${place.slug}` : undefined
   const shards = useCityShards(base, code ? [code] : [])
   const shard = code ? shards[code] : undefined
@@ -36,6 +39,7 @@ export default function CreatorGuide({ base, origin, edition, children }: Creato
   useEffect(() => {
     const [first] = parsePlaces(location.search)
     if (first) setPlace({ uf: first.uf, slug: first.slug, nome: first.slug })
+    setParsed(true)
   }, [])
 
   const pick = (p: PickedPlace) => {
@@ -59,8 +63,16 @@ export default function CreatorGuide({ base, origin, edition, children }: Creato
   const address = loaded ? shortAddress(cityUrl(origin, base, loaded.city.uf, loaded.city.slug)) : undefined
   const citation = say('guide.cite.line', { edition }) + (address ? say('guide.cite.place', { address }) : '')
 
+  // data-ready (#122): yes once the phrases of the chosen city are on screen, or right away when the
+  // address names none (the picker is the answer); a shard that fails keeps its inline message - the
+  // visitor picks another city and the island still answers.
+  useEffect(() => {
+    if (!parsed) return
+    if (!place || out) island.markReady()
+  }, [parsed, place, out, island.markReady])
+
   return (
-    <div data-guide>
+    <div data-guide data-ready={island.dataReady} data-error={island.dataError}>
       <div className="mt-4 flex items-center justify-between gap-3">
         <h2 className="font-serif text-step-3 font-normal">{say('guide.can.title')}</h2>
         <button type="button" role="switch" aria-checked={register === 'plain'} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-[var(--c-paper-2)] px-3 text-step-1" onClick={() => setRegister(register === 'plain' ? 'standard' : 'plain')} data-register-toggle>

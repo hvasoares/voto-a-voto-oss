@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useIslandReady } from '@/components/use-island-ready'
 import { printedFive, type DistribuicaoSpec } from '@/lib/nerds/distribuicao'
 
 /**
@@ -21,6 +22,8 @@ export default function DistribuicaoPanel({ spec, titleId }: Props) {
   const [measure, setMeasure] = useState(spec.initial.measure)
   const [turno, setTurno] = useState<1 | 2>(spec.initial.turno)
   void titleId
+  // data-ready (#122): yes once the island has run (the spec is a prop, so the upgrade to the chart is its data).
+  const island = useIslandReady('distribuicao-panel')
   useEffect(() => {
     const q = new URLSearchParams(location.search)
     const m = q.get('medida')
@@ -28,6 +31,8 @@ export default function DistribuicaoPanel({ spec, titleId }: Props) {
     if (q.get('turno') === '2' && spec.turnos.includes(2)) setTurno(2)
     setEnhanced(true)
     setView('grafico')
+    island.markReady()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spec])
   const remember = (m: string, t: number) => {
     const q = new URLSearchParams(location.search)
@@ -43,7 +48,7 @@ export default function DistribuicaoPanel({ spec, titleId }: Props) {
   const dist = spec.byKey[`${turno}-${measure}`]
 
   return (
-    <div className="nerds-dist" data-dist data-drawn={view} data-measure={measure} data-turno={turno}>
+    <div className="nerds-dist" data-dist data-drawn={view} data-measure={measure} data-turno={turno} data-ready={island.dataReady}>
       {enhanced && (
         <div className="nerds-map-controls">
           {[...new Set(spec.options.map((o) => o.group))].map((group) => (

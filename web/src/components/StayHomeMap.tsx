@@ -4,8 +4,9 @@
  * percentage on the tile, the map shape or its callout; the numeric legend and the table repeat the numbers, so colour is never the only cue.
  *
  * Every sentence and number arrives as the build's `StayHomeModel` (props), so this island does not carry the sentence catalog. It follows the
- * conventions of `StateMapMap` (the page script `scripts/map-pending.ts` keeps a tap that lands before hydration: `data-pending-uf` for a state,
- * `data-pending-vista` for the Mosaico | Mapa toggle, applied here URL included).
+ * conventions of `StateMapMap` (the page script `scripts/island-pending.ts` keeps a tap that lands before hydration: `data-pending-uf` for a
+ * state, `data-pending-vista` for the Mosaico | Mapa toggle), replayed through the shared gate of `useIslandReady` before `data-ready` reports
+ * `yes`, URL included.
  */
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import { getAnalytics } from '@/analytics'
@@ -13,6 +14,7 @@ import { UF_TILES } from '@/slots/home/uf-grid'
 import type { StayHomeModel } from '@/lib/stay-home-view'
 import { CALLOUT_LEFT, CALLOUT_RIGHT, UF_SHAPES } from '@/lib/uf-polygons'
 import { labelUnits } from '@/lib/map-hit'
+import { useIslandReady } from './use-island-ready'
 
 export interface StayHomeMapProps {
   model: StayHomeModel
@@ -42,6 +44,7 @@ export default function StayHomeMap({ model, base, viewPaths }: StayHomeMapProps
   const [vista, setVista] = useState<Presentation>('mosaico')
   const [selected, setSelected] = useState(model.defaultUf)
   const sectionRef = useRef<HTMLElement | null>(null)
+  const island = useIslandReady('stayhome-map', { host: sectionRef, storage: ['pendingUf', 'pendingVista'] })
   const withBase = (path: string) => base.replace(/\/$/, '') + path
   const stateHref = (uf: string) => withBase(`/${uf}/`)
   const tapState = (uf: string) => {
@@ -54,27 +57,25 @@ export default function StayHomeMap({ model, base, viewPaths }: StayHomeMapProps
   }
 
   useEffect(() => {
-    const host = sectionRef.current?.closest('astro-island') as HTMLElement | null
-    const pending = host?.dataset.pendingUf
-    delete host?.dataset.pendingUf
-    // A tap on the Mosaico | Mapa toggle that landed while React was attaching (kept by the page script) is applied now, URL included.
-    const pendingVista = host?.dataset.pendingVista
-    delete host?.dataset.pendingVista
-    if (pendingVista) {
-      const url = new URL(window.location.href)
-      if (pendingVista === 'mapa') url.searchParams.set('vista', 'mapa')
-      else url.searchParams.delete('vista')
-      window.history.replaceState(null, '', url)
-    }
+    island.markReady((tap) => {
+      // A tap on the Mosaico | Mapa toggle that landed while React was attaching is applied now, URL included.
+      if (tap.storage === 'pendingVista') {
+        const url = new URL(window.location.href)
+        if (tap.value === 'mapa') url.searchParams.set('vista', 'mapa')
+        else url.searchParams.delete('vista')
+        window.history.replaceState(null, '', url)
+      }
+      if (tap.storage === 'pendingUf') tapState(tap.value)
+    })
     if (new URLSearchParams(window.location.search).get('vista') === 'mapa') setVista('mapa')
-    if (pending) tapState(pending)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const cell = model.cells[selected]
   const tileClass = 'flex select-none flex-col items-center justify-center rounded-md border border-border text-center focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary'
 
   return (
-    <section ref={sectionRef} data-slot="state-map" data-kind="stayhome" aria-label="Mapa por estado: ficaram em casa">
+    <section ref={sectionRef} data-slot="state-map" data-kind="stayhome" data-ready={island.dataReady} data-error={island.dataError} aria-label="Mapa por estado: ficaram em casa">
       <nav className="flex gap-1 rounded-md bg-secondary p-1" aria-label="Margem, virada ou ficaram em casa">
         {[
           { href: '/mapa/', label: 'Margem', on: false },

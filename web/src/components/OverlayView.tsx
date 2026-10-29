@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useCityShards } from '@/components/use-city-shards'
+import { useIslandReady } from '@/components/use-island-ready'
 import { cityShardResult } from '@/lib/city-shard'
 import { overlayFigure, parseOverlay, sealText, type OverlayConfig } from '@/lib/overlay'
 import { DEFAULT_VOICE, message, type MessageKey } from '@/lib/sentences/catalog'
@@ -29,6 +30,7 @@ const PALETTE = {
 } as const
 
 export default function OverlayView({ base, origin, edition, fixture }: OverlayViewProps) {
+  const island = useIslandReady('overlay-view')
   const [config, setConfig] = useState<OverlayConfig>()
   useEffect(() => setConfig(parseOverlay(location.search)), [])
   const shards = useCityShards(base, config?.city ? [config.city] : [])
@@ -48,8 +50,17 @@ export default function OverlayView({ base, origin, edition, fixture }: OverlayV
   const address = loaded ? shortAddress(cityUrl(origin, base, loaded.city.uf, loaded.city.slug)) : shortAddress(origin)
   const status = !config ? undefined : !config.city ? say('overlay.invalid') : shard === 'failed' ? say('overlay.failed') : !figure ? say('overlay.loading') : undefined
 
+  // data-ready: no until the answer is known; an address without a city has already answered (the status
+  // says so); a shard that cannot be read is the terminal failure of the contract.
+  useEffect(() => {
+    if (!config) return
+    if (!config.city) return island.markReady()
+    if (shard === 'failed') return island.markFailed('city shard')
+    if (figure) island.markReady()
+  }, [config, shard, figure, island.markReady, island.markFailed])
+
   return (
-    <div data-overlay data-ready={figure ? 'yes' : 'no'} data-background={config?.background ?? 'transparente'} style={{ position: 'fixed', inset: 0, color: palette.ink, fontFamily: 'Helvetica Neue, Arial, sans-serif', overflow: 'hidden' }}>
+    <div data-overlay data-ready={island.dataReady} data-error={island.dataError} data-background={config?.background ?? 'transparente'} style={{ position: 'fixed', inset: 0, color: palette.ink, fontFamily: 'Helvetica Neue, Arial, sans-serif', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: '3vmin', background: palette.card, borderLeft: '1.6vmin solid #14505c', borderRadius: '1vmin', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '2.5vmin 3.5vmin', boxSizing: 'border-box' }}>
         {figure ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '3.5vmin', flex: 1, minHeight: 0 }}>

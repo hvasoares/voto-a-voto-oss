@@ -1,6 +1,7 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { SHARD_VERSION } from 'virtual:data-shards'
 import { Button } from '@/components/ui/button'
+import { useIslandReady } from '@/components/use-island-ready'
 import { withBase } from '@/paths'
 import { reopenFile, type Outcome, type ReopenContext } from '@/lib/card-reopen'
 import type { CityShard } from '@/lib/city-shard'
@@ -47,6 +48,10 @@ export default function CardDrop({ base, origin, fixture, edition }: CardDropPro
   const [outcome, setOutcome] = useState<Outcome>()
   const [over, setOver] = useState(false)
   const input = useRef<HTMLInputElement>(null)
+  // data-ready (#122): the island needs no data of its own; it is ready as soon as it runs, and a file it
+  // cannot reopen is the user's outcome (data-outcome), never the terminal failed of the island.
+  const island = useIslandReady('card-drop')
+  useEffect(() => island.markReady(), [island.markReady])
 
   const ctx: ReopenContext = {
     edition,
@@ -66,7 +71,7 @@ export default function CardDrop({ base, origin, fixture, edition }: CardDropPro
   }
 
   return (
-    <div data-card-drop>
+    <div data-card-drop data-ready={island.dataReady}>
       <div
         className={`mt-3 rounded-md border-2 border-dashed px-4 py-8 text-center ${over ? 'border-primary bg-secondary' : 'border-border'}`}
         onDragOver={(e) => (e.preventDefault(), setOver(true))}

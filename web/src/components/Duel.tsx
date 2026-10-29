@@ -3,6 +3,7 @@ import { getAnalytics } from '@/analytics'
 import PlacePicker, { type PickedPlace } from '@/components/PlacePicker'
 import ShareActions from '@/components/ShareActions'
 import { useCityShards } from '@/components/use-city-shards'
+import { useIslandReady } from '@/components/use-island-ready'
 import { withBase } from '@/paths'
 import { duelContent } from '@/lib/duel-content'
 import {
@@ -181,6 +182,12 @@ export default function Duel({ base, origin, fixture, editionDate, data }: DuelP
   const same = !!pa && !!pb && pa.code === pb.code
   const missing = [pa, pb].filter((p): p is DuelPlace => !!p?.missingCycle)
   const ready = !!pa && !!pb && !same && missing.length === 0
+  // data-ready (#122): yes once the pair answered, and it stays yes while the visitor re-picks (the
+  // contract's never-revert); a side whose shard failed keeps its inline message, the island stays usable.
+  const island = useIslandReady('duel')
+  useEffect(() => {
+    if (ready) island.markReady()
+  }, [ready, island.markReady])
   const content = useMemo(() => (ready ? duelContent(address.level, pa!, pb!, data, { origin, base, fixture }) : undefined), [ready, address.level, pa, pb, data, origin, base, fixture])
   const register = typeof window === 'undefined' ? 'standard' : readRegister()
   const reply = !!address.reply && !!address.a && !address.b
@@ -265,7 +272,7 @@ export default function Duel({ base, origin, fixture, editionDate, data }: DuelP
   const replyHref = pa && level === 'cidade' ? `${withBase(base, '/cara-a-cara/')}${duelQuery({ level: 'cidade', a: pa.code, reply: true })}` : undefined
 
   return (
-    <div data-duel data-level={level} data-ready={ready ? 'yes' : 'no'} data-places={[address.a, address.b].filter(Boolean).length}>
+    <div data-duel data-level={level} data-ready={island.dataReady} data-error={island.dataError} data-places={[address.a, address.b].filter(Boolean).length}>
       <div className="duel-head">
         <h1 className="duel-title">{say('duel.title')}</h1>
         <p className="duel-sub" data-sub>{sub}</p>

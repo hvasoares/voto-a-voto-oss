@@ -7,8 +7,9 @@
  *
  * Hydrated, a tap on a tile, shape or callout only selects the state (panel below); the
  * Mosaico|Mapa toggle becomes an in-page switch (`?vista=mapa` stays in the URL, so a plain link
- * deep-links the map view too). A tap recorded while still static (page script writes
- * data-pending-uf on the island root) is honoured right after hydration - the tap never gets lost.
+ * deep-links the map view too). A tap recorded while still static (the page script `scripts/island-pending.ts`
+ * keeps it on the island root) is replayed through the shared gate of `useIslandReady` right after
+ * hydration, before `data-ready` reports `yes` - the tap never gets lost.
  *
  * Analytics (ticket #20 surface, noop today): `map_view {view}` when a tab or Mosaico/Mapa is
  * chosen, `map_state_tap {uf}` when a hydrated tap selects a state.
@@ -24,6 +25,7 @@ import type { StateMapData, StateMapRow } from '@/lib/state-map-data'
 import { BIN_COLOR, fgOf, marginBin, marginLegend, swingBin, swingLegend, tileEdge, type DivBin } from '@/lib/scale'
 import { CALLOUT_LEFT, CALLOUT_RIGHT, UF_SHAPES } from '@/lib/uf-polygons'
 import { hitStroke, hitUnits, labelUnits, MAP_PX } from '@/lib/map-hit'
+import { useIslandReady } from './use-island-ready'
 
 export type MapKind = 'margin' | 'swing'
 export type MapPresentation = 'mosaico' | 'mapa'
@@ -98,6 +100,7 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
   const defaultUf = useMemo(() => [...rows].sort((a, b) => b.validos2 - a.validos2)[0]?.uf ?? '', [rows])
   const [selected, setSelected] = useState(defaultUf)
   const sectionRef = useRef<HTMLElement | null>(null)
+  const island = useIslandReady('state-map', { host: sectionRef, storage: ['pendingUf', 'pendingVista'] })
 
   const withBase = (path: string) => base.replace(/\/$/, '') + path
   const stateHref = (uf: string) => withBase(`/${uf}/`)
@@ -110,24 +113,22 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
     tapState(uf)
   }
 
-  // Honour a pre-hydration tap (data-pending-uf recorded by the page script on the island host)
-  // and the ?vista=mapa deep link.
+  // Replay the pre-hydration taps (kept by the page script on the island host), then report
+  // data-ready=yes in the same commit - yes is never observed before the held taps are applied.
   useEffect(() => {
-    const host = sectionRef.current?.closest('astro-island') as HTMLElement | null
-    const pending = host?.dataset.pendingUf
-    delete host?.dataset.pendingUf
-    // A tap on the Mosaico | Mapa toggle that landed while React was attaching (kept by the page script) is applied now, URL included.
-    const pendingVista = host?.dataset.pendingVista
-    delete host?.dataset.pendingVista
-    if (pendingVista) {
-      const url = new URL(window.location.href)
-      if (pendingVista === 'mapa') url.searchParams.set('vista', 'mapa')
-      else url.searchParams.delete('vista')
-      window.history.replaceState(null, '', url)
-    }
+    island.markReady((tap) => {
+      // A tap on the Mosaico | Mapa toggle that landed while React was attaching is applied now, URL included.
+      if (tap.storage === 'pendingVista') {
+        const url = new URL(window.location.href)
+        if (tap.value === 'mapa') url.searchParams.set('vista', 'mapa')
+        else url.searchParams.delete('vista')
+        window.history.replaceState(null, '', url)
+      }
+      if (tap.storage === 'pendingUf') tapState(tap.value)
+    })
     const deepLink = new URLSearchParams(window.location.search).get('vista') === 'mapa'
     if (deepLink) setVista('mapa')
-    if (pending) tapState(pending)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const byUf = useMemo(() => new Map(rows.map((r) => [r.uf, r])), [rows])
@@ -141,7 +142,7 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
   const sorted = useMemo(() => [...rows].sort((a, b) => b.validos2 - a.validos2), [rows])
 
   return (
-    <section ref={sectionRef} data-slot="state-map" data-kind={kind} aria-label={kind === 'margin' ? 'Mapa por estado: margem' : 'Mapa por estado: virada'}>
+    <section ref={sectionRef} data-slot="state-map" data-kind={kind} data-ready={island.dataReady} data-error={island.dataError} aria-label={kind === 'margin' ? 'Mapa por estado: margem' : 'Mapa por estado: virada'}>
       {/* Abas: margem (2º turno) | virada (1º→2º) — frames 10/10b; plain links between the routes. */}
       <nav className="flex gap-1 rounded-md bg-secondary p-1" aria-label="Margem, virada ou ficaram em casa">
         <a

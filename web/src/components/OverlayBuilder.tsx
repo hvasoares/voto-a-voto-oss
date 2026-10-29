@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import PlacePicker, { type PickedPlace } from '@/components/PlacePicker'
 import { useCityShards } from '@/components/use-city-shards'
+import { useIslandReady } from '@/components/use-island-ready'
 import { displayName } from '@/shared/city-search'
 import { BACKGROUNDS, DEFAULT_OVERLAY, MEASURES, OVERLAY_CYCLES, OVERLAY_SIZES, overlayQuery, overlaySize, parseOverlay, type OverlayConfig } from '@/lib/overlay'
 import { DEFAULT_VOICE, message, type MessageKey } from '@/lib/sentences/catalog'
@@ -52,20 +53,20 @@ export default function OverlayBuilder({ base, origin }: OverlayBuilderProps) {
   const [place, setPlace] = useState<PickedPlace>()
   const [status, setStatus] = useState('')
   const root = useRef<HTMLDivElement>(null)
-  const [ready, setReady] = useState(false)
+  const island = useIslandReady('overlay-builder', { host: root, storage: ['pendingOptions'] })
   useEffect(() => {
     let c = parseOverlay(location.search)
-    // A tap that landed before hydration (kept by scripts/overlay-pending.ts) is applied on top of the address, in the order it was made.
-    const host = root.current?.closest('astro-island') as HTMLElement | null
-    const pending = host?.dataset.pendingOptions
-    if (host) delete host.dataset.pendingOptions
-    for (const tapped of pending ? pending.split('|') : []) c = applyOption(c, tapped)
+    // Taps that landed before hydration (kept by scripts/island-pending.ts) replay here, on top of the
+    // address, in the order they were made - and only then does data-ready report yes.
+    island.markReady((tap) => {
+      if (tap.storage === 'pendingOptions') c = applyOption(c, tap.value)
+    })
     setConfig(c)
-    setReady(true)
     if (c.city) {
       const [uf, slug] = c.city.split('/') as [string, string]
       setPlace({ uf, slug, nome: slug })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const update = (patch: Partial<OverlayConfig>) => setConfig((c) => ({ ...c, ...patch }))
@@ -110,7 +111,7 @@ export default function OverlayBuilder({ base, origin }: OverlayBuilderProps) {
   }
 
   return (
-    <div ref={root} data-builder data-ready={ready ? 'yes' : 'no'} className="mt-3 lg:grid lg:grid-cols-[460px_1fr] lg:gap-10">
+    <div ref={root} data-builder data-ready={island.dataReady} data-error={island.dataError} className="mt-3 lg:grid lg:grid-cols-[460px_1fr] lg:gap-10">
       <div>
         <div>
           <PlacePicker base={base} label={say('overlay.place')} value={shownPlace} onPick={pick} />

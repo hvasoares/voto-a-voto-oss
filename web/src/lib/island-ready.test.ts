@@ -3,7 +3,8 @@ import { describe, expect, it, vi } from 'vitest'
 import { gateReduce, gateStart, islandFailLine, takeHeldTaps, type GateState } from './island-ready'
 
 type Key = string
-const hold = (state: GateState<Key> | undefined, ...keys: Key[]): GateState<Key> => keys.reduce((s, key) => gateReduce(s, { type: 'tap', key }), state)
+const hold = (state: GateState<Key> | undefined, ...keys: Key[]): GateState<Key> =>
+  keys.reduce<GateState<Key>>((s, key) => gateReduce(s, { type: 'tap', key }), state ?? gateStart)
 
 describe('the held-tap gate (#122)', () => {
   it('keeps one tap and replays it exactly once at ready, then empties the queue', () => {

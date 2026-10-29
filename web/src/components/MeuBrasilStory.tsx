@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { getAnalytics } from '@/analytics'
 import StorySequence, { type StoryCardView } from '@/components/StorySequence'
+import { useIslandReady } from '@/components/use-island-ready'
 import { usePlaceCards } from '@/components/use-place-cards'
 import { SHARD_VERSION } from 'virtual:data-shards'
 import { cityArc } from '@/lib/arcs'
@@ -40,7 +41,8 @@ const fetchJson = async <T,>(url: string): Promise<T> => {
 }
 
 export default function MeuBrasilStory({ base, origin, fixture, words }: MeuBrasilStoryProps) {
-  const { refs, shards, failed } = usePlaceCards(base)
+  const { refs, shards, failed, parsed } = usePlaceCards(base)
+  const island = useIslandReady('meu-brasil-story')
   const [extras, setExtras] = useState<{ for: string; value: Extras } | undefined>()
   const first = refs[0]
   const firstKey = first ? `${first.uf}/${first.slug}` : undefined
@@ -50,7 +52,7 @@ export default function MeuBrasilStory({ base, origin, fixture, words }: MeuBras
     () =>
       refs.flatMap((r) => {
         const sh = shards[`${r.uf}/${r.slug}`]
-        if (!sh || sh === 'failed') return []
+        if (typeof sh !== 'object') return []
         return [{ name: displayName(sh.city.nome), ufLabel: ufLabel(sh.city.uf), key: `${r.uf}/${r.slug}`, arc: cityArc(sh), results: Object.fromEntries([2018, 2022, 2026].map((a) => [a, cityShardResult(sh, a, 2)])) }]
       }),
     [refs, shards],
@@ -59,7 +61,7 @@ export default function MeuBrasilStory({ base, origin, fixture, words }: MeuBras
 
   // The twin and the curiosity of the first place, once it is known (the latest first place wins).
   useEffect(() => {
-    if (!firstKey || !firstShard || firstShard === 'failed') return
+    if (!firstKey || typeof firstShard !== 'object') return
     let live = true
     void (async () => {
       const value: Extras = {}
@@ -85,7 +87,7 @@ export default function MeuBrasilStory({ base, origin, fixture, words }: MeuBras
     return () => {
       live = false
     }
-  }, [firstKey, firstShard === undefined || firstShard === 'failed' ? undefined : 'ok', base])
+  }, [firstKey, typeof firstShard !== 'object' ? undefined : 'ok', base])
 
   const ready = loaded && extras?.for === firstKey
   const cards = useMemo<StoryCardView[]>(() => {
@@ -118,9 +120,18 @@ export default function MeuBrasilStory({ base, origin, fixture, words }: MeuBras
   }, [cards.length, refs.length])
 
   const wordsOf = { region: words.region, dots: words.dots, dot: words.dot, share: words.share, linkNote: words.linkNote, nojs: words.nojs }
-  if (!refs.length) return <p className="mt-4 text-step-1 text-muted-foreground" data-placeholder role="status" data-ready="empty">{words.none}</p>
-  if (failed) return <p className="mt-4 text-step-1 text-muted-foreground" data-placeholder role="status" data-ready="failed">{words.failed}</p>
-  if (!cards.length) return <p className="mt-4 text-step-1 text-muted-foreground" data-placeholder role="status" data-ready="no">{words.loading}</p>
+
+  // data-ready (#122): no while the shards can still come back; a shard that cannot be read is the terminal
+  // failure; no place in the address IS the answer (yes, and the placeholder carries data-places="0").
+  useEffect(() => {
+    if (!parsed) return
+    if (failed) return island.markFailed('city shard')
+    if (!refs.length) island.markReady()
+  }, [parsed, failed, refs.length, island.markReady, island.markFailed])
+
+  if (failed) return <p className="mt-4 text-step-1 text-muted-foreground" data-placeholder role="status" data-ready={island.dataReady} data-error={island.dataError}>{words.failed}</p>
+  if (!refs.length && parsed) return <p className="mt-4 text-step-1 text-muted-foreground" data-placeholder role="status" data-ready={island.dataReady} data-places="0">{words.none}</p>
+  if (!cards.length) return <p className="mt-4 text-step-1 text-muted-foreground" data-placeholder role="status" data-ready={island.dataReady}>{words.loading}</p>
   return (
     <>
       <p className="mt-1 text-step-1 text-muted-foreground" data-subtitle>{storySay('mbstory.sub', {}, { n: cards.length })}</p>
