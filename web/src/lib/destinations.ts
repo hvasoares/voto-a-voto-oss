@@ -6,12 +6,13 @@
  *
  * ONE shape: `to` is an address template below the site root where `{c}` is the chosen city as `<uf>/<slug>`. A page of the city
  * is `{c}/compartilhar/`; a different route that takes the city as a parameter is `cara-a-cara/?nivel=cidade&a={c}`.
- * The words that finish the note under the search ("Ao escolher a cidade, você vai direto para <goes>.") live in `destination-notes.ts`,
+ * The hint line shown above the search for each key (#147) lives in the sentence catalog (`catalog-home.ts`, both registers),
  * one per key here (#105: the Home script imports this file, so it carries only the addresses).
  */
 export const DESTINATION_PARAM = 'para'
 
 export const DESTINATIONS = {
+  cidade: { to: '{c}/' },
   compartilhar: { to: '{c}/compartilhar/' },
   'tres-ciclos': { to: '{c}/tres-ciclos/' },
   'cara-a-cara': { to: 'cara-a-cara/?nivel=cidade&a={c}' },
@@ -30,3 +31,10 @@ export const cityTarget = (uf: string, slug: string, destination?: Destination):
 
 /** The Home address that makes the search apply a destination; `#busca` brings the search box into view. */
 export const destinationLink = (destination: Destination): string => `?${DESTINATION_PARAM}=${destination}#busca`
+
+/**
+ * The destination that asks for the search to be focused and hinted (#147): a visitor arriving from an entry that needs a city, with none
+ * remembered (with one, the entries go straight to the destination). The Home script uses it to focus and hint at load; the search island
+ * uses it to focus again once it has hydrated, because hydration drops the focus the script gave the pre-rendered field.
+ */
+export const landingDestination = (search: string, hasCity: boolean): Destination | undefined => (hasCity ? undefined : readDestination(search))

@@ -54,7 +54,7 @@ test.describe('the task block', () => {
   test('"Ver minha cidade" goes to the search, "Conferir um número" to its section of Sobre os dados', async ({ page }) => {
     await ready(page)
     await page.getByRole('link', { name: /Ver minha cidade/ }).click()
-    await expect(page).toHaveURL(`${base}#busca`)
+    await expect(page).toHaveURL(`${base}?para=cidade#busca`)
     await expect(page.locator('#busca')).toBeInViewport()
     await page.getByRole('link', { name: /Conferir um número/ }).click()
     await expect(page).toHaveURL(`${base}sobre-os-dados/#confira-voce-mesmo`)
@@ -134,7 +134,7 @@ test.describe('Compartilhar um resultado: the search takes a destination', () =>
     await waitReady(page)
     const hit = await pickBoaEsperanca(page)
     await expect(page.locator('[data-city-search="main"]')).toHaveAttribute('data-destination', 'compartilhar')
-    await expect(page.locator('[data-destination-note]')).toBeVisible()
+    await expect(page.locator('[data-search-hint]')).toHaveText('Escolha a cidade para compartilhar o resultado.')
     await hit.click()
     await expect(page).toHaveURL(SHEET)
   })
@@ -148,11 +148,41 @@ test.describe('Compartilhar um resultado: the search takes a destination', () =>
     await expect(page).toHaveURL(SHEET)
   })
 
+  test('#147: the share entry puts the cursor in the search; the hint is not shown when the visitor arrives another way', async ({ page }) => {
+    await page.goto(SHARE_ENTRY)
+    await waitReady(page)
+    await expect(page.getByRole('combobox', { name: 'Busque sua cidade' })).toBeFocused()
+    await expect(page.locator('[data-search-hint]')).toHaveText('Escolha a cidade para compartilhar o resultado.')
+    await expect(page.locator('[data-search-hint]')).toHaveAttribute('aria-live', 'polite')
+    await page.goto(base)
+    await waitReady(page)
+    await expect(page.locator('[data-search-hint]')).toBeEmpty()
+    await expect(page.getByRole('combobox', { name: 'Busque sua cidade' })).not.toBeFocused()
+  })
+
+  test('#147: "Ver minha cidade" has its own hint, and the plain register has its own words', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('voto-a-voto:register', 'plain'))
+    await page.goto(`${base}?para=cidade#busca`)
+    await waitReady(page)
+    await expect(page.getByRole('combobox', { name: 'Busque sua cidade' })).toBeFocused()
+    await expect(page.locator('[data-search-hint]')).toHaveText('Escolha a cidade. Você vai ver o resultado dela.')
+  })
+
+  test('#147: with a remembered city no hint is shown and the entries go to the destination', async ({ page }) => {
+    await page.goto(SHARE_ENTRY)
+    await (await pickBoaEsperanca(page)).click()
+    await page.goto(`${base}?para=cidade#busca`)
+    await waitReady(page)
+    await expect(page.locator('[data-search-hint]')).toBeEmpty()
+    await expect(page.getByRole('link', { name: /Ver minha cidade/ })).toHaveAttribute('href', `${base}mt/boa-esperanca-do-norte/`)
+    await expect(page.getByRole('link', { name: /Compartilhar um resultado/ })).toHaveAttribute('href', `${base}mt/boa-esperanca-do-norte/compartilhar/`)
+  })
+
   for (const value of ['', 'cartao', 'https://example.org/', '//example.org/', '../../x', 'constructor', '__proto__', 'COMPARTILHAR']) {
     test(`an unknown destination (${JSON.stringify(value)}) is ignored: the pick opens the card`, async ({ page }) => {
       await page.goto(`${base}?para=${encodeURIComponent(value)}`)
       const hit = await pickBoaEsperanca(page)
-      await expect(page.locator('[data-destination-note]')).toHaveCount(0)
+      await expect(page.locator('[data-search-hint]')).toBeEmpty()
       await expect(hit).toHaveAttribute('href', `${base}mt/boa-esperanca-do-norte/`)
       await hit.click()
       await expect(page).toHaveURL(CARD)
