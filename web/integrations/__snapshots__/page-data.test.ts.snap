@@ -1,0 +1,42 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`the data file of each page (golden) > pins the bytes of all the files of the fixture family 1`] = `
+[
+  {
+    "json": "{"data":{"city":"boa-esperanca-do-norte","list":[0,0],"n":0},"family":"fixture","path":"mt/boa-esperanca-do-norte","sum":"99f316b2","v":1}",
+    "path": "v0123456789abcdef/fixture/mt/boa-esperanca-do-norte.json",
+  },
+  {
+    "json": "{"data":{"city":"cidade-exemplo","list":[1,2],"n":1},"family":"fixture","path":"rj/cidade-exemplo","sum":"32b279eb","v":1}",
+    "path": "v0123456789abcdef/fixture/rj/cidade-exemplo.json",
+  },
+  {
+    "json": "{"data":{"city":"cidade-exemplo-a","list":[2,4],"n":2},"family":"fixture","path":"rj/cidade-exemplo-a","sum":"58104a8d","v":1}",
+    "path": "v0123456789abcdef/fixture/rj/cidade-exemplo-a.json",
+  },
+  {
+    "json": "{"data":{"city":"cidade-exemplo-b","list":[3,6],"n":3},"family":"fixture","path":"rj/cidade-exemplo-b","sum":"234e8f82","v":1}",
+    "path": "v0123456789abcdef/fixture/rj/cidade-exemplo-b.json",
+  },
+  {
+    "json": "{"data":{"city":"cidade-exemplo-c","list":[4,8],"n":4},"family":"fixture","path":"rj/cidade-exemplo-c","sum":"a513d1eb","v":1}",
+    "path": "v0123456789abcdef/fixture/rj/cidade-exemplo-c.json",
+  },
+  {
+    "json": "{"data":{"city":"cidade-exemplo-d","list":[5,10],"n":5},"family":"fixture","path":"rj/cidade-exemplo-d","sum":"331023a1","v":1}",
+    "path": "v0123456789abcdef/fixture/rj/cidade-exemplo-d.json",
+  },
+  {
+    "json": "{"data":{"city":"cidade-exemplo-e","list":[6,12],"n":6},"family":"fixture","path":"rj/cidade-exemplo-e","sum":"d00132fc","v":1}",
+    "path": "v0123456789abcdef/fixture/rj/cidade-exemplo-e.json",
+  },
+  {
+    "json": "{"data":{"city":"cidade-exemplo-paulista","list":[7,14],"n":7},"family":"fixture","path":"sp/cidade-exemplo-paulista","sum":"b9666442","v":1}",
+    "path": "v0123456789abcdef/fixture/sp/cidade-exemplo-paulista.json",
+  },
+  {
+    "json": "{"data":{"city":"exterior-exemplo","list":[8,16],"n":8},"family":"fixture","path":"zz/exterior-exemplo","sum":"5ee892b4","v":1}",
+    "path": "v0123456789abcdef/fixture/zz/exterior-exemplo.json",
+  },
+]
+`;
