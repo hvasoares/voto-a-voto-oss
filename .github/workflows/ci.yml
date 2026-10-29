@@ -4,6 +4,15 @@ on:
   pull_request:
 
 jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv run pytest
+
   web:
     runs-on: ubuntu-latest
     defaults:
@@ -19,17 +28,57 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
+
+  perf:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.4
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      # The budget script reads the built site out of dist/ and only passes on the base `/` build (#107).
+      - run: npm run build
+      - run: npm run check:perf
+
+  e2e:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    strategy:
+      fail-fast: false
+      matrix:
+        # SITE_BASE is baked into the build, so each base pass needs its own build; the webServer in
+        # playwright.config.ts builds with this job's env. The pages leg sets a placeholder donation
+        # address so that pass exercises the link; the root leg has none.
+        include:
+          - label: root
+            site-base: /
+          - label: pages
+            site-base: /voto-a-voto-oss/
+            donation-url: https://doacao.example.test/apoie
+    env:
+      SITE_BASE: ${{ matrix.site-base }}
+      PUBLIC_DONATION_URL: ${{ matrix.donation-url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.4
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
       - run: npx playwright install --with-deps chromium
       # Behaviour only: route smoke, scoped search, 390 px layout. Screenshot captures are per checkpoint and not run in CI.
       - run: npm run test:e2e
-      - name: e2e under the GitHub Pages base path
-        run: npm run test:e2e
-        env:
-          SITE_BASE: /voto-a-voto-oss/
-          # A donation address (a placeholder: no real one is committed) so this pass exercises the link; the first pass has none.
-          PUBLIC_DONATION_URL: https://doacao.example.test/apoie
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: playwright-results
+          name: playwright-results-${{ matrix.label }}
           path: web/test-results
