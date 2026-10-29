@@ -19,7 +19,7 @@ async function sheetOf(page: Page, selector: string): Promise<number> {
 
 // [path, a rule only the group owns, a rule only the shared sheet owns]
 const PAGES: [string, string, string][] = [
-  ['rj/cidade-exemplo/', '.city-share', '.back'],
+  ['rj/cidade-exemplo/', '.city-share', '.page__title'],
 ]
 
 for (const [path, groupRule, sharedRule] of PAGES) {
