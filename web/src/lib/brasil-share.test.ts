@@ -30,14 +30,15 @@ const NAMES: Candidate[] = [
   { ano: 2026, turno: 2, candidatoNumero: 13, nomeUrna: 'LULA', partido: 'PT' },
   { ano: 2026, turno: 2, candidatoNumero: 22, nomeUrna: 'FLAVIO BOLSONARO', partido: 'PL' },
 ]
-const view: BrasilView = buildBrasil({
+const rawInput = {
   ano: 2026,
-  turno: 2,
+  turno: 2 as const,
   states: STATES,
   turnout: [...REGIONS.map(([, uf, aptos, comp, a, b]) => turnout(uf, aptos, comp, a + b)), turnout('zz', 300, 200, 190)],
   votes: [...REGIONS.flatMap(([, uf, , , a, b]) => [vote(uf, 13, a), vote(uf, 22, b)]), vote('zz', 13, 100), vote('zz', 22, 90)],
   candidates: NAMES,
-})
+}
+const view: BrasilView = buildBrasil(rawInput)
 const options = { origin: 'https://votoavoto.exemplo.br', base: '/', fixture: false, edition: '2026-10-26' }
 
 describe('the words of the share', () => {
@@ -82,6 +83,14 @@ describe('the picture', () => {
     expect(c.svg).toContain(`<title id="card-title">${c.variants.standard.alt}</title>`)
     expect(texts).toContain('votoavoto.exemplo.br/brasil')
     expect(texts.join(' ')).toContain('Fonte: TSE')
+  })
+  it('is exactly 1080x1350, the fixed share format, with or without the fixture tag and with the widest names', () => {
+    const longNames = buildBrasil({ ...rawInput, candidates: rawInput.candidates.map((k, i) => ({ ...k, nomeUrna: ['LUIZ INACIO LULA DA SILVA JUNIOR', 'FLAVIO NANTES BOLSONARO FILHO'][i] ?? k.nomeUrna })) })
+    for (const [v, fixture] of [[view, false], [view, true], [longNames, false], [longNames, true]] as const) {
+      const card = brasilCardSvg(v, { address: 'votoavoto.exemplo.br/brasil', fixture })
+      expect(card.height).toBe(1350)
+      expect(card.svg).toContain('width="1080" height="1350" viewBox="0 0 1080 1350"')
+    }
   })
   it('prints the numbers of the page: national bar, one bar per region and the turnout in text', () => {
     const joined = texts.join(' ')
@@ -150,6 +159,6 @@ describe('the picture from the REAL national result (../data, 2026 round 2)', ()
     // the widest real names, at every region's share, always keep the share and either the whole name, a wrapped name or the short form
     for (const r of real.regions) for (const k of r.candidates) expect(texts.some((x) => x.includes(`${k.pctText}%`)), `${r.label} ${k.labelFull}`).toBe(true)
     for (const x of texts) expect(textWidth(x, 28), x).toBeLessThan(1080 - 98)
-    expect(content.height).toBeLessThan(1800)
+    expect(content.height).toBe(1350)
   })
 })

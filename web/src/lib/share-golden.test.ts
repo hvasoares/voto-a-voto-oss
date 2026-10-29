@@ -5,6 +5,11 @@
  *
  * Capture (first checkpoint only): `GOLDEN_CAPTURE=1 npx vitest run src/lib/share-golden.test.ts` writes the files that do not exist yet and
  * refuses to overwrite one (flag `wx`), so a golden cannot be changed by accident.
+ *
+ * An INTENDED layout change of one picture (only with an owner decision as its reason) is recaptured on purpose: delete that picture's folder under
+ * `__golden__/`, run the capture command above, review the new files and commit them in the change that alters the builder, naming the decision.
+ * The other pictures' goldens must stay byte-identical. Done once so far: the Brasil picture, 1080x1710 to the fixed 1080x1350 share format
+ * (private#106, D-038).
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'

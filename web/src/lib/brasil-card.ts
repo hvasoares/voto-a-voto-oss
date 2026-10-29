@@ -7,7 +7,7 @@
 import type { BrasilCandidate, BrasilView } from './brasil'
 import { sideTone } from '@/shared/candidates'
 import { colors } from '@/shared/tokens'
-import { candidateLabel, centredLabel, fit, INNER, LEFT, rect, SEGMENT_FILL, text } from './share-picture'
+import { candidateLabel, centredLabel, fit, INNER, LEFT, rect, SEGMENT_FILL, text, wrap } from './share-picture'
 import { fixtureBand, flowCard, footerBlock, headlineBlock, mutedLines } from './share-picture-flow'
 import { DEFAULT_LOCALE, message, type Locale } from './sentences/catalog'
 import { brasilBase, brasilHeadline, brasilRegionShare, brasilTurnout } from './sentences/brasil'
@@ -42,28 +42,53 @@ function bar(out: string[], ano: number, cs: readonly BrasilCandidate[], y: numb
   })
 }
 
+/** The share format is fixed at 1080x1350 (#106, D-038): the picture is exactly this tall, whatever the headline and the fixture tag take. */
+export const BRASIL_CARD_HEIGHT = 1350
+/** A region's row (its name, a bar tall enough for a two-line candidate label, the turnout text) is never tighter than this, nor looser than ROW_MAX. */
+const ROW_MIN = 134
+const ROW_MAX = 168
+const BAR_MIN = 58
+const NATIONAL_BAR = 84
+/** Clear space kept between the last row and the rule above the closing lines. */
+const RULE_GAP = 20
+const HEADLINE_SIZES = [52, 48, 44, 40, 36] as const
+
 export function brasilCardSvg(view: BrasilView, o: BrasilCardOptions): BrasilCard {
   const voice = { locale: o.locale ?? DEFAULT_LOCALE, register: 'standard' as const }
   const headline = brasilHeadline(view, voice)
+  const base = brasilBase(view.turno, voice)
+  const baseLines = (wrap(base, 28, INNER, 3) ?? [fit(base, 28, INNER)]).length
+  // The closing lines (rule, base note, address, source line) sit at the foot; the regions share what is left between the national bar and them.
+  const tail = 30 + 36 * baseLines + 24 + 48 + 70
+  const n = Math.max(1, view.regions.length)
+  const top = o.fixture ? 61 + 78 + 24 : 61
+  const room = (size: number, lines: number) => (BRASIL_CARD_HEIGHT - tail - RULE_GAP - (top + size + lines * size * 1.3 + 8 + NATIONAL_BAR + 40)) / n
+  // The largest headline (up to three lines) that leaves every region its minimum row.
+  const fits = HEADLINE_SIZES.flatMap((size) => {
+    const lines = wrap(headline, size, INNER, 3)
+    return lines ? [{ size, lines: lines.length }] : []
+  })
+  const size = (fits.find((f) => room(f.size, f.lines) >= ROW_MIN) ?? fits.at(-1))?.size ?? 36
+
   const out: string[] = []
-  let y = headlineBlock(out, headline, fixtureBand(out, o.fixture, message(voice, 'card.example'), 69), { sizes: [52, 48, 44, 40, 36], lines: 5 })
-  y += 18
+  let y = headlineBlock(out, headline, fixtureBand(out, o.fixture, message(voice, 'card.example'), 61, 24), { sizes: [size], lines: 3 })
+  y += 8
+  bar(out, view.ano, view.nationalCandidates, y, NATIONAL_BAR, 40)
+  y += NATIONAL_BAR + 40
 
-  bar(out, view.ano, view.nationalCandidates, y, 110, 44)
-  y += 110 + 54
-
+  const row = Math.max(ROW_MIN, Math.min(ROW_MAX, Math.floor((BRASIL_CARD_HEIGHT - tail - RULE_GAP - y) / n)))
+  const barH = Math.min(68, Math.max(BAR_MIN, row - 70))
   for (const r of view.regions) {
-    out.push(text(LEFT, y + 34, 36, fit(r.label, 36, INNER * 0.5), { weight: 700 }))
-    out.push(text(LEFT + INNER, y + 34, 30, brasilRegionShare(r, voice), { fill: colors.muted, anchor: 'end' }))
-    y += 52
-    bar(out, view.ano, r.candidates, y, 68, 30)
-    y += 68 + 34
-    out.push(text(LEFT, y, 30, fit(brasilTurnout(r, voice), 30, INNER), { fill: colors.muted }))
-    y += 42
+    out.push(text(LEFT, y + 28, 32, fit(r.label, 32, INNER * 0.5), { weight: 700 }))
+    out.push(text(LEFT + INNER, y + 28, 28, brasilRegionShare(r, voice), { fill: colors.muted, anchor: 'end' }))
+    bar(out, view.ano, r.candidates, y + 36, barH, 28)
+    out.push(text(LEFT, y + 36 + barH + 26, 28, fit(brasilTurnout(r, voice), 28, INNER), { fill: colors.muted }))
+    y += row
   }
 
+  y = BRASIL_CARD_HEIGHT - tail
   out.push(rect(LEFT, y - 8, INNER, 3, colors.rule))
-  y = mutedLines(out, brasilBase(view.turno, voice), y + 38, { size: 30, lines: 3, step: 40 }) + 24
-  y = footerBlock(out, y, { address: o.address, brand: message(voice, o.fixture ? 'card.brand.fixture' : 'card.brand') })
+  y = mutedLines(out, base, y + 30, { size: 28, lines: 3, step: 36 }) + 24
+  y = footerBlock(out, y, { address: o.address, brand: message(voice, o.fixture ? 'card.brand.fixture' : 'card.brand'), addressStep: 48 })
   return flowCard(BRASIL_CARD_WIDTH, y, o.alt ?? headline, out)
 }
