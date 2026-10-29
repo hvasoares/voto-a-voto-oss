@@ -14,7 +14,7 @@
  * (not paths); widths are ESTIMATED as in the share card.
  */
 import { colors } from '@/shared/tokens'
-import { esc, fit, rect, stripControl, text, textWidth, wrap } from './share-card'
+import { cardSvg, exampleTag, fit, largestFit, stripControl, text, textWidth, wrap, LEFT } from './share-picture'
 import { DEFAULT_LOCALE, message, type Locale } from './sentences/catalog'
 import type { Stat } from './sentences/stat'
 
@@ -37,11 +37,6 @@ export interface StatCardOptions {
   /** The language of the words around the number (the catalog's `card.*`); Portuguese by default. */
   locale?: Locale
 }
-
-const LEFT = 98
-
-/** The largest size from `sizes` at which `s` fits `max` px on one line. */
-const biggest = (s: string, sizes: number[], max: number): number => sizes.find((sz) => textWidth(s, sz) <= max) ?? sizes[sizes.length - 1]!
 
 /** `line` in at most `maxLines` lines at the largest size of `sizes` that holds it; the last size cuts with "…". */
 function lines(line: string, sizes: number[], max: number, maxLines: number): { size: number; rows: string[] } {
@@ -70,11 +65,11 @@ function lines(line: string, sizes: number[], max: number, maxLines: number): { 
 export function statCardSvg(stat: Stat, o: StatCardOptions): string {
   const { width: W, height: H } = STAT_SIZES[o.size]
   const say = (key: 'card.example' | 'card.brand' | 'card.brand.fixture') => message({ locale: o.locale ?? DEFAULT_LOCALE, register: 'standard' }, key)
-  const out: string[] = [rect(0, 0, W, H, colors.paper), `<rect x="5" y="5" width="${W - 10}" height="${H - 10}" fill="none" stroke="${colors.ink}" stroke-width="10"/>`]
+  const out: string[] = []
   const inner = W - 2 * LEFT
   const wide = o.size === 'preview'
   const tagY = wide ? 52 : 69
-  if (o.fixture) out.push(rect(LEFT, tagY, 285, 78, colors.flag, ' rx="10"'), text(LEFT + 142, tagY + 53, 44, say('card.example'), { weight: 700, anchor: 'middle' }))
+  if (o.fixture) out.push(exampleTag(LEFT, tagY, say('card.example')))
 
   const addrSize = wide ? 34 : 44
   const brand = say(o.fixture ? 'card.brand.fixture' : 'card.brand')
@@ -87,7 +82,7 @@ export function statCardSvg(stat: Stat, o: StatCardOptions): string {
     const colNumber = 470
     const colLine = W - LEFT - (LEFT + colNumber + 50)
     const xLine = LEFT + colNumber + 50
-    const numSize = stat.number ? biggest(stat.number, [260, 220, 190, 160, 130, 100], colNumber) : 0
+    const numSize = stat.number ? largestFit(stat.number, [260, 220, 190, 160, 130, 100], colNumber) : 0
     const l = lines(stat.line, [48, 42, 38, 34], colLine, 6)
     const axis = 330
     if (stat.number) out.push(text(LEFT, axis + numSize * 0.34, numSize, stat.number, { serif: true }))
@@ -96,7 +91,7 @@ export function statCardSvg(stat: Stat, o: StatCardOptions): string {
     l.rows.forEach((row, i) => out.push(text(stat.number ? xLine : LEFT, top + i * lh, l.size, row, { serif: true })))
   } else {
     const tall = o.size === 'story'
-    const numSize = stat.number ? biggest(stat.number, tall ? [340, 300, 260, 220, 180, 140] : [300, 260, 220, 190, 160, 120], inner) : 0
+    const numSize = stat.number ? largestFit(stat.number, tall ? [340, 300, 260, 220, 180, 140] : [300, 260, 220, 190, 160, 120], inner) : 0
     const l = lines(stat.line, tall ? [64, 58, 52, 46] : [58, 52, 46, 42], inner, tall ? 6 : 5)
     const lh = l.size * 1.3
     const blockH = (stat.number ? numSize * 0.72 + 50 : 0) + l.rows.length * lh
@@ -115,5 +110,5 @@ export function statCardSvg(stat: Stat, o: StatCardOptions): string {
   const addr = fit(o.address, addrSize, inner, true)
   out.push(text(wide ? LEFT : W / 2, addrY, addrSize, addr, { weight: 600, anchor: wide ? 'start' : 'middle' }))
   out.push(text(wide ? LEFT : W / 2, bottom, brandSize, brand, { fill: colors.muted, anchor: wide ? 'start' : 'middle' }))
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img"><title>${esc(o.alt ?? stat.alt)}</title>${out.join('')}</svg>`
+  return cardSvg({ width: W, height: H, title: o.alt ?? stat.alt, parts: out })
 }

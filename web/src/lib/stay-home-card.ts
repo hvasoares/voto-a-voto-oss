@@ -6,15 +6,13 @@
  */
 import { colors } from '@/shared/tokens'
 import { UF_TILES } from '@/slots/home/uf-grid'
-import { esc, fit, rect, text, textWidth, wrap } from './share-card'
+import { fit, fixtureBand, flowCard, footerBlock, INNER, LEFT, mutedLines, rect, text, wrap } from './share-picture'
 import { DEFAULT_LOCALE, message, type Locale, type Register } from './sentences/catalog'
 import { stayhomeSay, subtitle } from './sentences/stayhome'
 import { stayHomeHex } from './stay-home'
 import type { StayHomeModel } from './stay-home-view'
 
 export const STAY_HOME_CARD_WIDTH = 1080
-const LEFT = 98
-const INNER = 884
 const TILE = 122
 const PITCH = 125
 const GRID_W = 7 * PITCH - (PITCH - TILE)
@@ -37,11 +35,7 @@ export interface StayHomeCard {
 export function stayHomeCardSvg(model: StayHomeModel, o: StayHomeCardOptions): StayHomeCard {
   const voice = { locale: o.locale ?? DEFAULT_LOCALE, register: o.register ?? ('standard' as const) }
   const out: string[] = []
-  let y = 69
-  if (o.fixture) {
-    out.push(rect(LEFT, y, 285, 78, colors.flag, ' rx="10"'), text(LEFT + 142, y + 53, 44, message(voice, 'card.example'), { weight: 700, anchor: 'middle' }))
-    y += 78 + 36
-  }
+  let y = fixtureBand(out, o.fixture, message(voice, 'card.example'), 69)
   const title = stayhomeSay(voice, 'stayhome.title')
   y += 64
   out.push(text(LEFT, y, 64, title, { serif: true }))
@@ -77,21 +71,7 @@ export function stayHomeCardSvg(model: StayHomeModel, o: StayHomeCardOptions): S
   out.push(text(LEFT, y, 28, stayhomeSay(voice, 'stayhome.card.legend', { edges: model.legend.edges.join(', ') }), { fill: colors.muted }))
   y += 52
 
-  const base = stayhomeSay(voice, 'stayhome.card.base')
-  const baseLines = wrap(base, 30, INNER, 4) ?? [fit(base, 30, INNER)]
-  for (const line of baseLines) {
-    out.push(text(LEFT, y, 30, line, { fill: colors.muted }))
-    y += 40
-  }
-  y += 24
-  const addrSize = [44, 40, 36, 32].find((sz) => textWidth(o.address, sz, true) <= INNER) ?? 32
-  out.push(text(LEFT, y, addrSize, fit(o.address, addrSize, INNER, true), { weight: 600 }))
-  y += 52
-  const brand = message(voice, o.fixture ? 'card.brand.fixture' : 'card.brand')
-  out.push(text(LEFT, y, [36, 32, 28].find((sz) => textWidth(brand, sz) <= INNER) ?? 28, brand, { fill: colors.muted }))
-  y += 70
-
-  const H = Math.round(y)
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${STAY_HOME_CARD_WIDTH}" height="${H}" viewBox="0 0 ${STAY_HOME_CARD_WIDTH} ${H}" role="img"><title>${esc(o.alt ?? model.alt)}</title>${rect(0, 0, STAY_HOME_CARD_WIDTH, H, colors.paper)}<rect x="5" y="5" width="${STAY_HOME_CARD_WIDTH - 10}" height="${H - 10}" fill="none" stroke="${colors.ink}" stroke-width="10"/>${out.join('')}</svg>`
-  return { svg, height: H }
+  y = mutedLines(out, stayhomeSay(voice, 'stayhome.card.base'), y, { size: 30, lines: 4, step: 40 }) + 24
+  y = footerBlock(out, y, { address: o.address, brand: message(voice, o.fixture ? 'card.brand.fixture' : 'card.brand'), addressSizes: [44, 40, 36, 32] })
+  return flowCard(STAY_HOME_CARD_WIDTH, y, o.alt ?? model.alt, out)
 }

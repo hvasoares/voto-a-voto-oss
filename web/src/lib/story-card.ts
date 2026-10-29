@@ -4,12 +4,10 @@
  * (`votoavoto.exemplo.br/sp/historia#2`). The words come ready from the catalog; nothing here says anything.
  */
 import { colors } from '@/shared/tokens'
-import { esc, fit, rect, text, textWidth, wrap } from './share-card'
+import { cardSvg, exampleTag, fit, fitLines, INNER, LEFT, rect, text, textWidth } from './share-picture'
 import { DEFAULT_LOCALE, message, type Locale } from './sentences/catalog'
 
 export const STORY_CARD_SIZE = { width: 1080, height: 1920 } as const
-const LEFT = 98
-const INNER = 884
 
 export interface StoryCardOptions {
   /** The small line on top: "SP · 2022 → 2026". */
@@ -28,19 +26,18 @@ export interface StoryCardOptions {
 
 export function storyCardSvg(o: StoryCardOptions): string {
   const say = (key: 'card.example' | 'card.brand' | 'card.brand.fixture') => message({ locale: o.locale ?? DEFAULT_LOCALE, register: 'standard' }, key)
-  const out: string[] = [rect(0, 0, STORY_CARD_SIZE.width, STORY_CARD_SIZE.height, colors.paper), `<rect x="5" y="5" width="${STORY_CARD_SIZE.width - 10}" height="${STORY_CARD_SIZE.height - 10}" fill="none" stroke="${colors.ink}" stroke-width="10"/>`]
+  const out: string[] = []
   let x = LEFT
   if (o.fixture) {
-    out.push(rect(LEFT, 90, 285, 78, colors.flag, ' rx="10"'), text(LEFT + 142, 143, 44, say('card.example'), { weight: 700, anchor: 'middle' }))
+    out.push(exampleTag(LEFT, 90, say('card.example')))
     x = 422
   }
   out.push(text(x, 143, 44, fit(o.kicker, 44, INNER - (x - LEFT)), { weight: 600, fill: colors.muted }))
   // The number: the serif, the biggest size at which it is one line.
-  const bigSize = [400, 340, 280, 230, 190, 150].find((sz) => wrap(o.big, sz, INNER, 1)) ?? 150
+  const bigSize = fitLines(o.big, [400, 340, 280, 230, 190, 150], INNER, 1).size
   out.push(text(LEFT, 560 + bigSize * 0.3, bigSize, fit(o.big, bigSize, INNER), { serif: true, fill: colors.accent }))
   // The sentence: the biggest size that holds it in eight lines.
-  const size = [68, 62, 56, 52, 48].find((sz) => wrap(o.sentence, sz, INNER, 8)) ?? 48
-  const lines = wrap(o.sentence, size, INNER, 8) ?? [fit(o.sentence, size, INNER)]
+  const { size, lines } = fitLines(o.sentence, [68, 62, 56, 52, 48], INNER, 8)
   const top = 560 + bigSize * 0.3 + 120
   lines.forEach((line, i) => out.push(text(LEFT, top + i * size * 1.3, size, line)))
   out.push(rect(LEFT, 1640, INNER, 4, colors.rule))
@@ -54,5 +51,5 @@ export function storyCardSvg(o: StoryCardOptions): string {
     const lines = cut ? [o.address.slice(0, cut), o.address.slice(cut)] : [o.address]
     lines.forEach((line, i) => out.push(text(LEFT, 1778 + i * 46, 38, fit(line, 38, INNER), { weight: 600 })))
   }
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${STORY_CARD_SIZE.width}" height="${STORY_CARD_SIZE.height}" viewBox="0 0 ${STORY_CARD_SIZE.width} ${STORY_CARD_SIZE.height}" role="img"><title>${esc(o.alt)}</title>${out.join('')}</svg>`
+  return cardSvg({ ...STORY_CARD_SIZE, title: o.alt, parts: out })
 }
