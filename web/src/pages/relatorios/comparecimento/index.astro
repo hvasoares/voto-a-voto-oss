@@ -2,122 +2,75 @@
 // "Comparecimento mais alto e mais baixo" (ticket #13): the ranked turnout of the runoff, both ways,
 // among cities with 5 mil+ eleitores aptos (the same minimum the hub headlines). Every rate carries
 // its volume: "4769 de 5272 eleitores aptos" under the percentage (Lean Analytics).
-import Base from '@/layouts/Base.astro'
+// Shell, tables, notice and share: ReportLayout (#118).
+import ReportLayout from '@/layouts/ReportLayout.astro'
+import ReportTable from '@/components/ReportTable.astro'
 import { MIN_TURNOUT_APTOS, rankedTurnout, type TurnoutExtreme } from '@/lib/reports/compute'
-import { formatFixedPct, formatInt } from '@/lib/reports/format'
-import { loadReportsData } from '@/lib/reports/load'
-import { buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { formatFixedPct, formatInt, loadReports, reportFacts } from '@/lib/reports/page'
 import { displayName, ufLabel } from '@/shared/city-search'
-import { siteBase, siteHref } from '@/paths'
-import Seal from '@/components/Seal.astro'
-import SiteFooter from '@/components/SiteFooter.astro'
-import { calcLink } from '@/lib/facts/link'
-import { factLinks } from '@/lib/facts/gate'
-import { getFactPage, sealOf, TURNOUT_SHOWN } from '@/lib/facts/pages'
-import { NAV_CHIP_QUIET } from '@/shared/link-classes'
+import { TURNOUT_SHOWN } from '@/lib/facts/pages'
 
 /** Rows shown per table; the caption states how many cities the filter compared (computed). */
 const SHOWN = TURNOUT_SHOWN
 
-const base = siteBase()
-// The #113 base-path helper (`base` stays for `factLinks`, which takes the base argument).
-const href = siteHref
-const input = await loadReportsData()
+const { input } = await loadReports()
 const { highest, lowest, compared } = rankedTurnout(input)
 // Fact records (#62): every listed figure links to its record; the seal is written from the build's checks.
-const facts = await getFactPage('relatorios/comparecimento', 'cidades')
-const links = factLinks(facts.facts, '/relatorios/comparecimento/', base)
-const seal = await sealOf(facts)
+const { calc, seal } = await reportFacts('relatorios/comparecimento', 'cidades')
 const minMilhares = `${formatInt(MIN_TURNOUT_APTOS / 1000)} mil`
-const share = cn(buttonVariants({ variant: 'default' }), 'min-h-11 w-full rounded-md text-step-2 font-bold text-primary-foreground')
-const badge = 'flex size-8 flex-none items-center justify-center rounded-full bg-primary pb-px text-step-1 font-bold text-primary-foreground'
 const volume = (r: TurnoutExtreme): string => `${formatFixedPct(r.rate)} · ${formatInt(r.comparecimento)} de ${formatInt(r.aptos)} eleitores aptos`
+const rowsOf = (list: TurnoutExtreme[]) =>
+  list.slice(0, SHOWN).map((r) => ({
+    id: `${r.nome.toLowerCase()}-${r.uf}`,
+    uf: r.uf,
+    slug: r.slug,
+    name: `${displayName(r.nome)}/${ufLabel(r.uf)}`,
+    detail: volume(r),
+    factKey: `${r.uf}-${r.slug}`,
+  }))
 ---
 
-<Base title="Comparecimento mais alto e mais baixo · Voto a Voto">
-  <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pb-2 pt-16 lg:pt-8" id="main" data-page="relatorios" data-report="comparecimento">
-    <a class={NAV_CHIP_QUIET} href={href('/relatorios/')}>‹ Relatórios</a>
-    <h1 class="mt-2 font-serif text-step-4 font-normal">Comparecimento mais alto e mais baixo</h1>
-    <p class="mt-2 text-step-2">
-      O comparecimento no 2º turno de 2026, entre as cidades com {minMilhares}+ eleitores aptos: as {formatInt(Math.min(SHOWN, highest.length))} maiores
-      e as {formatInt(Math.min(SHOWN, lowest.length))} menores taxas.
-    </p>
-    <p class="mt-1 text-step-1 text-muted-foreground" data-sized>
-      Comparecimento = quem votou dividido pelo eleitorado apto, em % · {formatInt(compared)} cidades no filtro, de cada uma o volume embaixo da taxa.
-    </p>
-    <p class="mt-1 text-step-1" data-count-links><Fragment set:html={calcLink(links('filtro'))} /></p>
+<ReportLayout
+  title="Comparecimento mais alto e mais baixo · Voto a Voto"
+  heading="Comparecimento mais alto e mais baixo"
+  report="comparecimento"
+  seal={seal}
+  notice="Cada taxa com o seu volume: uma taxa de 90% pode ser 9 de 10 eleitores aptos"
+  share
+>
+  <p class="mt-2 text-step-2">
+    O comparecimento no 2º turno de 2026, entre as cidades com {minMilhares}+ eleitores aptos: as {formatInt(Math.min(SHOWN, highest.length))} maiores
+    e as {formatInt(Math.min(SHOWN, lowest.length))} menores taxas.
+  </p>
+  <p class="mt-1 text-step-1 text-muted-foreground" data-sized>
+    Comparecimento = quem votou dividido pelo eleitorado apto, em % · {formatInt(compared)} cidades no filtro, de cada uma o volume embaixo da taxa.
+  </p>
+  <p class="mt-1 text-step-1" data-count-links><Fragment set:html={calc('filtro')} /></p>
 
-    <section class="mt-2" aria-label="Comparecimento mais alto">
-      <h2 class="text-step-2 font-bold">Mais alto</h2>
-      <table class="mt-1 w-full border-collapse text-left" data-turnout-high>
-        <caption class="sr-only">As maiores taxas de comparecimento do 2º turno de 2026</caption>
-        <tbody>
-          {highest.slice(0, SHOWN).map((r, i) => (
-            <tr class="border-t border-border" data-turnout={`${r.nome.toLowerCase()}-${r.uf}`}>
-              <td class="w-12 py-3.5 align-middle">
-                <span class={badge}>{i + 1}</span>
-              </td>
-              <td class="py-3.5 align-middle">
-                <a class="block min-h-11 min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
-                  <span class="block text-step-2 font-bold text-foreground">{displayName(r.nome)}/{ufLabel(r.uf)}</span>
-                  <span class="mt-[6px] block text-step-1 text-muted-foreground">{volume(r)}</span>
-                </a>
-                <Fragment set:html={calcLink(links(`alto-${r.uf}-${r.slug}`))} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </section>
+  <section class="mt-2" aria-label="Comparecimento mais alto">
+    <h2 class="text-step-2 font-bold">Mais alto</h2>
+    <ReportTable
+      class="mt-1"
+      rows={rowsOf(highest)}
+      calc={calc}
+      factPrefix="alto-"
+      tableAttr="data-turnout-high"
+      rowAttr="data-turnout"
+      caption="As maiores taxas de comparecimento do 2º turno de 2026"
+    />
+  </section>
 
-    <section class="mt-3" aria-label="Comparecimento mais baixo">
-      <h2 class="text-step-2 font-bold">Mais baixo</h2>
-      <table class="mt-1 w-full border-collapse text-left" data-turnout-low>
-        <caption class="sr-only">As menores taxas de comparecimento do 2º turno de 2026</caption>
-        <tbody>
-          {lowest.slice(0, SHOWN).map((r, i) => (
-            <tr class="border-t border-border" data-turnout={`${r.nome.toLowerCase()}-${r.uf}`}>
-              <td class="w-12 py-3.5 align-middle">
-                <span class={badge}>{i + 1}</span>
-              </td>
-              <td class="py-3.5 align-middle">
-                <a class="block min-h-11 min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
-                  <span class="block text-step-2 font-bold text-foreground">{displayName(r.nome)}/{ufLabel(r.uf)}</span>
-                  <span class="mt-[6px] block text-step-1 text-muted-foreground">{volume(r)}</span>
-                </a>
-                <Fragment set:html={calcLink(links(`baixo-${r.uf}-${r.slug}`))} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {compared === 0 && <p class="mt-2 text-step-1 text-muted-foreground" data-empty>Nenhuma cidade de {minMilhares}+ eleitores aptos.</p>}
-    </section>
-
-    <Seal lines={seal} />
-
-    <p class="mt-2 rounded-lg bg-secondary px-3 py-3 text-center text-step-1 font-bold text-secondary-foreground" data-notice>
-      <svg class="mr-1 inline-block -translate-y-px" viewBox="0 0 12 13" width="10" height="11" aria-hidden="true" focusable="false">
-        <circle cx="6" cy="6.5" r="5.8" fill="none" stroke="currentColor" stroke-width="1.4" />
-        <circle cx="6" cy="3.9" r="0.9" fill="currentColor" /><rect x="5.2" y="5.6" width="1.6" height="3.9" fill="currentColor" />
-      </svg>
-      Cada taxa com o seu volume: uma taxa de 90% pode ser 9 de 10 eleitores aptos
-    </p>
-
-    <div class="mt-6 flex min-h-11 flex-col gap-2" data-share>
-      <button class={share} type="button" data-share-report>Compartilhar</button>
-      <span class="text-center text-step-1 text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
-    </div>
-  </main>
-  {/* The #113 shared footer with this page's variant (#115): the " · " separator and the plain about link. */}
-  <SiteFooter
-    source="Fonte: TSE, dados finais"
-    separator=" · "
-    aboutClass=""
-    class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary"
-  />
-  <script>
-    import '@/scripts/report-analytics'
-  </script>
-</Base>
+  <section class="mt-3" aria-label="Comparecimento mais baixo">
+    <h2 class="text-step-2 font-bold">Mais baixo</h2>
+    <ReportTable
+      class="mt-1"
+      rows={rowsOf(lowest)}
+      calc={calc}
+      factPrefix="baixo-"
+      tableAttr="data-turnout-low"
+      rowAttr="data-turnout"
+      caption="As menores taxas de comparecimento do 2º turno de 2026"
+    />
+    {compared === 0 && <p class="mt-2 text-step-1 text-muted-foreground" data-empty>Nenhuma cidade de {minMilhares}+ eleitores aptos.</p>}
+  </section>
+</ReportLayout>

@@ -1,0 +1,34 @@
+---
+/**
+ * The share block of a report page (ticket #118): the "Compartilhar" button and its live status line, wired by
+ * `scripts/report-analytics.ts` (the one script of the report pages, imported by ReportLayout when it draws a
+ * share block, at the end of the document like every report page had it).
+ *
+ *  - `text`      the page's own share sentence (data-share-text); absent → the document title is shared;
+ *  - `label`     the button's words (default "Compartilhar");
+ *  - `placement` `foot` (default): the block under the page; `head`: the desktop copy beside the filters (wide
+ *                pages only, hidden below 1024 px); `foot` with `wide` is hidden from 1024 px up (the head copy replaces it).
+ */
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+
+interface Props {
+  text?: string
+  label?: string
+  placement?: 'foot' | 'head'
+  wide?: boolean
+}
+const { text, label = 'Compartilhar', placement = 'foot', wide = false } = Astro.props
+const button = cn(buttonVariants({ variant: 'default' }), 'min-h-11 w-full rounded-md text-step-2 font-bold text-primary-foreground')
+---
+{placement === 'head' ? (
+  <div class="hidden w-[220px] flex-none flex-col gap-1 lg:flex" data-share-top>
+    <button class={button} type="button" data-share-report data-share-text={text}>{label}</button>
+    <span class="text-center text-step-1 text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
+  </div>
+) : (
+  <div class={wide ? 'mt-6 flex min-h-11 flex-col gap-2 lg:hidden' : 'mt-6 flex min-h-11 flex-col gap-2'} data-share>
+    <button class={button} type="button" data-share-report data-share-text={text}>{label}</button>
+    <span class="text-center text-step-1 text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
+  </div>
+)}

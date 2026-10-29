@@ -6,20 +6,15 @@
  * shows the valid-vote count next to the rate, links to the city card and has its fact record (the calculation link) and the page its "conferido" seal.
  */
 import { candidateName } from '@/shared/candidate-name'
-import Base from '@/layouts/Base.astro'
-import { buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import ReportLayout from '@/layouts/ReportLayout.astro'
+import ReportShare from '@/components/ReportShare.astro'
 import { siteBase, siteHref } from '@/paths'
 import { siteOrigin } from '@/lib/share-url'
 import { outlierPath } from '@/lib/reports/outliers'
 import { loadOutliers } from '@/lib/reports/outliers-load'
 import { outlierShare, outlierView } from '@/lib/reports/outliers-view'
-import Seal from '@/components/Seal.astro'
-import SiteFooter from '@/components/SiteFooter.astro'
-import { calcLink } from '@/lib/facts/link'
-import { factLinks } from '@/lib/facts/gate'
-import { getOutlierFacts, sealOf } from '@/lib/facts/pages'
-import { NAV_CHIP_QUIET } from '@/shared/link-classes'
+import { RANK_BADGE, reportFacts } from '@/lib/reports/page'
+import { getOutlierFacts } from '@/lib/facts/pages'
 
 interface Props {
   uf?: string
@@ -33,22 +28,28 @@ const set = await loadOutliers()
 const filter = { uf, min }
 const picked = set.pick(filter)
 const view = outlierView({ filter, shown: picked.shown, compared: picked.compared, names: { primeiro: candidateName(set.pair.nomePrimeiro), segundo: candidateName(set.pair.nomeSegundo) }, states: set.states, base })
-const facts = await getOutlierFacts()
-const links = factLinks(facts.facts, '/relatorios/cidades-fora-da-curva/', base)
-const seal = await sealOf(facts)
+const { calc, seal } = await reportFacts('relatorios/cidades-fora-da-curva', 'cidades', await getOutlierFacts())
 const share = outlierShare(`${siteOrigin()}${href(outlierPath(uf, min))}`)
-const shareClass = cn(buttonVariants({ variant: 'default' }), 'min-h-11 w-full rounded-md text-step-2 font-bold text-primary-foreground')
-const badge = 'flex size-8 flex-none items-center justify-center rounded-full bg-primary pb-px text-step-1 font-bold text-primary-foreground'
 const summary = 'flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 rounded-md border border-border bg-background px-3 text-step-1 font-bold [&::-webkit-details-marker]:hidden'
 const menu = 'absolute left-0 right-0 z-10 mt-1 max-h-72 overflow-auto rounded-md border border-border bg-background p-1 shadow-md'
 const item = 'flex min-h-11 items-center rounded px-2 text-step-1 aria-[current=true]:bg-secondary aria-[current=true]:font-bold'
 const cols = 'lg:grid lg:grid-cols-[2rem_minmax(0,1.7fr)_repeat(5,minmax(0,1fr))_5.5rem] lg:items-center lg:gap-x-4'
 ---
 
-<Base title="Cidades fora da curva · Voto a Voto" description={view.screening}>
-  <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] lg:max-w-[1200px] flex-1 px-5 pb-2 pt-16 lg:px-0 lg:pt-8" id="main" data-page="relatorios" data-report="cidades-fora-da-curva" data-uf={uf ?? 'todos'} data-min={min}>
-    <a class={NAV_CHIP_QUIET} href={href('/relatorios/')}>‹ Relatórios</a>
-    <h1 class="mt-2 font-serif text-step-4 font-normal">Cidades fora da curva</h1>
+<ReportLayout
+  title="Cidades fora da curva · Voto a Voto"
+  description={view.screening}
+  heading="Cidades fora da curva"
+  report="cidades-fora-da-curva"
+  main={{ 'data-uf': uf ?? 'todos', 'data-min': min }}
+  seal={seal}
+  wide
+  notice={view.note}
+  noticeVariant="plain"
+  share
+  shareText={view.screening}
+  shareLabel={share.label}
+>
     <p class="mt-1 text-step-1 text-muted-foreground wrap-anywhere lg:font-serif lg:text-step-2" data-screening>{view.screening}</p>
 
 <div class="mt-3 lg:flex lg:items-start lg:justify-between lg:gap-6">
@@ -67,14 +68,11 @@ const cols = 'lg:grid lg:grid-cols-[2rem_minmax(0,1.7fr)_repeat(5,minmax(0,1fr))
       </details>
     </nav>
 
-      <div class="hidden w-[220px] flex-none flex-col gap-1 lg:flex" data-share-top>
-        <button class={shareClass} type="button" data-share-report data-share-text={view.screening}>{share.label}</button>
-        <span class="text-center text-step-1 text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
-      </div>
+      <ReportShare placement="head" text={view.screening} label={share.label} />
     </div>
 
     <p class="mt-3 text-step-1 text-muted-foreground lg:hidden" data-legend>{view.legend}</p>
-    <p class="mt-1 text-step-1 text-muted-foreground" data-count>{view.count} <Fragment set:html={calcLink(links(`filtro-${uf ?? 'todos'}-${min}`))} /></p>
+    <p class="mt-1 text-step-1 text-muted-foreground" data-count>{view.count} <Fragment set:html={calc(`filtro-${uf ?? 'todos'}-${min}`)} /></p>
 
     {view.empty && <p class="mt-3 text-step-2" data-empty>{view.empty}</p>}
     {view.rows.length > 0 && (
@@ -93,7 +91,7 @@ const cols = 'lg:grid lg:grid-cols-[2rem_minmax(0,1.7fr)_repeat(5,minmax(0,1fr))
           {view.rows.map((r) => (
             <li class="border-t border-border first:border-t-0 lg:border-t" data-outlier={r.anchor}>
               <div class={`flex gap-3 py-3 ${cols}`}>
-                <span class={badge}>{r.rank}</span>
+                <span class={RANK_BADGE}>{r.rank}</span>
                 <div class="min-w-0 flex-1 lg:contents">
                   <a class="block min-h-11 min-w-0 lg:min-h-0" href={r.href}>
                     <span class="block text-step-2 font-bold text-foreground">{r.name}</span>
@@ -105,8 +103,8 @@ const cols = 'lg:grid lg:grid-cols-[2rem_minmax(0,1.7fr)_repeat(5,minmax(0,1fr))
                   <span class="hidden text-center text-step-2 font-bold lg:block">{r.gap}</span>
                   <span class="hidden text-center text-step-2 lg:block">{r.swing}</span>
                   <span class="hidden text-center text-step-2 text-muted-foreground lg:block">{r.validos}</span>
-                  <span class="hidden whitespace-nowrap text-center lg:block"><Fragment set:html={calcLink(links(r.anchor))} /></span>
-                  <span class="block lg:hidden"><Fragment set:html={calcLink(links(r.anchor))} /></span>
+                  <span class="hidden whitespace-nowrap text-center lg:block"><Fragment set:html={calc(r.anchor)} /></span>
+                  <span class="block lg:hidden"><Fragment set:html={calc(r.anchor)} /></span>
                 </div>
               </div>
             </li>
@@ -115,31 +113,8 @@ const cols = 'lg:grid lg:grid-cols-[2rem_minmax(0,1.7fr)_repeat(5,minmax(0,1fr))
       </>
     )}
 
-    <Seal lines={seal} />
-
-    <p class="mt-3 rounded-lg bg-secondary px-3 py-3 text-step-1 font-bold text-secondary-foreground" data-notice>
-      <svg class="mr-1 inline-block -translate-y-px" viewBox="0 0 12 13" width="10" height="11" aria-hidden="true" focusable="false">
-        <circle cx="6" cy="6.5" r="5.8" fill="none" stroke="currentColor" stroke-width="1.4" />
-        <circle cx="6" cy="3.9" r="0.9" fill="currentColor" /><rect x="5.2" y="5.6" width="1.6" height="3.9" fill="currentColor" />
-      </svg>
-      {view.note}
-    </p>
-    <p class="mt-2 text-step-1 text-muted-foreground" data-sign>{view.sign}</p>
-    <p class="mt-1 text-step-1 text-muted-foreground" data-method>{view.method}</p>
-
-    <div class="mt-6 flex min-h-11 flex-col gap-2 lg:hidden" data-share>
-      <button class={shareClass} type="button" data-share-report data-share-text={view.screening}>{share.label}</button>
-      <span class="text-center text-step-1 text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
-    </div>
-  </main>
-  {/* The #113 shared footer with this page's variant (#115): the " · " separator and the plain about link. */}
-  <SiteFooter
-    source="Fonte: TSE, dados finais"
-    separator=" · "
-    aboutClass=""
-    class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] lg:max-w-[1200px] border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary lg:text-left"
-  />
-  <script>
-    import '@/scripts/report-analytics'
-  </script>
-</Base>
+    <Fragment slot="after-notice">
+      <p class="mt-2 text-step-1 text-muted-foreground" data-sign>{view.sign}</p>
+      <p class="mt-1 text-step-1 text-muted-foreground" data-method>{view.method}</p>
+    </Fragment>
+</ReportLayout>

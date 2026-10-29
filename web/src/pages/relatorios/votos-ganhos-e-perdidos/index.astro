@@ -5,39 +5,24 @@
 // volumes, so the volume is paired by showing the candidate's absolute 2026 votes next to the delta.
 // Cities without the 2022 runoff round (and the overseas posts) take no part; a tie in the number
 // of votes between cycles counts in neither list and is labelled.
-import { candidateName } from '@/shared/candidate-name'
-import Base from '@/layouts/Base.astro'
-import { MIN_FLIP_VALIDOS, computeReports, rankedVoteDeltas } from '@/lib/reports/compute'
-import { formatInt, formatSignedInt } from '@/lib/reports/format'
-import { loadReportsData } from '@/lib/reports/load'
-import { buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import { siteBase, siteHref } from '@/paths'
-import Seal from '@/components/Seal.astro'
-import SiteFooter from '@/components/SiteFooter.astro'
-import { calcLink } from '@/lib/facts/link'
-import { factLinks } from '@/lib/facts/gate'
-import { DELTAS_SHOWN, getFactPage, sealOf } from '@/lib/facts/pages'
-import { NAV_CHIP_QUIET } from '@/shared/link-classes'
+// Shell, tables, notice and share: ReportLayout (#118).
+import ReportLayout from '@/layouts/ReportLayout.astro'
+import ReportTable from '@/components/ReportTable.astro'
+import { MIN_FLIP_VALIDOS, rankedVoteDeltas } from '@/lib/reports/compute'
+import { formatInt, formatSignedInt, loadReports, reportFacts } from '@/lib/reports/page'
+import { DELTAS_SHOWN } from '@/lib/facts/pages'
 
 /** Rows shown per ranked list; everything else stays in the computed counts of the caption. */
 const SHOWN = DELTAS_SHOWN
 
-const base = siteBase()
-// The #113 base-path helper (`base` stays for `factLinks`, which takes the base argument).
-const href = siteHref
-const share = cn(buttonVariants({ variant: 'default' }), 'min-h-11 w-full rounded-md text-step-2 font-bold text-primary-foreground')
-const badge = 'flex size-8 flex-none items-center justify-center rounded-full bg-primary pb-px text-step-1 font-bold text-primary-foreground'
-const input = await loadReportsData()
+const { voteDeltas, netVotes, lula, flavio } = await loadReports()
 // Fact records (#62): every listed figure links to its record; the seal is written from the build's checks.
-const facts = await getFactPage('relatorios/votos-ganhos-e-perdidos', 'cidades')
-const links = factLinks(facts.facts, '/relatorios/votos-ganhos-e-perdidos/', base)
-const seal = await sealOf(facts)
-const { pair, netVotes, voteDeltas } = computeReports(input)
+const { calc, seal } = await reportFacts('relatorios/votos-ganhos-e-perdidos', 'cidades')
 const minMilhares = `${formatInt(MIN_FLIP_VALIDOS / 1000)} mil`
 
 /** One candidate's section markup: list rows are built here so both sections share the pattern. */
 interface CandidateSection {
+  key: 'primeiro' | 'segundo'
   candidate: string
   total: number
   gained: number
@@ -50,6 +35,7 @@ interface CandidateSection {
 const sectionOf = (key: 'primeiro' | 'segundo', candidate: string): CandidateSection => {
   const ranked = rankedVoteDeltas(voteDeltas[key])
   return {
+    key,
     candidate,
     total: netVotes[key].total,
     gained: netVotes[key].cities.gained,
@@ -60,8 +46,6 @@ const sectionOf = (key: 'primeiro' | 'segundo', candidate: string): CandidateSec
     losses: ranked.losses.slice(0, SHOWN),
   }
 }
-const lula = candidateName(pair.nomePrimeiro)
-const flavio = candidateName(pair.nomeSegundo)
 const sections = [sectionOf('primeiro', lula), sectionOf('segundo', flavio)]
 const totalLine = (s: CandidateSection): string => {
   const unchanged =
@@ -73,95 +57,57 @@ const totalLine = (s: CandidateSection): string => {
   return `${formatSignedInt(s.total)} votos no país: ganhou em ${formatInt(s.gained)} ${s.gained === 1 ? 'cidade' : 'cidades'}, perdeu em ${formatInt(s.lost)} ${s.lost === 1 ? 'cidade' : 'cidades'} (de ${formatInt(s.compared)} comparadas)${unchanged}.`
 }
 const deltaLine = (delta: number): string => `${formatSignedInt(delta)} ${Math.abs(delta) === 1 ? 'voto' : 'votos'}`
+const rowsOf = (list: CandidateSection['gains']) =>
+  list.map((r, j) => ({ id: j, uf: r.uf, slug: r.slug, name: `${r.nome}/${r.uf.toUpperCase()}`, detail: `${deltaLine(r.delta)} · ${formatInt(r.votos2026)} em 2026`, factKey: `${r.uf}-${r.slug}` }))
 ---
 
-<Base title="Votos ganhos e perdidos vs. 2022 · Voto a Voto">
-  <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pb-2 pt-16 lg:pt-8" id="main" data-page="relatorios" data-report="votos-ganhos-e-perdidos">
-    <a class={NAV_CHIP_QUIET} href={href('/relatorios/')}>‹ Relatórios</a>
-    <h1 class="mt-2 font-serif text-step-4 font-normal">Votos ganhos e perdidos vs. 2022</h1>
-    <p class="mt-2 text-step-2">
-      Quanto {lula} e {flavio} ganharam ou perderam de votos entre o 2º turno de 2022 e o 2º turno de 2026. A comparação é
-      pelo número de candidato: cada um dos dois disputou os dois 2º turnos no mesmo número.
-    </p>
-    <p class="mt-1 text-step-1 text-muted-foreground" data-sized>
-      Listas com o filtro de {minMilhares}+ votos válidos de 2026; sem os postos do exterior e sem as cidades que não tiveram 2º turno em 2022.
-    </p>
+<ReportLayout
+  title="Votos ganhos e perdidos vs. 2022 · Voto a Voto"
+  heading="Votos ganhos e perdidos vs. 2022"
+  report="votos-ganhos-e-perdidos"
+  seal={seal}
+  notice="Votos absolutos favorecem as cidades grandes; veja também as maiores viradas em pp"
+  share
+>
+  <p class="mt-2 text-step-2">
+    Quanto {lula} e {flavio} ganharam ou perderam de votos entre o 2º turno de 2022 e o 2º turno de 2026. A comparação é
+    pelo número de candidato: cada um dos dois disputou os dois 2º turnos no mesmo número.
+  </p>
+  <p class="mt-1 text-step-1 text-muted-foreground" data-sized>
+    Listas com o filtro de {minMilhares}+ votos válidos de 2026; sem os postos do exterior e sem as cidades que não tiveram 2º turno em 2022.
+  </p>
 
-    {sections.map((s, i) => (
-      <section class="mt-3 border-t border-border pt-2" data-candidate-section={i === 0 ? 'primeiro' : 'segundo'}>
-        <h2 class="text-step-2 font-bold">{s.candidate}</h2>
-        <p class="mt-[3px] text-step-1 text-muted-foreground" data-total>{totalLine(s)}</p>
-        <Fragment set:html={calcLink(links(`${i === 0 ? 'primeiro' : 'segundo'}-total`))} />
+  {sections.map((s) => (
+    <section class="mt-3 border-t border-border pt-2" data-candidate-section={s.key}>
+      <h2 class="text-step-2 font-bold">{s.candidate}</h2>
+      <p class="mt-[3px] text-step-1 text-muted-foreground" data-total>{totalLine(s)}</p>
+      <Fragment set:html={calc(`${s.key}-total`)} />
 
-        <h3 class="mt-2 text-step-1 font-bold" data-gains-heading>Maiores altas ({Math.min(SHOWN, s.gains.length)} de {formatInt(s.gained)})</h3>
-        <table class="mt-1 w-full border-collapse text-left" data-gains-table>
-          <caption class="sr-only">As cidades onde o candidato mais ganhou votos em relação a 2022</caption>
-          <tbody>
-            {s.gains.map((r, j) => (
-              <tr class="border-t border-border" data-gain={j}>
-                <td class="w-12 py-2.5 align-middle">
-                  <span class={badge}>{j + 1}</span>
-                </td>
-                <td class="py-2.5 align-middle">
-                  <a class="block min-h-11 min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
-                    <span class="block text-step-2 font-bold text-foreground">{r.nome}/{r.uf.toUpperCase()}</span>
-                    <span class="mt-[4px] block text-step-1 text-muted-foreground">{deltaLine(r.delta)} · {formatInt(r.votos2026)} em 2026</span>
-                  </a>
-                  <Fragment set:html={calcLink(links(`${i === 0 ? 'primeiro' : 'segundo'}-alta-${r.uf}-${r.slug}`))} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {s.gains.length === 0 && <p class="mt-1 text-step-1 text-muted-foreground" data-no-gains>Entre as cidades do filtro, nenhuma ganhou votos de {s.candidate}.</p>}
+      <h3 class="mt-2 text-step-1 font-bold" data-gains-heading>Maiores altas ({Math.min(SHOWN, s.gains.length)} de {formatInt(s.gained)})</h3>
+      <ReportTable
+        class="mt-1"
+        tight
+        rows={rowsOf(s.gains)}
+        calc={calc}
+        factPrefix={`${s.key}-alta-`}
+        tableAttr="data-gains-table"
+        rowAttr="data-gain"
+        caption="As cidades onde o candidato mais ganhou votos em relação a 2022"
+      />
+      {s.gains.length === 0 && <p class="mt-1 text-step-1 text-muted-foreground" data-no-gains>Entre as cidades do filtro, nenhuma ganhou votos de {s.candidate}.</p>}
 
-        <h3 class="mt-2 text-step-1 font-bold" data-losses-heading>Maiores perdas ({Math.min(SHOWN, s.losses.length)} de {formatInt(s.lost)})</h3>
-        <table class="mt-1 w-full border-collapse text-left" data-losses-table>
-          <caption class="sr-only">As cidades onde o candidato mais perdeu votos em relação a 2022</caption>
-          <tbody>
-            {s.losses.map((r, j) => (
-              <tr class="border-t border-border" data-loss={j}>
-                <td class="w-12 py-2.5 align-middle">
-                  <span class={badge}>{j + 1}</span>
-                </td>
-                <td class="py-2.5 align-middle">
-                  <a class="block min-h-11 min-w-0" href={href(`/${r.uf}/${r.slug}/`)}>
-                    <span class="block text-step-2 font-bold text-foreground">{r.nome}/{r.uf.toUpperCase()}</span>
-                    <span class="mt-[4px] block text-step-1 text-muted-foreground">{deltaLine(r.delta)} · {formatInt(r.votos2026)} em 2026</span>
-                  </a>
-                  <Fragment set:html={calcLink(links(`${i === 0 ? 'primeiro' : 'segundo'}-perda-${r.uf}-${r.slug}`))} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {s.losses.length === 0 && <p class="mt-1 text-step-1 text-muted-foreground" data-no-losses>Entre as cidades do filtro, nenhuma perdeu votos de {s.candidate}.</p>}
-      </section>
-    ))}
-
-    <Seal lines={seal} />
-
-    <p class="mt-2 rounded-lg bg-secondary px-3 py-3 text-center text-step-1 font-bold text-secondary-foreground" data-notice>
-      <svg class="mr-1 inline-block -translate-y-px" viewBox="0 0 12 13" width="10" height="11" aria-hidden="true" focusable="false">
-        <circle cx="6" cy="6.5" r="5.8" fill="none" stroke="currentColor" stroke-width="1.4" />
-        <circle cx="6" cy="3.9" r="0.9" fill="currentColor" /><rect x="5.2" y="5.6" width="1.6" height="3.9" fill="currentColor" />
-      </svg>
-      Votos absolutos favorecem as cidades grandes; veja também as maiores viradas em pp
-    </p>
-
-    <div class="mt-6 flex min-h-11 flex-col gap-2" data-share>
-      <button class={share} type="button" data-share-report>Compartilhar</button>
-      <span class="text-center text-step-1 text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
-    </div>
-  </main>
-  {/* The #113 shared footer with this page's variant (#115): the " · " separator and the plain about link. */}
-  <SiteFooter
-    source="Fonte: TSE, dados finais"
-    separator=" · "
-    aboutClass=""
-    class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary"
-  />
-  <script>
-    import '@/scripts/report-analytics'
-  </script>
-</Base>
+      <h3 class="mt-2 text-step-1 font-bold" data-losses-heading>Maiores perdas ({Math.min(SHOWN, s.losses.length)} de {formatInt(s.lost)})</h3>
+      <ReportTable
+        class="mt-1"
+        tight
+        rows={rowsOf(s.losses)}
+        calc={calc}
+        factPrefix={`${s.key}-perda-`}
+        tableAttr="data-losses-table"
+        rowAttr="data-loss"
+        caption="As cidades onde o candidato mais perdeu votos em relação a 2022"
+      />
+      {s.losses.length === 0 && <p class="mt-1 text-step-1 text-muted-foreground" data-no-losses>Entre as cidades do filtro, nenhuma perdeu votos de {s.candidate}.</p>}
+    </section>
+  ))}
+</ReportLayout>

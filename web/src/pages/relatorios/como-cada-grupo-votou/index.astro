@@ -1,20 +1,14 @@
 ---
-import Base from '@/layouts/Base.astro'
+import ReportLayout from '@/layouts/ReportLayout.astro'
 import { loadCohortData } from '@/lib/cohorts-load'
 import { dataDir } from '@/lib/data-dir'
 import { segmentColor, type CohortGroup } from '@/lib/cohorts'
 import { formatInt } from '@/shared/city-model'
-import { siteBase, siteHref } from '@/paths'
+import { reportFacts } from '@/lib/reports/page'
 import { colors } from '@/shared/tokens'
-import Seal from '@/components/Seal.astro'
-import SiteFooter from '@/components/SiteFooter.astro'
-import { calcLink } from '@/lib/facts/link'
-import { factLinks } from '@/lib/facts/gate'
-import { getFactPage, sealOf } from '@/lib/facts/pages'
 import { message, DEFAULT_VOICE } from '@/lib/sentences/catalog'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { NAV_CHIP_QUIET } from '@/shared/link-classes'
 
 /*
  * Screen 12, "Como cada grupo votou" (ticket #15). Static, like /sobre-os-dados/: the whole report
@@ -22,14 +16,9 @@ import { NAV_CHIP_QUIET } from '@/shared/link-classes'
  * JavaScript of its own — the pure model in src/lib/cohorts.ts is the source of the numbers, pinned
  * to the reference cohort table by src/lib/cohorts.test.ts on the committed data/.
  */
-const base = siteBase()
-// The #113 base-path helper (`base` stays for `factLinks`, which takes the base argument).
-const href = siteHref
 const { report, labels } = await loadCohortData()
 // Fact records (#62): the counts are counts of CITIES; the page says so and what it does not say (fact.cohort.limits).
-const facts = await getFactPage('relatorios/como-cada-grupo-votou', 'grupos')
-const links = factLinks(facts.facts, '/relatorios/como-cada-grupo-votou/', base)
-const seal = await sealOf(facts)
+const { calc, seal } = await reportFacts('relatorios/como-cada-grupo-votou', 'grupos')
 const manifest = JSON.parse(readFileSync(resolve(dataDir(), 'manifest.json'), 'utf8')) as { fixture?: boolean; note?: string }
 const banner = manifest.fixture ? 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS' : undefined
 
@@ -81,11 +70,10 @@ const tieNote = (g: CohortGroup): string => {
 
 const totalLine = `${fmt(report.totals.cities2026)} cidades do 2º turno de 2026 (sem os postos do exterior) = ${fmt(report.totals.grouped)} em grupos${report.tieCases.length ? ` + ${fmt(report.tieCases.length)} com empate antes de 2026` : ''}${report.noData.length ? ` + ${fmt(report.noData.length)} sem dados` : ''}.`
 ---
-<Base title="Como cada grupo votou · Voto a Voto">
-  <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="cohorts">
-    <a class={NAV_CHIP_QUIET} href={href('/relatorios/')}>‹ Relatórios</a>
-    {banner && <p class="mt-2 border border-border bg-secondary px-3 py-2 text-step-2 font-bold" data-component="fixture-banner">{banner}</p>}
-    <h1 class="mt-2 font-serif text-step-4 font-normal">Como cada grupo votou</h1>
+<ReportLayout title="Como cada grupo votou · Voto a Voto" heading="Como cada grupo votou" page="cohorts" seal={seal} bottomPad={false} aboutLabel="Sobre os dados">
+    <Fragment slot="banner">
+      {banner && <p class="mt-2 border border-border bg-secondary px-3 py-2 text-step-2 font-bold" data-component="fixture-banner">{banner}</p>}
+    </Fragment>
     <p class="mt-[5px]" data-component="lead">Presidente 2026: cidades agrupadas pelo vencedor do 2º turno em 2018 e 2022, e o resultado de 2026 em cada grupo.</p>
 
     <section class="mt-2 border-t border-border pt-[7px]" data-component="groups">
@@ -110,7 +98,7 @@ const totalLine = `${fmt(report.totals.cities2026)} cidades do 2º turno de 2026
             ))}
           </ul>
           {g.ties2026 > 0 && <p class="mt-[5px] text-step-1 text-muted-foreground" data-component="group-tie">{tieNote(g)}</p>}
-          <Fragment set:html={calcLink(links(`${g.winner2018}-${g.winner2022}`))} />
+          <Fragment set:html={calc(`${g.winner2018}-${g.winner2022}`)} />
         </article>
       ))}
     </section>
@@ -118,7 +106,7 @@ const totalLine = `${fmt(report.totals.cities2026)} cidades do 2º turno de 2026
     <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="fora-dos-grupos">
       <h2 class="font-serif text-step-3 font-normal" id="fora-dos-grupos">Fora dos grupos</h2>
       <p class="mt-[5px]" data-component="total-line">{totalLine}</p>
-      <Fragment set:html={calcLink(links('fora'))} />
+      <Fragment set:html={calc('fora')} />
       {outsideLines.length > 0 && (
         <ul class="mt-[5px] list-disc space-y-1 pl-5" data-component="outside-list">
           {outsideLines.map((line) => <li>{line}</li>)}
@@ -127,14 +115,4 @@ const totalLine = `${fmt(report.totals.cities2026)} cidades do 2º turno de 2026
       <p class="mt-1" data-component="definition">Venceu quem teve mais votos que o outro candidato do 2º turno; empate é o mesmo número de votos. Os percentuais das barras são das cidades decididas (maior resto, décimo: somam exatamente 100%).</p>
       <p class="mt-1" data-component="limits">{message(DEFAULT_VOICE, 'fact.cohort.limits')}</p>
     </section>
-    <Seal lines={seal} />
-  </main>
-  {/* The #113 shared footer with this page's variant (#115): the about link drops the chevron (the aboutLabel prop it added). */}
-  <SiteFooter
-    source="Fonte: TSE, dados finais"
-    separator=" · "
-    aboutClass=""
-    aboutLabel="Sobre os dados"
-    class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary"
-  />
-</Base>
+</ReportLayout>
