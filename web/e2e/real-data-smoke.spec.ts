@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync, statSync, writeFileSync, mkdirSy
 import { join, relative, resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * LAUNCH GATE (issue #21), criteria 1 and 3, on the REAL build. Run with `npm run test:real`
@@ -20,7 +21,7 @@ import { allowedOrigins, base, collectRequests, violations } from './helpers'
  * The full trace of the sample (per-route request counts, status and request types) is written to
  * .captures/launch-gate/network-trace.json for the record in web/docs/launch-gate.md.
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
+test.skip(...dataGuard())
 
 const DIST = resolve(process.env.OUT_DIR ?? 'dist')
 

@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { expect, test, type Page } from '@playwright/test'
 import { resolve } from 'node:path'
 import { base } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * Screenshot captures of screen 8 (ticket #10): the render at 390x844, scroll 0, next to
@@ -33,7 +34,7 @@ test('capture /brasil/ fixture state', async ({ page }) => {
 })
 
 test.describe('with JavaScript off', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
 
   test('capture /brasil/ no-JS state', async ({ page }) => {
     await page.goto(`${base}brasil/`)

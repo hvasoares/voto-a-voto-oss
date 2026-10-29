@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, maybeThrottleCpu, violations } from './helpers'
+import { noJs } from './presets'
 
 /*
  * Meu Brasil (#27) at 390x844 over the fixture dataset: up to three places in the address, one card, reload reproduces it, the share
@@ -96,7 +97,7 @@ test.describe('Meu Brasil', () => {
   })
 
   test('without JavaScript it says what it needs', async ({ browser }) => {
-    const ctx = await browser.newContext({ javaScriptEnabled: false })
+    const ctx = await browser.newContext(noJs())
     const page = await ctx.newPage()
     await page.goto(route(THREE))
     await expect(page.locator('[data-nojs]')).toContainText('precisa de JavaScript')

@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
+import { noJs } from './presets'
 
 /*
  * The static method page (/sobre-os-dados/), ticket #18. The page is pre-rendered Astro markup with
@@ -94,7 +95,7 @@ test.describe('sobre os dados page', () => {
   })
 
   test('the "Final, não ao vivo" chip sits in the page footer, right above the edition line, and shows without scripts', async ({ browser }) => {
-    const context = await browser.newContext({ javaScriptEnabled: false })
+    const context = await browser.newContext(noJs())
     const page = await context.newPage()
     await page.goto(path)
     const chip = page.locator('footer[data-component="source-footer"] [data-component="final-chip"]')
@@ -205,7 +206,7 @@ test.describe('sobre os dados page', () => {
   }
 
   test('"Usar os dados" works without scripts: plain links, one line each', async ({ browser }) => {
-    const context = await browser.newContext({ javaScriptEnabled: false })
+    const context = await browser.newContext(noJs())
     const page = await context.newPage()
     await page.goto(path)
     const links = page.locator('[data-component="use-data"] [data-use]')

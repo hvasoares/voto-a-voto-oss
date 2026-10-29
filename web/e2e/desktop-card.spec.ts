@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, expectNoHorizontalScroll, resizeTo, WIDTHS } from './helpers'
+import { useNoJs } from './presets'
 
 /* Ticket #52: the city card, the share dialog and Mostrar QR on desktop. Fixture dataset: Cidade Exemplo, RJ. */
 const city = `${base}rj/cidade-exemplo/`
@@ -174,7 +175,7 @@ test.describe('Mostrar QR', () => {
   })
 
   test.describe('without JavaScript', () => {
-    test.use({ javaScriptEnabled: false })
+    useNoJs()
     test('the QR, the address and Voltar are there; a print button that could not work is not', async ({ page }) => {
       await page.goto(`${city}qr/`)
       await expect(page.locator('[data-qr]')).toBeVisible()

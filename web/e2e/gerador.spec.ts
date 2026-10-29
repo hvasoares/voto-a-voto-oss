@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { expect, test, type Page } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
+import { noJs } from './presets'
 
 /*
  * The card generator (#25) at 390x844 over the fixture dataset: a city, one measure, a size; the PNG is made in the
@@ -87,7 +88,7 @@ test.describe('card generator', () => {
   })
 
   test('without JavaScript the page says what it needs', async ({ browser }) => {
-    const ctx = await browser.newContext({ javaScriptEnabled: false })
+    const ctx = await browser.newContext(noJs())
     const page = await ctx.newPage()
     await page.goto(path)
     await expect(page.locator('[data-nojs]')).toContainText('precisa de JavaScript')

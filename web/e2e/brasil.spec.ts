@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * Screen 8 (ticket #10): /brasil/ with the committed FIXTURE dataset (default DATA_DIR, see README).
@@ -54,7 +55,7 @@ test.describe('brasil: content (fixture build)', () => {
 })
 
 test.describe('brasil: no-JS and robustness (fixture build)', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
 
   test('the whole screen is there with JavaScript off: bar texts, note and links', async ({ page }) => {
     await page.goto(`${base}brasil/`)

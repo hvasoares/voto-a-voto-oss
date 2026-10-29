@@ -2,10 +2,11 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { test } from '@playwright/test'
 import { base } from './helpers'
+import { acknowledgeNotice } from './presets'
 
 /* Gate 2 of #29: /widget/?cidade=rj/cidade-exemplo at 390x844 against "18 Widget da cidade". Output: web/.captures/widget/ (not committed). */
 test('capture widget / phone', async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem('voto-a-voto:notice', 'acknowledged'))
+  await acknowledgeNotice(page)
   await page.goto(`${base}widget/?cidade=rj/cidade-exemplo`)
   await page.waitForSelector('[data-widget-builder][data-ready="yes"]')
   await page.evaluate(() => document.fonts.ready)

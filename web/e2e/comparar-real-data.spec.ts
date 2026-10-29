@@ -1,14 +1,15 @@
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * The compare pages against the real committed dataset (run with `npm run test:real`,
  * DATA_DIR=../data). Every figure below is a figure of the Sketch frames (site/reference/11 and
  * 11b): SP "26.258.452 votos válidos", "Lula 46,2% · 2022: 44,8% · +599.392 votos", etc.
  */
-test.skip(!existsSync(resolve('../data/votes.csv')), 'no ../data')
+test.skip(...dataGuard('votes.csv'))
 
 test.describe('compare pages on the real dataset', () => {
   test('frame 11: six rows in order, with the SP figures of the frame', async ({ page }) => {

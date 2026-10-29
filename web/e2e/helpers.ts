@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Page } from '@playwright/test'
 import { normalizeBase } from '../src/paths'
+import { viewport } from './presets'
 
 export const base = normalizeBase(process.env.SITE_BASE)
 export const mode: 'local' | 'production' = process.env.E2E_MODE === 'production' ? 'production' : 'local'
@@ -74,7 +75,7 @@ export async function expectNoHorizontalScroll(page: Page): Promise<void> {
 
 /** Resizes the page, keeping the phone's height for 390 and the desktop frame's for the others. */
 export async function resizeTo(page: Page, width: number): Promise<void> {
-  await page.setViewportSize({ width, height: width === 390 ? 844 : 900 })
+  await page.setViewportSize(viewport(width, width === 390 ? 844 : 900))
 }
 
 /** The Home's map lives in a lazy iframe from 1024 px up (#53): the document of the fragment. */

@@ -1,14 +1,13 @@
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * The cohort report on the REAL dataset (run with `npm run test:real`, DATA_DIR=../data), ticket #15.
  * These are the figures of the reference cohort table centraleleicao2026/thoughts/team/data-engineering/
  * 2026-10-26-swing-compare-cohort-figures.md section (c), pinned the same way by src/lib/cohorts.test.ts.
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
+test.skip(...dataGuard())
 
 const path = base + 'relatorios/como-cada-grupo-votou/'
 

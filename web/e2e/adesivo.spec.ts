@@ -3,6 +3,7 @@ import jsQR from 'jsqr'
 import { expect, test, type Page } from '@playwright/test'
 import sharp from 'sharp'
 import { base, maybeThrottleCpu } from './helpers'
+import { noJs } from './presets'
 
 /*
  * The Meu Brasil sticker (#37) at 390x844 over the fixture dataset: the PNG downloaded from the page is 1080x1920 with a transparent
@@ -104,7 +105,7 @@ test.describe('Meu Brasil sticker', () => {
   test('without places it asks for them; without JavaScript it says what it needs', async ({ page, browser }) => {
     await page.goto(`${base}meu-brasil/adesivo/`)
     await expect(page.getByText('Escolha ao menos um lugar para ver o cartão.')).toBeVisible()
-    const ctx = await browser.newContext({ javaScriptEnabled: false })
+    const ctx = await browser.newContext(noJs())
     const p2 = await ctx.newPage()
     await p2.goto(route)
     await expect(p2.locator('[data-nojs]')).toContainText('precisa de JavaScript')

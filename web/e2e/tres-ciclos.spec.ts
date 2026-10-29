@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { PHONE, noJs } from './presets'
 
 /*
  * /tres-ciclos/:uf/ (screen 13) on the fixture build. The REAL figures of the frame are pinned in
@@ -77,7 +78,7 @@ test.describe('tres-ciclos (fixture build)', () => {
   })
 
   test('works with JavaScript off (static HTML)', async ({ browser }) => {
-    const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } })
+    const context = await browser.newContext({ ...noJs(), viewport: PHONE })
     const page = await context.newPage()
     await page.goto(url('/tres-ciclos/mt/'))
     await expect(page.getByRole('heading', { level: 1, name: 'Três ciclos por estado' })).toBeVisible()

@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { base } from './helpers'
+import { DESKTOP, WIDE_BAND, noJs } from './presets'
 
 /*
  * The Escada and its Ficha at 1440 px (#75): the Ficha is the server-rendered view; from 1024 px, once scrolled into view, the island upgrades it in place to the paired bars.
@@ -25,7 +26,7 @@ async function drawn(page: Page) {
 
 test.describe('Escada (1440 px)', () => {
   test('is the Ficha until the panel is scrolled into view, then the chart replaces it in place', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 300 })
+    await page.setViewportSize(WIDE_BAND)
     await page.goto(url())
     await expect(escada(page)).toHaveAttribute('data-drawn', 'ficha')
     await expect(esc(page).locator('[data-ficha-table]')).toBeAttached()
@@ -93,7 +94,7 @@ test.describe('Escada (1440 px)', () => {
   })
 
   test('without scripts the Ficha is the panel: a table with a header row and every number as text', async ({ browser }) => {
-    const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } })
+    const ctx = await browser.newContext({ ...noJs(), viewport: DESKTOP })
     const page = await ctx.newPage()
     await page.goto(url())
     await expect(esc(page).locator('[data-ficha-table] thead th')).toHaveCount(9)
@@ -107,7 +108,7 @@ test.describe('Escada (1440 px)', () => {
   test('the island loads from 1024 px up and only when visible: not at parse time', async ({ page }) => {
     const chunks: string[] = []
     page.on('request', (r) => /\/_astro\/.*(EscadaPanel)\.[^/]*\.js/.test(r.url()) && chunks.push(r.url()))
-    await page.setViewportSize({ width: 1440, height: 300 })
+    await page.setViewportSize(WIDE_BAND)
     await page.goto(url('estado/rj/'))
     await page.waitForLoadState('networkidle')
     expect(chunks, 'nothing is loaded before the panel is in view').toEqual([])

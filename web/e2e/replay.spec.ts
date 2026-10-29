@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
+import { PHONE, noJs } from './presets'
 
 /*
  * City replay (#46, the Sketch frame "9b Replay da cidade"), 390x844, fixture Cidade Exemplo (round 2, the default: A 47%/B 53% in 2018, 58/42 in 2022, 50/50 in 2026; round 1: 55/45, 49/51, 52/48).
@@ -60,7 +61,7 @@ test.describe('city replay', () => {
   })
 
   test('without scripts there is no replay and the static card is shown', async ({ browser }) => {
-    const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } })
+    const context = await browser.newContext({ ...noJs(), viewport: PHONE })
     const page = await context.newPage()
     await page.goto(page9)
     await expect(page.locator('.replay')).toHaveCount(0)

@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
+import { noJs } from './presets'
 
 /*
  * The reports hub (/relatorios/) and the built reports: /relatorios/cidades-que-viraram/ (ticket #12)
@@ -90,7 +91,7 @@ test.describe('cidades que viraram page', () => {
   })
 
   test('reports what it does without JavaScript: all figures visible, share answers by copying', async ({ browser }) => {
-    const context = await browser.newContext({ javaScriptEnabled: false })
+    const context = await browser.newContext(noJs())
     const page = await context.newPage()
     await page.goto(base + 'relatorios/cidades-que-viraram/')
     await expect(page.locator('#main h1')).toBeVisible()

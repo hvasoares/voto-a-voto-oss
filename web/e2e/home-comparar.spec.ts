@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 import { activateSearch, base, expectNoHorizontalScroll, maybeThrottleCpu, resizeTo, waitReady } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * #101: the "Comparar" chooser, a section of Home (#comparar) that leads to routes that already exist. Options that need a city ask for it
@@ -179,7 +180,7 @@ test.describe('the remembered city', () => {
 })
 
 test.describe('without JavaScript', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
   test('every option is a plain link; the ones that need a city lead to the search with its instruction', async ({ page }) => {
     await page.goto(base)
     await expect(chooser(page).getByRole('link')).toHaveCount(5)

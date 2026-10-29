@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { activateSearch, base, collectRequests, expectNoHorizontalScroll, hoverState, mapFrame, resizeTo, WIDTHS } from './helpers'
+import { ULTRAWIDE, viewport, useNoJs } from './presets'
 
 /* Ticket #51: the desktop shell and Home. Fixture dataset (states rj, sp, mt). */
 
@@ -30,7 +31,7 @@ test.describe('top bar', () => {
 
   test('below 1024 px it is not drawn (a phone and a tablet keep their own header)', async ({ page }) => {
     for (const width of [390, 768, 1023]) {
-      await page.setViewportSize({ width, height: 900 })
+      await page.setViewportSize(viewport(width, 900))
       await page.goto(base)
       await expect(page.locator('[data-component="top-bar"]')).toBeHidden()
     }
@@ -46,7 +47,7 @@ test.describe('top bar', () => {
   })
 
   test.describe('without JavaScript', () => {
-    test.use({ javaScriptEnabled: false })
+    useNoJs()
     test('the bar and its links are pre-rendered and usable', async ({ page }) => {
       await page.goto(base)
       const bar = page.locator('[data-component="top-bar"]')
@@ -130,7 +131,7 @@ test.describe('layout', () => {
   })
 
   test('the content column is 1200 px wide and centered above 1440', async ({ page }) => {
-    await page.setViewportSize({ width: 1800, height: 900 })
+    await page.setViewportSize(ULTRAWIDE)
     await page.goto(base)
     const main = await page.locator('#main').boundingBox()
     expect(main!.width).toBeLessThanOrEqual(1240)
@@ -139,7 +140,7 @@ test.describe('layout', () => {
 
   test('at 768 and 1023 Home is one column and the tile grid shows (the map is for 1024 and up)', async ({ page }) => {
     for (const width of [768, 1023]) {
-      await page.setViewportSize({ width, height: 900 })
+      await page.setViewportSize(viewport(width, 900))
       await page.goto(base)
       const grid = await page.locator('[data-uf-grid]').boundingBox()
       const explore = await page.getByRole('heading', { name: 'O que você quer fazer?' }).boundingBox()

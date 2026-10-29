@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { base, collectRequests } from './helpers'
+import { DESKTOP, noJs } from './presets'
 
 /* The sentence highlight of the three-cycles page (#62), 1440x900: one island, loaded for 1024 px and up; every highlighted value is readable by keyboard and touch. */
 const page_ = `${base}tres-ciclos/rj/`
@@ -50,7 +51,7 @@ test.describe('desktop: sentence to data', () => {
   })
 
   test('works by touch (a tap) and the buttons are at least 44 px tall', async ({ browser, baseURL }) => {
-    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, hasTouch: true, baseURL })
+    const ctx = await browser.newContext({ viewport: DESKTOP, hasTouch: true, baseURL })
     const page = await ctx.newPage()
     await page.goto(page_)
     const first = page.locator('[data-fact-sentence]').first()
@@ -61,7 +62,7 @@ test.describe('desktop: sentence to data', () => {
   })
 
   test('the page without the island still has the links and the seal (the records stay readable)', async ({ browser, baseURL }) => {
-    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, javaScriptEnabled: false, baseURL })
+    const ctx = await browser.newContext({ viewport: DESKTOP, ...noJs(), baseURL })
     const page = await ctx.newPage()
     await page.goto(page_)
     await expect(page.locator('a.calc').first()).toBeVisible()

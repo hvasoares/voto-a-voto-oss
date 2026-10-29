@@ -4,6 +4,7 @@ import { createStore } from '../src/data'
 import { diskSource } from '../src/data/node'
 import { formatShare, stayHomeRows } from '../src/lib/stay-home'
 import { base, collectRequests, expectNoHorizontalScroll, mapaFrame, resizeTo } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * #32 "Ficaram em casa" on desktop (1024 px and up): the SVG map is the document of a lazy iframe like the other two maps of the Mapa por estado
@@ -64,7 +65,7 @@ test.describe('Ficaram em casa at 1440', () => {
   })
 
   test.describe('without JavaScript', () => {
-    test.use({ javaScriptEnabled: false })
+    useNoJs()
     test('the panel shows its default state and every state link works', async ({ page }) => {
       await page.goto(PATH)
       const frame = mapaFrame(page)

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * Ticket #40: the optional "Usar minha localização" button on Home. Fixture dataset: rj cities with centres around
@@ -95,7 +96,7 @@ test.describe('without a position API or without JavaScript', () => {
   })
 
   test.describe('no scripts', () => {
-    test.use({ javaScriptEnabled: false })
+    useNoJs()
     test('the button is not shown', async ({ page }) => {
       await page.goto(base)
       await expect(page.locator('[data-locate]')).toBeHidden()

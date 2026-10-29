@@ -1,16 +1,17 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import { expect, test } from '@playwright/test'
 import { UF_NOME } from '../src/lib/uf-names'
 import { base } from './helpers'
+import { DESKTOP, dataGuard } from './presets'
 
 /*
  * "Dados para nerds" on the REAL dataset (G12): all 27 estados, 5 regiões and Brasil have a page, the printed figures equal the national totals published by the TSE
  * (data/manifest.json reference), the 27 UFs are linked on the map, and the largest estado (MG, 853 municípios) stays within the recorded budget.
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
-test.use({ viewport: { width: 1440, height: 900 }, isMobile: false, hasTouch: false })
+test.skip(...dataGuard())
+test.use({ viewport: DESKTOP, isMobile: false, hasTouch: false })
 
 const manifest = JSON.parse(readFileSync(resolve('../data/manifest.json'), 'utf8')) as { national_reference: Record<string, { comparecimento: number; validos: number; candidates: Record<string, number> }> }
 const int = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.')

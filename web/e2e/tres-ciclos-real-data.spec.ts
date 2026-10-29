@@ -1,7 +1,8 @@
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * /tres-ciclos/sp/ (screen 13) against the real committed dataset (run with `npm run test:real`).
@@ -9,7 +10,7 @@ import { base } from './helpers'
  * ("Ponto de partida da série"), 2022 44,8/55,2 (Lula +12,7 pp vs 2018), 2026 46,2/53,8
  * (Lula +1,4 pp vs 2022); chips in the frame order; "Outros estados" MG RJ BA PR RS.
  */
-test.skip(!existsSync(resolve('../data/votes.csv')), 'no ../data')
+test.skip(...dataGuard('votes.csv'))
 
 test.beforeEach(async ({ page }) => {
   await page.goto(`${base}tres-ciclos/sp/`)

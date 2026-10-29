@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { PRINT_A4 } from './presets'
 
 /*
  * Gate 2 of each page checkpoint: captures the fixture-state render at 390x844, scroll 0, next to
@@ -104,7 +105,7 @@ test('capture qr / default', async ({ page }) => {
 
 /* Ticket #9: the printable poster, A4 emulated (print media at 794x1123 CSS px = 210x297 mm at 96 dpi). */
 test('capture qr / poster-print', async ({ page }) => {
-  await page.setViewportSize({ width: 794, height: 1123 })
+  await page.setViewportSize(PRINT_A4)
   await page.emulateMedia({ media: 'print' })
   await page.goto(`${base}qr/`)
   await page.evaluate(() => document.fonts.ready)

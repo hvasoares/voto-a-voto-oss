@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { acknowledgeNotice } from './presets'
 
 /*
  * Ticket #36: the donation link ("Apoie o projeto") on the footer of every page and on the data page, in a new
@@ -66,7 +67,7 @@ test.describe('address configured', () => {
 
   test('data page: the section "Apoie o projeto" has the statement and the button', async ({ page }) => {
     // the fixed metrics notice would cover the bottom of the page on a first visit
-    await page.addInitScript(() => localStorage.setItem('voto-a-voto:notice', 'acknowledged'))
+    await acknowledgeNotice(page)
     await page.goto(`${base}sobre-os-dados/`)
     const section = page.locator('[data-component="support"]')
     await expect(section.getByRole('heading', { name: 'Apoie o projeto' })).toBeVisible()

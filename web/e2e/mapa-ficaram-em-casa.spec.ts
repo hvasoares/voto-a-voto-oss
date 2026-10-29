@@ -5,6 +5,7 @@ import { createStore } from '../src/data'
 import { diskSource } from '../src/data/node'
 import { formatShare, stayHomeRows } from '../src/lib/stay-home'
 import { base, collectRequests, violations } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * #32 "Ficaram em casa" at 390x844, fixture dataset (states rj, sp, mt; an overseas post `zz` in the data). The expected percentages are
@@ -125,7 +126,7 @@ test.describe('Ficaram em casa: map view', () => {
 })
 
 test.describe('Ficaram em casa without JavaScript', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
 
   test('the mosaic, the views and the tabs are real links; the numbers are pre-rendered', async ({ page }) => {
     await page.goto(PATH)

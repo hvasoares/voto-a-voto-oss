@@ -1,14 +1,13 @@
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * /mapa/ and /mapa/virada/ on the REAL dataset (run with `npm run test:real`). The numbers below
  * are the same pins of src/lib/margins.test.ts (swing/compare note: RJ +7.4, SP +6.0, MG flip).
  * State paths are asserted as PATHS only; state pages are not ported yet (#50).
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
+test.skip(...dataGuard())
 
 test.describe('mapa on the real dataset', () => {
   test('the pair comes from the data: Lula 13 x Flávio 22 in 2026, named in the subtitle', async ({ page }) => {

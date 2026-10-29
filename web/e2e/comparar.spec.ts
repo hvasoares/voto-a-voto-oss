@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
+import { PHONE, noJs } from './presets'
 
 /*
  * /comparar/2022/ and /comparar/2018/ on the fixture build (screens 11 and 11b).
@@ -75,7 +76,7 @@ test.describe('compare pages (fixture build)', () => {
     })
 
     test(`frames "${route}": works with JavaScript off (static HTML, no island needed)`, async ({ browser }) => {
-      const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } })
+      const context = await browser.newContext({ ...noJs(), viewport: PHONE })
       const page = await context.newPage()
       await page.goto(url(route))
       await expect(page.locator('[data-component="compare-rows"] > li').first()).toBeVisible()

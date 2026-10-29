@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { base, collectRequests } from './helpers'
+import { DESKTOP, useNoJs } from './presets'
 
 /*
  * The Tabela de detalhe without the island (#76): complete in the HTML with scripts off, at every level, names that degrade to links, the total equal to the sum of the rows,
@@ -9,7 +10,7 @@ const url = (path: string) => `${base}dados-para-nerds/${path}`
 const int = (text: string) => Number(text.replace(/\./g, ''))
 
 test.describe('Tabela de detalhe, scripts off', () => {
-  test.use({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } })
+  useNoJs({ viewport: DESKTOP })
 
   for (const [path, first, href] of [
     ['', 'Centro-Oeste', null],

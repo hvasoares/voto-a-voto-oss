@@ -1,7 +1,8 @@
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { expect, test, type Locator } from '@playwright/test'
 import { base } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * LAUNCH GATE (issue #21), criterion 2: at least 20 figures across screens (national, regional,
@@ -21,7 +22,7 @@ import { base } from './helpers'
  * inside a specific element (a tile, a panel) instead of the page text. Recorded output:
  * .captures/launch-gate/verified-numbers.json.
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
+test.skip(...dataGuard())
 
 interface Figure { text: string; scope?: string; citation: string }
 

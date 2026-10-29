@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { OG_CARD } from './presets'
 
 /*
  * Ticket #8's capture: the og:image raster the build drew for the fixture city, next to the SAME svg
@@ -38,7 +39,7 @@ test('capture city-preview / og-image raster vs the same svg rendered by the bro
   // browser at exactly the og:image size, in its own 480x476 context (an <img>, so the viewBox of the
   // card-size svg is scaled to the og dimensions exactly like any og:image display)
   const encoded = Buffer.from(picture, 'utf8').toString('base64')
-  const browser2 = await page.context().browser()!.newContext({ viewport: { width: 480, height: 476 }, deviceScaleFactor: 1, isMobile: false })
+  const browser2 = await page.context().browser()!.newContext({ viewport: OG_CARD, deviceScaleFactor: 1, isMobile: false })
   const page2 = await browser2.newPage()
   await page2.setContent(
     `<!doctype html><html><head><meta name="viewport" content="width=480"></head><body style="margin:0"><img width="480" height="476" src="data:image/svg+xml;base64,${encoded}"></body></html>`,

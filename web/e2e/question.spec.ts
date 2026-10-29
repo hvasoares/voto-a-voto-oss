@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations, waitReady } from './helpers'
+import { PHONE, noJs } from './presets'
 
 /*
  * Question before the answer (#44, the Sketch frame "2b Pergunta antes da resposta"), 390x844, fixture Cidade Exemplo:
@@ -16,7 +17,7 @@ const ready = async (page: Page) => {
 
 test.describe('city page: question before the answer', () => {
   test('the question and its answer are in the first screen, with no guess and with no scripts', async ({ browser }) => {
-    const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 }, locale: 'pt-BR' })
+    const context = await browser.newContext({ ...noJs(), viewport: PHONE, locale: 'pt-BR' })
     const page = await context.newPage()
     await page.goto(`${city}?turno=1`)
     const q = page.locator('.city-q__q')

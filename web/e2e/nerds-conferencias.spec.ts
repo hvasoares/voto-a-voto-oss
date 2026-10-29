@@ -4,6 +4,7 @@ import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } f
 import { tmpdir } from 'node:os'
 import { resolve } from 'node:path'
 import { base } from './helpers'
+import { DESKTOP, useNoJs } from './presets'
 
 /*
  * Sinais and Invariantes (#77): the strip and the list on every level, complete without scripts; and a CORRUPTED copy of the fixture shards, built into its own directory, shows the
@@ -12,7 +13,7 @@ import { base } from './helpers'
 const url = (path: string) => `${base}dados-para-nerds/${path}`
 
 test.describe('Sinais and Invariantes', () => {
-  test.use({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } })
+  useNoJs({ viewport: DESKTOP })
 
   for (const [path, own] of [['', true], ['regiao/sudeste/', false], ['estado/rj/', false]] as const) {
     test(`${path || 'brasil'}: a minimal strip when all pass, and the list of rules with ✓ Passou, complete without scripts`, async ({ page }) => {
@@ -82,7 +83,7 @@ test.describe('a corrupted shard shows on the page', () => {
   test('the banner leads the page, the strip and the list name the failing rule, and the affected cycle is labelled "não conferido"', async ({ page }) => {
     const html = readFileSync(resolve(out, 'dados-para-nerds/estado/rj/index.html'), 'utf8')
     await page.route(`**${base}dados-para-nerds/estado/rj/`, (route) => route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: html }))
-    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.setViewportSize(DESKTOP)
     await page.goto(url('estado/rj/'))
     const banner = page.locator('[data-banner]')
     await expect(banner).toContainText('Soma dos municípios = Rio de Janeiro')

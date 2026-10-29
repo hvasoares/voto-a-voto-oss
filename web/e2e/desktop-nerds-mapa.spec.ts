@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import { base } from './helpers'
+import { DESKTOP, WIDE_BAND, useNoJs } from './presets'
 
 /*
  * The map panel at 1440 px (#78): static inline SVG (every state a link with a title and a text label, five-step numeric legend, region chips on Brasil), complete with scripts
@@ -18,7 +19,7 @@ const shardRows = (file: string, group: string) => {
 const pct = (a: number, b: number) => `${(Math.round((a / b) * 1000) / 10).toFixed(1).replace('.', ',')}%`
 
 test.describe('map panel, scripts off (1440 px)', () => {
-  test.use({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } })
+  useNoJs({ viewport: DESKTOP })
 
   test('Brasil: states that have a page are links with a title and a text label; the legend prints five steps; each region chip prints its value and links to the região', async ({ page }) => {
     await page.goto(url())
@@ -57,14 +58,14 @@ test.describe('map panel, scripts off (1440 px)', () => {
 
 test.describe('map panel, island (1440 px)', () => {
   test('a state link opens the estado level through the address', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.setViewportSize(DESKTOP)
     await page.goto(url())
     await panel(page).locator('a[data-map-uf="rj"] path').click()
     await expect(page).toHaveURL(new RegExp('dados-para-nerds/estado/rj/$'))
   })
 
   test('the pickers recolour the map, print the new values and keep the choice in the address; the address reopens it', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.setViewportSize(DESKTOP)
     await page.goto(url())
     await panel(page).scrollIntoViewIfNeeded()
     await expect(panel(page)).toHaveAttribute('data-drawn', '2026-1-comparecimento')
@@ -88,7 +89,7 @@ test.describe('map panel, island (1440 px)', () => {
   })
 
   test('keyboard selection: a state takes focus with a visible ring and its value is read out', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.setViewportSize(DESKTOP)
     await page.goto(url())
     await panel(page).scrollIntoViewIfNeeded()
     await expect(panel(page)).toHaveAttribute('data-drawn', /./)
@@ -103,7 +104,7 @@ test.describe('map panel, island (1440 px)', () => {
   test('the island loads only from 1024 px up and only when in view; the inline SVG costs a recorded amount of HTML', async ({ page }) => {
     const chunks: string[] = []
     page.on('request', (r) => /\/_astro\/.*(MapaEnhancer)\.[^/]*\.js/.test(r.url()) && chunks.push(r.url()))
-    await page.setViewportSize({ width: 1440, height: 300 })
+    await page.setViewportSize(WIDE_BAND)
     await page.goto(url())
     await page.waitForLoadState('networkidle')
     expect(chunks).toEqual([])

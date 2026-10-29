@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests } from './helpers'
+import { viewport, noJs } from './presets'
 
 /*
  * The embeddable city widget (#29) over the fixture dataset. A plain test page of "another site" embeds three cities with the snippet's
@@ -21,7 +22,7 @@ async function hostPage(page: Page, width: number, snippets?: string[]) {
 
 for (const width of [320, 390])
   test(`three cities embedded in a ${width} px column: the right size, no scrollbars, source and edition shown`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 900 })
+    await page.setViewportSize(viewport(width, 900))
     await page.goto(base)
     await hostPage(page, width)
     const frames = page.locator('iframe')
@@ -121,7 +122,7 @@ test.describe('the page that makes the snippet', () => {
   })
 
   test('without JavaScript it says what it needs', async ({ browser }) => {
-    const ctx = await browser.newContext({ javaScriptEnabled: false })
+    const ctx = await browser.newContext(noJs())
     const p = await ctx.newPage()
     await p.goto(`${base}widget/`)
     await expect(p.locator('[data-nojs]')).toContainText('precisa de JavaScript')

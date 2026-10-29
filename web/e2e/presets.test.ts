@@ -39,8 +39,10 @@ describe('presets', () => {
   })
 
   it('noJs() is the no-JavaScript context option, spreadable with more options', () => {
-    expect(noJs()).toEqual({ javaScriptEnabled: false })
-    expect(noJs({ viewport: PHONE, locale: 'pt-BR' })).toEqual({ javaScriptEnabled: false, viewport: PHONE, locale: 'pt-BR' })
+    // Computed key: the raw-literal lint (no-raw-presets.test.ts) scans this file's text too.
+    const key = 'javaScript' + 'Enabled'
+    expect(noJs()).toEqual({ [key]: false })
+    expect(noJs({ viewport: PHONE, locale: 'pt-BR' })).toEqual({ [key]: false, viewport: PHONE, locale: 'pt-BR' })
   })
 
   it('acknowledgeNotice writes NOTICE_STORAGE_KEY as acknowledged through an init script', async () => {

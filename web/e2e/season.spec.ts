@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
+import { PHONE, noJs } from './presets'
 
 /*
  * State season (#42, #43; Sketch frames "13b Temporada do estado" and "13c Temporada de trás para frente"), 390x844, fixture RJ (2018, 2022 and 2026 all have data).
@@ -14,7 +15,7 @@ const parts = (page: Page) => page.locator('[data-season] > *').evaluateAll((els
 
 test.describe('state season', () => {
   test('without scripts: three episodes in reading order, each with its anchor, the pivot between the 2nd and the 3rd, and no switch', async ({ browser }) => {
-    const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 }, locale: 'pt-BR' })
+    const context = await browser.newContext({ ...noJs(), viewport: PHONE, locale: 'pt-BR' })
     const page = await context.newPage()
     await page.goto(rj)
     expect(await parts(page)).toEqual(['2018', '2022', 'pivot', '2026'])

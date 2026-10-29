@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, expectNoHorizontalScroll, resizeTo, violations, waitReady, WIDTHS } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * State page (:uf/, #50, reorganised by #83): the search box comes FIRST and filters the ONE list of municipalities below it, the
@@ -313,7 +314,7 @@ test.describe('state: layout and accessibility', () => {
 })
 
 test.describe('state without JavaScript', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
   test('the full coloured list is there, every row a native anchor, and the search is said to need JavaScript', async ({ page }) => {
     await page.goto(rj)
     await expect(rows(page)).toHaveCount(6)

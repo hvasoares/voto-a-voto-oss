@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { gzipSync } from 'node:zlib'
 import { base } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * The region SVG of the dashboard (#71) at 1440 px: five linked shapes with a title and a text label, drawn from the same outlines as the UF map (a region is exactly the union
@@ -10,7 +11,7 @@ const REGIONS = ['norte', 'nordeste', 'centro-oeste', 'sudeste', 'sul']
 const url = `${base}dados-para-nerds/geometria/`
 
 test.describe('Região outlines (1440 px)', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
 
   test('draws the five regions as links with a title and a text label, with scripts off', async ({ page }) => {
     await page.goto(url)

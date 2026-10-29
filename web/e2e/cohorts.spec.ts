@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * The cohort report (/relatorios/como-cada-grupo-votou/), ticket #15. Static page, no island: the
@@ -68,7 +69,7 @@ test.describe('cohort report page', () => {
 })
 
 test.describe('cohort report without JavaScript', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
   test('the pre-rendered report is complete: same text, same bar, same notes', async ({ page }) => {
     await page.goto(path)
     await expect(page.locator('[data-component="group-card"]')).toHaveCount(3)

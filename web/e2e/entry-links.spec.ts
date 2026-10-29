@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 import { base, expectNoHorizontalScroll, resizeTo, WIDTHS } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * Four small entry points (follow-up): "Abrir cartão" on the generator, "Baixar adesivo" on the Meu Brasil card, "Comparar com outro estado"
@@ -56,7 +57,7 @@ test.describe('Já tem um cartão? Abrir cartão ›', () => {
   })
 
   test.describe('without JavaScript', () => {
-    test.use({ javaScriptEnabled: false })
+    useNoJs()
     test('is a plain anchor', async ({ page }) => {
       await page.goto(`${base}gerador/`)
       await expect(link(page)).toHaveAttribute('href', `${base}abrir-cartao/`)

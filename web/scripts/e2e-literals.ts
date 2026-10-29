@@ -88,6 +88,8 @@ const canon = (tok: string): string => (/^\d+$/.test(tok) ? tok : tok)
 /** The canonical viewport/no-js/guard/notice tokens of one source file (a multiset as token → count). */
 export function literalTokens(source: string): Record<string, number> {
   let text = stripComments(source)
+  // The migration's own import line lists the preset names — it is not a usage.
+  text = text.replace(/^import\s*\{[^}]*\}\s*from\s*'\.\/presets'\s*;?$/gm, (s) => ' '.repeat(s.length))
   const counts: Record<string, number> = {}
   const add = (token: string) => {
     counts[token] = (counts[token] ?? 0) + 1
@@ -128,8 +130,9 @@ export function literalTokens(source: string): Record<string, number> {
     add('nojs')
     text = blank(text, m.index!, m[0].length)
   }
-  // 8. Data guards, raw…
-  for (const m of text.matchAll(/test\.skip\s*\([\s\S]*?\bexistsSync\s*\([\s\S]*?\)/g)) {
+  // 8. Data guards, raw — every raw guard is a single line, so the body must stay on it (a multiline
+  // lookahead would otherwise swallow the helper call it replaced and the next stray existsSync).
+  for (const m of text.matchAll(/test\.skip\s*\([^\n]*\bexistsSync\s*\([^)]*\)[^\n]*/g)) {
     const body = m[0]
     const exact = body.match(/DATA_DIR\s*!==\s*'([^']+)'/)
     const single = body.match(/resolve\(\s*'([^']+)'/)

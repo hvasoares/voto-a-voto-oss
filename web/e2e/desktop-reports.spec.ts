@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { base, collectRequests, expectNoHorizontalScroll, resizeTo, WIDTHS } from './helpers'
+import { DESKTOP, noJs } from './presets'
 
 /* Ticket #56: the report screens on desktop. Fixture dataset. */
 const SCREENS = {
@@ -71,7 +72,7 @@ test.describe('comparar: the six states as a three-column table', () => {
     await page.goto(SCREENS['comparar com 2022'])
     await page.locator('[data-component="cycle-tabs"] a[data-tab="2018"]').click()
     await expect(page).toHaveURL(SCREENS['comparar com 2018'])
-    const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, javaScriptEnabled: false })
+    const context = await browser.newContext({ viewport: DESKTOP, ...noJs() })
     const plain = await context.newPage()
     await plain.goto(SCREENS['comparar com 2018'])
     await plain.locator('[data-component="cycle-tabs"] a[data-tab="2022"]').click()

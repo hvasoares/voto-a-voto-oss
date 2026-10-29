@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
 import { FINALITY_PAGES } from './routes-inventory'
+import { viewport, noJs } from './presets'
 
 /*
  * "Final, não ao vivo" sits on the global footer line of every page (Base.astro), with the wording Home prints under its tagline. A chip, not a link: plain text that
@@ -12,7 +13,7 @@ const line = (page: import('@playwright/test').Page) => page.locator('[data-comp
 
 for (const [w, h] of [[390, 844], [1440, 900]] as const) {
   test.describe(`${w}x${h}`, () => {
-    test.use({ viewport: { width: w, height: h } })
+    test.use({ viewport: viewport(w, h) })
 
     test('every page type has the chip once on the footer line, with the words Home uses, and it is not a link', async ({ page }) => {
       await page.goto(base)
@@ -46,7 +47,7 @@ for (const [w, h] of [[390, 844], [1440, 900]] as const) {
 }
 
 test('the chip is in the page without scripts', async ({ browser }) => {
-  const ctx = await browser.newContext({ javaScriptEnabled: false })
+  const ctx = await browser.newContext(noJs())
   const page = await ctx.newPage()
   await page.goto(`${base}rj/cidade-exemplo/`)
   await expect(line(page).locator('[data-finality-chip]')).toHaveText('Final, não ao vivo')

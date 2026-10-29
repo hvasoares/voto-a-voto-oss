@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base } from './helpers'
+import { DESKTOP, WIDE_BAND, useNoJs } from './presets'
 
 /*
  * Par 1º→2º and Distribuição at 1440 px (#79): both complete without scripts (Par as a table, Distribuição as tables of bins plus the five-number summary); the histogram island
@@ -10,7 +11,7 @@ const par = (page: Page) => page.locator('[data-ciclo-block="2026"] [data-panel=
 const dist = (page: Page) => page.locator('[data-ciclo-block="2026"] [data-panel="distribuicao"]')
 
 test.describe('without scripts', () => {
-  test.use({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } })
+  useNoJs({ viewport: DESKTOP })
 
   for (const [path, rows, unit] of [['', ['Brasil'], 'UFs'], ['regiao/sudeste/', ['Sudeste', 'Brasil'], 'UFs'], ['estado/rj/', ['Rio de Janeiro', 'Sudeste', 'Brasil'], 'municípios']] as const) {
     test(`${path || 'brasil'}: Par is a table of values with the fixed note and no difference; Distribuição is bins plus the five numbers and the rule`, async ({ page }) => {
@@ -37,7 +38,7 @@ test.describe('without scripts', () => {
 
 test.describe('with the island', () => {
   test('is the bins table until in view, then the histogram with the box plot; pickers change the measure and turno and the counts agree with the table', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 300 })
+    await page.setViewportSize(WIDE_BAND)
     await page.goto(url())
     await expect(dist(page).locator('[data-dist]')).toHaveAttribute('data-drawn', 'tabela')
     const tableCounts = (await dist(page).locator('[data-turno-table="1"] [data-count]').allTextContents()).map(Number)
@@ -61,7 +62,7 @@ test.describe('with the island', () => {
   test('the histogram island is not loaded until the panel is in view, and never below 1024 px', async ({ page }) => {
     const chunks: string[] = []
     page.on('request', (r) => /\/_astro\/.*(DistribuicaoPanel)\.[^/]*\.js/.test(r.url()) && chunks.push(r.url()))
-    await page.setViewportSize({ width: 1440, height: 300 })
+    await page.setViewportSize(WIDE_BAND)
     await page.goto(url())
     await page.waitForLoadState('networkidle')
     expect(chunks).toEqual([])

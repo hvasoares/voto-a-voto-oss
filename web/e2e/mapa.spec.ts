@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * Screens 10/10b (/mapa/ and /mapa/virada/) at 390x844, fixture dataset (states rj, sp, mt;
@@ -133,7 +134,7 @@ test.describe('mapa/virada: swing view', () => {
 })
 
 test.describe('mapa without JavaScript', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
 
   test('tiles stay links to the state paths, tabs and toggle are real links, panel pre-rendered', async ({ page }) => {
     await page.goto(`${base}mapa/`)

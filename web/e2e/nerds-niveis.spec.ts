@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { base } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * "Dados para nerds" at Brasil and região (#74): one component for the three levels, the breadcrumb and the links down (with JavaScript off), the two entry points on
@@ -34,7 +35,7 @@ test.describe('Brasil, região and estado from one component', () => {
 })
 
 test.describe('breadcrumb and links down work with JavaScript off', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
 
   test('Brasil -> região -> estado and back up, only by links', async ({ page }) => {
     await page.goto(at(''))

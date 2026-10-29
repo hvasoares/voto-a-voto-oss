@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { test } from '@playwright/test'
 import { base } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * Gate 2 of the state-map checkpoint: captures /mapa/ and /mapa/virada/ (fixture states) at
@@ -39,7 +40,7 @@ for (const [state, reference] of Object.entries(refs)) {
 }
 
 test.describe('no-JS render', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
   test('capture mapa / no-js', async ({ page }) => {
     const url = `${base}mapa/`
     await page.goto(url)

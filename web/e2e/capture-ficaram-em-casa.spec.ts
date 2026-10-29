@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { test } from '@playwright/test'
 import { base } from './helpers'
+import { DESKTOP } from './presets'
 
 /*
  * Gate 2 of #32: the slot in its fixture state at 390x844 (mosaic and map), next to the Sketch frames "20 Mapa de quem ficou em casa (mosaico)" and
@@ -29,7 +30,7 @@ for (const view of ['mosaico', 'mapa'] as const) {
 }
 
 test('capture ficaram-em-casa / desktop', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.setViewportSize(DESKTOP)
   await page.goto(PATH)
   await page.frameLocator('[data-mapa-frame]').locator('svg[data-uf-map]').waitFor()
   await page.evaluate(() => document.fonts.ready)

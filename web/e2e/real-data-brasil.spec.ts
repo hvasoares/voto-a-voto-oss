@@ -1,7 +1,8 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * /brasil/ on the REAL dataset (run with `npm run test:real`; DATA_DIR=../data, relative to web/).
@@ -12,7 +13,7 @@ import { allowedOrigins, base, collectRequests, violations } from './helpers'
  * committed in data/manifest.json ("national_reference"), so no number below is typed by hand.
  * Skipped when ../data is missing.
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
+test.skip(...dataGuard())
 
 /** Rows of `file` as arrays of columns (the dataset CSVs contain no quoted commas). */
 function csv(file: string): string[][] {

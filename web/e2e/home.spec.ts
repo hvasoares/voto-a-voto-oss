@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { activateSearch, allowedOrigins, base, collectRequests, maybeThrottleCpu, violations } from './helpers'
+import { PHONE, useNoJs } from './presets'
 
 /* Home page at 390x844, fixture dataset (9 cities, states rj, sp, mt). Behaviour spec: site/src/slots/home/CONTRACT.md */
 // #122 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file.
@@ -47,14 +48,14 @@ test.describe('home: content', () => {
 
   test('does not scroll sideways', async ({ page }) => {
     await page.goto(base)
-    expect(page.viewportSize()).toEqual({ width: 390, height: 844 })
+    expect(page.viewportSize()).toEqual(PHONE)
     const { sw, iw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: window.innerWidth }))
     expect(sw).toBeLessThanOrEqual(iw)
   })
 })
 
 test.describe('home without JavaScript', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
   test('the pre-rendered page still offers the state tiles and the task links as plain anchors', async ({ page }) => {
     await page.goto(base)
     await expect(page.getByRole('link', { name: /RJ · Rio de Janeiro/ })).toHaveAttribute('href', `${base}rj/`)

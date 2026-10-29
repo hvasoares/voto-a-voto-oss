@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { base, collectRequests, expectNoHorizontalScroll, hoverState, mapFrame, resizeTo } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * Ticket #53: the SVG state map on Home at 1024 px and up. Fixture dataset: states rj, sp and mt have pages.
@@ -34,7 +35,7 @@ test.describe('Home map', () => {
   })
 
   test.describe('without JavaScript', () => {
-    test.use({ javaScriptEnabled: false })
+    useNoJs()
     test('at 1440 the map draws and every state link works', async ({ page }) => {
       await page.goto(base)
       await expect(page.locator('[data-uf-map-frame]')).toBeVisible()

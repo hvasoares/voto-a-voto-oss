@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, maybeThrottleCpu, violations } from './helpers'
+import { PHONE, noJs } from './presets'
 
 // #123 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file.
 test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
@@ -24,7 +25,7 @@ const centered = (page: Page) =>
 
 test.describe('state story', () => {
   test('without scripts the cards are a stacked list in order, each with its anchor, picture and caption', async ({ browser }) => {
-    const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 }, locale: 'pt-BR' })
+    const context = await browser.newContext({ ...noJs(), viewport: PHONE, locale: 'pt-BR' })
     const page = await context.newPage()
     await page.goto(rj)
     const ids = await page.locator('[data-card]').evaluateAll((els) => els.map((e) => e.id))

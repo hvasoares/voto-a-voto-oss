@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { base, collectRequests, expectNoHorizontalScroll, mapaFrame, resizeTo } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * Ticket #54: "Mapa por estado" and "Mapa por estado: virada" on desktop (1024 px and up). Fixture dataset: rj, sp, mt.
@@ -90,7 +91,7 @@ for (const p of PAGES) {
     })
 
     test.describe('without JavaScript', () => {
-      test.use({ javaScriptEnabled: false })
+      useNoJs()
       test('the panel shows its default state and every state link works, with the tabs', async ({ page }) => {
         await page.goto(base + p.path)
         const frame = mapaFrame(page)

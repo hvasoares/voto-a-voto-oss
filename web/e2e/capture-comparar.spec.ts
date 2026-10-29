@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { PHONE, noJs } from './presets'
 
 /*
  * Gate 2 of the compare checkpoint: captures the fixture build at 390x844 next to the frames
@@ -26,7 +27,7 @@ for (const route of ['/comparar/2018/', '/comparar/2022/']) {
   })
 
   test(`capture ${route} / same page with JavaScript off`, async ({ browser }) => {
-    const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } })
+    const context = await browser.newContext({ ...noJs(), viewport: PHONE })
     const page = await context.newPage()
     await page.goto(`${base}${route.slice(1)}`)
     const dir = resolve('.captures', 'comparar')

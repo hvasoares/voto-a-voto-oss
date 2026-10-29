@@ -1,7 +1,6 @@
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * The #17 route on the REAL dataset (run with `npm run test:real`): spot e2e over a spread of UFs --
@@ -10,7 +9,7 @@ import { allowedOrigins, base, collectRequests, violations } from './helpers'
  * row must carry the 7-digit IBGE code of its mesh shape (the join), the geo file must be a single
  * on-demand GET to the site origin, and the only without-boundary state must be MT.
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
+test.skip(...dataGuard())
 
 const COUNTS: Record<string, number> = { df: 1, rr: 15, rs: 497, sp: 645, mg: 853, mt: 142 }
 const UF_CODE: Record<string, string> = { df: '53', rr: '14', rs: '43', sp: '35', mg: '31', mt: '51' }

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { activateSearch, base } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * Ticket #35: the site remembers the place the visitor picked (in this browser only) and Home offers it back as
@@ -114,7 +115,7 @@ test.describe('home: nothing leaves the device and nothing breaks without storag
 })
 
 test.describe('home without JavaScript', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
   test('the shortcut stays out of the page', async ({ page }) => {
     await page.goto(base)
     await expect(shortcut(page)).toBeHidden()

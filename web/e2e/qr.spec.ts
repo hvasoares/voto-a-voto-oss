@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
+import { useNoJs } from './presets'
 // the same generator the build rasterises with, so the pin adapts to the built base path
 import { glyphSvg, qrGlyph } from '../src/lib/qr-code'
 
@@ -103,7 +104,7 @@ test.describe('qr: the printable poster', () => {
   })
 
   test.describe('poster without JavaScript', () => {
-    test.use({ javaScriptEnabled: false })
+    useNoJs()
     test('the QR, address and links are all there (the screen never needed JS)', async ({ page }) => {
       await page.goto(path)
       await expect(page.locator('[data-qr] svg')).toBeVisible()

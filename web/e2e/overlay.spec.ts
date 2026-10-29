@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 import sharp from 'sharp'
 import { base, collectRequests, maybeThrottleCpu } from './helpers'
+import { OVERLAY_FRAME, viewport } from './presets'
 
 /*
  * The live overlay (#68) over the fixture dataset: the builder (place, measure, cycle, size, background, OBS steps, copy), the overlay address that reproduces the
@@ -16,7 +17,7 @@ test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
 test.describe('Overlay para live', () => {
   for (const [w, h] of [[1920, 1080], [1280, 720], [600, 200]] as const) {
     test(`works at ${w}x${h}: the number, the sentence and the seal fit the canvas`, async ({ page }) => {
-      await page.setViewportSize({ width: w, height: h })
+      await page.setViewportSize(viewport(w, h))
       await page.goto(overlay(`?c=rj/cidade-exemplo&m=nv&a=2026&t=2&s=${w}x${h}&f=claro`))
       await expect(page.locator('[data-overlay]')).toHaveAttribute('data-ready', 'yes')
       await expect(page.locator('[data-big]')).toHaveText(/^\d+(,\d)?%$/)
@@ -42,7 +43,7 @@ test.describe('Overlay para live', () => {
   })
 
   test('the transparent background renders on a transparent canvas (alpha 0 outside the card, opaque inside); dark and light fill the canvas', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 720 })
+    await page.setViewportSize(OVERLAY_FRAME)
     await page.goto(overlay())
     await expect(page.locator('[data-overlay]')).toHaveAttribute('data-ready', 'yes')
     const png = await page.screenshot({ omitBackground: true })

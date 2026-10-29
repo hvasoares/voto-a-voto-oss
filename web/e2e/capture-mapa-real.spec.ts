@@ -1,15 +1,15 @@
-import { existsSync } from 'node:fs'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { test } from '@playwright/test'
 import { base } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * Real-dataset captures for the state map (screens 10/10b): run with
  *   DATA_DIR=../data npx playwright test --project=capture capture-mapa-real
  * (build with the real data inside the same env). Skipped without ../data.
  */
-test.skip(process.env.DATA_DIR === undefined || !existsSync(resolve(process.env.DATA_DIR, 'cities.csv')), 'run with DATA_DIR=../data')
+test.skip(...dataGuard('cities.csv', process.env.DATA_DIR ?? null))
 
 const routes: Record<string, string> = {
   'real-mosaico': `${base}mapa/`,

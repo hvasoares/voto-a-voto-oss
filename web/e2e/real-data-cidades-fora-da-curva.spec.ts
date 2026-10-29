@@ -1,13 +1,12 @@
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * "Cidades fora da curva" (#34) on the REAL dataset (run with `npm run test:real`). The method is pinned by src/lib/reports/outliers.test.ts; these are the shape of the
  * list the real data gives and the first cities of the default list (a regression pin of the ranking, not a claim about any city).
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
+test.skip(...dataGuard())
 
 const PATH = `${base}relatorios/cidades-fora-da-curva/`
 

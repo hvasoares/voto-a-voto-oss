@@ -2,6 +2,7 @@ import { mkdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { test } from '@playwright/test'
 import { base } from './helpers'
+import { viewport, acknowledgeNotice } from './presets'
 
 /*
  * Gate 2 of the desktop tickets (G10): the fixture-state render of each screen at 1440x900 (and the phone-width and tablet
@@ -34,9 +35,9 @@ for (const [name, path] of Object.entries(SCREENS)) {
   if (only && !only.includes(name)) continue
   for (const width of WIDTHS) {
     test(`capture desktop ${name} ${width}`, async ({ page }) => {
-      await page.setViewportSize({ width, height: width === 390 ? 844 : 900 })
+      await page.setViewportSize(viewport(width, width === 390 ? 844 : 900))
       // The frames are the first-visit-free state and a browser without the Web Share API ("3 Compartilhar (desktop)").
-      await page.addInitScript(() => localStorage.setItem('voto-a-voto:notice', 'acknowledged'))
+      await acknowledgeNotice(page)
       if (name === 'compartilhar-sem-share') await page.addInitScript(() => Object.defineProperty(navigator, 'share', { value: undefined, configurable: true }))
       await page.goto(base + path)
       await page.evaluate(() => document.fonts.ready)

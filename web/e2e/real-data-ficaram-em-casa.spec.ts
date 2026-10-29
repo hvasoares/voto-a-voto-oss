@@ -1,13 +1,12 @@
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * "Ficaram em casa" (#32) on the REAL dataset (run with `npm run test:real`). The claim of each cycle and round is the line "Brasil (sem exterior)"
  * of docs/nonvoters-vs-margin.md (the unit test pins the same six numbers against the dataset); the percentages below are the sums of data/turnout.csv.
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
+test.skip(...dataGuard())
 
 const PATH = `${base}mapa/ficaram-em-casa/`
 const CLAIMS = [

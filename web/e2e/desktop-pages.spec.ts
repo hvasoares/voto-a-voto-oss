@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { base, collectRequests, expectNoHorizontalScroll, maybeThrottleCpu, resizeTo, waitReady, WIDTHS } from './helpers'
+import { DESKTOP, BELOW_FOLD, viewport, noJs } from './presets'
 
 // #123 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file.
 test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
@@ -54,7 +55,7 @@ test.describe('Estado: the municipality map slot', () => {
 
   test('at 1440 it loads only when scrolled into view', async ({ page }) => {
     const seen = collectRequests(page)
-    await page.setViewportSize({ width: 1440, height: 160 }) // the slot starts below the fold
+    await page.setViewportSize(BELOW_FOLD) // the slot starts below the fold
     await page.goto(SCREENS.estado)
     await page.waitForLoadState('networkidle')
     expect(seen.filter((r) => MAP_CODE.test(r.url))).toEqual([])
@@ -65,7 +66,7 @@ test.describe('Estado: the municipality map slot', () => {
   for (const width of [390, 768, 1023]) {
     test(`at ${width} px it does not load by scrolling (a phone downloads nothing until a tap)`, async ({ page }) => {
       const seen = collectRequests(page)
-      await page.setViewportSize({ width, height: 600 })
+      await page.setViewportSize(viewport(width, 600))
       await page.goto(SCREENS.estado)
       await page.locator('[data-map-area]').scrollIntoViewIfNeeded()
       // the page's own script ran and installed whatever would load the map module; anything it would fetch has landed
@@ -76,7 +77,7 @@ test.describe('Estado: the municipality map slot', () => {
   }
 
   test('without scripts the page shows the municipality list and its links', async ({ browser }) => {
-    const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, javaScriptEnabled: false })
+    const context = await browser.newContext({ viewport: DESKTOP, ...noJs() })
     const page = await context.newPage()
     await page.goto(SCREENS.estado)
     await expect(page.locator('[data-map-area] nav a[data-cd]')).toHaveCount(6)

@@ -3,6 +3,7 @@ import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 import sharp from 'sharp'
 import { base } from './helpers'
+import { noJs } from './presets'
 
 /*
  * Self-describing cards (#38) at 390x844: the SVG and the PNG that the generator and the share sheet make reopen their view
@@ -105,7 +106,7 @@ test.describe('reopening a card from its file', () => {
   })
 
   test('the page names what it needs without JavaScript', async ({ browser }) => {
-    const ctx = await browser.newContext({ javaScriptEnabled: false })
+    const ctx = await browser.newContext(noJs())
     const page = await ctx.newPage()
     await page.goto(`${base}abrir-cartao/`)
     await expect(page.locator('[data-nojs]')).toContainText('precisa de JavaScript')

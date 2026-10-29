@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
+import { noJs } from './presets'
 
 /*
  * The state recap (#28) at 390x844 over the fixture dataset: the three cycles of a state, the base of the percentages, the
@@ -95,7 +96,7 @@ test.describe('state recap', () => {
   })
 
   test('without JavaScript the picture and the link to the three cycles still work', async ({ browser }) => {
-    const ctx = await browser.newContext({ javaScriptEnabled: false })
+    const ctx = await browser.newContext(noJs())
     const page = await ctx.newPage()
     await page.goto(path)
     await expect(page.locator('[data-recap-picture] svg')).toBeVisible()

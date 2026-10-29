@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, waitReady } from './helpers'
+import { PHONE, noJs } from './presets'
 
 /*
  * Three cycles of a city (the approved Sketch frame "9 Três ciclos (cidade)", ported by #50) in a
@@ -62,7 +63,7 @@ test.describe('city-cycles: round switch', () => {
 
 test.describe('city-cycles: without JavaScript', () => {
   test('all three cycles of both rounds are in the page, stacked, and the useless switch link is hidden', async ({ browser, baseURL }) => {
-    const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL, viewport: { width: 390, height: 844 } })
+    const ctx = await browser.newContext({ ...noJs(), baseURL, viewport: PHONE })
     const page = await ctx.newPage()
     await page.goto(page9)
     await expect(page.locator('.cycles__round:visible')).toHaveCount(2)

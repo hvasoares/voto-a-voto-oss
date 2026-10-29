@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base } from './helpers'
+import { viewport } from './presets'
 
 /*
  * The fixed metrics notice (#90) must not cover the last lines of a page. While it is visible the page makes room for it (bottom padding, and a shell that is
@@ -15,7 +16,7 @@ const bannerTop = (page: Page) => page.locator('#consent-banner').evaluate((el) 
 
 for (const [w, h] of FRAMES) {
   test.describe(`${w}x${h}`, () => {
-    test.use({ viewport: { width: w, height: h } })
+    test.use({ viewport: viewport(w, h) })
 
     test('a short page shows its last control above the notice at once, with nothing to scroll', async ({ page }) => {
       await page.goto(base + SHORT)

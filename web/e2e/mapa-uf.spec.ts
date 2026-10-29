@@ -1,7 +1,6 @@
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base, maybeThrottleCpu } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * The #17 extension of the municipality map at 390x844 on the FIXTURE dataset: the dynamic route
@@ -11,7 +10,7 @@ import { base, maybeThrottleCpu } from './helpers'
  * (TSE 99201, "Boa Esperança do Norte", ciclos 2026 only) does not join the real IBGE mesh --
  * the same note Boa Esperança do Norte (TSE 73709) gets on the real build.
  */
-test.skip(!existsSync(resolve('fixtures/data/cities.csv')), 'no fixture data')
+test.skip(...dataGuard('cities.csv', 'fixtures/data'))
 
 // #122 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file.
 test.beforeEach(async ({ page }) => maybeThrottleCpu(page))

@@ -7,6 +7,7 @@ import { computeOutliers, pickOutliers } from '../src/lib/reports/outliers'
 import { formatInt as intPt } from '../src/lib/reports/format'
 import { displayName, ufLabel } from '../src/shared/city-search'
 import { base, collectRequests, maybeThrottleCpu, violations } from './helpers'
+import { PHONE, noJs } from './presets'
 
 /*
  * #34 "Cidades fora da curva" at 390x844, fixture dataset (rj, sp, mt). The expected list is computed here from the fixture's own CSVs with the pure
@@ -133,7 +134,7 @@ test.describe('Cidades fora da curva: the filters', () => {
   })
 
   test('works without JavaScript: the list is pre-rendered and the filters are links', async ({ browser }) => {
-    const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } })
+    const ctx = await browser.newContext({ ...noJs(), viewport: PHONE })
     const page = await ctx.newPage()
     await page.goto(PATH)
     await expect(page.locator('[data-outliers] > li').first()).toBeVisible()

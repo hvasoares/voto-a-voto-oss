@@ -1,8 +1,8 @@
-import { existsSync } from 'node:fs'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * Gate captures of /mapa/rj/ (ticket #16), at 390x844 on the REAL dataset: the list (the mosaic
@@ -11,7 +11,7 @@ import { base } from './helpers'
  * and review next to site/reference/10-mapa-por-estado-mosaico.png. Output: .captures/mapa-rj/
  * (not committed, no baselines). Skipped without ../data.
  */
-test.skip(process.env.DATA_DIR === undefined || !existsSync(resolve(process.env.DATA_DIR, 'cities.csv')), 'run with DATA_DIR=../data')
+test.skip(...dataGuard('cities.csv', process.env.DATA_DIR ?? null))
 
 const dir = resolve('.captures', 'mapa-rj')
 const record = async (page: import('@playwright/test').Page, state: string, url: string) =>

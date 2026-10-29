@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * Ticket #103: the desktop top bar names tasks. At 1440 px it is the same on every kind of page: the wordmark, the search
@@ -115,7 +116,7 @@ test.describe('the task-named bar', () => {
   })
 
   test.describe('without JavaScript', () => {
-    test.use({ javaScriptEnabled: false })
+    useNoJs()
     test('the bar is readable and its links work', async ({ page }) => {
       await page.goto(`${base}brasil/`)
       expect(await barLinks(page)).toEqual([['Voto a Voto', base], ...TASKS])

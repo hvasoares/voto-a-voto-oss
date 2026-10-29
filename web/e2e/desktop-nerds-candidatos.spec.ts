@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 import { parseCsv } from '../src/lib/nerds/actions'
 import { base } from './helpers'
+import { DESKTOP, useNoJs } from './presets'
 
 /*
  * Candidate measures on the same panels (#81): the Escada by candidate, the map shaded by one candidate, the Tabela's "Participação | Candidatos" toggle, and the candidate tables
@@ -12,7 +13,7 @@ const BANNED = /\b(vencedor|venceu|ganhou|eleito|derrotad\w*|perdeu|melhor|pior|
 const escada = (page: Page) => page.locator('[data-panel="escada"]')
 
 test.describe('without scripts and on a phone: the candidate tables are in the page', () => {
-  test.use({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } })
+  useNoJs({ viewport: DESKTOP })
 
   test('Escada Ficha by candidate, Par by candidate and the Tabela\'s candidate columns, in ballot-number order, no ranking', async ({ page }) => {
     await page.goto(url())
@@ -32,7 +33,7 @@ test.describe('without scripts and on a phone: the candidate tables are in the p
 
 test.describe('with the islands (1440 px)', () => {
   test('Escada by candidate: two candidates in a 2º turno, every candidate listed in a 1º turno, in ballot-number order, named and valued; the picker has both groups', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.setViewportSize(DESKTOP)
     await page.goto(url())
     await escada(page).scrollIntoViewIfNeeded()
     await expect(escada(page).locator('[data-escada]')).toHaveAttribute('data-drawn', 'chart')
@@ -50,7 +51,7 @@ test.describe('with the islands (1440 px)', () => {
   })
 
   test('the map is shaded by one candidate\'s share and the address keeps the choice', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.setViewportSize(DESKTOP)
     await page.goto(url(''))
     const map = page.locator('[data-panel="mapa"]')
     await map.scrollIntoViewIfNeeded()
@@ -63,7 +64,7 @@ test.describe('with the islands (1440 px)', () => {
   })
 
   test('the Tabela toggle "Participação | Candidatos" switches the column set; the CSV follows it', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.setViewportSize(DESKTOP)
     await page.goto(url())
     const panel = page.locator('[data-ciclo-block="2026"] [data-panel="detalhe"]')
     await panel.scrollIntoViewIfNeeded()
@@ -85,7 +86,7 @@ test.describe('with the islands (1440 px)', () => {
   })
 
   test('the candidate views contain no ranking, winner label or computed difference (HTML)', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.setViewportSize(DESKTOP)
     await page.goto(url('', '?ciclo=2022&turno=2&cargo=presidente&medida=candidatos'))
     await escada(page).scrollIntoViewIfNeeded()
     await expect(escada(page).locator('[data-escada]')).toHaveAttribute('data-measure', 'candidatos')

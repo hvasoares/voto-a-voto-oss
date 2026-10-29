@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { noJs } from './presets'
 
 /*
  * The ready-made texts of a city (#65) on its share page, over the fixture dataset: both texts are printed in the page (readable without
@@ -9,7 +10,7 @@ const share = `${base}rj/cidade-exemplo/compartilhar/`
 
 test.describe('Textos prontos', () => {
   test('without JavaScript the WhatsApp block and the bulletin are printed, with no copy button', async ({ browser }) => {
-    const ctx = await browser.newContext({ javaScriptEnabled: false })
+    const ctx = await browser.newContext(noJs())
     const page = await ctx.newPage()
     await page.goto(share)
     const wa = page.locator('[data-text="whatsapp"]:visible')

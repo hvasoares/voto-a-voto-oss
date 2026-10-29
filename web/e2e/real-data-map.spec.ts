@@ -1,12 +1,11 @@
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { UF_NOME } from '../src/lib/uf-names'
 import { base, mapFrame } from './helpers'
+import { DESKTOP, useNoJs, dataGuard } from './presets'
 
 /* Ticket #53 on the REAL build: all 27 states have a page, so every shape of the Home map is a link to it. */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
-test.use({ viewport: { width: 1440, height: 900 }, isMobile: false, hasTouch: false })
+test.skip(...dataGuard())
+test.use({ viewport: DESKTOP, isMobile: false, hasTouch: false })
 
 const STATES = Object.keys(UF_NOME).filter((uf) => uf !== 'zz').sort()
 
@@ -21,7 +20,7 @@ test('every one of the 27 shapes of the Home map is a link to its state page, an
 })
 
 test.describe('without JavaScript', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
   test('the map works: a state link opens the state page', async ({ page }) => {
     await page.goto(base)
     // The click goes where the state's label is (inside its shape; the centre of a link's bounding box may lie over a neighbour).

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
+import { DUEL, noJs } from './presets'
 
 /*
  * Cara a cara (#30) over the fixture dataset at 390x844: the entry link of the city card, the address that reproduces the card at each level,
@@ -141,7 +142,7 @@ test.describe('Cara a cara: sharing', () => {
 })
 
 test.describe('Cara a cara: modo duelo at 1920x1080', () => {
-  test.use({ viewport: { width: 1920, height: 1080 }, isMobile: false, hasTouch: false })
+  test.use({ viewport: DUEL, isMobile: false, hasTouch: false })
 
   for (const [level, q] of [['cidade', CITIES], ['estado', STATES], ['regiao', REGIONS]] as const) {
     test(`${level}: opens from the card, same numbers, seal on screen, large type, Esc leaves; only the site's own files are requested`, async ({ page }) => {
@@ -181,7 +182,7 @@ test.describe('Cara a cara: modo duelo at 1920x1080', () => {
 })
 
 test('without JavaScript it says what it needs', async ({ browser }) => {
-  const ctx = await browser.newContext({ javaScriptEnabled: false })
+  const ctx = await browser.newContext(noJs())
   const page = await ctx.newPage()
   await page.goto(route(CITIES))
   await expect(page.locator('[data-nojs]')).toContainText('precisa de JavaScript')

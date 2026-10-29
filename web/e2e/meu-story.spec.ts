@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
+import { PHONE, noJs } from './presets'
 
 /*
  * Meu Brasil as a story (#97, the Sketch frame "16b Meu Brasil em sequência"), 390x844, fixture places: Cidade Exemplo (RJ, changed side in 2022, has a twin and curiosities), Cidade Exemplo C (RJ, never
@@ -190,7 +191,7 @@ test.describe('Meu Brasil story', () => {
     await expect(page.locator('[data-placeholder]')).toContainText('Escolha ao menos um lugar')
     await page.goto(story('?mora=rj/nao-existe'))
     await expect(page.locator('[data-placeholder][data-ready="failed"]')).toContainText('Não foi possível carregar a sequência')
-    const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } })
+    const context = await browser.newContext({ ...noJs(), viewport: PHONE })
     const p = await context.newPage()
     await p.goto(story(ONE))
     await expect(p.locator('[data-nojs]')).toContainText('precisa de JavaScript')

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * Share sheet (#7) at 390x844 over the fixture dataset. The demo route /compartilhar/ carries the sheet contract;
@@ -227,7 +228,7 @@ test.describe('share: the real route (the city card as backdrop, #50)', () => {
 })
 
 test.describe('share without JavaScript', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
   test('the picture, the text and "Fechar" work; the buttons that need JavaScript are not offered and a sentence says why', async ({ page }) => {
     await page.goto(path)
     await expect(page.locator('h1')).toHaveText('Compartilhar resultado')

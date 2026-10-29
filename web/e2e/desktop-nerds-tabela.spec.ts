@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 import { base } from './helpers'
+import { DESKTOP, WIDE_BAND } from './presets'
 
 /*
  * The Tabela de detalhe at 1440 px (#76): complete in the HTML, upgraded in place once in view (filter, sort, rows that open into the next level, CSV), at every level.
@@ -12,7 +13,7 @@ const rowsOf = (page: Page) => wrap(page).locator('tbody tr[data-row]:not([data-
 const names = (page: Page) => wrap(page).locator('tbody tr:not([hidden]) th[scope="row"]')
 
 async function enhanced(page: Page, path: string, q = '') {
-  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.setViewportSize(DESKTOP)
   await page.goto(url(path, q))
   await wrap(page).scrollIntoViewIfNeeded()
   await expect(wrap(page)).toHaveAttribute('data-ready', 'yes')
@@ -72,7 +73,7 @@ test.describe('Tabela de detalhe (1440 px)', () => {
   test('the table chunk loads only from 1024 px up and only when the panel is in view', async ({ page }) => {
     const chunks: string[] = []
     page.on('request', (r) => /\/_astro\/.*(DetalheEnhancer)\.[^/]*\.js/.test(r.url()) && chunks.push(r.url()))
-    await page.setViewportSize({ width: 1440, height: 300 })
+    await page.setViewportSize(WIDE_BAND)
     await page.goto(url('estado/rj/'))
     await page.waitForLoadState('networkidle')
     expect(chunks).toEqual([])

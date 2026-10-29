@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { test } from '@playwright/test'
 import { base } from './helpers'
+import { DESKTOP, acknowledgeNotice } from './presets'
 
 /*
  * Gate 2 of the G2 city-card lines (#26, #41, #31, #33): the fixture city at 390x844 (phone frames "2 Cartão da cidade,
@@ -21,13 +22,13 @@ const shoot = async (page: import('@playwright/test').Page, route: string, name:
 }
 
 test('capture city lines / phone', async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem('voto-a-voto:notice', 'acknowledged'))
+  await acknowledgeNotice(page)
   await shoot(page, 'rj/cidade-exemplo/?turno=1', 'phone')
   // The frames are one 844 px screen; the lines sit lower on this longer page, so the rest of it is captured too.
   await shoot(page, 'rj/cidade-exemplo/?turno=1', 'phone-full', true)
 })
 test('capture city lines / desktop', async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem('voto-a-voto:notice', 'acknowledged'))
-  await page.setViewportSize({ width: 1440, height: 900 })
+  await acknowledgeNotice(page)
+  await page.setViewportSize(DESKTOP)
   await shoot(page, 'rj/cidade-exemplo/?turno=1', 'desktop', true)
 })

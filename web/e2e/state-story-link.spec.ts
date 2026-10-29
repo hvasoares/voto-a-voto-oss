@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { base, expectNoHorizontalScroll, mode, waitReady } from './helpers'
+import { PHONE } from './presets'
 
 /*
  * #100: the state page links to the state story (/<uf>/historia/, the swipeable cards) from "Mais sobre o estado", next to
@@ -63,7 +64,7 @@ test.describe('state story entry (page)', () => {
   })
 
   test('at 390 px the group has no horizontal scroll, the link is 44 px tall and axe is clean', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 })
+    await page.setViewportSize(PHONE)
     await page.goto(`${base}rj/`)
     await waitReady(page)
     await expectNoHorizontalScroll(page)

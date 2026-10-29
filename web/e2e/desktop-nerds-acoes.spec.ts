@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import sharp from 'sharp'
 import { base } from './helpers'
 import { parseCsv } from '../src/lib/nerds/actions'
+import { PHONE, DESKTOP } from './presets'
 
 /*
  * The panel actions at 1440 px (#80): Citar (one dialog, three formats), CSV (provenance block, then the rows as printed) and Imagem (16:9 PNG), real text buttons reachable from
@@ -12,7 +13,7 @@ const url = (path = 'estado/rj/', q = '') => `${base}dados-para-nerds/${path}${q
 const act = (page: Page, panel: string, name: string) => page.locator(`[data-panel="${panel}"]`).last().locator(`[data-action="${name}"]`)
 
 async function ready(page: Page, path = 'estado/rj/', q = '') {
-  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.setViewportSize(DESKTOP)
   await page.goto(url(path, q))
   await expect(page.locator('[data-page="nerds"]')).toHaveAttribute('data-actions-ready', 'yes')
 }
@@ -52,7 +53,7 @@ test.describe('panel actions (1440 px)', () => {
   })
 
   test('Citar copies the text shown to the clipboard', async ({ browser }) => {
-    const ctx = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'], viewport: { width: 1440, height: 900 } })
+    const ctx = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'], viewport: DESKTOP })
     const page = await ctx.newPage()
     await ready(page)
     await act(page, 'par', 'citar').click()
@@ -129,7 +130,7 @@ test.describe('panel actions (1440 px)', () => {
   })
 
   test('without scripts or on a phone there are no action buttons and nothing is requested for them', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 })
+    await page.setViewportSize(PHONE)
     const seen: string[] = []
     page.on('request', (r) => seen.push(r.url()))
     await page.goto(url())

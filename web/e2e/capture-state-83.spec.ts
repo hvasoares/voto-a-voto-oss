@@ -2,6 +2,7 @@ import { mkdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { test } from '@playwright/test'
 import { base } from './helpers'
+import { DESKTOP } from './presets'
 
 /* #83 gate 2: the state page at 390x844 (list, filtered, map view, empty) and at 1440x900, on the fixture build. Output .captures/state-83/ (not committed). */
 const dir = resolve('.captures', 'state-83')
@@ -27,7 +28,7 @@ test('capture state-83 / phone', async ({ page }) => {
 })
 
 test.describe('desktop', () => {
-  test.use({ viewport: { width: 1440, height: 900 }, isMobile: false, hasTouch: false })
+  test.use({ viewport: DESKTOP, isMobile: false, hasTouch: false })
   test('capture state-83 / desktop', async ({ page }) => {
     await page.goto(`${base}rj/`)
     await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)

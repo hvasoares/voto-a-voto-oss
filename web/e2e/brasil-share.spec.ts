@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
+import { PHONE, noJs } from './presets'
 
 /*
  * The share of /brasil/ (#91) at 390x844 over the fixture dataset: the Compartilhar link opens the EXISTING share sheet (the City card's: a bottom sheet over the page,
@@ -60,7 +61,7 @@ test.describe('/brasil/: the Compartilhar action', () => {
   })
 
   test('works without JavaScript: the link, the picture and the message text are there; only the buttons need scripts', async ({ browser }) => {
-    const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } })
+    const ctx = await browser.newContext({ ...noJs(), viewport: PHONE })
     const page = await ctx.newPage()
     await page.goto(`${base}brasil/`)
     await expect(page.locator('[data-share]')).toBeVisible()

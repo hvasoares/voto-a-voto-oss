@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * Real-data checks of the city-page head (ticket #8). Run with `npm run test:real` (builds with DATA_DIR=../data,
@@ -10,7 +11,7 @@ import { base } from './helpers'
  * its own), accented names of several types, and an overseas post whose latest cycle is 2018 (an older default
  * view than the rest). Every og:image must resolve on this build to an existing PNG of this city's own slug.
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
+test.skip(...dataGuard())
 
 const CITIES: Array<{ uf: string; slug: string; nome: string; label: string; uf_: string; ano: string }> = [
   { uf: 'sp', slug: 'sao-paulo', nome: 'SÃO PAULO', label: 'São Paulo', uf_: 'SP', ano: '2026' },

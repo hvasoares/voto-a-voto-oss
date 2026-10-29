@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations, waitReady } from './helpers'
+import { PHONE, useNoJs } from './presets'
 
 /*
  * City card (the approved Sketch frame "2 Cartão da cidade", ported by #50) in a real browser at
@@ -93,7 +94,7 @@ test.describe('city card: fixture route is the frame', () => {
     expect(errors).toEqual([])
   })
   test('curiosities (#33): the card is on the city page at 390x844, between the twin line and Compartilhar, with facts that name their group and cycles', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 })
+    await page.setViewportSize(PHONE)
     await page.goto(`${city}?turno=1`)
     await waitReady(page)
     const card = page.locator('.city-curio')
@@ -115,14 +116,14 @@ test.describe('city card: fixture route is the frame', () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   })
   test('curiosities: there is no separate page and no link to one', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 })
+    await page.setViewportSize(PHONE)
     await page.goto(city)
     await expect(page.getByRole('link', { name: /Curiosidades da cidade/ })).toHaveCount(0)
     await expect(page.locator('a[href*="curiosidades"]')).toHaveCount(0)
     expect((await page.goto(`${city}curiosidades/`))!.status()).toBe(404)
   })
   test('curiosities: a city whose group is too small (or measures all equal) has no card at 390x844', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 })
+    await page.setViewportSize(PHONE)
     await page.goto(`${base}rj/cidade-exemplo-a/`)
     await expect(page.locator('.city-curio')).toHaveCount(0)
     await expect(page.getByText('Curiosidades ·')).toHaveCount(0)
@@ -247,7 +248,7 @@ test.describe('city card: layout and links', () => {
 })
 
 test.describe('city card without JavaScript', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
   test('the default view, the legend and the sentence are in the page', async ({ page }) => {
     await page.goto(city)
     await expect(page.locator('h1')).toHaveText('Cidade Exemplo')
@@ -382,7 +383,7 @@ test.describe('city card: linguagem simples', () => {
 })
 
 test.describe('city card without JavaScript: the register', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
   test('the standard sentence is shown, the plain one is not and the switch is not offered', async ({ page }) => {
     await page.goto(city)
     await expect(card(page).locator('[data-headline]:visible')).toContainText('do eleitorado não votou')

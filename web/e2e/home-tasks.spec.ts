@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
 import { activateSearch, base, expectNoHorizontalScroll, maybeThrottleCpu, resizeTo, waitReady } from './helpers'
+import { PHONE, useNoJs } from './presets'
 
 /*
  * #99: Home's task block replaces "Para explorar". Four entries in the visitor's words, the old destinations still one tap away, the
@@ -86,7 +87,7 @@ test.describe('the task block', () => {
 
   test('"Final, não ao vivo." shows once and is visible without scrolling on the phone', async ({ page }) => {
     await page.goto(base)
-    expect(page.viewportSize()).toEqual({ width: 390, height: 844 })
+    expect(page.viewportSize()).toEqual(PHONE)
     await expect(page.getByText('Final, não ao vivo.')).toHaveCount(1)
     await expect(page.getByText('Final, não ao vivo.')).toBeInViewport({ ratio: 1 })
   })
@@ -197,7 +198,7 @@ test.describe('Compartilhar um resultado: the search takes a destination', () =>
 })
 
 test.describe('without JavaScript', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
   test('every entry is a plain link and the share entry carries its instruction', async ({ page }) => {
     await page.goto(base)
     const tasks = page.locator('[data-tasks]')

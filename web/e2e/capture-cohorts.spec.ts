@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { test } from '@playwright/test'
 import { base } from './helpers'
+import { useNoJs } from './presets'
 
 /*
  * Screenshot source for the review of /relatorios/como-cada-grupo-votou/ (ticket #15): phone 390x844
@@ -24,7 +25,7 @@ test('capture cohorts / phone full page', async ({ page }) => {
 })
 
 test.describe('cohorts without JavaScript', () => {
-  test.use({ javaScriptEnabled: false })
+  useNoJs()
   test('capture cohorts / without JavaScript', async ({ page }) => {
     await page.goto(base + 'relatorios/como-cada-grupo-votou/')
     await page.evaluate(() => document.fonts.ready)

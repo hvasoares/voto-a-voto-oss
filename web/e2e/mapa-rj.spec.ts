@@ -1,7 +1,6 @@
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { PHONE, noJs, dataGuard } from './presets'
 
 /*
  * /mapa/rj/ (ticket #16) at 390x844 on the FIXTURE dataset: six RJ municipalities
@@ -13,7 +12,7 @@ import { base } from './helpers'
  * so this whole file has been SILENTLY SKIPPED since that merge; it points at the committed
  * web/fixtures/data again. Flagged in web/docs/checkpoints/issue-17.md.)
  */
-test.skip(!existsSync(resolve('fixtures/data/cities.csv')), 'no fixture data')
+test.skip(...dataGuard('cities.csv', 'fixtures/data'))
 
 const ROWS = [
   { cd: '99001', nome: 'Cidade Exemplo', slug: 'cidade-exemplo', pp: '+0,9', validos: '68.434' },
@@ -111,13 +110,13 @@ test.describe('mapa/rj: content', () => {
   })
 
   test('the page works without JavaScript: rows stay plain links to the city pages', async ({ page, browser }) => {
-    const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } })
-    const p = await noJs.newPage()
+    const noJsContext = await browser.newContext({ ...noJs(), viewport: PHONE })
+    const p = await noJsContext.newPage()
     await p.goto(`${base}mapa/rj/`)
     await expect(p.locator('[data-cd="99001"]')).toHaveAttribute('href', `${base}rj/cidade-exemplo/`)
     // without JavaScript the map view is out, but the noscript note is in the HTML (same shape as home.spec)
     expect(await p.locator('noscript').first().textContent()).toContain('A lista acima funciona sem')
-    await noJs.close()
+    await noJsContext.close()
   })
 })
 

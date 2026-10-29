@@ -1,14 +1,13 @@
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test, type Page } from '@playwright/test'
 import { base, waitReady } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * The state page on the REAL dataset (#83; run with `npm run test:real`): the largest states have hundreds of rows (SP 645, MG 853), so
  * the ONE list, the search above it and the tap on a row are checked where it hurts: the order, the count, the filter against an
  * independent oracle, how long one keystroke takes, a tap in a real state, and typing before the island hydrates.
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
+test.skip(...dataGuard())
 
 const STATES = [
   { uf: 'sp', count: 645, capital: 'São Paulo', slug: 'sao-paulo' },

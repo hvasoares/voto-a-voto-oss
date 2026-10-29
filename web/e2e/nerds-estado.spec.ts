@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { base, collectRequests } from './helpers'
+import { PHONE, DESKTOP, UNDER_BREAKPOINT, noJs } from './presets'
 
 /*
  * "Dados para nerds" at the estado level (#73) over the fixture dataset: the Placar printed from the level shards, "Como ler", the four-field provenance footer, the entry point on
@@ -73,7 +74,7 @@ test.describe('Dados para nerds: estado, Placar', () => {
   })
 
   test('is complete without scripts: every cycle is in the page, every number is text', async ({ browser }) => {
-    const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 900 } })
+    const ctx = await browser.newContext({ ...noJs(), viewport: DESKTOP })
     const page = await ctx.newPage()
     await page.goto(url('rj'))
     await expect(page.locator('[data-ciclo-block]:visible')).toHaveCount(3)
@@ -85,7 +86,7 @@ test.describe('Dados para nerds: estado, Placar', () => {
   })
 
   test('a phone loads no chart code: the islands are not requested below 1024 px (and their markup is the plain table)', async ({ page }) => {
-    for (const size of [{ width: 390, height: 844 }, { width: 1023, height: 900 }]) {
+    for (const size of [PHONE, UNDER_BREAKPOINT]) {
       await page.setViewportSize(size)
       const seen = collectRequests(page)
       await page.goto(url('rj'))

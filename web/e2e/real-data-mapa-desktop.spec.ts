@@ -1,15 +1,14 @@
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { UF_NOME } from '../src/lib/uf-names'
 import { base, mapaFrame } from './helpers'
+import { DESKTOP, dataGuard } from './presets'
 
 /*
  * #54 on the REAL dataset: the desktop map prints the figures of the swing/compare note for every state (the same pins as
  * real-data-mapa.spec.ts and src/lib/margins.test.ts), all 27 states are links, and the panel opens on SP.
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
-test.use({ viewport: { width: 1440, height: 900 }, isMobile: false, hasTouch: false })
+test.skip(...dataGuard())
+test.use({ viewport: DESKTOP, isMobile: false, hasTouch: false })
 
 const STATES = Object.keys(UF_NOME).filter((uf) => uf !== 'zz').sort()
 const value = async (page: import('@playwright/test').Page, uf: string) => ((await mapaFrame(page).locator(`a[data-map-uf="${uf}"]`).textContent()) ?? '').match(/[+-]\d+,\d/)![0]

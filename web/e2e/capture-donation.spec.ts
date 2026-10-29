@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { test } from '@playwright/test'
 import { base } from './helpers'
+import { acknowledgeNotice } from './presets'
 
 /*
  * Gate 2 of ticket #36: the footer with the donation link, at 390 wide, fixture state: a placeholder address
@@ -11,7 +12,7 @@ import { base } from './helpers'
  * its last 330 px; the Home footer has no frame of its own and is captured at 390x844 (viewport) scrolled to its end.
  */
 test('capture about / donation footer', async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem('voto-a-voto:notice', 'acknowledged'))
+  await acknowledgeNotice(page)
   await page.goto(`${base}sobre-os-dados/`)
   await page.evaluate(() => document.fonts.ready)
   const height = await page.evaluate(() => document.documentElement.scrollHeight)
@@ -23,7 +24,7 @@ test('capture about / donation footer', async ({ page }) => {
 })
 
 test('capture home / donation footer', async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem('voto-a-voto:notice', 'acknowledged'))
+  await acknowledgeNotice(page)
   await page.goto(base)
   await page.evaluate(() => document.fonts.ready)
   await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)

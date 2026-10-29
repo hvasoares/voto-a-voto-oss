@@ -1,15 +1,14 @@
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
 import { measureMap } from './map-touch'
+import { dataGuard } from './presets'
 
 /*
  * #88 on the REAL outlines (run with `npm run test:real`): the 27 shapes of /mapa/?vista=mapa and /mapa/virada/?vista=mapa at 390x844.
  * Every state has a 44 px hit area (hit path bounding box); the states drawn smaller than a fingertip also have a callout row that is
  * a 44 px tap target of its own; a tap on the centre of a shape reaches that shape; no tap on a drawn shape is taken by a neighbour's hit path.
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
+test.skip(...dataGuard())
 const MIN = 44
 
 for (const path of ['mapa/?vista=mapa', 'mapa/virada/?vista=mapa']) {

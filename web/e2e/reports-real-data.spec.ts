@@ -1,7 +1,8 @@
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * Real-data checks of the report screens (tickets #12 and #13), run with `npm run test:real` (builds
@@ -12,7 +13,7 @@ import { allowedOrigins, base, collectRequests, violations } from './helpers'
  * Apiacá/Anhangüera and Santa Maria do Herval/Itaubal. Real-data screenshots (390x844) are saved
  * to .captures/reports/real/.
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
+test.skip(...dataGuard())
 
 test.describe('reports hub on the real dataset', () => {
   test('announces the 211 viradas of the highlights note', async ({ page, baseURL }) => {

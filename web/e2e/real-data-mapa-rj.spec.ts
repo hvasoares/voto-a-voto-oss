@@ -1,7 +1,6 @@
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * /mapa/rj/ on the REAL dataset (run with `npm run test:real`): the per-city margins of the
@@ -9,7 +8,7 @@ import { allowedOrigins, base, collectRequests, violations } from './helpers'
  * same pins of src/lib/margins-city.test.ts, now checked in the rendered page; the mesh join of
  * all 92 municipalities; the on-demand GET of the geo file; and a load/render time record.
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
+test.skip(...dataGuard())
 
 test.describe('mapa/rj on the real dataset', () => {
   test('the pair comes from the data and the page names all 92 municipalities', async ({ page }) => {

@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { base, collectRequests, waitReady } from './helpers'
+import { noJs } from './presets'
 
 /*
  * Fact records (#61): a "De onde vem este número?" link next to every figure of the city card, and the page of the calculation it opens: inputs,
@@ -81,7 +82,7 @@ test.describe('the page of the calculation', () => {
   })
 
   test('is readable without scripts, in the standard register, with the plain sentence in the page for the other', async ({ browser, baseURL }) => {
-    const ctx = await browser.newContext({ javaScriptEnabled: false, baseURL })
+    const ctx = await browser.newContext({ ...noJs(), baseURL })
     const page = await ctx.newPage()
     await page.goto(fato('2026-2'))
     await expect(page.locator('h1')).toHaveText('Cálculo dos números')

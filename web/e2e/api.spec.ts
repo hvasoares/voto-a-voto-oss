@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { datasetFingerprintFromDisk } from '../integrations/shards-fingerprint'
 import { base, collectRequests } from './helpers'
+import { DESKTOP } from './presets'
 
 /*
  * The static JSON API and the per-page data download (ticket #64). The API is the shards the pages read, so the checks
@@ -60,7 +61,7 @@ test.describe('static JSON API', () => {
 })
 
 test.describe('Baixar os dados desta página', () => {
-  const desktop = { width: 1440, height: 900 }
+  const desktop = DESKTOP
 
   test('on the city card the link downloads the city shard byte for byte', async ({ browser, baseURL }) => {
     const context = await browser.newContext({ viewport: desktop, baseURL })

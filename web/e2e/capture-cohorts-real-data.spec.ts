@@ -1,13 +1,14 @@
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { test } from '@playwright/test'
 import { base } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * Real-data screenshot of the cohort report (ticket #15), taken by `npm run test:real`
  * (DATA_DIR=../data builds and serves the real dataset). Skipped anywhere else.
  */
-test.skip(process.env.DATA_DIR !== '../data' || !existsSync(resolve('../data/cities.csv')), 'real-data capture needs npm run test:real')
+test.skip(...dataGuard('cities.csv', process.env.DATA_DIR === '../data' ? '../data' : null))
 
 test('capture cohorts on the real dataset / phone full page', async ({ page }) => {
   await page.goto(base + 'relatorios/como-cada-grupo-votou/')

@@ -1,7 +1,6 @@
-import { existsSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { activateSearch, allowedOrigins, base, collectRequests, violations } from './helpers'
+import { dataGuard } from './presets'
 
 /*
  * Real-data checks. Run with `npm run test:real` (builds with DATA_DIR=../data, relative to web/). Skipped when ../data is missing.
@@ -9,7 +8,7 @@ import { activateSearch, allowedOrigins, base, collectRequests, violations } fro
  * is what this suite exercises. City routes are pre-rendered since #49/#50: the card, three cycles and share page
  * of every real city exist without any /data/ request.
  */
-test.skip(!existsSync(resolve('../data/cities.csv')), 'no ../data')
+test.skip(...dataGuard())
 
 const results = (page: import('@playwright/test').Page) => page.locator('a[data-position]').evaluateAll((els) => els.map((e) => e.textContent!.trim()))
 

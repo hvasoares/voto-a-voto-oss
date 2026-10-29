@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests } from './helpers'
 import { dailyIndex, type GameData } from '../src/lib/game'
+import { viewport } from './presets'
 
 /*
  * "Adivinhe a cidade" (#69) and its end (#70) over the fixture dataset (7 cities), at 390x844 and 1440x900, with the clock fixed so the daily city is known: the
@@ -167,7 +168,7 @@ test.describe('Adivinhe a cidade', () => {
 
   for (const [w, h] of [[390, 844], [1440, 900]] as const) {
     test(`works at ${w}px: no sideways scroll, the clues and the guess table are visible`, async ({ page }) => {
-      await page.setViewportSize({ width: w, height: h })
+      await page.setViewportSize(viewport(w, h))
       await open(page)
       const { others } = await secretOf(page)
       await guess(page, others[0]![2])
