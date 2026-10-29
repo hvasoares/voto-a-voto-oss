@@ -6,19 +6,17 @@
  * reappear. Nothing is refused here; a visitor who does not want the measurement blocks the Google
  * origins in the browser (disclosed in the privacy section).
  *
- * The storage access sits behind try/catch: a private window (or a cleaned/blocked site data) must leave
- * the site fully working; the acknowledgment is then just not remembered and the banner asks again.
+ * The storage access goes through the safe-storage helper (#141): a private window (or a cleaned/blocked
+ * site data) must leave the site fully working; the acknowledgment is then just not remembered and the
+ * banner asks again.
  * Unit tests run in plain node and inject the storage, so the store itself never touches jsdom.
  */
 
 export type NoticeState = 'unknown' | 'acknowledged'
 
-export interface StorageLike {
-  getItem(key: string): string | null
-  setItem(key: string, value: string): void
-  removeItem(key: string): void
-}
+export type { StorageLike } from './safe-storage'
 
+import { browserStorage, readStored, removeStored, writeStored, type StorageLike } from './safe-storage'
 import { NOTICE_STORAGE_KEY } from './storage-keys'
 
 export { NOTICE_STORAGE_KEY }
@@ -37,29 +35,14 @@ export interface NoticeStore {
 const STATES: NoticeState[] = ['acknowledged']
 
 function load(storage: () => StorageLike | undefined): NoticeState {
-  const st = storage()
-  if (!st) return 'unknown'
-  try {
-    const raw = st.getItem(NOTICE_STORAGE_KEY)
-    return STATES.includes(raw as NoticeState) ? (raw as NoticeState) : 'unknown'
-  } catch {
-    return 'unknown'
-  }
+  const raw = readStored(storage(), NOTICE_STORAGE_KEY)
+  return STATES.includes(raw as NoticeState) ? (raw as NoticeState) : 'unknown'
 }
 
 export function createNoticeStore(overlay?: { storage?: StorageLike | undefined }): NoticeStore {
-  // The browser storage is looked up lazily: unit tests run in node (no window) and a page whose
-  // localStorage is unavailable (try/catch below) must keep working, just not remembering the banner.
-  let remembered: (() => StorageLike | undefined) | undefined
-  if (overlay && 'storage' in overlay) remembered = () => overlay.storage
-  else
-    remembered = () => {
-      try {
-        return typeof localStorage === 'undefined' ? undefined : localStorage
-      } catch {
-        return undefined
-      }
-    }
+  // The browser storage is looked up lazily (the helper's browserStorage): unit tests run in node (no
+  // window) and a page whose localStorage is unavailable must keep working, just not remembering.
+  const remembered: () => StorageLike | undefined = overlay && 'storage' in overlay ? () => overlay.storage : browserStorage
 
   let current: NoticeState = load(remembered)
   const listeners = new Set<(state: NoticeState) => void>()
@@ -72,20 +55,12 @@ export function createNoticeStore(overlay?: { storage?: StorageLike | undefined 
     state: () => current,
     acknowledge() {
       current = 'acknowledged'
-      try {
-        remembered?.()?.setItem(NOTICE_STORAGE_KEY, 'acknowledged')
-      } catch {
-        // Not remembered (browser without storage): the banner shows again on the next visit.
-      }
+      writeStored(remembered(), NOTICE_STORAGE_KEY, 'acknowledged')
       notify()
     },
     forget() {
       current = 'unknown'
-      try {
-        remembered?.()?.removeItem(NOTICE_STORAGE_KEY)
-      } catch {
-        // Nothing persisted to forget.
-      }
+      removeStored(remembered(), NOTICE_STORAGE_KEY)
       notify()
     },
     onChange(callback) {

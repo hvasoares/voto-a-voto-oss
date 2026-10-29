@@ -1,15 +1,12 @@
 /**
  * What the daily game keeps on the device (#69, #70): today's guesses (city ids) and the history of finished games (the day number and the result, never the city's name).
- * Browser only, one key (`GAME_KEY`, listed on the data page). Every access is guarded: with storage blocked the game keeps working in memory and `persistent` says it will
- * not be remembered. Tests inject a fake storage.
+ * Browser only, one key (`GAME_KEY`, listed on the data page). Every access goes through the safe-storage helper (#141): with storage blocked the game keeps working
+ * in memory and `persistent` says it will not be remembered. Tests inject a fake storage.
  */
 import { GAME_KEY } from './storage-keys'
+import { browserStorage, readStored, writeStored, type StorageLike } from './safe-storage'
 
-export interface GameStorage {
-  getItem(key: string): string | null
-  setItem(key: string, value: string): void
-  removeItem(key: string): void
-}
+export type { StorageLike as GameStorage } from './safe-storage'
 
 export interface HistoryEntry {
   /** The game's number (the day). */
@@ -30,13 +27,7 @@ export interface GameSave {
 
 export const EMPTY_SAVE: GameSave = { day: '', guesses: [], history: [] }
 
-export const browserGameStorage = (): GameStorage | undefined => {
-  try {
-    return globalThis.localStorage
-  } catch {
-    return undefined
-  }
-}
+export const browserGameStorage = (): StorageLike | undefined => browserStorage()
 
 const ID = /^[a-z]{2}\/[a-z0-9-]+$/
 
@@ -52,23 +43,13 @@ export function parseSave(raw: string | null | undefined): GameSave {
   }
 }
 
-export function loadSave(storage: GameStorage | undefined = browserGameStorage()): GameSave {
-  try {
-    return parseSave(storage?.getItem(GAME_KEY))
-  } catch {
-    return { ...EMPTY_SAVE }
-  }
+export function loadSave(storage: StorageLike | undefined = browserGameStorage()): GameSave {
+  return parseSave(readStored(storage, GAME_KEY))
 }
 
 /** Writes the save; returns false when the browser would not keep it (the game goes on in memory). */
-export function writeSave(save: GameSave, storage: GameStorage | undefined = browserGameStorage()): boolean {
-  try {
-    if (!storage) return false
-    storage.setItem(GAME_KEY, JSON.stringify(save))
-    return true
-  } catch {
-    return false
-  }
+export function writeSave(save: GameSave, storage: StorageLike | undefined = browserGameStorage()): boolean {
+  return writeStored(storage, GAME_KEY, JSON.stringify(save))
 }
 
 /** Today's guesses, or none when the saved ones are from another day. */
@@ -80,7 +61,7 @@ export function withResult(save: GameSave, entry: HistoryEntry): GameSave {
 }
 
 /** Empties the history; `today` is the number of the game on screen, whose result is not put back by a reload. */
-export function clearHistory(save: GameSave, today: number, storage: GameStorage | undefined = browserGameStorage()): GameSave {
+export function clearHistory(save: GameSave, today: number, storage: StorageLike | undefined = browserGameStorage()): GameSave {
   const next: GameSave = { ...save, history: [], skipped: today }
   writeSave(next, storage)
   return next

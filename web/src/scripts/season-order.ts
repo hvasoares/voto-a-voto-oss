@@ -1,6 +1,7 @@
 /** The order switch of the state season (#43): reads the order (the visitor's choice kept in this browser, else the default constant), puts the pre-rendered episodes and the pivot in it, and
  * wires the two buttons. The episodes and their anchors are the same in both orders (the DOM is reordered, so reading order and tab order follow what is seen); a link to an anchor
  * lands on its episode after the reorder. Without scripts the page stays chronological and the switch stays hidden. Nothing is fetched or sent. Browser only. */
+import { browserStorage } from '@/lib/safe-storage'
 import { orderSeason, readOrder, saveOrder, type SeasonOrder } from '@/lib/season-order'
 
 const host = document.querySelector<HTMLElement>('[data-season]')
@@ -10,13 +11,7 @@ if (host) {
   const sub = document.querySelector<HTMLElement>('[data-season-sub]')
   const note = document.querySelector<HTMLElement>('[data-season-note]')
   const status = document.querySelector<HTMLElement>('[data-season-status]')
-  const storage = (() => {
-    try {
-      return globalThis.localStorage
-    } catch {
-      return undefined
-    }
-  })()
+  const storage = browserStorage()
   const text = (el: HTMLElement | null, key: string) => (el?.dataset[key] ?? '') || undefined
 
   const apply = (order: SeasonOrder, announce: boolean) => {

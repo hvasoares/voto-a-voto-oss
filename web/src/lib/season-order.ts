@@ -1,8 +1,9 @@
 /**
  * The order the season of a state is read in (#43) and where the choice is kept: the browser's storage, one key (`SEASON_KEY`, listed on the data page, cleared by "esquecer meus dados"), the
- * words `chronological` or `reverse` and nothing else. No imports (the page's small script reads this file; the sentences are in `season.ts`, which the build uses). Guarded: with storage
- * blocked the choice lives until the page closes. Nothing here sends anything.
+ * words `chronological` or `reverse` and nothing else. No imports but the guarded storage calls (the page's small script reads this file; the sentences are in `season.ts`, which the build uses).
+ * The safe-storage helper (#141) guarantees it: with storage blocked the choice lives until the page closes. Nothing here sends anything.
  */
+import { readStored, writeStored } from './safe-storage'
 import { SEASON_KEY } from './storage-keys'
 
 export type SeasonOrder = 'chronological' | 'reverse'
@@ -17,23 +18,13 @@ export interface OrderStorage {
 
 /** The visitor's choice, or the default. */
 export function readOrder(storage?: OrderStorage): SeasonOrder {
-  try {
-    const raw = storage?.getItem(SEASON_KEY)
-    return SEASON_ORDERS.find((o) => o === raw) ?? SEASON_DEFAULT_ORDER
-  } catch {
-    return SEASON_DEFAULT_ORDER
-  }
+  const raw = readStored(storage, SEASON_KEY)
+  return SEASON_ORDERS.find((o) => o === raw) ?? SEASON_DEFAULT_ORDER
 }
 
 /** Keeps the choice; false when the browser would not (storage blocked). */
 export function saveOrder(order: SeasonOrder, storage?: OrderStorage): boolean {
-  try {
-    if (!storage) return false
-    storage.setItem(SEASON_KEY, order)
-    return true
-  } catch {
-    return false
-  }
+  return writeStored(storage, SEASON_KEY, order)
 }
 
 /** The episodes in the order asked: the same three episodes and the pivot between the 2nd and the 3rd, reversed or not. `items` is [episode 1, episode 2, pivot, episode 3]. Never changes `items`. */
