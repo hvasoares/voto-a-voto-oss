@@ -74,7 +74,7 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
         "Usar os dados" (done, after "entender") and #103 anything else after it. A link to a screen that does not exist yet is not shown. */}
     <ul class="mt-[5px] list-none p-0 lg:mt-3">
       <li data-task="ver-cidade"><TaskRow href="#busca" title="Ver minha cidade" sub="Busque pelo nome ou use a localização" /></li>
-      <li data-task="compartilhar"><TaskRow href={href('/') + destinationLink('compartilhar')} title="Compartilhar um resultado" sub="Escolha a cidade e toque em Compartilhar" /></li>
+      <li data-task="compartilhar"><TaskRow href={href('/') + destinationLink('compartilhar')} title="Compartilhar um resultado" sub="Escolha a cidade e toque em Compartilhar" asksCity /></li>
       <li data-task="comparar" id="comparar" class="border-t border-border pt-3 scroll-mt-4">
         <strong class="block text-step-2 font-bold lg:text-step-3" id="comparar-titulo">Comparar</strong>
         <span class="block text-step-1 text-muted-foreground">O que você quer comparar?</span>
@@ -83,7 +83,7 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
           {COMPARAR.map((o) => (
             <li>
               {'destination' in o
-                ? <TaskRow href={href('/') + destinationLink(o.destination)} title={o.title} sub={o.sub} data={{ 'place-to': DESTINATIONS[o.destination].to }} />
+                ? <TaskRow href={href('/') + destinationLink(o.destination)} title={o.title} sub={o.sub} asksCity data={{ 'place-to': DESTINATIONS[o.destination].to }} />
                 : <TaskRow href={href(o.to.replace(':uf', firstUf))} title={o.title} sub={o.sub} />}
             </li>
           ))}

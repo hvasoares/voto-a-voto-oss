@@ -4,6 +4,8 @@
  * save their pick in their own island (components/CitySearch.tsx). All of it is guarded: with storage blocked
  * nothing is shown or saved and the page works as before.
  */
+import { cityTarget, readDestination } from '@/lib/destinations'
+import { HOME_SAY } from '@/lib/sentences/catalog-home'
 import { forgetAll, placeHref, placeLabel, readPlace, savePlace } from '@/lib/place-store'
 
 const card = document.querySelector<HTMLElement>('[data-place-shortcut]')
@@ -15,13 +17,21 @@ const render = (): void => {
     a.dataset.home ??= a.getAttribute('href')!
     a.setAttribute('href', place?.kind === 'city' ? (card?.dataset.base ?? '/') + a.dataset.placeTo!.replace('{c}', `${place.uf}/${place.slug}`) : a.dataset.home)
   }
+  // The sub-lines that ask for a city say which one is remembered (#105); without one they stay as the page wrote them.
+  for (const sub of document.querySelectorAll<HTMLElement>('[data-ask-city]')) {
+    sub.dataset.asked ??= sub.textContent!
+    sub.textContent = place?.kind === 'city' ? HOME_SAY['home.place.remembered']!.replace('{nome}', place.nome) : sub.dataset.asked
+  }
   if (!card) return
   card.hidden = !place
   if (!place) return
   const link = card.querySelector<HTMLAnchorElement>('[data-place-link]')
   const label = card.querySelector<HTMLElement>('[data-place-label]')
   if (link) {
-    link.href = (card.dataset.base ?? '/') + placeHref(place).slice(1)
+    // A chosen destination (`?para=`, the closed list) takes the remembered city there; a state keeps its own page.
+    const destination = place.kind === 'city' ? readDestination(location.search) : undefined
+    const path = place.kind === 'city' && destination ? cityTarget(place.uf, place.slug, destination) : placeHref(place)
+    link.href = (card.dataset.base ?? '/') + path.slice(1)
     link.textContent = `${placeLabel(place)} ›`
   }
   if (label) label.textContent = place.kind === 'city' ? 'Sua cidade' : 'Seu estado'
