@@ -27,6 +27,9 @@ jobs:
         working-directory: web
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The release-map test compares docs/releases.md with every tag; a tag push fetches only its own tag.
+          fetch-depth: 0
       - uses: ./.github/actions/setup-web
       - run: npm run typecheck
       - run: npm test

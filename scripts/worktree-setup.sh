@@ -104,7 +104,7 @@ smoke() {
   log=$(mktemp "${TMPDIR:-/tmp}/worktree-setup-smoke.XXXXXX")
 
   since=$(now)
-  if npm --prefix web test -- src/theme.test.ts >"$log" 2>&1; then
+  if (cd web && npx vitest run src/theme.test.ts) >"$log" 2>&1; then
     say "PASS unit src/theme.test.ts ($(( $(now) - since ))s)"
   else
     rc=1; say "FAIL unit src/theme.test.ts ($(( $(now) - since ))s)"; tail -n 30 "$log" >&2
