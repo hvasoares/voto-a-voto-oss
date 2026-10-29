@@ -22,6 +22,7 @@ export const QUESTION_STANDARD: Record<string, string> = {
   'question.switchedTwice.o': 'O voto no exterior em {city} mudou de lado em 2022 e de novo em 2026?',
   'question.tie.o': 'O 2º turno de {years} no exterior, em {city}, terminou empatado?',
   'question.missing.o': 'Há resultado do 2º turno de {years} no exterior, em {city}?',
+  'question.noscript': 'A pergunta precisa de scripts para ser feita; a resposta está visível abaixo.',
   'guess.card.right': 'Palpite certo: {guess}',
   'guess.card.wrong': 'Palpite errado: {guess}',
   'guess.card.answer': 'Resposta: {answer} · {label}',

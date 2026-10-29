@@ -32,11 +32,18 @@
 .city-page .city-arc__pill { margin: 0; color: var(--c-ink); }
 .city-page .city-twin { display: block; margin-top: 12px; color: var(--c-accent); }
 .city-page .city-twin__reason { display: block; margin-top: 1px; color: var(--c-muted); }
+.city-page .city-q__needs { margin: 8px 0 0; font-size: var(--step-1); line-height: var(--lh-1); }
 .city-page .city-arc__note { margin: 0; color: var(--c-muted); }
 .city-page .city-q__q { margin: 16px 0 0; font: 400 var(--step-3)/var(--lh-3) var(--font-serif); }
 .city-page .city-q__q::before, .city-page .city-q .city-arc::before { display: block; font: var(--fw-bold) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); }
 .city-page .city-q__q::before { content: "PERGUNTA"; }
 .city-page .city-q .city-arc::before { content: "RESPOSTA"; }
+/* Without scripts the answer is shown (#149); same layer trick as the cycles page: the preflight's [hidden] is layered and important. */
+@layer base {
+  @media (scripting: none) {
+    .city-page .city-q .city-arc[hidden], .city-page .city-q .city-q__needs[hidden][data-register="standard"] { display: block !important; }
+  }
+}
 .city-page .city-q__yn { float: left; margin: 0 .3em 0 0; font: 700 var(--step-2)/var(--lh-2) var(--font-sans); }
 .city-page .city-q__btn { min-width: 80px; min-height: 44px; margin: 6px 8px 0 0; border: 1px solid var(--c-accent); border-radius: var(--radius); background: none; color: var(--c-accent); font: 700 var(--step-2)/var(--lh-2) var(--font-sans); }
 .city-page .city-q__btn[aria-pressed="true"] { background: var(--c-accent); color: var(--c-accent-fg); }

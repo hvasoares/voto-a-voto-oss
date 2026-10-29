@@ -5,9 +5,8 @@
 export const GUESS_STANDARD: Record<string, string> = {
   'question.yes': 'Sim',
   'question.no': 'Não',
-  'question.guess.note': 'Palpite opcional · fica só no seu navegador',
+  'question.guess.note': 'Escolha para ver a resposta · fica só no seu navegador',
   'question.guess.group': 'Seu palpite',
   'question.guess.right': 'Palpite: {guess}. Resposta: {answer}. O palpite estava certo.',
   'question.guess.wrong': 'Palpite: {guess}. Resposta: {answer}. O palpite estava errado.',
-  'question.guess.undo': 'Toque de novo no mesmo botão para tirar o palpite.',
 }

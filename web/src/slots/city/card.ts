@@ -7,7 +7,7 @@ import { toLegendRows, toTurnoutBarProps } from '../../shared/city-figures'
 import { candidateRow, turnoutBar } from '../../shared/components'
 import { html, type Raw } from '../../shared/html'
 import { calcLink } from '../../lib/facts/link'
-import { questionText, yesNo, type Question } from '../../lib/question'
+import { noscriptText, questionText, yesNo, type Question } from '../../lib/question'
 import '../../lib/sentences/catalog-twin'
 import '../../lib/sentences/catalog-register'
 
@@ -58,7 +58,9 @@ export function viewSentence(result: CityResult | undefined, place: Place, view:
 export function viewQuestion(q: Question, place: Place): Raw {
   const lines = voices(place).map((v) => ({ register: v.register, ...arcLabel(q.arc, { locale: place.locale, register: v.register }) }))
   const voice = { locale: place.locale }
-  return html`<section class="city-q" data-question="${q.kind}" data-answer="${q.answer ? 'yes' : 'no'}" aria-labelledby="city-q"><h2 class="city-q__q" id="city-q">${questionText(q, place.cityName, voice)}</h2><div class="city-arc" data-arc="${q.kind}"><p class="city-q__yn">${yesNo(q.answer, voice)}.</p>${lines.map((l) => html`<p class="city-arc__pill" data-register="${l.register}">${l.label}</p>`)}${lines.map((l) => html`<p class="city-arc__note" data-register="${l.register}">${l.note}</p>`)}</div></section>`
+  // The answer starts hidden (#149) and the guess script reveals it; without scripts the CSS (`city.css`, scripting: none) shows it and the hidden note there are no buttons.
+  const noscript = html`${voices(place).map((v) => html`<p class="city-q__needs" data-register="${v.register}" hidden>${noscriptText({ locale: voice.locale ?? DEFAULT_LOCALE, register: v.register })}</p>`)}`
+  return html`<section class="city-q" data-question="${q.kind}" data-answer="${q.answer ? 'yes' : 'no'}" aria-labelledby="city-q"><h2 class="city-q__q" id="city-q">${questionText(q, place.cityName, voice)}</h2>${noscript}<div class="city-arc" data-arc="${q.kind}" hidden><p class="city-q__yn">${yesNo(q.answer, voice)}.</p>${lines.map((l) => html`<p class="city-arc__pill" data-register="${l.register}">${l.label}</p>`)}${lines.map((l) => html`<p class="city-arc__note" data-register="${l.register}">${l.note}</p>`)}</div></section>`
 }
 
 /** The twin city (#31) as the card links it: its display name, the label of its state and the address of its card. */
