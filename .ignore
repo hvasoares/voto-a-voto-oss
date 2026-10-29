@@ -1,0 +1,9 @@
+# Read by ripgrep-style searches: keep generated and downloaded trees out of them.
+.cache/
+data/
+web/dist*/
+web/node_modules/
+web/.astro/
+web/test-results/
+.claude/worktrees/
+.codegraph/

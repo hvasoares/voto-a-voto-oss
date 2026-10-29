@@ -20,3 +20,6 @@ outbox/
 .mcp.json
 node_modules/
 thoughts/
+
+# Code index of the codegraph tool (rebuild with `codegraph sync`)
+.codegraph/

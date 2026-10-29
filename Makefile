@@ -1,6 +1,6 @@
 .PHONY: test tse-scrape data data-outlines data-nerds data-2018 data-2022 data-2026 data-check publish-edition rollback-edition nonvoters deploy \
         install typecheck web-test browser e2e e2e-port e2e-pages e2e-real build-deploy ci web-install pytest perf \
-        worktree-setup worktree-teardown releases releases-check decisions-check
+        worktree-setup worktree-teardown releases releases-check decisions-check status ci-failures test-summary
 
 test:
 	uv run pytest
@@ -50,6 +50,18 @@ nonvoters:
 # Rodar DE DENTRO da worktree nova, que deve ficar FORA da árvore do checkout principal.
 worktree-setup:
 	bash scripts/worktree-setup.sh
+
+# Onde o repositório está, em um bloco (branch, remotos à frente/atrás, últimos runs de CI, worktrees de agentes).
+status:
+	@bash scripts/status.sh
+
+# O que falhou no último run do ci da main de um remoto (padrão origin): jobs, steps e as primeiras linhas de erro.
+ci-failures:
+	@bash scripts/ci-failures.sh $(or $(REMOTE),origin)
+
+# Resultado dos testes unitários e de componentes em uma linha cada, mais só os nomes do que falhou.
+test-summary:
+	@npm --prefix web run --silent test:summary
 
 # Desfazer: `git worktree remove <caminho>` a partir do checkout principal. Nada mais a limpar —
 # o setup não escreve nada fora da worktree (os browsers ficam no cache compartilhado por usuário).

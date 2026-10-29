@@ -43,6 +43,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run && vitest run -c vitest.astro.config.ts",
     "test:components": "vitest run -c vitest.astro.config.ts",
+    "test:summary": "tsx scripts/test-summary.ts",
     "check:shards": "tsx scripts/shard-check.ts",
     "check:perf": "tsx scripts/perf-budgets.ts",
     "check:peers": "tsx scripts/peers-check.ts",

@@ -9,6 +9,8 @@ Each rule is one line: the rule, why, and the file that enforces it where one ex
 - Do not push or tag. Releasing is a separate step done by the owner; an agent only commits on its own branch. Enforced by: review of the hand-back.
 - Stage by path (`git add <file>`), never `git add -A` or `git add .`. A sweeping add has swept other agents' and generated files into commits. Enforced by: review of the commit.
 - Prefix a command with `rtk proxy` when you need its raw output; the default filter shortens it. Enforced by: the launching session's command hook, not by a file here.
+- Read output in one line: in a worktree call git as `/usr/bin/git` (the command hook rewrites `git` and a worktree refuses it), read test results with `npm run test:summary` (both vitest configs, one line each, only failing names) and CI with `make ci-failures`, never the raw output; `make status` shows where the repo stands. Enforced by: `web/scripts/test-summary.ts`, `scripts/ci-failures.sh`, `scripts/status.sh`
+- Explore code with the code index before grep or reads: call `codegraph_explore` with `projectPath` set to the repo root; the index is `.codegraph/` (git-ignored; `codegraph sync` refreshes it). Enforced by: `.gitignore`
 - Neutral wording: no sentence favours a candidate; all words come from the catalog. Enforced by: `web/src/lib/sentences/catalog.ts`
 - Ballot-number order: two candidates are listed lower number first, whoever leads. Enforced by: `web/src/shared/ballot-order.test.ts`
 - No invented entry points: a new route, entry point, framework or layout that the ticket does not name is a blocking question, not a decision. Enforced by: review of the diff.
@@ -48,6 +50,6 @@ Each rule is one line: the rule, why, and the file that enforces it where one ex
 
 ### Hand-back
 
-- One final report. Its first line is `HANDBACK <ticket> <commit sha> <PASS|PARTIAL|FAILED>`, its last line is `END-HANDBACK <ticket>`, and it names the sha of this brief that the agent read.
+- One final report of at most 25 lines: numbers in a table, long evidence in a file the report names, no restating of the ticket. Its first line is `HANDBACK <ticket> <commit sha> <PASS|PARTIAL|FAILED>`, its last line is `END-HANDBACK <ticket>`, and it names the sha of this brief that the agent read.
 - The receiver ignores a second report with the same ticket and sha as a duplicate.
 - After a failure, resume from the last heartbeat; do not hand back a failure and then continue.

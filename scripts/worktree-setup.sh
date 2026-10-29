@@ -124,10 +124,27 @@ smoke() {
   done_step
 }
 
+# 0. a worktree is cut from the tip of main. A checkout that is strictly BEHIND main (no commits of its own) was cut
+# from a stale base: its first merge would be a surprise rebase. Skipped when there is no local `main`, and for
+# a deliberate older base with WORKTREE_ALLOW_STALE=1.
+check_base() {
+  begin check_base "this checkout is not behind main"
+  if [[ ${WORKTREE_ALLOW_STALE:-} == 1 ]] || ! git rev-parse --verify --quiet main >/dev/null; then
+    say "skipped"; done_step; return
+  fi
+  local head main_tip
+  head=$(git rev-parse HEAD); main_tip=$(git rev-parse main)
+  if [[ $head != "$main_tip" ]] && git merge-base --is-ancestor "$head" "$main_tip"; then
+    die "HEAD $(git rev-parse --short "$head") is behind main $(git rev-parse --short "$main_tip") with no commits of its own — cut the branch from main (git checkout -b <branch> main) or set WORKTREE_ALLOW_STALE=1"
+  fi
+  done_step
+}
+
 main() {
   [[ -f web/package.json ]] ||
     { echo "[setup] FAILED: web/package.json not found — run from the worktree's repo root" >&2; exit 1; }
   local start=$SECONDS
+  check_base
   check_node
   install_deps
   install_browser
