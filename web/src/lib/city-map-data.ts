@@ -8,12 +8,10 @@
 import { candidateName } from '@/shared/candidate-name'
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { createStore } from '@/data/store'
-import { diskSource } from '@/data/node'
+import { createNodeStore } from '@/data/node'
 import type { City, Turnout, Vote } from '@/data'
 import { computeMargins, type Margins } from './margins'
 import { computeCityMargins, type CityMarginRow } from './margins-city'
-import { dataDir } from './data-dir'
 import { shortName } from './state-map-data'
 import type { MunicipalityMesh } from './municipality-geo'
 
@@ -38,7 +36,7 @@ export function cityRowsFor(m: Margins, uf: string, citiesOfUf: readonly City[],
 }
 
 export async function loadCityMapData(uf: string): Promise<CityMapData> {
-  const store = createStore(diskSource(dataDir()))
+  const store = createNodeStore()
   const [turnout, votes, candidates, cities] = await Promise.all([store.turnout(), store.votes(), store.candidates(), store.cities()])
   // The state's newest cycle with turnout data (a fixture state keeps only the cycles it has).
   const anoOf = (t: Turnout) => t.ano

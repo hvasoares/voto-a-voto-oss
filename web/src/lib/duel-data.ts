@@ -4,11 +4,9 @@
  * The page hands the result to its island as props, so choosing two states or two regions fetches nothing. A few kB for 27 states and
  * 5 regions; the overseas posts are in neither list. The cycle is the newest one the dataset has: no election number is hard-coded.
  */
-import { createStore } from '@/data/store'
-import { diskSource } from '@/data/node'
+import { createNodeStore } from '@/data/node'
 import type { Candidate, State, Turnout, Vote } from '@/data'
 import { buildBrasil, splitShares } from './brasil'
-import { dataDir } from './data-dir'
 import type { DuelData } from './duel-model'
 import { computeMargins } from './margins'
 
@@ -47,7 +45,7 @@ export function duelData(input: { states: readonly State[]; turnout: readonly Tu
 
 /** The configured dataset's head-to-head data (build time only). */
 export async function loadDuelData(): Promise<DuelData> {
-  const store = createStore(diskSource(dataDir()))
+  const store = createNodeStore()
   const [states, turnout, votes, candidates] = await Promise.all([store.states(), store.turnout(), store.votes(), store.candidates()])
   const ano = Math.max(...new Set(turnout.map((t) => t.ano)))
   return duelData({ states, turnout, votes, candidates, ano })

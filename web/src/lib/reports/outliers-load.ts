@@ -1,6 +1,4 @@
-import { createStore } from '@/data/store'
-import { diskSource } from '@/data/node'
-import { dataDir } from '../data-dir'
+import { createNodeStore } from '@/data/node'
 import { computePeers } from '../peers'
 import { UF_NOME } from '../uf-names'
 import { MIN_OPTIONS, computeOutliers, pickOutliers, type OutlierFilter, type OutlierRow, type Outliers } from './outliers'
@@ -26,7 +24,7 @@ let memo: Promise<OutlierSet> | undefined
 
 export function loadOutliers(): Promise<OutlierSet> {
   return (memo ??= (async () => {
-    const store = createStore(diskSource(dataDir()))
+    const store = createNodeStore()
     const [cities, turnout, votes, candidates] = await Promise.all([store.cities(), store.turnout(), store.votes(), store.candidates()])
     const outliers = computeOutliers({ cities, turnout, votes, candidates, peers: computePeers({ cities, turnout, votes }) })
     const ufs = [...new Set(outliers.rows.map((r) => r.uf))]

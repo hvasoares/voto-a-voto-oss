@@ -12,9 +12,8 @@
  *   municipality codes BOTH cycles have (2026 adds Boa Esperança do Norte — that vote never counts
  *   as a swing). Percentages still belong to one cycle per bar on screen 13.
  */
-import { createStore, type DataStore, type Turno } from '@/data'
-import { diskSource } from '@/data/node'
-import { dataDir } from './data-dir'
+import type { DataStore, Turno } from '@/data'
+import { createNodeStore } from '@/data/node'
 import { buildCompareRow, buildCycleBlocks, CYCLES, runoffPair, shortName, sortCompareRows, type CompareRow, type CycleBlock, type RunoffTally } from './compare'
 
 const OVERSEAS_UF = 'zz'
@@ -245,7 +244,7 @@ function tallyFromBasis(sum: { validos: number; votes: Map<number, number> }, an
 /** Memoized build-time loader over the configured dataset directory (DATA_DIR, default the fixtures). */
 export function stateStatsLoader() {
   let cache: Promise<StateStats[]> | undefined
-  return () => (cache ??= buildStateStats(createStore(diskSource(dataDir()))))
+  return () => (cache ??= buildStateStats(createNodeStore()))
 }
 
 export const stateStats = stateStatsLoader()

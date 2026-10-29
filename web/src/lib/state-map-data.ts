@@ -5,11 +5,9 @@
  * hard-coded here.
  */
 import { candidateName } from '@/shared/candidate-name'
-import { createStore } from '@/data/store'
-import { diskSource } from '@/data/node'
+import { createNodeStore } from '@/data/node'
 import type { Candidate, Turnout, Vote } from '@/data'
 import { computeMargins, formatSwing, type NationalMargin, type PairMember, type StateMargin } from './margins'
-import { dataDir } from './data-dir'
 
 export interface StateMapRow {
   uf: string
@@ -36,7 +34,7 @@ export interface StateMapData {
 export const shortName = (nomeUrna: string): string => candidateName(nomeUrna, 'short')
 
 export async function loadStateMapData(): Promise<StateMapData> {
-  const store = createStore(diskSource(dataDir()))
+  const store = createNodeStore()
   const [turnout, votes, candidates] = await Promise.all([store.turnout(), store.votes(), store.candidates()])
   const ano = Math.max(...new Set(turnout.map((t: Turnout) => t.ano)))
   return stateMapData(turnout, votes, candidates, ano)

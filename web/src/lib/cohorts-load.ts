@@ -4,9 +4,7 @@
  * Reads the dataset of DATA_DIR through the shared store (default: the committed fixtures;
  * real data: DATA_DIR=../data), so development, tests and captures never need the network.
  */
-import { diskSource } from '@/data/node'
-import { createStore } from '@/data/store'
-import { dataDir } from './data-dir'
+import { createNodeStore } from '@/data/node'
 import { buildCohorts, candidateLabels, RUNOFF_CYCLES, type CandidateRowLike, type CohortReport, type Cycle, type CityRef, type PersonLabel, type RunoffVotes } from './cohorts'
 
 const runoffPerCity = (rows: { ano: number; cdMunicipio: string; candidatoNumero: number; votos: number }[]): RunoffVotes => {
@@ -28,7 +26,7 @@ const pairOf = (rows: CandidateRowLike[], ano: Cycle): [number, number] => {
 }
 
 export async function loadCohortData(dirOverride?: string): Promise<{ report: CohortReport; labels: Record<string, PersonLabel> }> {
-  const store = createStore(diskSource(dirOverride ?? dataDir()))
+  const store = createNodeStore(dirOverride)
   const [votesByCycle, candidates, cities] = await Promise.all([
     Promise.all(RUNOFF_CYCLES.map((ano) => store.votes({ ano, turno: 2 }))),
     store.candidates(),

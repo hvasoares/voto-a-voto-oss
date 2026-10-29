@@ -2,9 +2,7 @@
  * Build time (Node) assembly of "Ficaram em casa" (#32): the dataset of `DATA_DIR` becomes the model of each cycle and round the dataset has.
  * Read once per build (the pages and the fragments share it). Everything else is pure (`stay-home.ts`, `stay-home-view.ts`).
  */
-import { createStore } from '@/data/store'
-import { diskSource } from '@/data/node'
-import { dataDir } from './data-dir'
+import { createNodeStore } from '@/data/node'
 import { nonVotersExceedMargin, stayHomeRows, stayHomeViews, type StayHomeView } from './stay-home'
 import { stayHomeModel, type StayHomeModel } from './stay-home-view'
 import type { Register } from './sentences/catalog'
@@ -22,7 +20,7 @@ let memo: Promise<StayHomeSet> | undefined
 
 export function loadStayHome(): Promise<StayHomeSet> {
   return (memo ??= (async () => {
-    const store = createStore(diskSource(dataDir()))
+    const store = createNodeStore()
     const [turnout, votes] = await Promise.all([store.turnout(), store.votes()])
     const views = stayHomeViews(turnout)
     const claims = new Map(views.map((v) => [`${v.ano}-${v.turno}`, nonVotersExceedMargin(turnout, votes, v.ano, v.turno)]))

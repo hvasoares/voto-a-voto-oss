@@ -1,6 +1,4 @@
-import { createStore } from '@/data/store'
-import { diskSource } from '@/data/node'
-import { dataDir } from '../data-dir'
+import { createNodeStore } from '@/data/node'
 import type { City, Vote, Turnout, Candidate } from '@/data/types'
 
 /**
@@ -15,7 +13,7 @@ export interface ReportsData {
 }
 
 export async function loadReportsData(): Promise<ReportsData> {
-  const store = createStore(diskSource(dataDir()))
+  const store = createNodeStore()
   const [cities, votes, turnout, candidates] = await Promise.all([store.cities(), store.votes(), store.turnout(), store.candidates()])
   return { cities, votes, turnout, candidates }
 }
