@@ -22,8 +22,9 @@
  *   Safari rasterise it with system fonts in the browser.
  */
 import type { CityResult, Segment, SegmentKey } from '@/shared/city-model'
-import { colors, fonts } from '@/shared/tokens'
-import { pickCandidateText } from '@/shared/fit-candidate'
+import { colors } from '@/shared/tokens'
+export { candidateLabel, esc, fit, labelText, rect, SANS, SERIF, stripControl, text, textWidth, wrap, type Anchor } from './share-picture'
+import { candidateLabel, cardSvg, centredLabel, esc, fit, fitLines, INNER, largestFit, LEFT, rect, SEGMENT_FILL, stripControl, text, textWidth, wrap } from './share-picture'
 import { DEFAULT_LOCALE, message, type Locale, type MessageKey } from './sentences/catalog'
 
 /** The fields of a CityResult the picture and the share text read. A CityResult is one. */
@@ -64,51 +65,8 @@ export interface GuessCard {
 
 const W = SHARE_CARD_SIZE.width
 const H = SHARE_CARD_SIZE.height
-const LEFT = 98
-const INNER = 884 // 98 .. 982, the frame's 180 px column
 const GAP = 10
-
-/** XML 1.0 forbids most control characters. */
-export const stripControl = (s: string) => s.replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f￾￿]/g, '')
-export const esc = (s: string) => stripControl(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
-const family = (stack: string) => stack.replace(/"/g, "'")
-export const SERIF = family(fonts.serif)
-export const SANS = family(fonts.sans)
-
-const NARROW = new Set("iIjltf.,:;|'!()[]/ ’".split(''))
-const WIDE = new Set('mwMW@%'.split(''))
-/** Generous width estimate in px of `s` at `size` px (calibrated against Chromium's Helvetica and Georgia: 0.95 to 1.25 times the real width, so slightly generous on average). */
-export function textWidth(s: string, size: number, bold = false): number {
-  let em = 0
-  for (const ch of stripControl(s)) em += NARROW.has(ch) ? 0.3 : WIDE.has(ch) ? 0.9 : /\p{Lu}/u.test(ch) ? 0.74 : /\d/.test(ch) ? 0.56 : 0.52
-  return em * size * 1.04 * (bold ? 1.02 : 1)
-}
-
-/** `s`, or the longest start of it plus "…" that fits `max` px. */
-export function fit(s: string, size: number, max: number, bold = false): string {
-  const clean = stripControl(s).trim()
-  if (textWidth(clean, size, bold) <= max) return clean
-  const chars = [...clean]
-  while (chars.length > 1 && textWidth(chars.join('').trimEnd() + '…', size, bold) > max) chars.pop()
-  return chars.join('').trimEnd() + '…'
-}
-
-/** Greedy word wrap; undefined when more than `maxLines` lines are needed or a word is wider than the line. */
-export function wrap(s: string, size: number, max: number, maxLines: number): string[] | undefined {
-  const lines: string[] = []
-  let line = ''
-  for (const word of stripControl(s).trim().split(/\s+/)) {
-    const next = line ? `${line} ${word}` : word
-    if (textWidth(next, size) <= max) line = next
-    else {
-      if (line) lines.push(line)
-      line = word
-      if (textWidth(word, size) > max) return undefined
-    }
-  }
-  if (line) lines.push(line)
-  return lines.length <= maxLines ? lines : undefined
-}
+const LABEL = 44
 
 /** One line at the largest size that fits (128 as in the frame, down to 84); else two lines at 72, the second cut with "…" if needed. */
 function nameLines(name: string): { size: number; lines: string[] } {
@@ -128,34 +86,8 @@ function nameLines(name: string): { size: number; lines: string[] } {
   return { size, lines: rest ? [first, fit(rest, size, INNER)] : [first] }
 }
 
-const FILL: Record<SegmentKey, string> = { a: colors['cand-a'], b: colors['cand-b'], outros: colors['cand-outros'], abstencao: colors.abstencao, brancos: colors.brancos, nulos: colors.nulos }
 const TEXT_ON: Record<SegmentKey, string> = { a: colors['accent-fg'], b: colors['accent-fg'], outros: colors.ink, abstencao: colors.ink, brancos: colors.ink, nulos: colors.ink }
 const ABBR: Partial<Record<SegmentKey, string>> = { abstencao: 'Ab', brancos: 'Br', nulos: 'Nu' }
-
-export type Anchor = 'start' | 'middle' | 'end'
-export const text = (x: number, y: number, size: number, content: string, o: { weight?: 400 | 600 | 700; fill?: string; serif?: boolean; anchor?: Anchor } = {}) =>
-  `<text x="${x}" y="${y}" font-family="${o.serif ? SERIF : SANS}" font-size="${size}"${o.weight && o.weight !== 400 ? ` font-weight="${o.weight}"` : ''} fill="${o.fill ?? colors.ink}"${o.anchor && o.anchor !== 'start' ? ` text-anchor="${o.anchor}"` : ''}>${esc(content)}</text>`
-export const rect = (x: number, y: number, w: number, h: number, fill: string, extra = '') => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"${extra}/>`
-
-const LABEL = 44
-/** Two-line labels are set a little smaller so both lines sit inside the bar. */
-const TWO_LINES = 0.9
-
-/**
- * The text of a candidate (the two sides) in a segment `room` units wide at `size`: "Name 52%", the name wrapped, the short form, the
- * share alone, else '' (#85). Measured with `textWidth`, never cut with "…". Returns the lines and the size they are set in.
- */
-export function candidateLabel(name: string, pct: string, short: string | undefined, room: number, size: number): { text: string; size: number } | undefined {
-  const t = pickCandidateText(name, pct, short, (line, lines) => textWidth(line, lines > 1 ? Math.round(size * TWO_LINES) : size, true) <= room)
-  return t ? { text: t, size: t.includes('\n') ? Math.round(size * TWO_LINES) : size } : undefined
-}
-
-/** A label centred on (`x`, `cy`): one line, or two stacked when `content` has a line break. */
-export function labelText(x: number, cy: number, size: number, content: string, o: Parameters<typeof text>[4]): string {
-  const lines = content.split('\n')
-  const gap = size * 1.05
-  return lines.map((line, i) => text(x, Math.round(cy + size * 0.34 + (i - (lines.length - 1) / 2) * gap), size, line, o)).join('')
-}
 
 /** Candidate segments: "Name 52%", else the name wrapped, else the short form, else "52%". Other segments: "Abstenção 78%", else "Br". */
 function segmentLabel(s: Seg, width: number, others: string): { text: string; size: number } | undefined {
@@ -184,7 +116,7 @@ function bar(segs: Seg[], y: number, h: number, others: string): string {
     .map((s) => {
       const w = s.pct * unit
       const label = segmentLabel(s, w, others)
-      const out = rect(x, y, w, h, FILL[s.tone ?? s.key]) + (label ? labelText(x + w / 2, y + h / 2, label.size, label.text, { weight: 600, fill: TEXT_ON[s.tone ?? s.key], anchor: 'middle' }) : '')
+      const out = rect(x, y, w, h, SEGMENT_FILL[s.tone ?? s.key]) + centredLabel(x, w, y, h, label, { weight: 600, fill: TEXT_ON[s.tone ?? s.key] })
       x += w + GAP
       return out
     })
@@ -205,13 +137,11 @@ function addressLines(address: string): { size: number; lines: string[] } {
 /** The question (up to three lines), the result of the guess in the serif (the biggest size that fits one line) and the answer (up to two lines). Nothing is cut with "…" unless the words cannot be made to fit. */
 function guessBlock(g: GuessCard, top: number): string {
   const out: string[] = []
-  const qSize = [46, 42, 38].find((sz) => wrap(g.question, sz, INNER, 3)) ?? 38
-  const q = wrap(g.question, qSize, INNER, 3) ?? [fit(g.question, qSize, INNER)]
+  const { size: qSize, lines: q } = fitLines(g.question, [46, 42, 38], INNER, 3)
   q.forEach((line, i) => out.push(text(LEFT, top + 46 + i * 58, qSize, line, { weight: 700 })))
-  const rSize = [96, 84, 72, 60].find((sz) => textWidth(g.result, sz) <= INNER) ?? 60
+  const rSize = largestFit(g.result, [96, 84, 72, 60], INNER)
   out.push(text(LEFT, top + 46 + 3 * 58 + 70, rSize, fit(g.result, rSize, INNER), { serif: true, fill: colors.accent }))
-  const aSize = [42, 38, 34].find((sz) => wrap(g.answer, sz, INNER, 2)) ?? 34
-  const a = wrap(g.answer, aSize, INNER, 2) ?? [fit(g.answer, aSize, INNER)]
+  const { size: aSize, lines: a } = fitLines(g.answer, [42, 38, 34], INNER, 2)
   a.forEach((line, i) => out.push(text(LEFT, top + 46 + 3 * 58 + 70 + 64 + i * 50, aSize, line, { fill: colors.muted })))
   return out.join('')
 }
@@ -219,8 +149,6 @@ function guessBlock(g: GuessCard, top: number): string {
 export function shareCardSvg(r: PictureResult, o: ShareCardOptions): string {
   const say = (key: MessageKey, params: Record<string, string | number> = {}) => message({ locale: o.locale ?? DEFAULT_LOCALE, register: 'standard' }, key, params)
   const out: string[] = []
-  out.push(rect(0, 0, W, H, colors.paper))
-  out.push(`<rect x="5" y="5" width="${W - 10}" height="${H - 10}" fill="none" stroke="${colors.ink}" stroke-width="10"/>`)
 
   // Header: fictitious tag and "Presidente {ano}".
   let hx = LEFT
@@ -257,10 +185,9 @@ export function shareCardSvg(r: PictureResult, o: ShareCardOptions): string {
   const lastAddr = 995 + (addr.lines.length - 1) * 38
   addr.lines.forEach((line, i) => out.push(text(W / 2, 995 - (addr.lines.length - 1) * 8 + i * 38, addr.size, line, { weight: 600, anchor: 'middle' })))
   const brand = say(o.fixture ? 'card.brand.fixture' : 'card.brand')
-  const brandSize = [38, 34, 30].find((sz) => textWidth(brand, sz) <= INNER) ?? 30
-  out.push(text(W / 2, Math.max(1040, lastAddr + 48), brandSize, brand, { fill: colors.muted, anchor: 'middle' }))
+  out.push(text(W / 2, Math.max(1040, lastAddr + 48), largestFit(brand, [38, 34, 30], INNER), brand, { fill: colors.muted, anchor: 'middle' }))
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${o.width ?? W}" height="${o.height ?? H}" viewBox="0 0 ${W} ${H}" role="img"><title>${esc(o.alt)}</title>${out.join('')}</svg>`
+  return cardSvg({ width: W, height: H, displayWidth: o.width, displayHeight: o.height, title: o.alt, parts: out })
 }
 
 /** `svg` (made by `shareCardSvg`) with another `<title>`: the same drawing, the text alternative of another register. */
