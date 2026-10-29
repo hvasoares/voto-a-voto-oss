@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { parseView, type View } from '@/slots/city/city-view'
 import { cityShardResult, type CityShard } from '@/lib/city-shard'
 import { pictureSvg, shareContent, type ShareContent } from '@/lib/share-model'
@@ -47,6 +47,8 @@ export default function ShareSheet({ uf, slug, view, initial, origin, base, fixt
   // data-ready (#122): yes once the browser storage answered (the picture drawn is final; a query view can
   // still re-fetch the city's own shard, which today falls back to the pre-rendered content).
   const island = useIslandReady('share-sheet')
+  // The sheet is opened once, however many cards it draws: its ShareActions share the flag (one share_opened per sheet).
+  const opened = useRef(false)
   useEffect(() => {
     setGuess(readGuess(`${uf}/${slug}`, browserStorage()) ?? null)
     island.markReady()
@@ -104,6 +106,7 @@ export default function ShareSheet({ uf, slug, view, initial, origin, base, fixt
         svg={pictureSvg(card, CARD_REGISTER)}
         filename={card.filename}
         link={card.url}
+        openedRef={opened}
         {...(kind === 'guess' ? { primaryLabel: message(voice, 'guess.card.shareLabel' as MessageKey), downloadLabel: message(voice, 'guess.card.downloadLabel' as MessageKey) } : {})}
       />
     </div>

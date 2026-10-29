@@ -98,9 +98,26 @@ test.describe('share sheet: the guess card', () => {
     await block('city').locator('[data-act="share"]').click()
     const calls = await share.waitForCalls(2)
     expect(calls.map((c) => c.files[0]?.name)).toEqual(['voto-a-voto-rj-cidade-exemplo-palpite.png', expect.stringMatching(/^voto-a-voto-rj-cidade-exemplo-2026-turno-\d\.png$/)])
-    // no share state of one card shows on the other: the status line of each is its own
-    await expect(block('guess').locator('[data-status]')).toHaveText('')
-    await expect(block('city').locator('[data-status]')).toHaveText('')
+  })
+
+  test('no share state leaks between the cards: a share that fails on one shows its message there and leaves the other card\'s status empty', async ({ page }) => {
+    const share = shareMock(page)
+    await share.install('fails')
+    await page.addInitScript(() => localStorage.setItem('voto-a-voto:guess', '{"rj/cidade-exemplo":"yes"}'))
+    await page.goto(sheet)
+    await share.ready()
+    await ready(page, 'guess')
+    const block = (kind: string) => page.locator(`[data-card-block="${kind}"]`)
+    const status = (kind: string) => block(kind).locator('[data-status]')
+    await expect(status('guess')).toHaveText('')
+    await expect(status('city')).toHaveText('')
+    await Promise.all([page.waitForEvent('download'), block('guess').locator('[data-act="share"]').click()])
+    await expect(status('guess')).toContainText('A imagem foi baixada')
+    await expect(status('city')).toHaveText('')
+    // and the other way round: the city card's own failure does not touch what the guess card says
+    await Promise.all([page.waitForEvent('download'), block('city').locator('[data-act="share"]').click()])
+    await expect(status('city')).toContainText('A imagem foi baixada')
+    await expect(status('guess')).toContainText('A imagem foi baixada')
   })
 
   test('with the palpite answered, "Baixar imagem" on the city card saves the city picture, not the guess card', async ({ page }) => {

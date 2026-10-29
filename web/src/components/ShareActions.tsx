@@ -36,6 +36,8 @@ export interface ShareActionsProps {
   /** A screen's own counters, called besides the share ones: when the actions open and when a share completes (#28's recap_opened, recap_shared). */
   onOpened?: () => void
   onShared?: () => void
+  /** Several actions on one screen (the share sheet with a palpite answered shows two cards) count the opening once: they share this flag, the first to mount sets it. */
+  openedRef?: { current: boolean }
 }
 
 const MESSAGES = {
@@ -53,7 +55,7 @@ const BTN = 'min-h-11 w-full rounded-md text-step-2 font-bold'
 const BTN_PRIMARY = `${BTN} text-primary-foreground`
 const BTN_OUTLINE = `${BTN} border border-border bg-background text-foreground`
 
-export default function ShareActions({ text, svg, filename, link, primaryLabel = 'Compartilhar', downloadLabel = 'Baixar imagem', downloadFirst = false, compact = false, textHidden = false, onOpened, onShared }: ShareActionsProps) {
+export default function ShareActions({ text, svg, filename, link, primaryLabel = 'Compartilhar', downloadLabel = 'Baixar imagem', downloadFirst = false, compact = false, textHidden = false, onOpened, onShared, openedRef }: ShareActionsProps) {
   const [mounted, setMounted] = useState(false)
   // Feature-detected after hydration (the server cannot know): where the browser has no Web Share API (most desktop
   // browsers) the native share button is hidden and "Copiar link" takes its place (#52).
@@ -63,7 +65,8 @@ export default function ShareActions({ text, svg, filename, link, primaryLabel =
   const [pngState, setPngState] = useState<'pending' | 'ready' | 'failed'>('pending')
   const readyRef = useRef<Promise<File | undefined>>(Promise.resolve(undefined))
   // The picture can change under the actions (Meu Brasil redraws it for every place): the opening is counted once.
-  const opened = useRef(false)
+  const ownOpened = useRef(false)
+  const opened = openedRef ?? ownOpened
   // data-ready (#122): yes once the island runs and the web-share feature check is done (the buttons answer
   // a tap right away); the picture's own pace stays in the island's data-png.
   const island = useIslandReady('share-actions')
