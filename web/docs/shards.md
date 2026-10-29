@@ -15,7 +15,6 @@ The version directory changes whenever the dataset changes, so a stale copy is n
 | City | `city/<uf>/<slug>.json` | The city card, one request per page view |
 | State | `state/<uf>.json` | State list pages |
 | Totals | `totals.json` | National and region totals |
-| Centroids | `centroids.json` | The IBGE centre of every city that has one, by state (#40); fetched only when "Usar minha localização" is tapped |
 | Arcs | `arcs.json` | How many cities have each arc (#41): `{ counts, overseas }`, each with the seven kinds of `src/lib/arcs.ts`; read by tests and `check:shards`, no screen fetches it (the city page computes its own arc from its shard) |
 | Curiosities | `curiosities.json` | Up to three rank facts per city against the cities of its size band (#33; method in `curiosities.md`); read at build time by the city page (the card is pre-rendered in its HTML), no browser fetches it |
 | Peers | `peers.json` | The closest peer cities of every city (#23; method in `peer-similarity.md`; the twin of the city card, #31, is read from it at build time) |
@@ -43,10 +42,6 @@ code learn it through `virtual:data-shards` (`@/shards` exports `SHARD_VERSION`)
 **Totals** — `{ national: cycles, regions: { [regiao]: cycles } }`; the sums per cycle and round
 over all their cities. Overseas posts enter the national totals and form the `"exterior"` region.
 A region has a block only when it has cities — never invented.
-
-**Centroids** — `{ [uf]: [[slug, lat, lon], ...] }`, WGS84 degrees with the 4 decimals IBGE gives, cities sorted by slug within a state. A city
-without an IBGE centre (Boa Esperança do Norte/MT) and the overseas posts are absent; a centre that is not a city of `cities.csv` breaks the build.
-The nearest city is found on the device (`src/lib/nearest-city.ts`); the position is never sent.
 
 **Search** — an array of `[nome, slug, uf]` rows, every city (overseas included).
 
@@ -90,7 +85,7 @@ is rebuilt on every build, so the sizes cannot drift from the dataset without a 
 The shards above are the API: `/data/v<fingerprint>/…` is served as it is, with open CORS (GitHub Pages sends
 `Access-Control-Allow-Origin: *`; `scripts/serve.ts` does the same), no analytics and no server. `api/latest.json` is the stable
 pointer (edition, fingerprint, absolute endpoint addresses) because the directory name changes with the data; every edition's
-`edicoes/<id>/edition.json` never changes. The reference page is `/api/`. Public subset: city, state, totals, search and centroids;
+`edicoes/<id>/edition.json` never changes. The reference page is `/api/`. Public subset: city, state, totals and search;
 `peers.json` is a build input and is not documented as API. Desktop pages (city card, three cycles, state, /brasil/) link
 "Baixar os dados desta página" to the file the page is drawn from: the city or state shard itself, or `/brasil/dados.json`, the
 `BrasilView` the page renders, serialized as it is. The link is hidden below 1024 px by an inline media rule (no new CSS or JS for the phone).

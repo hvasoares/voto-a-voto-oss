@@ -12,7 +12,6 @@ import TaskRow from '@/components/TaskRow.astro'
 import { loadStateCodes } from '@/lib/states'
 import { loadUfMap } from '@/lib/uf-map'
 import { UF_NOME, ufFullLabel } from '@/lib/uf-names'
-import { LOCATE_HINT } from '@/lib/locate-messages'
 import Base from '@/layouts/Base.astro'
 
 const base = siteBase()
@@ -43,14 +42,6 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
       </span>
       <button type="button" class="absolute bottom-[-1px] right-[11px] h-11 cursor-pointer border-0 bg-transparent p-0 pt-[10px] text-step-1 text-muted-foreground underline" data-place-forget>esquecer meus dados</button>
     </div>
-    <div class="mt-[10px] [[data-place-shortcut]:not([hidden])+&]:mt-3" data-locate data-base={base} hidden>
-      <button type="button" class="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-[1.5px] border-primary bg-background px-3 text-step-2 font-bold text-primary disabled:opacity-60" data-locate-button>
-        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.4"></circle><circle cx="8" cy="8" r="2.4" fill="currentColor"></circle></svg>
-        Usar minha localização
-      </button>
-      <p class="mt-1.5 text-step-1 text-muted-foreground">{LOCATE_HINT}</p>
-      <p class="mt-1.5 text-step-1" role="status" aria-live="polite" data-locate-status hidden></p>
-    </div>
     </div>
     <div class="lg:col-start-2 lg:row-span-2 lg:row-start-1">
     <p class="mt-1.5 text-step-1 lg:mt-[2px] lg:text-step-2"><span class="lg:hidden">Ou escolha um estado. Toque para ver os municípios.</span><span class="hidden lg:inline">Ou escolha um estado. Clique para ver os municípios.</span></p>
@@ -73,7 +64,7 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
     {/* The entries in the order a visit unfolds (data-task is the stable hook); "comparar" (id="comparar") is the chooser (#101). #102 inserts
         "Usar os dados" (done, after "entender") and #103 anything else after it. A link to a screen that does not exist yet is not shown. */}
     <ul class="mt-[5px] list-none p-0 lg:mt-3">
-      <li data-task="ver-cidade"><TaskRow href={href('/') + destinationLink('cidade')} title="Ver minha cidade" sub="Busque pelo nome ou use a localização" data={{ 'place-to': DESTINATIONS.cidade.to }} /></li>
+      <li data-task="ver-cidade"><TaskRow href={href('/') + destinationLink('cidade')} title="Ver minha cidade" sub="Busque pelo nome" data={{ 'place-to': DESTINATIONS.cidade.to }} /></li>
       <li data-task="compartilhar"><TaskRow href={href('/') + destinationLink('compartilhar')} title="Compartilhar um resultado" sub="Escolha a cidade e toque em Compartilhar" asksCity data={{ 'place-to': DESTINATIONS.compartilhar.to }} /></li>
       <li data-task="comparar" id="comparar" class="border-t border-border pt-3 scroll-mt-4">
         <strong class="block text-step-2 font-bold lg:text-step-3" id="comparar-titulo">Comparar</strong>
@@ -111,6 +102,5 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
   <script>
     import '@/scripts/tile-analytics'
     import '@/scripts/home-place'
-    import '@/scripts/home-locate'
   </script>
 </Base>

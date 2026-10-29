@@ -88,7 +88,7 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
 
     <section class={sec} aria-labelledby="de-onde-vem">
       <h2 class={h2} id="de-onde-vem">De onde vêm os números</h2>
-      <p class="mt-[5px]">Todos os números de eleição do site vêm de publicações oficiais do Tribunal Superior Eleitoral (TSE). Não há pesquisa própria nem estimativa. A única outra fonte é geográfica, do Instituto Brasileiro de Geografia e Estatística (IBGE), e não traz nenhum resultado: o centro de cada município, usado só pelo botão "Usar minha localização".</p>
+      <p class="mt-[5px]">Todos os números de eleição do site vêm de publicações oficiais do Tribunal Superior Eleitoral (TSE). Não há pesquisa própria nem estimativa. A única outra fonte é geográfica, do Instituto Brasileiro de Geografia e Estatística (IBGE), e não traz nenhum resultado: o centro de cada município.</p>
       <p class="mt-1">Resultados de 2026: arquivos oficiais assinados, um por município, do site de resultados do TSE (resultados.tse.jus.br), coletados em {COLLECTION_DATE}. Estão finalizados nos dois turnos: {fmt(BR_CITIES_2026)} municípios, {fmt(SECTIONS_APURADAS.counted)} de {fmt(SECTIONS_APURADAS.total)} seções apuradas, mais {OVERSEAS_POSTS_2026} postos de votação no exterior.</p>
       <p class="mt-1">Resultados de 2018 e 2022: bases de dados abertos do TSE com a votação de presidente por município e zona, coletadas em {COLLECTION_DATE} e somadas por município — {fmt(BR_CITIES_2018_2022)} municípios por ciclo, só as linhas de presidente do arquivo nacional.</p>
 
@@ -105,7 +105,7 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
         ))}
       </ul>
       <p class="mt-1 text-step-1 text-muted-foreground">O <code>digest</code> da linha de 2026 reúne em um único SHA-256 o hash de cada arquivo coletado, ordenado por nome, e a <code>geração</code> é a data mais recente que o TSE marcou em um arquivo coletado. Manifesto no GitHub: <a href={githubManifest}>data/manifest.json ›</a></p>
-      <p class="mt-1">O site lê só as tabelas que o pipeline grava somadas por município: {tables}, todas conferidas contra o manifesto. Os centros dos municípios (centroids.csv) vêm do serviço de malhas do IBGE, um arquivo por estado; o município de Boa Esperança do Norte/MT, criado depois da malha que o IBGE publica, não tem centro e por isso nunca é oferecido como a cidade mais próxima. Os arquivos originais do TSE ficam no cache da coleta, não no site: nada aqui baixa de novo um arquivo do TSE para mostrar um número.</p>
+      <p class="mt-1">O site lê só as tabelas que o pipeline grava somadas por município: {tables}, todas conferidas contra o manifesto. Os centros dos municípios (centroids.csv) vêm do serviço de malhas do IBGE, um arquivo por estado. Os arquivos originais do TSE ficam no cache da coleta, não no site: nada aqui baixa de novo um arquivo do TSE para mostrar um número.</p>
       <section aria-labelledby="calculo">
         <h3 class={h3} id="calculo">Como os números do site são calculados</h3>
         <ul class="mt-[5px] list-disc space-y-1 pl-5">
@@ -215,9 +215,6 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
       <ul class="mt-1 list-disc space-y-1 pl-5 text-step-1">
         <li>A navegação é estática; não há conta nem formulário.</li>
         <li>O texto digitado na busca não é enviado: a busca roda no próprio navegador.</li>
-        <li>O botão "Usar minha localização" só pede a posição ao navegador depois do seu toque. A posição é usada
-          no seu aparelho, contra o centro de cada município, para abrir a cidade mais próxima; ela não é enviada
-          nem guardada, e o site só baixa a lista dos centros (um arquivo igual para todos).</li>
         <li>Para medir como o site é usado, este site usa o Google Analytics — páginas vistas, cidades e
           relatórios abertos, quantos resultados uma busca mostrou (nunca o texto digitado), imagens
           baixadas, a tela do QR e a impressão do pôster. Ao utilizar nossos serviços, você está ciente

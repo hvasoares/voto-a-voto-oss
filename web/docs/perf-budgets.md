@@ -36,6 +36,8 @@ Os números medidos e a folga de cada orçamento **não** ficam neste documento:
 
 **Medição (#147, sem mudança de orçamento):** a dica acima da busca da home (uma linha por destino, nos dois registros) e o foco ao chegar de uma entrada que pede cidade entram no script da página. Celular, `scripts/measure.ts` na home: antes html 8823 B, JS 4276 B (gzip), css 13141 B; depois html 8872 B, JS 4910 B, css 13160 B. `check:perf`: eagerJs da home 3204 B -> 3478 B (limite 4300 B), html 8823 B -> 8872 B (limite 12 KB). Só a home muda neste ticket.
 
+**Medição (#156, sem mudança de orçamento):** o botão "Usar minha localização", sua linha, o script e o arquivo dos centros saem da home. Celular, `scripts/measure.ts` na home: antes html 8872 B, JS 4910 B (gzip), css 13160 B; depois html 8669 B, JS 3949 B, css 13095 B. `check:perf`: eagerJs da home 2517 B (limite 4300 B), html 8669 B (limite 12 KB). A home é a única página tocada (o texto de `/sobre-os-dados/` e `/api/` não é medido pelo `check:perf`).
+
 **Mudança de orçamento (#35, #40):** o `eagerJs` da home passou de 3 KB para 4.2 KB. A home agora lê o aparelho ao carregar
 (o atalho "Sua cidade" e o "esquecer meus dados", ~0.6 KB gzip) e traz o botão "Usar minha localização"; o código que pede a posição
 e o arquivo dos centros (70 KB gzip) só carregam no toque, mas o `import()` dinâmico faz o Vite acrescentar seu carregador (~0.9 KB gzip) ao script

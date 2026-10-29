@@ -23,7 +23,6 @@ const rows: { name: string; path: string; what: string; fields: string }[] = [
   { name: 'Estado', path: endpoints.state, what: 'As cidades de um estado.', fields: 'uf, regiao, cities[] (nome, slug)' },
   { name: 'Totais', path: endpoints.totals, what: 'Somas nacionais e por região, por ciclo e turno.', fields: 'national, regions[região], cada um com os mesmos campos de cycles[ano][turno]' },
   { name: 'Busca', path: endpoints.search, what: 'Todas as cidades, uma linha cada.', fields: '[nome, slug, uf]' },
-  { name: 'Centros', path: endpoints.centroids, what: 'O centro IBGE de cada município, por estado.', fields: '{ uf: [[slug, lat, lon], ...] }' },
 ]
 ---
 

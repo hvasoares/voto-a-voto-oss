@@ -16,14 +16,13 @@
     "vf591db74932ecbdc/arcs.json": "0b0cad2e3fc159f0fdfd4a1d007ff585f3e98e559ca46c9e7f7c78b20c65e804",
     "vf591db74932ecbdc/curiosities.json": "aff993d131930f54ffcd33c08709c7817dafd7bd958ece73356630ed199ec004",
     "vf591db74932ecbdc/totals.json": "69276d61c9c3bae92a4cd919decc2a7656f71be31bdd1ff07ccd7c1b434d8b9f",
-    "vf591db74932ecbdc/peers.json": "3d13d17ef6bb96896826d82c1a08a44653aba445a7073b1662e78304aafdf838",
-    "vf591db74932ecbdc/centroids.json": "12bd0029bca40ec9525128c792eefbb75938f5bb158394ae6eaa810c1281fe00"
+    "vf591db74932ecbdc/peers.json": "3d13d17ef6bb96896826d82c1a08a44653aba445a7073b1662e78304aafdf838"
   },
   "checks": {
     "shard-check/green": {
       "exit": 0,
-      "message": "check:shards: the shards of <web>/fixtures/data cover the dataset exactly (18 files, fingerprint f591db74932ecbdc).",
-      "stdout": "0181a826cf66fdcd13d144a0a8849a681fd4f5bc3956e61ecdc882e6133c5ed3"
+      "message": "check:shards: the shards of <web>/fixtures/data cover the dataset exactly (17 files, fingerprint f591db74932ecbdc).",
+      "stdout": "54421416d51b453f2d2d22dd9b4f238b87c96f217014e0c545c392c16bfffeb0"
     },
     "shard-check/no-dir": {
       "exit": 1,

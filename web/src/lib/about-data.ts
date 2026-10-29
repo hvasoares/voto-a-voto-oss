@@ -81,7 +81,7 @@ export const SOURCES: SourceLine[] = [
   },
   {
     label: 'servicodados.ibge.gov.br/api/v3/malhas (metadados por estado)',
-    kind: 'IBGE: centro de cada município, para o botão "Usar minha localização" (só geografia, nenhum resultado)',
+    kind: 'IBGE: centro de cada município (só geografia, nenhum resultado)',
     retrievedAt: '2026-10-27T18:44:42Z',
     bytes: 0,
     sha256: '',
