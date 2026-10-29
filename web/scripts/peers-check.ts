@@ -4,19 +4,12 @@
  * the method used (size band, round-1 turnout and margin of the latest cycle), so a reviewer can read why they are peers.
  *   DATA_DIR=../data npm run check:peers [uf/slug ...]
  */
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import { parseCities, parseTurnout, parseVotes } from '../src/data/csv'
-import { buildShards, type ShardSources } from '../integrations/shards'
-import { FINGERPRINT_FILES } from '../integrations/shards-fingerprint'
-import { dataDir } from '../src/lib/data-dir'
+import { loadDatasetShards } from '../integrations/shards'
 import { sizeBand, type PeersFile } from '../src/lib/peers'
 
-const dir = dataDir()
-const sources = {} as ShardSources
-for (const f of FINGERPRINT_FILES) sources[f] = readFileSync(resolve(dir, f), 'utf8')
-const built = buildShards(sources)
+const { dir, sources, built } = loadDatasetShards()
 const json = built.files.find((f) => f.path.endsWith('/peers.json'))!.json
 const peers = JSON.parse(json) as PeersFile
 

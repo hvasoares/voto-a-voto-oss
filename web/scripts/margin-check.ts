@@ -4,18 +4,11 @@
  * arithmetic by hand from data/votes.csv and data/turnout.csv.
  *   DATA_DIR=../data npm run check:margin [uf/slug ...]
  */
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
-import { buildShards, type ShardSources } from '../integrations/shards'
-import { FINGERPRINT_FILES } from '../integrations/shards-fingerprint'
-import { dataDir } from '../src/lib/data-dir'
+import { loadDatasetShards } from '../integrations/shards'
 import { cityShardResult, type CityShard } from '../src/lib/city-shard'
 import { marginLine, marginVotes } from '../src/lib/sentences/margin'
 
-const dir = dataDir()
-const sources = {} as ShardSources
-for (const f of FINGERPRINT_FILES) sources[f] = readFileSync(resolve(dir, f), 'utf8')
-const built = buildShards(sources)
+const { built } = loadDatasetShards()
 const shard = (id: string) => {
   const f = built.files.find((x) => x.path.endsWith(`/city/${id}.json`))
   return f ? (JSON.parse(f.json) as CityShard) : undefined

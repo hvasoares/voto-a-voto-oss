@@ -7,7 +7,7 @@
  */
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { buildShards, type BuiltShards } from '../../integrations/shards'
+import { loadDatasetShards, type BuiltShards } from '../../integrations/shards'
 import { datasetFingerprintFromDisk } from '../../integrations/shards-fingerprint'
 import { dataDir } from './data-dir'
 import { cityShardResult, type CityShard } from './city-shard'
@@ -15,8 +15,6 @@ import type { PeersFile } from './peers'
 import type { CuriositiesFile } from './curiosities'
 import type { ArcsFile } from './arcs'
 import type { CityResult } from '../shared/city-model'
-
-const FINGERPRINT_FILES = ['candidates.csv', 'centroids.csv', 'cities.csv', 'manifest.json', 'turnout.csv', 'votes.csv'] as const
 
 /** The JSON text of every shard file, keyed by its path relative to public/data. Memoised per dataset. */
 const memos = new Map<string, Promise<BuiltShards>>()
@@ -28,12 +26,7 @@ function datasetShards(env: Record<string, string | undefined> = process.env, cw
   return done
 }
 function buildDatasetShards(env: Record<string, string | undefined>, cwd: string): Promise<BuiltShards> {
-  return (async () => {
-    const dir = dataDir(env, cwd)
-    const sources = {} as Record<string, string>
-    for (const f of FINGERPRINT_FILES) sources[f] = readFileSync(resolve(dir, f), 'utf8')
-    return buildShards(sources as Parameters<typeof buildShards>[0])
-  })()
+  return (async () => loadDatasetShards(env, cwd).built)()
 }
 
 async function publicShardText(path: string): Promise<string | undefined> {

@@ -30,15 +30,28 @@ export function datasetFingerprint(sources: ShardSources): string {
   return hash.digest('hex').slice(0, 16)
 }
 
+/**
+ * The I/O half of the shard plumbing (#139): the six dataset files of `dir` as text. A missing file throws the file system's own error,
+ * unless `onMissing` turns it into the caller's (the build names the directory and the file).
+ */
+export function readShardSources(dir: string, onMissing?: (file: DataFile, error: Error) => Error): ShardSources {
+  const sources = {} as ShardSources
+  for (const f of FINGERPRINT_FILES) {
+    try {
+      sources[f] = readFileSync(resolve(dir, f), 'utf8')
+    } catch (error) {
+      throw onMissing ? onMissing(f, error as Error) : error
+    }
+  }
+  return sources
+}
+
 /** The fingerprint of the configured dataset on disk (what the Playwright specs assert against the served build). */
 export async function datasetFingerprintFromDisk(
   env: Record<string, string | undefined> = process.env,
   cwd = process.cwd(),
 ): Promise<string> {
-  const dir = dataDir(env, cwd)
-  const sources = {} as Record<string, string>
-  for (const f of FINGERPRINT_FILES) sources[f] = readFileSync(resolve(dir, f), 'utf8')
-  return datasetFingerprint(sources as ShardSources)
+  return datasetFingerprint(readShardSources(dataDir(env, cwd)))
 }
 
 let fingerprintPromise: Promise<string> | undefined

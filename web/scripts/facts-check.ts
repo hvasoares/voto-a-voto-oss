@@ -3,11 +3,7 @@
  * and every record has an id, a sentence in both registers, inputs, a source and a calculation; ids are unique across the dataset.
  * Choose the dataset with DATA_DIR (default: the fixtures; the recorded run uses DATA_DIR=../data). Exit 1 on any problem.
  */
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
-import { buildShards, type ShardSources } from '../integrations/shards'
-import { FINGERPRINT_FILES } from '../integrations/shards-fingerprint'
-import { dataDir } from '../src/lib/data-dir'
+import { loadDatasetShards } from '../integrations/shards'
 import { cityShardResult, type CityShard } from '../src/lib/city-shard'
 import { factsOf, type CuriositiesFile } from '../src/lib/curiosities'
 import { gateProblems } from '../src/lib/facts/gate'
@@ -16,10 +12,7 @@ import { curiosityLine } from '../src/slots/city/curiosities'
 import { displayName } from '../src/shared/city-search'
 import { CYCLES } from '../src/shared/city-model'
 
-const dir = dataDir()
-const sources = {} as ShardSources
-for (const f of FINGERPRINT_FILES) sources[f] = readFileSync(resolve(dir, f), 'utf8')
-const built = buildShards(sources)
+const { dir, built } = loadDatasetShards()
 const json = (name: string) => built.files.find((f) => f.path.endsWith(`/${name}`))!.json
 const curio = JSON.parse(json('curiosities.json')) as CuriositiesFile
 const shards = built.files.filter((f) => /\/city\/[^/]+\/[^/]+\.json$/.test(f.path)).map((f) => JSON.parse(f.json) as CityShard)

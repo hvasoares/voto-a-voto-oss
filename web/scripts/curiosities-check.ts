@@ -3,19 +3,12 @@
  * the city's own value, its group (size band + same cycles) and its place in the sorted values, so a reviewer can redo the ranking.
  *   DATA_DIR=../data npm run check:curiosities [uf/slug ...]
  */
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
-import { buildShards, type ShardSources } from '../integrations/shards'
-import { FINGERPRINT_FILES } from '../integrations/shards-fingerprint'
-import { dataDir } from '../src/lib/data-dir'
+import { loadDatasetShards } from '../integrations/shards'
 import type { CityShard } from '../src/lib/city-shard'
 import { curiosities, MIN_GROUP, readings } from '../src/lib/curiosities'
 import { message } from '../src/lib/sentences/catalog'
 
-const dir = dataDir()
-const sources = {} as ShardSources
-for (const f of FINGERPRINT_FILES) sources[f] = readFileSync(resolve(dir, f), 'utf8')
-const built = buildShards(sources)
+const { sources, built } = loadDatasetShards()
 const shards = built.files.filter((f) => /\/city\/[^/]+\/[^/]+\.json$/.test(f.path)).map((f) => JSON.parse(f.json) as CityShard)
 const minGroup = (JSON.parse(sources['manifest.json']) as { fixture?: boolean }).fixture ? 2 : MIN_GROUP
 const facts = curiosities(shards, minGroup)

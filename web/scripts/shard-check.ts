@@ -5,21 +5,13 @@
  * DATA_DIR (default: the committed fixture dataset; the recorded run uses DATA_DIR=../data).
  */
 import { gzipSync } from 'node:zlib'
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { verifyShards } from '../integrations/shards-verify'
-import { buildShards, type ShardSources } from '../integrations/shards'
-import { FINGERPRINT_FILES } from '../integrations/shards-fingerprint'
-import { dataDir } from '../src/lib/data-dir'
+import { loadDatasetShards } from '../integrations/shards'
 import { ARC_KINDS, cityArc, type ArcsFile } from '../src/lib/arcs'
 import type { CityShard } from '../src/lib/city-shard'
 import type { CuriositiesFile } from '../src/lib/curiosities'
 
-const dir = dataDir()
-const sources = {} as ShardSources
-for (const f of FINGERPRINT_FILES) sources[f] = readFileSync(resolve(dir, f), 'utf8')
-
-const built = buildShards(sources)
+const { dir, sources, built } = loadDatasetShards()
 const problems = await verifyShards(built, sources)
 if (problems.length > 0) {
   console.error(`check:shards FAILED over ${dir} — ${problems.length} problem(s):`)

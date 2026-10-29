@@ -33,7 +33,7 @@ import { countArcs } from '../src/lib/arcs'
 import type { CityShard } from '../src/lib/city-shard'
 import { curiosities, encodeCuriosities, FIXTURE_MIN_GROUP, MIN_GROUP } from '../src/lib/curiosities'
 import { computePeers, encodePeers } from '../src/lib/peers'
-import { datasetFingerprint, FINGERPRINT_FILES, type ShardSources } from './shards-fingerprint'
+import { datasetFingerprint, readShardSources, type ShardSources } from './shards-fingerprint'
 
 /** Bumped when the shard layout changes: a cached version directory is rebuilt when this does not match. */
 export const SHARD_GENERATOR = 'voto-shards/7'
@@ -273,6 +273,13 @@ function composeShards(
   return files
 }
 
+/** The configured dataset read and built in one step: its directory, its sources and its shards (what the check scripts and the in-memory shard reader start from). */
+export function loadDatasetShards(env: Record<string, string | undefined> = process.env, cwd = process.cwd()): { dir: string; sources: ShardSources; built: BuiltShards } {
+  const dir = dataDir(env, cwd)
+  const sources = readShardSources(dir)
+  return { dir, sources, built: buildShards(sources) }
+}
+
 /**
  * Writes the shards of the configured dataset (env/DATA_DIR, cwd) under public/data and prunes everything else of
  * that directory (older version directories, the previously copied CSVs). The version directory is cached with a
@@ -281,15 +288,8 @@ function composeShards(
  */
 export function generateShards(publicData: string, env: Record<string, string | undefined> = process.env, cwd = process.cwd()): string {
   const dir = dataDir(env, cwd)
-  const sources = {} as Record<string, string>
-  for (const f of FINGERPRINT_FILES) {
-    try {
-      sources[f] = readFileSync(resolve(dir, f), 'utf8')
-    } catch (error) {
-      throw new ShardError(`DATA_DIR ${dir} is missing ${f}: ${(error as Error).message}`)
-    }
-  }
-  const built = buildShards(sources as Parameters<typeof buildShards>[0])
+  const sources = readShardSources(dir, (f, error) => new ShardError(`DATA_DIR ${dir} is missing ${f}: ${error.message}`))
+  const built = buildShards(sources)
   const versionDir = resolve(publicData, `v${built.fingerprint}`)
   let stale = true
   try {

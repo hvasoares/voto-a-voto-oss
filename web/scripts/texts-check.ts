@@ -3,18 +3,11 @@
  * limit, the bulletin has no digit, no percent sign and its length is about 90 seconds, and no slot is left unfilled. The page build runs the same gate city by
  * city; this script runs it without a build. Choose the dataset with DATA_DIR (default: the fixtures; the recorded run uses DATA_DIR=../data). Exit 1 on any problem.
  */
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
-import { buildShards, type ShardSources } from '../integrations/shards'
-import { FINGERPRINT_FILES } from '../integrations/shards-fingerprint'
-import { dataDir } from '../src/lib/data-dir'
+import { loadDatasetShards } from '../integrations/shards'
 import type { CityShard } from '../src/lib/city-shard'
 import { cityTexts } from '../src/lib/city-texts-build'
 
-const dir = dataDir()
-const sources = {} as ShardSources
-for (const f of FINGERPRINT_FILES) sources[f] = readFileSync(resolve(dir, f), 'utf8')
-const built = buildShards(sources)
+const { dir, built } = loadDatasetShards()
 const shards = built.files.filter((f) => /\/city\/[^/]+\/[^/]+\.json$/.test(f.path)).map((f) => JSON.parse(f.json) as CityShard)
 
 let longest = 0
