@@ -17,7 +17,7 @@ const SHOWN = RACES_SHOWN
 const { margins, lula, flavio } = await loadReports()
 const races = closestRaces(margins)
 const shown = races.slice(0, SHOWN)
-// Fact records (#62): every row links to its record; the seal is written from the build's checks.
+// Fact records (#62): the page's one calculation entry (#155) opens its records; the seal is written from the build's checks.
 const { calc, seal } = await reportFacts('relatorios/disputas-mais-apertadas', 'cidades')
 /** The row's own words: "Empate, 1.530 a 1.530" or "Diferença de 1 voto — Lula à frente". */
 const raceLine = (r: (typeof races)[number]): string =>
@@ -28,11 +28,11 @@ const rows = shown.map((r) => ({
   slug: r.slug,
   name: `${displayName(r.nome)}/${ufLabel(r.uf)}`,
   detail: `${raceLine(r)} · margem ${formatSignedPp(r.margin)} · ${formatInt(r.validos2)} votos válidos`,
-  factKey: `${r.uf}-${r.slug}`,
 }))
 ---
 
 <ReportLayout
+  calc={calc}
   title="Disputas mais apertadas · Voto a Voto"
   heading="Disputas mais apertadas"
   report="disputas-mais-apertadas"
@@ -51,7 +51,6 @@ const rows = shown.map((r) => ({
   <section class="mt-2" aria-label="Disputas mais apertadas">
     <ReportTable
       rows={rows}
-      calc={calc}
       tableAttr="data-race-table"
       rowAttr="data-race"
       caption="A diferença de votos, os votos de cada candidato e a margem em pp de cada cidade"

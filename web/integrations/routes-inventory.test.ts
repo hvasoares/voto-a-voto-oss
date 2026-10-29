@@ -26,6 +26,7 @@ import {
   EXAMPLE_URLS,
   FINALITY_PAGES,
   KNOWN_ROUTES_EXTRA,
+  checkCalcEntryPages,
   checkDiscovery,
   checkExclusions,
   checkFinalityPages,
@@ -89,6 +90,10 @@ describe('the route inventory of the site (#110)', () => {
 
   it('every page template has a type-scale screen or a reasoned exclusion, and no screen is stale', () => {
     expect(checkTypeScaleScreens(pages, SCREENS.map((s) => s.path))).toEqual([])
+  })
+
+  it('the pages with the calculation entry (#155) are live templates, each opened at an address of its own', () => {
+    expect(checkCalcEntryPages(pages)).toEqual([])
   })
 
   it('the tap-target footer pages are derived: templates minus FOOTER_EXCLUSIONS, no dupes, every one a live URL', () => {

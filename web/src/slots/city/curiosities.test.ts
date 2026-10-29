@@ -7,11 +7,12 @@ const facts: Fact[] = [
   { code: 'ml', rank: 12, n: 48, cycles: [2026] },
   { code: 'bh', rank: 5, n: 48, cycles: [2018, 2022, 2026] },
 ]
-const html = curiosityCard(facts, 'x', (anchor) => `/fato/rj/x/comparacoes/#${anchor}`).toString()
+const html = curiosityCard(facts, 'x').toString()
 
 describe('the curiosities card', () => {
-  it('has a "De onde vem este número?" link on every fact, to that fact\'s record', () => {
-    expect(html.match(/<a class="calc" href="\/fato\/rj\/x\/comparacoes\/#(td|ml|bh)">De onde vem este número\?<\/a>/g)).toHaveLength(3)
+  it('has no calculation link of its own: the page has the one entry (#155)', () => {
+    expect(html).not.toContain('class="calc"')
+    expect(html.match(/<li class="curio__fact"/g)).toHaveLength(3)
   })
   it('is the frame: the rank, what it ranks, the group size and the cycles compared', () => {
     expect(html).toContain('3ª')
@@ -34,10 +35,10 @@ describe('the curiosities card', () => {
     expect(html.replace('não um indício de irregularidade', '').replace('Não mostra que algo deu errado', '')).not.toMatch(/irregular|fraude|suspeit|anormal|problema|erro/i)
   })
   it('a rise in turnout is an "alta"', () => {
-    expect(curiosityCard([{ code: 'tu', rank: 1, n: 20, cycles: [2022, 2026] }], 'y', (a) => `#${a}`).toString()).toContain('maior alta de comparecimento')
+    expect(curiosityCard([{ code: 'tu', rank: 1, n: 20, cycles: [2022, 2026] }], 'y').toString()).toContain('maior alta de comparecimento')
   })
   it('has the standard register first and nothing at all when the city has no facts', () => {
     expect(html.indexOf('data-register="standard"')).toBeLessThan(html.indexOf('data-register="plain"'))
-    expect(curiosityCard([], 'z', (a) => `#${a}`).toString()).toBe('')
+    expect(curiosityCard([], 'z').toString()).toBe('')
   })
 })

@@ -148,17 +148,16 @@ test.describe('Meu Brasil story', () => {
     expect(shared!.text).toContain('/meu-brasil/historia/?mora=rj/cidade-exemplo&vota=sp/cidade-exemplo-paulista#3')
   })
 
-  test('every number has its "De onde vem este número?", and the page it names exists and has that record', async ({ page, request }) => {
+  test('the story has the one "De onde vem este número?", and the page it names exists and has that record', async ({ page, request }) => {
     await page.goto(story(ONE))
     await ready(page)
-    const links = await page.locator('.story__calc a.calc').evaluateAll((els) => els.map((e) => e.getAttribute('href')!))
-    expect(links.length).toBeGreaterThanOrEqual(3)
-    for (const href of [...new Set(links)]) {
-      const [path, id] = href.split('#')
-      const res = await request.get(path!)
-      expect(res.status(), href).toBe(200)
-      expect(await res.text(), href).toContain(`id="${id}"`)
-    }
+    await expect(page.locator('.story__card a.calc')).toHaveCount(0)
+    const links = await page.locator('a.calc').evaluateAll((els) => els.map((e) => e.getAttribute('href')!))
+    expect(links).toHaveLength(1)
+    const [path, id] = links[0]!.split('#')
+    const res = await request.get(path!)
+    expect(res.status(), links[0]).toBe(200)
+    expect(await res.text(), links[0]).toContain(`id="${id}"`)
   })
 
   test('the picture of a card says one idea about places and nothing about the visitor, a winner or a why', async ({ page }) => {

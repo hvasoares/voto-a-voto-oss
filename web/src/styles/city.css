@@ -2,8 +2,6 @@
    (so also on the share sheet that uses the card as its backdrop). The bars, the legend and the tabs it reuses are in screens.css, which
    Astro links BEFORE this file (CityCard imports global.css first; e2e/css-groups.spec.ts keeps the order): the rules here may tie the
    shared ones on specificity and win by coming later (#119). */
-.city-sentence + .calc, .city-margin ~ .calc { display: block; margin-top: 6px; }
-
 /* The card's base is the scale's small step (#86); only what is larger or bolder says so. */
 .city-page { font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); }
 .city-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }

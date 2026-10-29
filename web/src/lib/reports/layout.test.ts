@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { assertReportPage, assertReportRows, type ReportRow } from './layout'
 
-const row: ReportRow = { id: 'x', uf: 'sp', slug: 'campinas', name: 'Campinas/SP', detail: '1 voto', factKey: 'sp-campinas' }
+const row: ReportRow = { id: 'x', uf: 'sp', slug: 'campinas', name: 'Campinas/SP', detail: '1 voto' }
 
 describe('assertReportRows', () => {
   it('accepts well-formed rows and an empty list', () => {
@@ -9,7 +9,7 @@ describe('assertReportRows', () => {
     expect(() => assertReportRows('p', [])).not.toThrow()
   })
 
-  it.each(['uf', 'slug', 'name', 'detail', 'factKey'] as const)('names the page, the row and the empty %s', (field) => {
+  it.each(['uf', 'slug', 'name', 'detail'] as const)('names the page, the row and the empty %s', (field) => {
     expect(() => assertReportRows('relatorios/x', [row, { ...row, [field]: ' ' }])).toThrow(`relatorios/x: row 1 has an empty ${field}`)
   })
 

@@ -91,7 +91,7 @@ test.describe('brasil: type and targets (#91)', () => {
 
   test('the links of the region rows and the page keep a 44 px hit height', async ({ page }) => {
     await page.goto(`${base}brasil/`)
-    for (const sel of ['[data-link="nerds"]', '[data-share]', '[data-brasil-regioes] li .calc', '[data-link="compare"]', 'footer a']) {
+    for (const sel of ['[data-link="nerds"]', '[data-share]', '.calc', '[data-link="compare"]', 'footer a']) {
       for (const link of await page.locator(sel).all()) {
         expect((await link.boundingBox())!.height, sel).toBeGreaterThanOrEqual(44)
       }

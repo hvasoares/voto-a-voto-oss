@@ -21,8 +21,6 @@ export interface StoryCardView {
   caption: string
   /** `votoavoto.exemplo.br/sp/historia#2` */
   address: string
-  /** The card's the calculation link link, as the page's markup. */
-  calc?: string
 }
 
 export interface StorySequenceProps {
@@ -149,7 +147,6 @@ export default function StorySequence({ cards, words, onOpened, onReached, onSha
           <li key={c.n} id={String(c.n)} className="story__card" data-card={c.n} aria-current={enhanced ? c.n === current : undefined} aria-label={c.caption}>
             <div className="story__pic" dangerouslySetInnerHTML={{ __html: c.svg }} />
             <p className="story__cap">{c.caption}</p>
-            {c.calc && <p className="story__calc" dangerouslySetInnerHTML={{ __html: c.calc }} />}
             {!enhanced && <a className="story__link" href={`#${c.n}`}>{c.address}</a>}
           </li>
         ))}

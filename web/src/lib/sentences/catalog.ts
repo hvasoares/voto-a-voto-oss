@@ -466,7 +466,6 @@ export const KEYS = [
   'outlier.method',
   'outlier.share',
   'outlier.share.text',
-  'outlier.calc',
   /** The page shell (#136): the fixture banner, said by `components/FixtureBanner.astro`; the sentence lives in `catalog-shell.ts`. */
   'shell.fixtureBanner',
   /** The hint above the Home search (#147): one per destination; the words are data in `catalog-home.ts`, registered by `catalog-hint.ts`. */

@@ -31,6 +31,10 @@ if (card) {
       a.setAttribute('aria-current', String(t === v.turno))
       a.href = viewHref(path, { ano: v.ano, turno: t })
     }
+    // The page's one calculation entry (#155) opens the records of the view shown; a view with no data has none.
+    const calc = document.querySelector<HTMLAnchorElement>('[data-calc]')
+    const shown = figures.find((p) => p.dataset.view === viewId(v))?.dataset.calcHref
+    if (calc) [calc.hidden, calc.href] = [!shown, shown ?? calc.href]
     const share = document.querySelector<HTMLAnchorElement>('[data-share]')
     if (share) share.href = `${share.dataset.base}?ciclo=${v.ano}&turno=${v.turno}`
   }

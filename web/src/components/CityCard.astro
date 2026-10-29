@@ -22,10 +22,11 @@ import { displayName, ufLabel } from '@/shared/city-search'
 import { CYCLES, type CityResult } from '@/shared/city-model'
 import { cycleTabs, roundTabs } from '@/shared/components'
 import { viewFigures, viewSentence, viewMargin, viewQuestion, viewTwin, headlineId } from '@/slots/city/card'
+import { calcLink } from '@/lib/facts/link'
 import { curiosityCard } from '@/slots/city/curiosities'
 import { loadCityFacts } from '@/lib/facts/load'
 import { factLinks } from '@/lib/facts/gate'
-import { CURIOSITIES_PAGE, LATEST_CYCLE } from '@/lib/facts/model'
+import { LATEST_CYCLE } from '@/lib/facts/model'
 import { OLDER_ANCHORS } from '@/lib/facts/other'
 import { getFactPage } from '@/lib/facts/pages'
 import { defaultView, viewHref, viewId, type View } from '@/slots/city/city-view'
@@ -67,15 +68,20 @@ for (const ano of CYCLES) for (const turno of [1, 2] as const) results.set(viewI
 const has = (ano: number, turno: 1 | 2) => !!results.get(viewId({ ano, turno }))
 const view = asked ?? defaultView(has)
 
-// The fact records (#61): every figure below links to its record (the calculation link); factLinks fails the build for a figure with no record
-// or a record with no source or no calculation, so no number of the card is published unexplained.
+// The fact records (#61): the page's one calculation entry (#155) opens the records of the view shown; factLinks fails the build for a record with no source
+// or no calculation, so no number of the card is published unexplained. The entry follows the view (scripts/city-card.ts reads `data-calc` of the shown panel).
 const cityFacts = (await loadCityFacts(uf, slug))!
 // The earlier cycles have no fact page per city (it would triple the site): their links open the one page of the rules (`olderCyclesFacts`).
 const olderLinks = factLinks((await getFactPage('metodo', 'ciclos-anteriores')).facts, `the city card /${uf}/${slug}/ (earlier cycles)`, base)
 const linksOf = (page: string) => {
-  if (page !== CURIOSITIES_PAGE && Number(page.split('-')[0]) < LATEST_CYCLE) return (anchor: string) => olderLinks(OLDER_ANCHORS[anchor] ?? anchor)
+  if (Number(page.split('-')[0]) < LATEST_CYCLE) return (anchor: string) => olderLinks(OLDER_ANCHORS[anchor] ?? anchor)
   return factLinks(cityFacts.pages.get(page) ?? [], `the city card /${uf}/${slug}/ (${page})`, base)
 }
+
+// The address of a view's calculation page; none for a view with no data.
+const calcOf = (id: string) => (results.get(id) ? linksOf(id)('votaram') : undefined)
+
+const entry = calcOf(viewId(view)) ?? calcOf(viewId(defaultView(has)))
 
 const title = `${name} · ${ufLabel(city.uf)}`
 const sub = overseas ? 'Voto no exterior' : `${fixture ? 'Município fictício' : 'Município'} · ${ufLabel(city.uf)}`
@@ -93,6 +99,7 @@ const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: T
         <a class="back" href={href('/')}>‹ Início</a>
         <h1 class="page__title">{name}</h1>
         <p class="page__subtitle">{sub}</p>
+        {entry && !backdrop && <Fragment set:html={calcLink(entry)} />}
         <Fragment set:html={viewQuestion(question, { cityName: name, overseas })} />
         <Fragment set:html={cycleTabs({ cycles: [...CYCLES], active: view.ano, hrefFor: (c) => viewHref(here, { ano: c, turno: view.turno }) })} />
         <Fragment set:html={roundTabs({ active: view.turno, hrefFor: (t) => viewHref(here, { ano: view.ano, turno: t }) })} />
@@ -104,17 +111,17 @@ const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: T
           data-uf={city.uf}
           data-slug={city.slug}
         >
-          {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} role={r ? 'group' : undefined} aria-describedby={r ? headlineId(id) : undefined} set:html={viewFigures(r, { cityName: name, overseas }, linksOf(id))} />)}
+          {[...results].map(([id, r]) => <div class="city-panel" data-view={id} data-calc-href={calcOf(id)} hidden={id !== viewId(view)} role={r ? 'group' : undefined} aria-describedby={r ? headlineId(id) : undefined} set:html={viewFigures(r, { cityName: name, overseas })} />)}
         </div>
         {/* Under the figures from 1024 px; on a phone the CSS orders it after the twin line, before Compartilhar. A city with no fact has no card. */}
-        {facts.length > 0 && <div class="city-curio" set:html={curiosityCard(facts, 'card', linksOf(CURIOSITIES_PAGE))} />}
+        {facts.length > 0 && <div class="city-curio" set:html={curiosityCard(facts, 'card')} />}
       </div>
       <div class="city-right">
         <div class="city-words" data-city-words>
-          {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} set:html={viewSentence(r, { cityName: name, overseas }, id, linksOf(id))} />)}
+          {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} set:html={viewSentence(r, { cityName: name, overseas }, id)} />)}
         </div>
         <div class="city-margin-lines" data-city-words>
-          {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} set:html={viewMargin(r, { cityName: name, overseas }, linksOf(id))} />)}
+          {[...results].map(([id, r]) => <div class="city-panel" data-view={id} hidden={id !== viewId(view)} set:html={viewMargin(r, { cityName: name, overseas })} />)}
         </div>
         <Fragment set:html={viewTwin(twin, { cityName: name, overseas })} />
         <a class="city-share" href={`${shareBase}?ciclo=${view.ano}&turno=${view.turno}`} data-share data-base={shareBase}>Compartilhar</a>

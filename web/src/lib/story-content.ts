@@ -24,8 +24,6 @@ export interface StoryCardContent {
   filename: string
   /** "Cartão 2 de 7 · o fato mais surpreendente" */
   caption: string
-  /** The anchor of the fact record of the card's number on the state's calculation page, when the card has one. */
-  calc?: string
 }
 
 export interface StoryContentOptions extends Omit<StoryInput, 'recap'> {
@@ -38,15 +36,6 @@ export interface StoryContentOptions extends Omit<StoryInput, 'recap'> {
   edition?: string
   locale?: Locale
 }
-
-const CALC: Partial<Record<StoryKind, { page: string; anchor: string }>> = {
-  cities: { page: 'municipios', anchor: 'municipios' },
-  turned2026: { page: 'tres-ciclos', anchor: '2026-viradas' },
-  turned2022: { page: 'tres-ciclos', anchor: '2022-viradas' },
-  returned: { page: 'tres-ciclos', anchor: 'voltaram' },
-  steady: { page: 'tres-ciclos', anchor: 'sem-mudanca' },
-}
-export const storyCalc = (kind: StoryKind) => CALC[kind]
 
 /** `https://votoavoto.exemplo.br/sp/historia/` */
 export function storyUrl(origin: string, base: string, uf: string): string {
@@ -89,7 +78,6 @@ export function storyContent(o: StoryContentOptions): StoryCardContent[] | undef
       address,
       filename: `voto-a-voto-${o.uf}-historia-${n}.png`,
       caption: storySay(step.surprising ? 'story.caption.surprising' : 'story.caption', { locale }, { n, total: plan.length }),
-      calc: CALC[step.kind]?.anchor,
     }
   })
 }

@@ -1,31 +1,27 @@
 ---
 /**
  * The ranked table of a report page (ticket #118): one `<table>` of rank badge, city link (name and figures) and the
- * calculation link of the row's figure. The rows arrive finished (`ReportRow`: the page writes the words), the table
+ * (the page's calculation entry is the layout's, #155). The rows arrive finished (`ReportRow`: the page writes the words), the table
  * draws them; a malformed row fails the build with the page named (`assertReportRows`).
  *
  *  - `rows`      the rows; `rowAttr` is the marker attribute each `<tr>` carries (`data-race`, `data-flip`, ...);
  *  - `tableAttr` the marker attribute of the `<table>` (`data-race-table`, ...); `caption` its screen-reader caption;
- *  - `calc`      `reportFacts().calc` of the page; `factPrefix` is put before each row's `factKey` ("alto-", ...);
  *  - `tight`     the denser rows of the two-section vote lists (default: the regular rows);
  *  - `class`     extra table class ("mt-1" under a heading);
  *  - slot `head` the optional `<thead>` (the flips table's header row).
  */
 import { siteHref } from '@/paths'
 import { RANK_BADGE, assertReportRows, type ReportRow } from '@/lib/reports/layout'
-import type { ReportFacts } from '@/lib/reports/page'
 
 interface Props {
   rows: ReportRow[]
   rowAttr: string
   tableAttr: string
   caption: string
-  calc: ReportFacts['calc']
-  factPrefix?: string
   tight?: boolean
   class?: string
 }
-const { rows, rowAttr, tableAttr, caption, calc, factPrefix = '', tight = false, class: extra } = Astro.props
+const { rows, rowAttr, tableAttr, caption, tight = false, class: extra } = Astro.props
 assertReportRows(`table ${tableAttr}`, rows)
 const pad = tight ? 'py-2.5' : 'py-3.5'
 const gap = tight ? 'mt-[4px]' : 'mt-[6px]'
@@ -45,7 +41,6 @@ const table = extra ? `${extra} w-full border-collapse text-left` : 'w-full bord
             <span class="block text-step-2 font-bold text-foreground">{r.name}</span>
             <span class={`${gap} block text-step-1 text-muted-foreground`}>{r.detail}</span>
           </a>
-          <Fragment set:html={calc(`${factPrefix}${r.factKey}`)} />
         </td>
       </tr>
     ))}
