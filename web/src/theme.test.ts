@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { colors, fonts, layout, radius } from '@/shared/tokens'
+import { BIN_COLOR } from '@/lib/scale'
 import { shadcnVariables, themeCss } from './theme'
 
 describe('Sketch tokens mapped onto the shadcn theme variables', () => {
@@ -20,9 +21,11 @@ describe('Sketch tokens mapped onto the shadcn theme variables', () => {
   it('uses the Sketch fonts, the 4 px radius and the 20 px gutter', () => {
     expect(vars['--sketch-font-sans']).toBe(fonts.sans)
     expect(vars['--sketch-font-serif']).toBe(fonts.serif)
-    // the two party swatches the compare screens and screen 13 paint bars with
-    expect(vars['--sketch-lula']).toBe(colors.lula)
-    expect(vars['--sketch-bolsonaro']).toBe(colors.bolsonaro)
+    // the two party swatches the compare screens and screen 13 paint bars with: --c-lula / --c-bolsonaro (bg-lula reads them), no alias
+    expect(vars['--c-lula']).toBe(colors.lula)
+    expect(vars['--c-bolsonaro']).toBe(colors.bolsonaro)
+    expect(vars['--sketch-lula']).toBeUndefined()
+    expect(vars['--sketch-bolsonaro']).toBeUndefined()
     expect(vars['--radius']).toBe(`${radius.control}px`)
     expect(vars['--gutter']).toBe(`${layout.gutter}px`)
   })
@@ -30,7 +33,8 @@ describe('Sketch tokens mapped onto the shadcn theme variables', () => {
   // Every page inlines this block (City card HTML margin, private#121): a swatch is emitted once, as --c-<name>.
   it('emits each swatch once: no second copy of the palette under another prefix', () => {
     const names = Object.keys(vars)
-    expect(names.filter((n) => n.startsWith('--sketch-color-'))).toEqual([])
+    expect(names.filter((n) => n.startsWith('--sketch-color-') || n.startsWith('--sketch-div-') || n === '--sketch-lula' || n === '--sketch-bolsonaro')).toEqual([])
+    for (const bin of Object.values(BIN_COLOR)) expect(names, bin).toContain(bin.slice(4, -1))
   })
 
   it('emits one :root block with all the variables', () => {

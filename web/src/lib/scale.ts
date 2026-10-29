@@ -32,13 +32,13 @@ export function swingBin(pp: number): DivBin {
 
 /** CSS custom property of each bin, on :root via @/theme (Sketch swatches). */
 export const BIN_COLOR: Record<DivBin, string> = {
-  neg3: 'var(--sketch-div-neg-3)',
-  neg2: 'var(--sketch-div-neg-2)',
-  neg1: 'var(--sketch-div-neg-1)',
-  zero: 'var(--sketch-div-zero)',
-  pos1: 'var(--sketch-div-pos-1)',
-  pos2: 'var(--sketch-div-pos-2)',
-  pos3: 'var(--sketch-div-pos-3)',
+  neg3: 'var(--c-div-neg-3)',
+  neg2: 'var(--c-div-neg-2)',
+  neg1: 'var(--c-div-neg-1)',
+  zero: 'var(--c-div-zero)',
+  pos1: 'var(--c-div-pos-1)',
+  pos2: 'var(--c-div-pos-2)',
+  pos3: 'var(--c-div-pos-3)',
 }
 
 /** The bins a legend row shows for margin values (frame: -30 -15 0 +15 +30 under the swatches). */

@@ -6,8 +6,6 @@
  */
 import { colors, fonts, layout, radius } from '@/shared/tokens'
 
-const DIV_COLOR_PREFIX = 'div-' as const
-
 export function shadcnVariables(): Record<string, string> {
   return {
     '--background': colors.paper,
@@ -35,16 +33,9 @@ export function shadcnVariables(): Record<string, string> {
     ...Object.fromEntries(Object.entries(colors).map(([k, v]) => [`--c-${k}`, v])),
     '--sketch-font-sans': fonts.sans,
     '--sketch-font-serif': fonts.serif,
-    '--sketch-lula': colors.lula,
-    '--sketch-bolsonaro': colors.bolsonaro,
     '--gutter': `${layout.gutter}px`,
     '--min-tap': `${layout.minTap}px`,
-    // Diverging scale swatches (state map, ticket #11): zero-centred, neg = Flavio side, pos = Lula side.
-    ...Object.fromEntries(
-      Object.entries(colors)
-        .filter(([k]) => k.startsWith(DIV_COLOR_PREFIX))
-        .map(([k, v]) => [`--sketch-${k}`, v]),
-    ),
+    // The diverging scale swatches (state map, ticket #11) are --c-div-* above, read by lib/scale.ts: no second copy under another prefix.
   }
 }
 
