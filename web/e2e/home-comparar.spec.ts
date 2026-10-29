@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
-import { activateSearch, base, expectNoHorizontalScroll, resizeTo, waitReady } from './helpers'
+import { activateSearch, base, expectNoHorizontalScroll, maybeThrottleCpu, resizeTo, waitReady } from './helpers'
 
 /*
  * #101: the "Comparar" chooser, a section of Home (#comparar) that leads to routes that already exist. Options that need a city ask for it
@@ -35,6 +35,9 @@ async function pick(page: Page) {
   await expect(hit).toHaveCount(1)
   return hit
 }
+
+// #122 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file.
+test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
 
 test.describe('the Comparar chooser', () => {
   test('the entry sits after Compartilhar and lists the five comparisons in the visitor\'s words', async ({ page }) => {

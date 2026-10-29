@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import sharp from 'sharp'
-import { base, collectRequests } from './helpers'
+import { base, collectRequests, maybeThrottleCpu } from './helpers'
 
 /*
  * The live overlay (#68) over the fixture dataset: the builder (place, measure, cycle, size, background, OBS steps, copy), the overlay address that reproduces the
@@ -8,6 +8,10 @@ import { base, collectRequests } from './helpers'
  */
 const Q = '?c=rj/cidade-exemplo&m=nv&a=2026&t=2&s=1920x1080&f=transparente'
 const overlay = (q = Q) => `${base}overlay/tela/${q}`
+
+// #122 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file (the clipboard
+// contexts below call `maybeThrottleCpu` on their own pages).
+test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
 
 test.describe('Overlay para live', () => {
   for (const [w, h] of [[1920, 1080], [1280, 720], [600, 200]] as const) {
@@ -82,6 +86,7 @@ test.describe('Overlay builder', () => {
   test('lists the steps for OBS and copies an address that reproduces the chosen overlay', async ({ browser }) => {
     const ctx = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'] })
     const page = await ctx.newPage()
+    await maybeThrottleCpu(page)
     await page.goto(`${base}overlay/?c=rj/cidade-exemplo`)
     await expect(page.locator('[data-builder]')).toHaveAttribute('data-ready', 'yes')
     await page.locator('[data-option="Medida:margem"]').click()
@@ -104,6 +109,7 @@ test.describe('Overlay builder', () => {
   test('a choice tapped while the island is still hydrating is kept, not lost (the address copied afterwards carries it)', async ({ browser }) => {
     const ctx = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'] })
     const page = await ctx.newPage()
+    await maybeThrottleCpu(page)
     // Hold every script back so the tap lands on the static markup, as it does on a slow phone or a loaded CI runner.
     let release!: () => void
     const gate = new Promise<void>((r) => (release = r))

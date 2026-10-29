@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises'
 import jsQR from 'jsqr'
 import { expect, test, type Page } from '@playwright/test'
 import sharp from 'sharp'
-import { base } from './helpers'
+import { base, maybeThrottleCpu } from './helpers'
 
 /*
  * The Meu Brasil sticker (#37) at 390x844 over the fixture dataset: the PNG downloaded from the page is 1080x1920 with a transparent
@@ -26,6 +26,9 @@ async function open(page: Page, share = false) {
   await expect(page.locator('[data-sticker-page]')).toHaveAttribute('data-places', '2')
   await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
 }
+
+// #122 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file.
+test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
 
 test.describe('Meu Brasil sticker', () => {
   test('the downloaded PNG is 1080x1920, transparent outside the card, and its QR decodes to the card address', async ({ page }) => {

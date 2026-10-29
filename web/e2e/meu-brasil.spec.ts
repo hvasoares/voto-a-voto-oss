@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { base, collectRequests, violations } from './helpers'
+import { base, collectRequests, maybeThrottleCpu, violations } from './helpers'
 
 /*
  * Meu Brasil (#27) at 390x844 over the fixture dataset: up to three places in the address, one card, reload reproduces it, the share
@@ -21,6 +21,9 @@ async function open(page: Page, q = '', share: 'files' | 'none' = 'none') {
 }
 const title = (page: Page) => page.locator('[data-card-picture] svg title')
 const ready = (page: Page) => expect(page.locator('[data-meu-brasil]')).toHaveAttribute('data-ready', 'yes')
+
+// #122 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file.
+test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
 
 test.describe('Meu Brasil', () => {
   for (const [n, q] of [[1, '?mora=rj/cidade-exemplo'], [2, '?mora=rj/cidade-exemplo&vota=sp/cidade-exemplo-paulista'], [3, THREE]] as const) {

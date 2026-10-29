@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
-import { activateSearch, base, expectNoHorizontalScroll, resizeTo, waitReady } from './helpers'
+import { activateSearch, base, expectNoHorizontalScroll, maybeThrottleCpu, resizeTo, waitReady } from './helpers'
 
 /*
  * #99: Home's task block replaces "Para explorar". Four entries in the visitor's words, the old destinations still one tap away, the
@@ -27,6 +27,9 @@ async function pickBoaEsperanca(page: Page) {
   await expect(hit).toHaveCount(1)
   return hit
 }
+
+// #122 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file.
+test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
 
 test.describe('the task block', () => {
   test('replaces "Para explorar": the task entries, in order, with their words', async ({ page }) => {

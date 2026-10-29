@@ -88,3 +88,14 @@ export async function hoverState(page: Page, uf: string) {
 
 /** "Mapa por estado" at 1024 px and up is the document of a lazy iframe (#54). */
 export const mapaFrame = (page: Page) => page.frameLocator('[data-mapa-frame]')
+
+/**
+ * E2E_CPU_RATE=4 puts the page under a CDP 4x CPU slowdown (Emulation.setCPUThrottlingRate), for the
+ * flake-hunt repeats of #122: the readiness waits must pass with a loaded runner, not by luck of a fast
+ * one. A no-op without the variable. (Custom `browser.newContext` pages need their own call.)
+ */
+export async function maybeThrottleCpu(page: Page): Promise<void> {
+  const rate = Number(process.env.E2E_CPU_RATE ?? 0)
+  if (!rate || rate <= 1) return
+  await (await page.context().newCDPSession(page)).send('Emulation.setCPUThrottlingRate', { rate })
+}

@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test'
-import { activateSearch, allowedOrigins, base, collectRequests, violations } from './helpers'
+import { activateSearch, allowedOrigins, base, collectRequests, maybeThrottleCpu, violations } from './helpers'
 
 /* Home page at 390x844, fixture dataset (9 cities, states rj, sp, mt). Behaviour spec: site/src/slots/home/CONTRACT.md */
+// #122 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file.
+test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
 test.describe('home: content', () => {
   test('shows the title, tagline, search prompt, state hint, the task block and the TSE footer', async ({ page }) => {
     await page.goto(base)

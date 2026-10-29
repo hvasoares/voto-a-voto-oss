@@ -4,6 +4,8 @@
  * (UF/CD storage), a view-toggle direction, and the overlay builder's options in order.
  */
 import { describe, expect, it } from 'vitest'
+import { HELD_STORAGE } from '@/lib/island-ready'
+import { installPendingCapture } from './island-pending'
 
 function pointerdown(target: Element, bubbles = true) {
   const ev = new PointerEvent('pointerdown', { bubbles, cancelable: true })
@@ -117,5 +119,18 @@ describe('island-pending page script', () => {
     island.removeAttribute('data-pending-options')
     click(buttons[0]!)
     expect(island.hasAttribute('data-pending-options')).toBe(false)
+  })
+})
+
+describe('the installer the overlay page inlines (is:inline)', () => {
+  it('its source stands alone: no imports, no free variables — a runnable script when stringified', () => {
+    const fn = new Function(`return (${installPendingCapture.toString()})`)() as () => void
+    expect(typeof fn).toBe('function')
+  })
+
+  it('the storage attribute names are exactly the shared HELD_STORAGE vocabulary', () => {
+    for (const [, attr] of HELD_STORAGE) {
+      expect(installPendingCapture.toString()).toContain(attr)
+    }
   })
 })

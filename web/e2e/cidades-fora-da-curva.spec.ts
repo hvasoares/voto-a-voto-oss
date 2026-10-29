@@ -6,7 +6,7 @@ import { computePeers } from '../src/lib/peers'
 import { computeOutliers, pickOutliers } from '../src/lib/reports/outliers'
 import { formatInt as intPt } from '../src/lib/reports/format'
 import { displayName, ufLabel } from '../src/shared/city-search'
-import { base, collectRequests, violations } from './helpers'
+import { base, collectRequests, maybeThrottleCpu, violations } from './helpers'
 
 /*
  * #34 "Cidades fora da curva" at 390x844, fixture dataset (rj, sp, mt). The expected list is computed here from the fixture's own CSVs with the pure
@@ -19,6 +19,9 @@ const outliers = (async () => {
   return computeOutliers({ cities, turnout, votes, candidates, peers: computePeers({ cities, turnout, votes }) })
 })()
 const SCREENING = 'Lista de triagem, não uma conclusão: cidades mais distantes de cidades parecidas no comparecimento e na virada desde 2022.'
+
+// #122 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file.
+test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
 
 test.describe('Cidades fora da curva: the hub', () => {
   test('lists the report as a row with a computed headline and its record, and links through', async ({ page }) => {

@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
-import { base } from './helpers'
+import { base, maybeThrottleCpu } from './helpers'
 
 /*
  * The #17 extension of the municipality map at 390x844 on the FIXTURE dataset: the dynamic route
@@ -12,6 +12,9 @@ import { base } from './helpers'
  * the same note Boa Esperança do Norte (TSE 73709) gets on the real build.
  */
 test.skip(!existsSync(resolve('fixtures/data/cities.csv')), 'no fixture data')
+
+// #122 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file.
+test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
 
 test.describe('mapa: the index sentence of #17', () => {
   test('the paragraph points at the state pages instead of the single /mapa/rj/ page', async ({ page }) => {
