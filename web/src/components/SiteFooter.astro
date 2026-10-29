@@ -11,6 +11,7 @@
  *  - `aboutLink`   draw "Sobre os dados ›" after the source note (default true, the pilot carries it).
  *  - `aboutClass`  the about link's class (default 'source-footer__about', the card's keyboard-only link;
  *                  pass '' for the plain link of the share sheets / story / recap / three-cycles state page).
+ *  - `aboutLabel`  the about link's words (default 'Sobre os dados ›'; como-cada-grupo-votou drops the chevron).
  *  - `separator`   text between note and link (default '', the card variant; the standard pages pass ' · ').
  *  - `class`       the <footer>/wrapper class (source footer default 'source-footer', the pilot's own).
  *  - `ariaHidden`  aria-hidden="true" on the <footer> (the inert backdrop copy behind a share sheet).
@@ -35,6 +36,7 @@ interface Props {
   source?: string
   aboutLink?: boolean
   aboutClass?: string
+  aboutLabel?: string
   separator?: string
   class?: string
   ariaHidden?: boolean
@@ -53,6 +55,7 @@ if (p.source !== undefined) {
     aboutHref: siteHref('sobre-os-dados/'),
     aboutLink: p.aboutLink,
     aboutClass: p.aboutClass,
+    aboutLabel: p.aboutLabel,
     separator: p.separator,
     class: p.class,
     ariaHidden: p.ariaHidden,

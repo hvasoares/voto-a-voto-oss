@@ -54,6 +54,21 @@ describe('sourceFooter — the pilot page variants (the city card /rj/cidade-exe
     )
   })
 
+  it('the cohorts variant (#115): the about link of /relatorios/como-cada-grupo-votou/ drops the chevron', () => {
+    expect(
+      sourceFooter({
+        source: 'Fonte: TSE, dados finais',
+        aboutHref: '/sobre-os-dados/',
+        aboutClass: '',
+        aboutLabel: 'Sobre os dados',
+        separator: ' · ',
+        class: 'mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary',
+      }),
+    ).toBe(
+      '<footer class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary" data-component="source-footer">Fonte: TSE, dados finais · <a href="/sobre-os-dados/">Sobre os dados</a></footer>',
+    )
+  })
+
   it('the share-sheet/story/recap variant (#114): aboutClass \'\' leaves the about link with NO class attribute', () => {
     expect(
       sourceFooter({

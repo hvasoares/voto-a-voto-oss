@@ -9,7 +9,8 @@
  *
  *  - the PAGE footer (`sourceFooter`): the per-page source line, a `<footer data-component="source-footer">`.
  *    Variants on main (44 files): the standard line ("Fonte: TSE, dados finais · Sobre os dados ›", ~35 pages
- *    in ~12 class spellings), the no-link source note (edicoes ×2, api), the keyboard-only about-link card
+ *    in ~12 class spellings; como-cada-grupo-votou's label drops the chevron — `aboutLabel`, #115), the no-link
+ *    source note (edicoes ×2, api), the keyboard-only about-link card
  *    variant (CityCard, the fact pages, cidade/tres-ciclos — the pilot's own), Home's "Dados oficiais do TSE",
  *    the sobre-os-dados line with the inline finality chip, mapa/[uf]'s IBGE credit, the game sentence from the
  *    catalog, and the nerds/print specials. Defaults below reproduce the PILOT's variant (the city card):
@@ -100,6 +101,11 @@ export interface SourceFooterProps {
    * the story and recap pages, the state page) carry the plain `<a href>` with no class — #114's census.
    */
   aboutClass?: string
+  /**
+   * The about link's words. Default 'Sobre os dados ›'; /relatorios/como-cada-grupo-votou/ (#115) draws the
+   * link without the chevron ('Sobre os dados') and passes its own label.
+   */
+  aboutLabel?: string
   /** The text between note and link. Default '' (the card variant); the standard pages pass ' · '. */
   separator?: string
   /** The <footer> class. Default 'source-footer' (the pilot's); the utility-class pages pass their own string. */
@@ -124,7 +130,7 @@ export function sourceFooter(props: SourceFooterProps): string {
   const marker = props.scopeMarker ? raw(` ${props.scopeMarker}`) : ''
   const about =
     props.aboutLink ?? true
-      ? html`${props.separator ?? ''}<a${aboutClass ? html` class="${aboutClass}"` : ''} href="${props.aboutHref}"${marker}>Sobre os dados ›</a>`
+      ? html`${props.separator ?? ''}<a${aboutClass ? html` class="${aboutClass}"` : ''} href="${props.aboutHref}"${marker}>${props.aboutLabel ?? 'Sobre os dados ›'}</a>`
       : ''
   const aria = props.ariaHidden ? ' aria-hidden="true"' : ''
   return `${html`<footer class="${props.class ?? 'source-footer'}" data-component="source-footer"`}${raw(`${aria}${marker}`)}>${html`${props.source}`}${about}</footer>`
