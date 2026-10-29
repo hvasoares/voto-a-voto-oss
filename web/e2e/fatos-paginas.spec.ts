@@ -7,6 +7,33 @@ import { base, collectRequests } from './helpers'
  */
 const SEAL_MUNICIPIOS = /Contra a soma dos \d+ municípios e postos do exterior \(2026, 2º turno\): [\d.]+ eleitores aptos, [\d.]+ comparecimentos e [\d.]+ votos válidos, iguais ao total do país\./
 
+test.describe('the way back from the calculation page (#152)', () => {
+  test('after the link on Brasil e regiões, the back link returns to the card where the link was left', async ({ page }) => {
+    await page.goto(`${base}brasil/`)
+    const link = page.locator('a.calc').last()
+    await link.scrollIntoViewIfNeeded()
+    await link.click()
+    await expect(page).toHaveURL(/\/fato\//)
+    const back = page.locator('.fact-page a.back')
+    await back.focus()
+    await expect(back).toBeFocused()
+    await page.keyboard.press('Enter')
+    await expect(page).toHaveURL(/\/brasil\//)
+    // The card is where it was left: the link the visitor tapped is still in view, not the top of the page.
+    await expect(page.locator('a.calc').last()).toBeInViewport()
+  })
+
+  test('opened directly, the back link is a plain link to the page that prints the figure', async ({ page }) => {
+    await page.goto(`${base}brasil/`)
+    const target = (await page.locator('a.calc').first().getAttribute('href'))!
+    await page.goto(new URL(target, page.url()).href)
+    const back = page.locator('.fact-page a.back')
+    await expect(back).toHaveAttribute('href', /\/brasil\/$/)
+    await back.click()
+    await expect(page).toHaveURL(/\/brasil\/$/)
+  })
+})
+
 test.describe('De onde vem este número? and the seal on the other pages', () => {
   for (const [name, path, links] of [
     ['Brasil e regiões', 'brasil/', 2],

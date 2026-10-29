@@ -16,6 +16,7 @@ import { editionLabel, editionPath, releasePath } from '@/lib/editions'
 import { registerBootScript } from '@/lib/sentences/register-store'
 import { message } from '@/lib/sentences/catalog'
 import AppHeader from '@/components/AppHeader.astro'
+import { wayBackScript } from '@/lib/facts/link'
 import FixtureBanner from '@/components/FixtureBanner.astro'
 
 export async function getStaticPaths() {
@@ -36,10 +37,11 @@ const title = `${std('fact.title')} · ${fp.title} · Voto a Voto`
 <Base title={title}>
   <div class="screen fact-page">
     <script is:inline set:html={registerBootScript} />
+    <script is:inline set:html={wayBackScript} />
     <AppHeader />
     <FixtureBanner show={fp.fixture} class="banner" role="note" wideSeparator />
     <main class="page__main" id="main">
-      <a class="back" href={href(fp.back.path)}>{fp.back.label}</a>
+      <a class="back" href={href(fp.back.path)} data-back>{fp.back.label}</a>
       <h1 class="page__title">{std('fact.title')}</h1>
       <p class="page__subtitle">{fp.subtitle}</p>
       <div class="facts">
