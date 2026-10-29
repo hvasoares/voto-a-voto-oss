@@ -16,8 +16,10 @@ interface Props {
   description?: string
   /** The page's link-preview contract (og/twitter tags): provided by pages that have one, absent on the rest. */
   preview?: PreviewHead
+  /** The page asks not to be indexed (the two demo screens, #137). */
+  noindex?: boolean
 }
-const { title, description, preview } = Astro.props
+const { title, description, preview, noindex } = Astro.props
 // The footer's "Privacidade" link (and the in-banner detail link) open the privacy section of /sobre-os-dados/,
 // which discloses the metrics notice (the notice-only model of 2026-10-27) and the browser-level opt-out.
 const privacyHref = siteHref('sobre-os-dados/#privacidade')
@@ -27,7 +29,7 @@ const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : siteHref(D
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <DocHead title={title} description={description} preview={preview} importMap={cdnImportMap} />
+    <DocHead title={title} description={description} preview={preview} noindex={noindex} importMap={cdnImportMap} />
   </head>
   <body>
     {/* Skip link (issue #19): keyboard/screen-reader users reach the content without the tabs/grid. */}
