@@ -1,4 +1,7 @@
-@import "tailwindcss";
+/* Build output left next to src (a `dist-*` copy, a scratch folder, ...) must not change the CSS bytes, so
+ * automatic source detection is off and only web/src is scanned for class names (#125; scripts/css-decoy-check.ts guards it). */
+@import "tailwindcss" source(none);
+@source "../";
 
 /* tw-animate-css was dropped for weight (issue #19): no rendered component animates (ui/dialog keeps
  * its animate-in classes but is never mounted; reduced motion is handled below). Bring the import

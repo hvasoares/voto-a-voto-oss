@@ -30,7 +30,7 @@ Inheritance: `.city-page` sets step 1 once, so most card rules no longer repeat 
 ## Bytes (gzip)
 - Shared CSS: 16359 -> **15328 B** (-1031 B; room now 1056 B of 16384). Sources: card rules inherit from `.city-page` and group identical page-title/subtitle rules (about -85 B); redundant `--c-*` alias block of `:root` dropped is NOT done (theme still inlines; only unused `--fs-lead/--fs-tiny` went); unused shadcn parts removed (CardHeader/Title/Action/Description/Content/Footer, `textarea.tsx`, `dialog.tsx`, CommandDialog/Empty/Group/Separator/Shortcut, InputGroupTextarea): about -950 B, because Tailwind emitted their classes into the shared CSS.
 - City html 6515 -> 6493 B (budget 6554); Home html 8424 -> 8377; CitySearch island 1932 -> 1913 B. No JS added.
-- Note for later tickets: Tailwind scans every untracked file under `web/` (a stray `dist-xyz/` of a second build inflates the CSS by ~270 B); build experiments into `dist`.
+- Note closed by #125: `global.css` pins `@import "tailwindcss" source(none);` plus `@source "../"`, so build-output folders left under `web/` no longer reach the class scan; `scripts/css-decoy-check.ts` (inside `npm test`) builds with decoy folders and asserts the CSS bytes hold.
 
 ## Probe
 `e2e/type-scale.spec.ts` (phone, 390x844): City card (rounds 1 and 2), Home, Home with search results and the saved-city shortcut: every visible text node is one of 13/16/20/26 px and 400/700, distinct sizes <= 5 (it is 4), min 13, no horizontal scroll, no clipped text; plus the bar-fit test. 8 tests, 10x repeat = 80 passed. Extend `SCREENS` in #87. Before: card 8 sizes (26-10.. with 63 nodes at 11), Home 8 sizes + a 500; after: 4 sizes, 2 weights.
