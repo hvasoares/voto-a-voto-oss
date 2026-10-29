@@ -9,7 +9,6 @@
 .city-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
 .city-page .banner { letter-spacing: 0; padding: 6px var(--gutter); margin: 0 calc(-1 * var(--gutter)); }
 .city-page .page__main { padding: 0 var(--gutter) var(--sp-4); }
-.city-page .back { min-width: 84px; margin: 4px 0 8px -8px; padding: 0 12px; }
 .city-page .tabs { margin-top: 14px; padding: 2px 4px; }
 .city-page .tabs + .tabs { margin-top: 6px; }
 .city-page .tabs__tab { min-height: 44px; }
@@ -68,7 +67,6 @@
   .city-left { grid-column: 1; grid-row: 1 / 3; }
   .city-right { grid-column: 2; grid-row: 2; }
   .city-page .banner { grid-column: 2; grid-row: 1; justify-self: start; width: auto; height: auto; margin: 26px 0 0; padding: 3px 6px; border-radius: 3px; white-space: normal; }
-  .city-page .back { min-width: 0; margin: 0; min-height: 28px; padding: 0; border: 0; background: none; font-size: var(--step-1); color: var(--c-accent); }
   .city-page .tabs { margin-top: 24px; }
   .city-page .tabs + .tabs { margin-top: 10px; }
   .city-card { margin-top: 20px; padding: 4px 24px 20px; border: 1px solid var(--c-rule); border-radius: 12px; }
@@ -99,7 +97,6 @@
 @media (max-width: 1023.98px) {
   .city-body { display: flex; flex-direction: column; }
   .city-left, .city-right { display: contents; }
-  .city-page .back { align-self: flex-start; }
   .screen .city-curio { order: 1; margin-top: 20px; }
   .city-share, .city-links { order: 2; }
 }

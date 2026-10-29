@@ -12,7 +12,6 @@ import { siteBase, siteHref } from '@/paths'
 import { datasetFixture } from '@/lib/shard-files'
 import { siteOrigin } from '@/lib/share-url'
 import { currentEdition } from '@/lib/editions-load'
-import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import PageMain from '@/components/PageMain.astro'
 
 const base = siteBase()
@@ -23,7 +22,6 @@ const edition = await currentEdition()
 ---
 <Base title="Gerador de cartão · Voto a Voto" description="Escolha uma cidade e uma medida e baixe uma imagem pronta para postar, em três tamanhos.">
   <PageMain md="480" data-page="gerador">
-    <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Gerador de cartão</h1>
     <p class="mt-1 text-step-1 text-muted-foreground">Escolha uma cidade e uma medida. A imagem sai pronta para postar.</p>
     <div class="mt-3">

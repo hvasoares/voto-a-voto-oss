@@ -90,7 +90,6 @@ const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: T
     <div class="city-body">
       <FixtureBanner show={fixture} class="banner" role="note" wideSeparator />
       <div class="city-left">
-        <a class="back" href={href('/')}>‹ Início</a>
         <h1 class="page__title">{name}</h1>
         <p class="page__subtitle">{sub}</p>
         <Fragment set:html={viewQuestion(question, { cityName: name, overseas })} />

@@ -7,24 +7,20 @@
 import Base from '@/layouts/Base.astro'
 import MeuBrasil from '@/components/MeuBrasil'
 import SiteFooter from '@/components/SiteFooter.astro'
-import { siteBase, siteHref } from '@/paths'
+import { siteBase } from '@/paths'
 import { datasetFixture } from '@/lib/shard-files'
 import { siteOrigin } from '@/lib/share-url'
 import { currentEdition } from '@/lib/editions-load'
 import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
-import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import '@/lib/sentences/catalog-meu-brasil'
 import PageMain from '@/components/PageMain.astro'
 
 const base = siteBase()
-// The #113 base-path helper (`base` stays for the MeuBrasil island, which takes the base argument).
-const href = siteHref
 const fixture = await datasetFixture()
 const edition = await currentEdition()
 ---
 <Base title={`${message(DEFAULT_VOICE, 'mb.title')} · Voto a Voto`} description={message(DEFAULT_VOICE, 'mb.sub')}>
   <PageMain md="480" lg="1240" data-page="meu-brasil">
-    <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{message(DEFAULT_VOICE, 'mb.title')}</h1>
     <p class="mt-1 text-step-1 text-muted-foreground lg:text-step-2">{message(DEFAULT_VOICE, 'mb.sub')}</p>
     <MeuBrasil client:load base={base} origin={siteOrigin()} fixture={fixture} edition={edition.id} />

@@ -8,7 +8,7 @@ import Base from '@/layouts/Base.astro'
 import StorySequence from '@/components/StorySequence'
 import Seal from '@/components/Seal.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
-import { siteBase, siteHref } from '@/paths'
+import { siteBase } from '@/paths'
 import { loadStory, storyUfs } from '@/lib/story-data'
 import { storyCalc } from '@/lib/story-content'
 import { storySay } from '@/lib/story'
@@ -16,7 +16,6 @@ import { datasetFixture } from '@/lib/shard-files'
 import { calcLink } from '@/lib/facts/link'
 import { factLinks } from '@/lib/facts/gate'
 import { getFactPage, sealOf } from '@/lib/facts/pages'
-import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import '@/styles/story.css'
 import PageMain from '@/components/PageMain.astro'
 
@@ -27,8 +26,6 @@ export async function getStaticPaths() {
 
 const { uf } = Astro.params
 const base = siteBase()
-// The #113 base-path helper (`base` stays for storyUfs/loadStory and the fact links, which take the base argument).
-const href = siteHref
 const fixture = await datasetFixture()
 const story = (await loadStory(uf!, base))!
 // Fact records (#62): the number of a card has its record (the calculation link); a card whose number has none does not build.
@@ -43,7 +40,6 @@ const words = { region: storySay('story.region', {}, { name: story.stateName }),
 ---
 <Base title={`${storySay('story.title', {}, { name: story.stateName })} · Voto a Voto`} description={story.cards[1]!.variants.standard.alt}>
   <PageMain md="480" data-page="historia" data-uf={uf}>
-    <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{story.stateName}</h1>
     <p class="mt-1 text-step-1 text-muted-foreground" data-subtitle>{storySay('story.sub', {}, { n: cards.length })}</p>
     <StorySequence client:load cards={cards} words={words} />

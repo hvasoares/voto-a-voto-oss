@@ -63,10 +63,7 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
   inert={backdrop}
 >
   {/* The banner's words are the catalog's; the element stays here: this page's scoped-style marker (data-astro-cid) prints bare only on an element of its own template. */}
-  {fixture && <p role="note" class="-mx-5 -mt-16 mb-10 lg:-mt-8 lg:mb-6 bg-[var(--c-flag)] px-[var(--gutter)] py-2 text-center font-bold text-step-1 text-[var(--c-ink)]">{fixtureBannerText()}</p>}
-  <p class="mb-3 print:hidden">
-    <a class="-ml-2 inline-flex min-h-12 min-w-[116px] items-center rounded-[var(--radius)] border border-border bg-background px-4 text-step-2 text-[var(--c-ink)] lg:ml-0 lg:min-h-8 lg:min-w-0 lg:border-0 lg:px-0 lg:text-step-1 lg:text-primary" href={href('/')}>‹ Início</a>
-  </p>
+  {fixture && <p role="note" class="-mx-5 mb-3 -mt-3 lg:-mt-8 lg:mb-6 bg-[var(--c-flag)] px-[var(--gutter)] py-2 text-center font-bold text-step-1 text-[var(--c-ink)]">{fixtureBannerText()}</p>}
   <div class="brasil-top">
   <div class="min-w-0">
     <h1 class="font-serif text-step-4 font-normal wrap-anywhere">Brasil e regiões</h1>

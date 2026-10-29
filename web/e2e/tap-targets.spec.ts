@@ -236,3 +236,24 @@ test.describe('tap targets: the footer link on every page (390x844)', () => {
     })
   }
 })
+
+/* #154: the way home sits in the page header on the wordmark's line (390x844), a 44 px target, and the page keeps no row of its own for it. */
+const HEADER_PAGES = ['rj/', 'rj/cidade-exemplo/', 'rj/cidade-exemplo/tres-ciclos/', 'brasil/', 'gerador/', 'cara-a-cara/', 'meu-brasil/', 'widget/', 'imprensa/']
+test.describe('the "Início" link shares the line with "Voto a Voto" (390x844)', () => {
+  for (const path of HEADER_PAGES) {
+    test(`${path}: same line as the wordmark, 44 px high, to Home, no second link`, async ({ page }) => {
+      await page.goto(`${base}${path}`)
+      const back = page.locator('header [data-back-home]')
+      const mark = page.locator('header:not([data-component="top-bar"]) a', { hasText: 'Voto a Voto' })
+      await expect(back).toHaveText('‹ Início')
+      await expect(back).toHaveAttribute('href', base)
+      const [b, m] = [await back.boundingBox(), await mark.boundingBox()]
+      expect(b!.height).toBeGreaterThanOrEqual(MIN)
+      expect(b!.y + b!.height / 2).toBeGreaterThan(m!.y)
+      expect(b!.y + b!.height / 2).toBeLessThan(m!.y + m!.height)
+      expect(b!.x).toBeGreaterThan(m!.x + m!.width)
+      expect(b!.x + b!.width).toBeLessThanOrEqual(390)
+      await expect(page.getByRole('link', { name: '‹ Início' })).toHaveCount(1)
+    })
+  }
+})
