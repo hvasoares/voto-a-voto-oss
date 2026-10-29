@@ -41,13 +41,22 @@ test.describe('the task-named bar', () => {
 
   test('keyboard order is wordmark, search, then the three links, each with a visible focus ring', async ({ page }) => {
     await page.goto(base)
-    await page.locator('[data-component="top-bar"] [data-wordmark]').focus()
+    // The search island loads on the first interaction and re-renders its input then, taking the focus with it:
+    // touch the input first, wait until the island answered, and only then walk the Tab order.
+    await page.locator('[data-component="top-bar"] input').focus()
+    await expect(page.locator('[data-component="top-bar"] [data-city-search="bar"]')).toHaveAttribute('data-ready', 'yes')
+    await page.keyboard.press('Shift+Tab')
+    await expect(page.locator('[data-component="top-bar"] [data-wordmark]')).toBeFocused()
     const order: (string | null)[] = []
     for (let i = 0; i < 5; i++) {
       const info = await page.evaluate(() => {
         const el = document.activeElement as HTMLElement
         const s = getComputedStyle(el)
-        return { name: el.matches('input') ? 'search' : el.textContent, ring: s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0 }
+        const outline = s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0
+        // Once the island hydrated, the search draws its ring on the input group around the field (a box-shadow), not as an outline.
+        const group = el.closest('[data-slot="input-group"]')
+        const groupRing = group ? getComputedStyle(group).boxShadow !== 'none' : false
+        return { name: el.matches('input') ? 'search' : el.textContent, ring: outline || groupRing }
       })
       expect(info.ring, String(info.name)).toBe(true)
       order.push(info.name)
