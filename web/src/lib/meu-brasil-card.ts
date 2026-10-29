@@ -7,15 +7,13 @@
  */
 import { colors } from '@/shared/tokens'
 import type { PlaceCard } from './meu-brasil'
-import { esc, fit, rect, text, textWidth, wrap } from './share-card'
+import { fit, fixtureBand, flowCard, footerBlock, headlineBlock, INNER, LEFT, mutedLines, rect, SEGMENT_FILL, text } from './share-picture'
 import { DEFAULT_LOCALE, message, type Locale, type Register } from './sentences/catalog'
 import { meuBrasilHeadline } from './sentences/meu-brasil'
 import './sentences/catalog-meu-brasil'
 import type { MessageKey } from './sentences/catalog'
 
 export const MEU_BRASIL_CARD_WIDTH = 1080
-const LEFT = 98
-const INNER = 884
 const COL_GAP = 30
 const COL = (INNER - 2 * COL_GAP) / 3
 
@@ -29,22 +27,12 @@ export interface MeuBrasilCardOptions {
   alt?: string
 }
 
-const FILL = { a: colors['cand-a'], b: colors['cand-b'], outros: colors['cand-outros'] } as const
-
 export function meuBrasilCardSvg(cards: readonly PlaceCard[], o: MeuBrasilCardOptions): { svg: string; height: number } {
   const voice = { locale: o.locale ?? DEFAULT_LOCALE, register: o.register ?? 'standard' }
   const say = (key: MessageKey, params: Record<string, string | number> = {}) => message(voice, key, params)
   const headline = meuBrasilHeadline(cards, voice)
   const out: string[] = []
-  let y = 69
-  if (o.fixture) {
-    out.push(rect(LEFT, y, 285, 78, colors.flag, ' rx="10"'), text(LEFT + 142, y + 53, 44, say('card.example'), { weight: 700, anchor: 'middle' }))
-    y += 78 + 36
-  }
-  const size = [48, 44, 40, 36].find((sz) => wrap(headline, sz, INNER, 4)) ?? 36
-  const lines = wrap(headline, size, INNER, 4) ?? [fit(headline, size, INNER)]
-  y += size
-  for (const line of lines) (out.push(text(LEFT, y, size, line, { serif: true })), (y += size * 1.3))
+  let y = headlineBlock(out, headline, fixtureBand(out, o.fixture, say('card.example'), 69), { sizes: [48, 44, 40, 36], lines: 4 })
   y += 26
 
   for (const card of cards) {
@@ -57,7 +45,7 @@ export function meuBrasilCardSvg(cards: readonly PlaceCard[], o: MeuBrasilCardOp
         let sx = x
         for (const s of b.sides.filter((s) => s.pct > 0)) {
           const w = (s.pct / 100) * COL
-          out.push(rect(sx, y + 44, w, 56, FILL[s.tone ?? s.key]))
+          out.push(rect(sx, y + 44, w, 56, SEGMENT_FILL[s.tone ?? s.key]))
           sx += w
         }
       } else out.push(rect(x, y + 44, COL, 56, colors['paper-2']))
@@ -71,17 +59,7 @@ export function meuBrasilCardSvg(cards: readonly PlaceCard[], o: MeuBrasilCardOp
 
   out.push(rect(LEFT, y - 12, INNER, 3, colors.rule))
   y += 30
-  const legend = say('mb.legend')
-  for (const line of wrap(legend, 30, INNER, 3) ?? [fit(legend, 30, INNER)]) (out.push(text(LEFT, y, 30, line, { fill: colors.muted })), (y += 40))
-  y += 26
-  const addrSize = [44, 40, 36].find((sz) => textWidth(o.address, sz, true) <= INNER) ?? 36
-  out.push(text(LEFT, y, addrSize, fit(o.address, addrSize, INNER, true), { weight: 600 }))
-  y += 52
-  const brand = say(o.fixture ? 'card.brand.fixture' : 'card.brand')
-  out.push(text(LEFT, y, [36, 32, 28].find((sz) => textWidth(brand, sz) <= INNER) ?? 28, brand, { fill: colors.muted }))
-  y += 70
-
-  const H = Math.round(y)
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${MEU_BRASIL_CARD_WIDTH}" height="${H}" viewBox="0 0 ${MEU_BRASIL_CARD_WIDTH} ${H}" role="img"><title>${esc(o.alt ?? headline)}</title>${rect(0, 0, MEU_BRASIL_CARD_WIDTH, H, colors.paper)}<rect x="5" y="5" width="${MEU_BRASIL_CARD_WIDTH - 10}" height="${H - 10}" fill="none" stroke="${colors.ink}" stroke-width="10"/>${out.join('')}</svg>`
-  return { svg, height: H }
+  y = mutedLines(out, say('mb.legend'), y, { size: 30, lines: 3, step: 40 }) + 26
+  y = footerBlock(out, y, { address: o.address, brand: say(o.fixture ? 'card.brand.fixture' : 'card.brand') })
+  return flowCard(MEU_BRASIL_CARD_WIDTH, y, o.alt ?? headline, out)
 }

@@ -8,13 +8,11 @@
  */
 import { colors } from '@/shared/tokens'
 import type { Recap } from './recap'
-import { candidateLabel, esc, fit, labelText, rect, text, textWidth, wrap } from './share-card'
+import { candidateLabel, centredLabel, fit, fixtureBand, flowCard, footerBlock, headlineBlock, INNER, LEFT, mutedLines, rect, text } from './share-picture'
 import { DEFAULT_LOCALE, message, type Locale, type Register } from './sentences/catalog'
 import { recapBase, recapChange, recapHeadline } from './sentences/recap'
 
 export const RECAP_CARD_WIDTH = 1080
-const LEFT = 98
-const INNER = 884
 const BAR_H = 100
 
 export interface RecapCardOptions {
@@ -38,16 +36,8 @@ export function recapCardSvg(recap: Recap, o: RecapCardOptions): RecapCard {
   const voice = { locale: o.locale ?? DEFAULT_LOCALE, register: 'standard' as const }
   const headline = recapHeadline(recap, place)
   const out: string[] = []
-  let y = 69
-  if (o.fixture) {
-    out.push(rect(LEFT, y, 285, 78, colors.flag, ' rx="10"'), text(LEFT + 142, y + 53, 44, message(voice, 'card.example'), { weight: 700, anchor: 'middle' }))
-    y += 78 + 36
-  }
   // The headline, serif, at the largest size that holds it in five lines.
-  const size = [52, 48, 44, 40, 36].find((sz) => wrap(headline, sz, INNER, 5)) ?? 36
-  const lines = wrap(headline, size, INNER, 5) ?? [fit(headline, size, INNER)]
-  y += size
-  for (const line of lines) (out.push(text(LEFT, y, size, line, { serif: true })), (y += size * 1.3))
+  let y = headlineBlock(out, headline, fixtureBand(out, o.fixture, message(voice, 'card.example'), 69), { sizes: [52, 48, 44, 40, 36], lines: 5 })
   y += 14
 
   for (const row of recap.rows) {
@@ -60,27 +50,15 @@ export function recapCardSvg(recap: Recap, o: RecapCardOptions): RecapCard {
       const wr = INNER - wl
       out.push(rect(LEFT, y, wl, BAR_H, colors.lula), rect(LEFT + wl, y, wr, BAR_H, colors.bolsonaro))
       for (const [s, x, w] of [[row.left, LEFT, wl], [row.rival, LEFT + wl, wr]] as const) {
-        const t = candidateLabel(s.label, `${s.pct}%`, undefined, w - 20, 40)
-        if (t) out.push(labelText(x + w / 2, y + BAR_H / 2, t.size, t.text, { weight: 600, fill: colors['accent-fg'], anchor: 'middle' }))
+        out.push(centredLabel(x, w, y, BAR_H, candidateLabel(s.label, `${s.pct}%`, undefined, w - 20, 40), { weight: 600, fill: colors['accent-fg'] }))
       }
     } else out.push(rect(LEFT, y, INNER, BAR_H, colors['paper-2']))
     y += BAR_H + 50
   }
 
   out.push(rect(LEFT, y - 14, INNER, 3, colors.rule))
-  const baseLines = wrap(recapBase(place), 32, INNER, 3) ?? [fit(recapBase(place), 32, INNER)]
-  y += 30
-  for (const line of baseLines) (out.push(text(LEFT, y, 32, line, { fill: colors.muted })), (y += 42))
-  y += 28
-  const addrSize = [44, 40, 36].find((sz) => textWidth(o.address, sz, true) <= INNER) ?? 36
-  out.push(text(LEFT, y, addrSize, fit(o.address, addrSize, INNER, true), { weight: 600 }))
-  y += 52
-  const brand = message(voice, o.fixture ? 'card.brand.fixture' : 'card.brand')
-  out.push(text(LEFT, y, [36, 32, 28].find((sz) => textWidth(brand, sz) <= INNER) ?? 28, brand, { fill: colors.muted }))
-  y += 70
-
-  const H = Math.round(y)
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${RECAP_CARD_WIDTH}" height="${H}" viewBox="0 0 ${RECAP_CARD_WIDTH} ${H}" role="img"><title>${esc(o.alt ?? headline)}</title>${rect(0, 0, RECAP_CARD_WIDTH, H, colors.paper)}<rect x="5" y="5" width="${RECAP_CARD_WIDTH - 10}" height="${H - 10}" fill="none" stroke="${colors.ink}" stroke-width="10"/>${out.join('')}</svg>`
-  return { svg, height: H }
+  y = mutedLines(out, recapBase(place), y + 30, { size: 32, lines: 3, step: 42 }) + 28
+  y = footerBlock(out, y, { address: o.address, brand: message(voice, o.fixture ? 'card.brand.fixture' : 'card.brand') })
+  return flowCard(RECAP_CARD_WIDTH, y, o.alt ?? headline, out)
 }
 
