@@ -8,14 +8,15 @@
  * state, `data-pending-vista` for the Mosaico | Mapa toggle), replayed through the shared gate of `useIslandReady` before `data-ready` reports
  * `yes`, URL included.
  */
-import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
+import { useMemo, useState, type MouseEvent } from 'react'
 import { getAnalytics } from '@/analytics'
 import { linkHref } from '@/paths'
 import { UF_TILES } from '@/slots/home/uf-grid'
 import type { StayHomeModel } from '@/lib/stay-home-view'
 import { CALLOUT_LEFT, CALLOUT_RIGHT, UF_SHAPES } from '@/lib/uf-polygons'
 import { labelUnits } from '@/lib/map-hit'
-import { useIslandReady } from './use-island-ready'
+import { toPath } from '@/lib/map-path'
+import { keepVistaInUrl, useMapView } from './use-map-view'
 
 export interface StayHomeMapProps {
   model: StayHomeModel
@@ -43,34 +44,19 @@ const TAB_OFF = ' cursor-pointer text-muted-foreground'
 export default function StayHomeMap({ model, base, viewPaths }: StayHomeMapProps) {
   const analytics = getAnalytics()
   const [vista, setVista] = useState<Presentation>('mosaico')
-  const [selected, setSelected] = useState(model.defaultUf)
-  const sectionRef = useRef<HTMLElement | null>(null)
-  const island = useIslandReady('stayhome-map', { host: sectionRef, storage: ['pendingUf', 'pendingVista'] })
+  const { island, sectionRef, selected, tap: tapState } = useMapView({
+    name: 'stayhome-map',
+    initialSelected: model.defaultUf,
+    select: { storage: 'pendingUf', track: (uf) => analytics.event('map_state_tap', { uf }) },
+    onVistaTap: keepVistaInUrl,
+    openMap: () => setVista('mapa'),
+  })
   const hrefOf = (path: string) => linkHref(path, base)
   const stateHref = (uf: string) => hrefOf(`/${uf}/`)
-  const tapState = (uf: string) => {
-    if (uf !== selected) setSelected(uf)
-    analytics.event('map_state_tap', { uf })
-  }
   const stop = (uf: string) => (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
     tapState(uf)
   }
-
-  useEffect(() => {
-    island.markReady((tap) => {
-      // A tap on the Mosaico | Mapa toggle that landed while React was attaching is applied now, URL included.
-      if (tap.storage === 'pendingVista') {
-        const url = new URL(window.location.href)
-        if (tap.value === 'mapa') url.searchParams.set('vista', 'mapa')
-        else url.searchParams.delete('vista')
-        window.history.replaceState(null, '', url)
-      }
-      if (tap.storage === 'pendingUf') tapState(tap.value)
-    })
-    if (new URLSearchParams(window.location.search).get('vista') === 'mapa') setVista('mapa')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   const cell = model.cells[selected]
   const tileClass = 'flex select-none flex-col items-center justify-center rounded-md border border-border text-center focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary'
@@ -292,14 +278,5 @@ function MapView({ model, selected, tapState, stateHref }: { model: StayHomeMode
       })}
     </svg>
   )
-}
-
-function toPath(pts: readonly (readonly [number, number])[]): string {
-  let d = 'M'
-  for (let i = 0; i < pts.length; i++) {
-    if (i > 0) d += 'L'
-    d += `${pts[i]![0]} ${pts[i]![1]}`
-  }
-  return d + 'Z'
 }
 

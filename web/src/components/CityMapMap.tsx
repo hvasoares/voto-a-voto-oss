@@ -29,7 +29,8 @@ import type { CityMarginRow } from '@/lib/margins-city'
 import type { CityMapData } from '@/lib/city-map-data'
 import { BIN_COLOR, marginBin, marginLegend, fgOf, type DivBin } from '@/lib/scale'
 import { meshShapes, parseMunicipalityMesh, type MunicipalityMesh } from '@/lib/municipality-geo'
-import { useIslandReady } from './use-island-ready'
+import { toPath } from '@/lib/map-path'
+import { useMapView } from './use-map-view'
 
 export interface CityMapProps {
   data: CityMapData
@@ -159,18 +160,27 @@ export default function CityMapMap({ data, base, geoUrl, ufNome, semContorno }: 
     () => [...rows].sort((a, b) => b.validos2 - a.validos2 || a.cdMunicipio.localeCompare(b.cdMunicipio))[0]?.cdMunicipio ?? '',
     [rows],
   )
-  const [selected, setSelected] = useState(defaultCd)
-  const sectionRef = useRef<HTMLElement | null>(null)
-  const island = useIslandReady('city-map', { host: sectionRef, storage: ['pendingCd', 'pendingVista'] })
+  const { island, sectionRef, selected, tap: tapCd } = useMapView({
+    name: 'city-map',
+    initialSelected: defaultCd,
+    select: { storage: 'pendingCd', track: (cd) => analytics.event('map_municipio_tap', { cd }) },
+    onVistaTap: (value) => {
+      if (value !== 'mapa') return
+      const deepLink = new URLSearchParams(window.location.search).get('vista') === 'mapa'
+      if (!deepLink) {
+        const url = new URL(window.location.href)
+        url.searchParams.set('vista', 'mapa')
+        window.history.replaceState(null, '', url)
+      }
+      setVista('mapa')
+    },
+    openMap: () => setVista('mapa'),
+  })
 
   const cityHref = (slug: string) => linkHref(`/${uf}/${slug}/`, base)
   const byCd = useMemo(() => new Map(rows.map((r) => [r.cdMunicipio, r])), [rows])
   const byIbge = useMemo(() => new Map(rows.map((r) => [r.cdIbge, r])), [rows])
 
-  const tapCd = (cd: string) => {
-    if (cd !== selected) setSelected(cd)
-    analytics.event('map_municipio_tap', { cd })
-  }
   const setVista_ = (v: Vista) => {
     if (v !== vista) analytics.event('map_view', { view: v })
     setVista(v)
@@ -204,27 +214,6 @@ export default function CityMapMap({ data, base, geoUrl, ufNome, semContorno }: 
       .catch(() => setMeshError(true))
     return () => controller.abort()
   }, [vista, mesh, meshError, geoUrl])
-
-  // Replay the pre-hydration taps (kept by the page script on the island host) and honour the
-  // ?vista=mapa deep link - the never-lost-tap model of the state map, at city granularity - then
-  // report data-ready=yes in the same commit.
-  useEffect(() => {
-    island.markReady((tap) => {
-      if (tap.storage === 'pendingVista' && tap.value === 'mapa') {
-        const deepLink = new URLSearchParams(window.location.search).get('vista') === 'mapa'
-        if (!deepLink) {
-          const url = new URL(window.location.href)
-          url.searchParams.set('vista', 'mapa')
-          window.history.replaceState(null, '', url)
-        }
-        setVista('mapa')
-      }
-      if (tap.storage === 'pendingCd') setSelected(tap.value)
-    })
-    const deepLink = new URLSearchParams(window.location.search).get('vista') === 'mapa'
-    if (deepLink) setVista('mapa')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   return (
     <section ref={sectionRef} data-slot="city-map" data-uf={uf} data-ready={island.dataReady} data-error={island.dataError} aria-label={`Mapa por município: margem de ${ladoANome} sobre ${ladoBNome} em ${ufNome}`}>
@@ -608,15 +597,6 @@ function Selecionado({
       </a>
     </div>
   )
-}
-
-function toPath(pts: readonly (readonly [number, number])[]): string {
-  let d = 'M'
-  for (let i = 0; i < pts.length; i++) {
-    if (i > 0) d += 'L'
-    d += `${pts[i]![0]} ${pts[i]![1]}`
-  }
-  return d + 'Z'
 }
 
 /** Projected bbox of a shape (px of the viewBox), for the inline label size decision. */

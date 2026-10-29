@@ -2,7 +2,7 @@
  * The island list of the data-ready contract (#122), DERIVED from the pages: every component used with a
  * client directive (`client:load|idle|visible|media|interaction|panel|slot`) in an `src/**​/*.astro` page is a
  * hydrated island, and every hydrated island must say its readiness through the shared gate — its source must
- * contain `data-ready` and name the shared helper (`useIslandReady`, built on `lib/island-ready`). An island
+ * contain `data-ready` and name the shared helper (`useIslandReady`, or `useMapView` which wraps it, built on `lib/island-ready`). An island
  * without both fails the run:
  *
  *     island <Component> (used in <page>) has no data-ready
@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 const SRC = resolve(dirname(fileURLToPath(import.meta.url)), '../src')
 const DIRECTIVE = /client:(load|idle|visible|media|interaction|panel|slot)/
-const HELPER = /useIslandReady|island-ready/
+const HELPER = /useIslandReady|useMapView|island-ready/
 
 /**
  * Islands excused from the gate, and why. Keep it short: an entry means the island's readiness lives somewhere

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { render, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { setAnalytics, noopAnalytics, type Analytics } from '@/analytics'
+import { getAnalytics, setAnalytics, noopAnalytics, type Analytics } from '@/analytics'
 import { keepVistaInUrl, useMapView } from './use-map-view'
 
 /** A probe island: renders the selection, records the toggle taps and the deep-link opening. */
@@ -9,7 +9,7 @@ function Probe({ log }: { log: string[] }) {
   const { sectionRef, island, selected } = useMapView({
     name: 'probe-map',
     initialSelected: 'sp',
-    select: { storage: 'pendingUf', event: 'map_state_tap', param: 'uf' },
+    select: { storage: 'pendingUf', track: (uf) => getAnalytics().event('map_state_tap', { uf }) },
     onVistaTap: (value) => log.push(`vista:${value}`),
     openMap: () => log.push('open'),
   })

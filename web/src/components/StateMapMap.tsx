@@ -14,7 +14,7 @@
  * Analytics (ticket #20 surface, noop today): `map_view {view}` when a tab or Mosaico/Mapa is
  * chosen, `map_state_tap {uf}` when a hydrated tap selects a state.
  */
-import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
+import { useMemo, useState, type MouseEvent } from 'react'
 import { formatInt } from '@/shared/city-model'
 import { UF_TILES } from '@/slots/home/uf-grid'
 import { getAnalytics } from '@/analytics'
@@ -26,7 +26,8 @@ import type { StateMapData, StateMapRow } from '@/lib/state-map-data'
 import { BIN_COLOR, fgOf, marginBin, marginLegend, swingBin, swingLegend, tileEdge, type DivBin } from '@/lib/scale'
 import { CALLOUT_LEFT, CALLOUT_RIGHT, UF_SHAPES } from '@/lib/uf-polygons'
 import { hitStroke, hitUnits, labelUnits, MAP_PX } from '@/lib/map-hit'
-import { useIslandReady } from './use-island-ready'
+import { toPath } from '@/lib/map-path'
+import { keepVistaInUrl, useMapView } from './use-map-view'
 
 export type MapKind = 'margin' | 'swing'
 export type MapPresentation = 'mosaico' | 'mapa'
@@ -99,38 +100,20 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
   const [vista, setVista] = useState<MapPresentation>('mosaico')
   /** Selected state of the panel; default = the state with most valid votes (the frames pick SP). */
   const defaultUf = useMemo(() => [...rows].sort((a, b) => b.validos2 - a.validos2)[0]?.uf ?? '', [rows])
-  const [selected, setSelected] = useState(defaultUf)
-  const sectionRef = useRef<HTMLElement | null>(null)
-  const island = useIslandReady('state-map', { host: sectionRef, storage: ['pendingUf', 'pendingVista'] })
+  const { island, sectionRef, selected, tap: tapState } = useMapView({
+    name: 'state-map',
+    initialSelected: defaultUf,
+    select: { storage: 'pendingUf', track: (uf) => analytics.event('map_state_tap', { uf }) },
+    onVistaTap: keepVistaInUrl,
+    openMap: () => setVista('mapa'),
+  })
 
   const hrefOf = (path: string) => linkHref(path, base)
   const stateHref = (uf: string) => hrefOf(`/${uf}/`)
-  const tapState = (uf: string) => {
-    if (uf !== selected) setSelected(uf)
-    analytics.event('map_state_tap', { uf })
-  }
   const stop = (uf: string) => (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
     tapState(uf)
   }
-
-  // Replay the pre-hydration taps (kept by the page script on the island host), then report
-  // data-ready=yes in the same commit - yes is never observed before the held taps are applied.
-  useEffect(() => {
-    island.markReady((tap) => {
-      // A tap on the Mosaico | Mapa toggle that landed while React was attaching is applied now, URL included.
-      if (tap.storage === 'pendingVista') {
-        const url = new URL(window.location.href)
-        if (tap.value === 'mapa') url.searchParams.set('vista', 'mapa')
-        else url.searchParams.delete('vista')
-        window.history.replaceState(null, '', url)
-      }
-      if (tap.storage === 'pendingUf') tapState(tap.value)
-    })
-    const deepLink = new URLSearchParams(window.location.search).get('vista') === 'mapa'
-    if (deepLink) setVista('mapa')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   const byUf = useMemo(() => new Map(rows.map((r) => [r.uf, r])), [rows])
   const validos2Max = Math.max(...rows.map((r) => r.validos2), 0)
@@ -436,13 +419,4 @@ function MapView(props: {
       })}
     </svg>
   )
-}
-
-function toPath(pts: readonly (readonly [number, number])[]): string {
-  let d = 'M'
-  for (let i = 0; i < pts.length; i++) {
-    if (i > 0) d += 'L'
-    d += `${pts[i]![0]} ${pts[i]![1]}`
-  }
-  return d + 'Z'
 }

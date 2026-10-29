@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type RefObject } from 'react'
-import { getAnalytics } from '@/analytics'
 import type { HeldStorage, HeldTap } from '@/lib/island-ready'
 import { useIslandReady, type IslandReady } from './use-island-ready'
 
@@ -16,8 +15,11 @@ export interface MapViewOptions {
   name: string
   /** The selection when nothing was tapped yet. */
   initialSelected: string
-  /** Which kept tap selects, and the analytics event a selecting tap fires with `{ [param]: value }`. */
-  select: { storage: Extract<HeldStorage, 'pendingUf' | 'pendingCd'>; event: string; param: 'uf' | 'cd' }
+  /**
+   * Which kept tap selects, and the island's own report of a selecting tap (its analytics call, which
+   * stays a literal in the island so the events table can find the emitter).
+   */
+  select: { storage: Extract<HeldStorage, 'pendingUf' | 'pendingCd'>; track(value: string): void }
   /** A kept tap on the view toggle (`pendingVista`) that landed while React was attaching. */
   onVistaTap(value: string): void
   /** The URL asks for the map view (`?vista=mapa`). */
@@ -38,7 +40,7 @@ export function useMapView({ name, initialSelected, select, onVistaTap, openMap 
   const island = useIslandReady(name, { host: sectionRef, storage: [select.storage, 'pendingVista'] })
   const tap = (value: string) => {
     if (value !== selected) setSelected(value)
-    getAnalytics().event(select.event, { [select.param]: value })
+    select.track(value)
   }
 
   // Replay the kept taps, then report data-ready=yes in the same commit - yes is never observed before they are applied.
