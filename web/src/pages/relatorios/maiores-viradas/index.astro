@@ -12,14 +12,16 @@ import { loadReportsData } from '@/lib/reports/load'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { displayName, ufLabel } from '@/shared/city-search'
-import { normalizeBase, withBase } from '@/paths'
+import { normalizeBase, siteHref } from '@/paths'
 import Seal from '@/components/Seal.astro'
+import SiteFooter from '@/components/SiteFooter.astro'
 import { calcLink } from '@/lib/facts/link'
 import { factLinks } from '@/lib/facts/gate'
 import { getFactPage, sealOf } from '@/lib/facts/pages'
 
 const base = normalizeBase(import.meta.env.BASE_URL)
-const href = (path: string) => withBase(base, path)
+// The #113 base-path helper (`base` stays for `factLinks`, which takes the base argument).
+const href = siteHref
 const input = await loadReportsData()
 const { margins, pair } = computeReports(input)
 const lula = candidateName(pair.nomePrimeiro)
@@ -91,9 +93,13 @@ const outcome = (margin2: number): string => (margin2 > 0 ? `venceu no 2º turno
       <span class="text-center text-step-1 text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
     </div>
   </main>
-  <footer class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary" data-component="source-footer">
-    Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
-  </footer>
+  {/* The #113 shared footer with this page's variant (#115): the " · " separator and the plain about link. */}
+  <SiteFooter
+    source="Fonte: TSE, dados finais"
+    separator=" · "
+    aboutClass=""
+    class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary"
+  />
   <script>
     import '@/scripts/report-analytics'
   </script>

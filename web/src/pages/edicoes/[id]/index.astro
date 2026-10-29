@@ -9,14 +9,15 @@ import { citation, editionLabel, editionPath, releasePath, type Edition } from '
 import { currentEdition, loadEditions } from '@/lib/editions-load'
 import { siteOrigin } from '@/lib/share-url'
 import { formatInt } from '@/shared/city-model'
-import { normalizeBase, withBase } from '@/paths'
+import { siteHref } from '@/paths'
+import SiteFooter from '@/components/SiteFooter.astro'
 
 export function getStaticPaths() {
   return loadEditions().map((edition) => ({ params: { id: edition.id }, props: { edition } }))
 }
 const { edition } = Astro.props as { edition: Edition }
-const base = normalizeBase(import.meta.env.BASE_URL)
-const href = (path: string) => withBase(base, path)
+// The #113 base-path helper; no local `base` remains (nothing here takes the base argument).
+const href = siteHref
 const current = await currentEdition()
 const address = `${siteOrigin()}${href(editionPath(edition.id))}`
 const counts = edition.counts
@@ -83,7 +84,10 @@ const counts = edition.counts
       <p class="mt-1 text-step-1 text-muted-foreground">Dados de {formatUtc(edition.date)}. Impressão digital dos dados: {edition.fingerprint}.</p>
     </section>
   </main>
-  <footer class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary" data-component="source-footer">
-    Fonte: TSE, dados finais
-  </footer>
+  {/* The #113 shared footer with this page's variant (#115): the source note with no about link. */}
+  <SiteFooter
+    source="Fonte: TSE, dados finais"
+    aboutLink={false}
+    class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary"
+  />
 </Base>

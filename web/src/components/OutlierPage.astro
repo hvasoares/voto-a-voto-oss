@@ -9,12 +9,13 @@ import { candidateName } from '@/shared/candidate-name'
 import Base from '@/layouts/Base.astro'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { normalizeBase, withBase } from '@/paths'
+import { normalizeBase, siteHref } from '@/paths'
 import { siteOrigin } from '@/lib/share-url'
 import { outlierPath } from '@/lib/reports/outliers'
 import { loadOutliers } from '@/lib/reports/outliers-load'
 import { outlierShare, outlierView } from '@/lib/reports/outliers-view'
 import Seal from '@/components/Seal.astro'
+import SiteFooter from '@/components/SiteFooter.astro'
 import { calcLink } from '@/lib/facts/link'
 import { factLinks } from '@/lib/facts/gate'
 import { getOutlierFacts, sealOf } from '@/lib/facts/pages'
@@ -25,7 +26,8 @@ interface Props {
 }
 const { uf, min } = Astro.props
 const base = normalizeBase(import.meta.env.BASE_URL)
-const href = (path: string) => withBase(base, path)
+// The #113 base-path helper (`base` stays for outlierView and the fact links, which take the base argument).
+const href = siteHref
 const set = await loadOutliers()
 const filter = { uf, min }
 const picked = set.pick(filter)
@@ -129,9 +131,13 @@ const cols = 'lg:grid lg:grid-cols-[2rem_minmax(0,1.7fr)_repeat(5,minmax(0,1fr))
       <span class="text-center text-step-1 text-muted-foreground" role="status" aria-live="polite" data-share-feedback></span>
     </div>
   </main>
-  <footer class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] lg:max-w-[1200px] border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary lg:text-left" data-component="source-footer">
-    Fonte: TSE, dados finais · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
-  </footer>
+  {/* The #113 shared footer with this page's variant (#115): the " · " separator and the plain about link. */}
+  <SiteFooter
+    source="Fonte: TSE, dados finais"
+    separator=" · "
+    aboutClass=""
+    class="mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] lg:max-w-[1200px] border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary lg:text-left"
+  />
   <script>
     import '@/scripts/report-analytics'
   </script>
