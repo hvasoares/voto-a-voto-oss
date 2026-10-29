@@ -5,8 +5,8 @@
  * - "Lula: +3.862.039 votos no país"
  * - "Marquinho/PR: empate, diferença de 0 votos"
  * - "Mais alto: Santa Maria do Herval/RS, 90,5%. Mais baixo: Itaubal/AP, 59,0%"
- * The two rows that are lists (Comparar, Como cada grupo votou) carry a descriptive headline,
- * like the frame. Since #14, all seven rows link through.
+ * The row that is a list (Como cada grupo votou) carry a descriptive headline,
+ * like the frame. Every row links through; none leads to Comparar (#158).
  */
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -31,8 +31,8 @@ async function realInput(): Promise<MarginInput> {
 }
 
 describe('hub rows (fixture state)', () => {
-  it('has seven rows', async () => {
-    expect(hubRows(computeReports(await fixtureInput()), await fixtureInput())).toHaveLength(7)
+  it('has six rows', async () => {
+    expect(hubRows(computeReports(await fixtureInput()), await fixtureInput())).toHaveLength(6)
   })
 
   it('the built report row announces the flips with the real candidate names the fixture plays', async () => {
@@ -46,7 +46,7 @@ describe('hub rows (fixture state)', () => {
     })
   })
 
-  it('all seven rows are links after #14', async () => {
+  it('every row is a built report link, and none leads to Comparar (#158)', async () => {
     const input = await fixtureInput()
     const rows = hubRows(computeReports(input), input)
     expect(rows.filter((r) => r.to === undefined)).toHaveLength(0)
@@ -55,8 +55,8 @@ describe('hub rows (fixture state)', () => {
     expect(rows[3]).toMatchObject({ id: 'disputas-mais-apertadas', to: '/relatorios/disputas-mais-apertadas/', headline: 'Cidade Exemplo A/RJ: margem de -0,1 pp' })
     expect(rows[4]).toMatchObject({ id: 'comparecimento', to: '/relatorios/comparecimento/' })
     expect(rows[4]!.headline).toContain('Cidade Exemplo C/RJ, 78,2%. Mais baixo: Cidade Exemplo E/RJ, 70,5%')
-    expect(rows[5]).toMatchObject({ id: 'comparar', headline: 'Os seis maiores estados: Candidato A e Candidato B, votos e percentuais', to: '/comparar/2022/' })
-    expect(rows[6]).toMatchObject({ id: 'como-cada-grupo-votou', headline: 'Cidades agrupadas por quem venceu em 2018 e 2022', to: '/relatorios/como-cada-grupo-votou/' })
+    expect(rows.filter((r) => r.to?.startsWith('/comparar/'))).toEqual([])
+    expect(rows[5]).toMatchObject({ id: 'como-cada-grupo-votou', headline: 'Cidades agrupadas por quem venceu em 2018 e 2022', to: '/relatorios/como-cada-grupo-votou/' })
   })
 })
 
@@ -64,11 +64,11 @@ describe('the Cidades fora da curva row (#34)', () => {
   it('is added when the list has been computed, with a headline that says how many cities were compared and that it is a screening list', async () => {
     const input = await fixtureInput()
     const rows = hubRows(computeReports(input), input, { n: 4321, min: 5_000 })
-    expect(rows).toHaveLength(8)
+    expect(rows).toHaveLength(7)
     expect(rows[5]).toEqual({ id: 'cidades-fora-da-curva', title: 'Cidades fora da curva', headline: 'Lista de triagem: 4.321 cidades comparadas com cidades parecidas', to: '/relatorios/cidades-fora-da-curva/' })
     expect(rows[5]!.headline).not.toMatch(/irregular|suspeit|erro/i)
   })
-  it('without it the hub is the seven rows of before', async () => {
+  it('without it the hub is the six rows of before', async () => {
     const input = await fixtureInput()
     expect(hubRows(computeReports(input), input).map((r) => r.id)).not.toContain('cidades-fora-da-curva')
   })

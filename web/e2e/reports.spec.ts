@@ -20,11 +20,11 @@ test.describe('reports hub page', () => {
     await expect(page.locator('#main h1')).toHaveText('Relatórios')
     await expect(page.locator('#main > p').first()).toHaveText('2º turno de 2026 e comparação com 2022')
     const rows = page.locator('nav[aria-label="Relatórios"] > ul > li')
-    await expect(rows).toHaveCount(8)
+    await expect(rows).toHaveCount(7)
     await expect(page.getByRole('link', { name: /Cidades que viraram no 2º turno/ })).toHaveText('Cidades que viraram no 2º turnoCandidato A virou 2 cidades; Candidato B virou 1')
     for (const title of STUB_TITLES) await expect(rows.filter({ hasText: title }), title).toHaveCount(0)
     await expect(page.locator('[data-report="cidades-que-viraram"]')).toHaveAttribute('href', base + 'relatorios/cidades-que-viraram/')
-    await expect(page.locator('[data-report="comparar"]')).toHaveAttribute('href', base + 'comparar/2022/')
+    await expect(page.locator('[data-report="comparar"]')).toHaveCount(0)
   })
 
   test('links every row of the hub', async ({ page }) => {
@@ -40,7 +40,6 @@ test.describe('reports hub page', () => {
       `disputas-mais-apertadas${base}relatorios/disputas-mais-apertadas/`,
       `comparecimento${base}relatorios/comparecimento/`,
       `cidades-fora-da-curva${base}relatorios/cidades-fora-da-curva/`,
-      `comparar${base}comparar/2022/`,
       `como-cada-grupo-votou${base}relatorios/como-cada-grupo-votou/`,
     ])
   })
@@ -60,6 +59,26 @@ test.describe('reports hub page', () => {
     await expect(page.locator('#main h1')).toBeVisible()
     expect(violations(seen, await allowedOrigins(baseURL!))).toEqual([])
   })
+})
+
+test.describe('no report links to the Comparar cycle page (#158)', () => {
+  const REPORT_PAGES = [
+    'relatorios/',
+    'relatorios/cidades-que-viraram/',
+    'relatorios/maiores-viradas/',
+    'relatorios/votos-ganhos-e-perdidos/',
+    'relatorios/disputas-mais-apertadas/',
+    'relatorios/comparecimento/',
+    'relatorios/cidades-fora-da-curva/',
+    'relatorios/como-cada-grupo-votou/',
+  ]
+  for (const path of REPORT_PAGES) {
+    test(`${path} has no link to /comparar/<year>/`, async ({ page }) => {
+      await page.goto(base + path)
+      await expect(page.locator('#main h1')).toBeVisible()
+      await expect(page.locator('a[href*="/comparar/"]')).toHaveCount(0)
+    })
+  }
 })
 
 test.describe('cidades que viraram page', () => {
@@ -168,7 +187,7 @@ test.describe('disputas mais apertadas page', () => {
     await expect(page.locator('#main h1')).toHaveText('Disputas mais apertadas')
     await expect(page.locator('[data-sized]')).toContainText('As 8 menores diferenças de 8 cidades')
     const rows = page.locator('[data-race]')
-    await expect(rows).toHaveCount(8)
+    await expect(rows).toHaveCount(7)
     // The fixture's closest race: Cidade Exemplo A/RJ, 31 votes apart, Candidato B ahead (unit-pinned).
     await expect(rows.first()).toContainText('Cidade Exemplo A/RJ')
     await expect(rows.first()).toContainText('Diferença de 31 votos — Candidato B à frente (12.215 a 12.184)')
@@ -193,8 +212,8 @@ test.describe('comparecimento page', () => {
     await expect(page.locator('[data-sized]')).toContainText('8 cidades no filtro, de cada uma o volume embaixo da taxa')
     const high = page.locator('[data-turnout-high] [data-turnout]')
     const low = page.locator('[data-turnout-low] [data-turnout]')
-    await expect(high).toHaveCount(8)
-    await expect(low).toHaveCount(8)
+    await expect(high).toHaveCount(7)
+    await expect(low).toHaveCount(7)
     await expect(high.first()).toContainText('Cidade Exemplo C/RJ')
     await expect(high.first()).toContainText('78,2% · 53.040 de 67.868 eleitores aptos')
     await expect(low.first()).toContainText('Cidade Exemplo E/RJ')
