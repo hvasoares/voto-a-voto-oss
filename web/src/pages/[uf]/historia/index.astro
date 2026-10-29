@@ -5,19 +5,16 @@
  * (`/<uf>/historia/#2`). Built for the states whose sequence has six to eight cards (`story-data.ts`). No entry point links here yet: the page is reached by its address.
  */
 import Base from '@/layouts/Base.astro'
-import PhoneHeader from '@/components/PhoneHeader.astro'
 import StorySequence from '@/components/StorySequence'
 import Seal from '@/components/Seal.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
-import { siteBase, siteHref } from '@/paths'
+import { siteBase } from '@/paths'
 import { loadStory, storyUfs } from '@/lib/story-data'
-import { storyCalc } from '@/lib/story-content'
 import { storySay } from '@/lib/story'
 import { datasetFixture } from '@/lib/shard-files'
 import { calcLink } from '@/lib/facts/link'
 import { factLinks } from '@/lib/facts/gate'
 import { getFactPage, sealOf } from '@/lib/facts/pages'
-import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import '@/styles/story.css'
 import PageMain from '@/components/PageMain.astro'
 
@@ -28,25 +25,21 @@ export async function getStaticPaths() {
 
 const { uf } = Astro.params
 const base = siteBase()
-// The #113 base-path helper (`base` stays for storyUfs/loadStory and the fact links, which take the base argument).
-const href = siteHref
 const fixture = await datasetFixture()
 const story = (await loadStory(uf!, base))!
-// Fact records (#62): the number of a card has its record (the calculation link); a card whose number has none does not build.
-const pages = { municipios: await getFactPage(`estado/${uf}`, 'municipios'), 'tres-ciclos': await getFactPage(`estado/${uf}`, 'tres-ciclos') }
-const linksOf = (page: 'municipios' | 'tres-ciclos') => factLinks(pages[page].facts, `/${uf}/historia/`, base)
-const cards = story.cards.map((c) => {
-  const where = c.kind === 'recap' || c.kind === 'share' ? undefined : storyCalc(c.kind)
-  return { n: c.n, svg: c.svg, text: c.variants.standard.text, link: c.url, filename: c.filename, caption: c.caption, address: c.address, calc: where ? calcLink(linksOf(where.page as 'municipios' | 'tres-ciclos')(where.anchor)) : undefined }
-})
-const seal = await sealOf(pages['tres-ciclos'])
+// Fact records (#62): the page's one calculation entry (#155) opens the state's three-cycles records, the ones its seal is written from.
+const facts = await getFactPage(`estado/${uf}`, 'tres-ciclos')
+const links = factLinks(facts.facts, `/${uf}/historia/`, base)
+const cards = story.cards.map((c) => ({ n: c.n, svg: c.svg, text: c.variants.standard.text, link: c.url, filename: c.filename, caption: c.caption, address: c.address }))
+const seal = await sealOf(facts)
 const words = { region: storySay('story.region', {}, { name: story.stateName }), dots: storySay('story.dots'), dot: storySay('story.dot', {}, {}), share: storySay('story.share'), linkNote: storySay('story.link.note'), nojs: storySay('story.nojs') }
 ---
 <Base title={`${storySay('story.title', {}, { name: story.stateName })} · Voto a Voto`} description={story.cards[1]!.variants.standard.alt}>
-  <PhoneHeader />
   <PageMain md="480" data-page="historia" data-uf={uf}>
-    <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
-    <h1 class="mt-2 font-serif text-step-4 font-normal">{story.stateName}</h1>
+    <div class="mt-2 flex items-center justify-between gap-2">
+      <h1 class="font-serif text-step-4 font-normal">{story.stateName}</h1>
+      <Fragment set:html={calcLink(links(facts.facts[0]!.anchor))} />
+    </div>
     <p class="mt-1 text-step-1 text-muted-foreground" data-subtitle>{storySay('story.sub', {}, { n: cards.length })}</p>
     <StorySequence client:load cards={cards} words={words} />
     <p class="mt-2 text-center text-step-1 text-muted-foreground">{storySay('story.note')}</p>

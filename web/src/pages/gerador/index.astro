@@ -6,14 +6,12 @@
  * says so. Reached from the share dialog's link (the city arrives in the address: ?cidade=rj/cidade-exemplo).
  */
 import Base from '@/layouts/Base.astro'
-import PhoneHeader from '@/components/PhoneHeader.astro'
 import CardGenerator from '@/components/CardGenerator'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { siteBase, siteHref } from '@/paths'
 import { datasetFixture } from '@/lib/shard-files'
 import { siteOrigin } from '@/lib/share-url'
 import { currentEdition } from '@/lib/editions-load'
-import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import PageMain from '@/components/PageMain.astro'
 
 const base = siteBase()
@@ -23,9 +21,7 @@ const fixture = await datasetFixture()
 const edition = await currentEdition()
 ---
 <Base title="Gerador de cartão · Voto a Voto" description="Escolha uma cidade e uma medida e baixe uma imagem pronta para postar, em três tamanhos.">
-  <PhoneHeader />
   <PageMain md="480" data-page="gerador">
-    <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Gerador de cartão</h1>
     <p class="mt-1 text-step-1 text-muted-foreground">Escolha uma cidade e uma medida. A imagem sai pronta para postar.</p>
     <div class="mt-3">

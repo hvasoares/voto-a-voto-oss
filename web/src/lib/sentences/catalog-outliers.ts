@@ -36,7 +36,6 @@ export const OUTLIER_KEYS = [
   'outlier.method',
   'outlier.share',
   'outlier.share.text',
-  'outlier.calc',
 ] as const satisfies readonly Key[]
 
 export const OUTLIER_STANDARD: Record<(typeof OUTLIER_KEYS)[number], string> = {
@@ -67,7 +66,6 @@ export const OUTLIER_STANDARD: Record<(typeof OUTLIER_KEYS)[number], string> = {
   'outlier.method': 'Cada cidade é comparada com as cinco cidades parecidas do arquivo de pares (porte, comparecimento, margem e histórico). O típico é a mediana delas. A ordem é a distância nos dois números, na mesma escala.',
   'outlier.share': 'Compartilhar',
   'outlier.share.text': 'Lista de triagem, não uma conclusão: cidades mais distantes de cidades parecidas no comparecimento e na virada desde 2022.',
-  'outlier.calc': 'De onde vem este número?',
 }
 
 export const OUTLIER_PLAIN: Record<(typeof OUTLIER_KEYS)[number], string> = {
@@ -98,7 +96,6 @@ export const OUTLIER_PLAIN: Record<(typeof OUTLIER_KEYS)[number], string> = {
   'outlier.method': 'Cada cidade é comparada com as cinco cidades parecidas do arquivo de pares: porte, comparecimento, margem e histórico. O comum é o valor do meio entre elas. A ordem mostra a distância nos dois números, na mesma escala.',
   'outlier.share': 'Compartilhar',
   'outlier.share.text': 'Esta é uma lista para triagem, não uma conclusão: cidades mais distantes de cidades parecidas no comparecimento e na virada desde 2022.',
-  'outlier.calc': 'De onde vem este número?',
 }
 
 registerSentences('pt-BR', 'standard', OUTLIER_STANDARD)

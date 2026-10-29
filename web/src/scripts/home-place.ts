@@ -4,8 +4,9 @@
  * save their pick in their own island (components/CitySearch.tsx). All of it is guarded: with storage blocked
  * nothing is shown or saved and the page works as before.
  */
-import { cityTarget, readDestination } from '@/lib/destinations'
-import { HOME_SAY } from '@/lib/sentences/catalog-home'
+import { cityTarget, landingDestination, readDestination } from '@/lib/destinations'
+import { HOME_HINT_PLAIN, HOME_HINT_STANDARD, HOME_SAY } from '@/lib/sentences/catalog-home'
+import { readRegister } from '@/lib/sentences/register-store'
 import { forgetAll, placeHref, placeLabel, readPlace, savePlace } from '@/lib/place-store'
 
 const card = document.querySelector<HTMLElement>('[data-place-shortcut]')
@@ -37,6 +38,19 @@ const render = (): void => {
   if (label) label.textContent = place.kind === 'city' ? 'Sua cidade' : 'Seu estado'
 }
 
+/**
+ * The one "focus the search with a hint" (#147): a visitor who arrives from an entry that needs a city (`?para=`, the closed list) and
+ * has none remembered gets the cursor in the search and one line above it saying what the pick will do. Any other arrival, or a
+ * remembered city (the entries then went straight to the destination), gets neither.
+ */
+const landOnSearch = (): void => {
+  const destination = landingDestination(location.search, readPlace()?.kind === 'city')
+  const hint = document.querySelector<HTMLElement>('[data-search-hint]')
+  if (!destination || !hint) return
+  hint.textContent = (readRegister() === 'plain' ? HOME_HINT_PLAIN : HOME_HINT_STANDARD)[`home.hint.${destination}`]
+  document.querySelector<HTMLInputElement>('#busca input')?.focus()
+}
+
 document.querySelector('[data-uf-grid]')?.addEventListener('click', (e) => {
   const tile = (e.target as Element).closest<HTMLAnchorElement>('a[data-uf]')
   if (tile?.dataset.uf && tile.dataset.nome) savePlace({ kind: 'state', uf: tile.dataset.uf, nome: tile.dataset.nome })
@@ -48,4 +62,5 @@ card?.querySelector('[data-place-forget]')?.addEventListener('click', () => {
 })
 
 render()
+landOnSearch()
 document.documentElement.dataset.ready = 'home'

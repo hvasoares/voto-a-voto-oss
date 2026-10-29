@@ -1,8 +1,7 @@
 ---
-// The reports hub (frame "6 Relatórios", ticket #12). Seven rows, each with its headline figure,
-// computed at build time from the dataset (nothing here is a copied constant). Six are built reports
-// and link through (cidades-que-viraram #12; the four of #13; como-cada-grupo-votou #15); the row of
-// #14 stays a stub and shows "Em breve". Shell and footer: ReportLayout (#118).
+// The reports hub (frame "6 Relatórios", ticket #12). Six rows, each with its headline figure,
+// computed at build time from the dataset (nothing here is a copied constant). All are built reports
+// and link through (cidades-que-viraram #12; the four of #13; como-cada-grupo-votou #15); none leads to Comparar (#158). Shell and footer: ReportLayout (#118).
 import ReportLayout from '@/layouts/ReportLayout.astro'
 import { hubRows } from '@/lib/reports/hub'
 import { loadReports, reportFacts } from '@/lib/reports/page'
@@ -14,14 +13,13 @@ const href = siteHref
 const { input, ...computed } = await loadReports()
 const outliers = await loadOutliers()
 const rows = hubRows(computed, input, { n: outliers.counts.find((k) => k.uf === undefined && k.min === DEFAULT_MIN)!.n, min: DEFAULT_MIN })
-// Fact records (#62): the figure of each headline has its record; the link sits beside the row (a link cannot nest in the row's own link).
-const { facts, calc, seal } = await reportFacts('relatorios', 'resumo')
-const has = (id: string) => facts.some((f) => f.anchor === id)
+// Fact records (#62): the page's one calculation entry (#155) opens the records of the headlines.
+const { calc, seal } = await reportFacts('relatorios', 'resumo')
 const chevron =
   '<svg class="mx-px flex-none text-primary" viewBox="0 0 6 10" width="5" height="8.5" aria-hidden="true" focusable="false"><path d="M0.7 0.5 4 4.6 0.7 8.7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></path></svg>'
 ---
 
-<ReportLayout title="Relatórios · Voto a Voto" heading="Relatórios" seal={seal} back={{ label: '‹ Início', to: '/' }}>
+<ReportLayout title="Relatórios · Voto a Voto" heading="Relatórios" calc={calc} seal={seal} back={null}>
   <p class="mt-0.5 text-step-1 text-muted-foreground">2º turno de 2026 e comparação com 2022</p>
 
   <nav aria-label="Relatórios">
@@ -52,7 +50,6 @@ const chevron =
               <Fragment set:html={chevron} />
             </div>
           )}
-          {has(row.id) && <Fragment set:html={calc(row.id)} />}
         </li>
       ))}
     </ul>

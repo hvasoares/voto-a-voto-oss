@@ -73,22 +73,6 @@ export function parseCities(text: string): City[] {
   }))
 }
 
-export interface Centroid {
-  cdIbge: string
-  lat: number
-  lon: number
-}
-
-export function parseCentroids(text: string): Centroid[] {
-  const f = 'centroids.csv'
-  const num = (col: string, v: string | undefined): number => {
-    const n = Number(v)
-    if (v === undefined || v === '' || !Number.isFinite(n)) throw new SchemaError(`${f}: column ${col} is not a number: "${v}"`)
-    return n
-  }
-  return records(f, text, ['cd_ibge', 'lat', 'lon']).map((r) => ({ cdIbge: r.cd_ibge!, lat: num('lat', r.lat), lon: num('lon', r.lon) }))
-}
-
 export function parseTurnout(text: string): Turnout[] {
   const f = 'turnout.csv'
   return records(f, text, TURNOUT_COLUMNS).map((r) => ({

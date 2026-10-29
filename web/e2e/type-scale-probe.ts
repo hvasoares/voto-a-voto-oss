@@ -36,6 +36,7 @@ const ALL_SCREENS: Screen[] = [
   { name: 'Mapa de um estado, map', path: 'mapa/rj/?vista=mapa', settle: 'svg', family: 'b' },
   { name: 'Mapa, virada', path: 'mapa/virada/', family: 'b' },
   { name: 'Brasil', path: 'brasil/', family: 'c' },
+  { name: 'Região', path: 'brasil/sudeste/', family: 'd' },
   { name: 'Brasil, compartilhar', path: 'brasil/compartilhar/', family: 'c' },
   { name: 'Relatórios', path: 'relatorios/', family: 'd' },
   { name: 'A report', path: 'relatorios/comparecimento/', family: 'd' },

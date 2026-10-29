@@ -26,14 +26,14 @@ test.describe('state season', () => {
     await context.close()
   })
 
-  test('the pivot says the change of the share and in how many cities the side changed, and links its calculation', async ({ page }) => {
+  test('the pivot says the change of the share and in how many cities the side changed; the one entry of the page opens its calculation (#155)', async ({ page }) => {
     await page.goto(rj)
     await ready(page)
     const pivot = page.locator('[data-pivot]')
     await expect(pivot).toContainText(/Entre 2022 e 2026, a parcela de .+ nos votos válidos do 2º turno variou [+−-]\d+,\d pp\./)
     await expect(pivot).toContainText(/Em \d+ das \d+ cidades com os três ciclos o lado com mais votos mudou\.|Em nenhuma das \d+ cidades/)
-    const href = await pivot.getByRole('link', { name: 'De onde vem este número?' }).getAttribute('href')
-    expect(href).toContain('/fato/estado/rj/tres-ciclos/#2026-viradas')
+    await expect(pivot.getByRole('link')).toHaveCount(0)
+    expect(await page.getByRole('link', { name: 'De onde vem este número?' }).getAttribute('href')).toContain('/fato/estado/rj/tres-ciclos/#')
     await page.goto(`${base}fato/estado/rj/tres-ciclos/`)
     await expect(page.locator('[id="2026-viradas"]')).toContainText('cidades com os três ciclos')
   })

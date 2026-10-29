@@ -16,12 +16,27 @@ beforeAll(async () => {
 })
 
 describe('AppHeader', () => {
-  it('draws the wordmark, the divider and the scope', async () => {
-    const html = await container.renderToString(AppHeader)
-    expect(html).toContain('<header class="app-header">')
+  it('the screen variant draws the wordmark, the divider, the scope and the city search', async () => {
+    const html = await container.renderToString(AppHeader, { props: { variant: 'screen' } })
+    expect(html).toContain('<header class="app-header" data-app-header>')
     expect(html).toMatch(/<a class="brand" href="[^"]*">Voto a Voto<\/a>/)
     expect(html).toContain('<span class="app-header__sep" aria-hidden="true"></span>')
     expect(html).toContain('<span class="app-header__context">Presidente 2026</span>')
+    expect(html).toContain('data-topbar-search')
+  })
+
+  it('the phone variant (the default) draws the same wordmark and scope in one header with the search', async () => {
+    const html = await container.renderToString(AppHeader)
+    expect(html).toContain('data-component="phone-header" data-app-header')
+    expect(html).toMatch(/<a class="[^"]*" href="[^"]*">Voto a Voto<\/a>/)
+    expect(html).toContain('Presidente 2026')
+    expect(html).toMatch(/<input[^>]*aria-label="Ver minha cidade"/)
+  })
+
+  it.each(['phone', 'screen'] as const)('the %s variant has the wordmark as the way home and no "Início" link (#154)', async (variant) => {
+    const html = await container.renderToString(AppHeader, { props: { variant } })
+    expect(html).toMatch(/<a class="[^"]*" href="[^"]*">Voto a Voto<\/a>/)
+    expect(html).not.toContain('Início')
   })
 })
 
@@ -49,9 +64,9 @@ describe('PageMain', () => {
     expect(html.trim()).toBe('<main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:pt-8" id="main" data-page="gerador">x</main>')
   })
 
-  it('takes the bar clearance, the grid and an id of its own', async () => {
-    const html = await container.renderToString(PageMain, { props: { top: 'bar', md: '720', grid: true, lg: '1240', id: 'top' } })
-    expect(html).toContain('pt-16 md:max-w-[720px] lg:grid lg:max-w-[1240px] lg:pt-8" id="top"')
+  it('takes the grid and an id of its own', async () => {
+    const html = await container.renderToString(PageMain, { props: { md: '720', grid: true, lg: '1240', id: 'top' } })
+    expect(html).toContain('pt-3 md:max-w-[720px] lg:grid lg:max-w-[1240px] lg:pt-8" id="top"')
   })
 
   it('omits an attribute whose value is undefined', async () => {

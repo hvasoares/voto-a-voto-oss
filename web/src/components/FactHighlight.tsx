@@ -13,8 +13,6 @@ import { parseFactPage, type FactCard } from '@/lib/facts/parse'
 export interface FactHighlightProps {
   /** Address of the page of the calculation (base included, no fragment). */
   href: string
-  /** The calculation link's words (catalog key `fact.link`), given by the page. */
-  calcLabel: string
 }
 
 const ACCENT = '#14505c'
@@ -27,7 +25,7 @@ const SENTENCES = /-variacao$/
 const YEARS = (cards: FactCard[]) => [...new Set(cards.map((c) => c.anchor.split('-')[0]!))]
 const KEYS = [['a', 'Parcela A'], ['b', 'Parcela B'], ['variacao', 'Variação']] as const
 
-export default function FactHighlight({ href, calcLabel }: FactHighlightProps) {
+export default function FactHighlight({ href }: FactHighlightProps) {
   const [cards, setCards] = useState<FactCard[]>([])
   const [active, setActive] = useState<string | undefined>()
   const island = useIslandReady('fact-highlight')
@@ -141,7 +139,6 @@ export default function FactHighlight({ href, calcLabel }: FactHighlightProps) {
                   ))}
                 </div>
               ))}
-              <a href={`${href}#${(share ?? current).anchor}`} style={{ display: 'inline-block', marginTop: 8, font: '700 var(--step-1)/var(--lh-1) var(--font-sans)', color: ACCENT }}>{calcLabel} ›</a>
             </>
           )}
         </div>

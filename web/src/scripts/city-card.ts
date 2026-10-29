@@ -1,8 +1,6 @@
 /** Progressive enhancement of the city card: switching cycle and round without a request or a reload.
  * All six panels are pre-rendered in the page; this only shows them and updates the address. Browser only. */
 import { getAnalytics, onAnalyticsReady } from '@/analytics'
-import { REGISTERS, type Register } from '@/lib/sentences/register'
-import { readRegister, saveRegister } from '@/lib/sentences/register-store'
 import { mountGuess } from './city-guess'
 import { createCityTracker, parseView, viewHref, viewId, type View } from '@/slots/city/city-view'
 
@@ -31,6 +29,10 @@ if (card) {
       a.setAttribute('aria-current', String(t === v.turno))
       a.href = viewHref(path, { ano: v.ano, turno: t })
     }
+    // The page's one calculation entry (#155) opens the records of the view shown; a view with no data has none.
+    const calc = document.querySelector<HTMLAnchorElement>('[data-calc]')
+    const shown = figures.find((p) => p.dataset.view === viewId(v))?.dataset.calcHref
+    if (calc) [calc.hidden, calc.href] = [!shown, shown ?? calc.href]
     const share = document.querySelector<HTMLAnchorElement>('[data-share]')
     if (share) share.href = `${share.dataset.base}?ciclo=${v.ano}&turno=${v.turno}`
   }
@@ -41,21 +43,6 @@ if (card) {
   // A view event when the page opens — emitted when the boot settles (see report-analytics.ts);
   // the tracker holds the late-bound analytics, so the boot's install reaches it.
   onAnalyticsReady(() => tracker.viewed(current))
-  // The register switch (standard / linguagem simples): shown now that scripts run; the choice stays in this browser.
-  const setRegister = (r: Register) => {
-    if (r === 'plain') document.documentElement.dataset.register = 'plain'
-    else delete document.documentElement.dataset.register
-    for (const b of document.querySelectorAll<HTMLElement>('[data-register-choice]')) b.setAttribute('aria-pressed', String(b.dataset.registerChoice === r))
-  }
-  for (const s of document.querySelectorAll<HTMLElement>('[data-register-switch]')) s.hidden = false
-  setRegister(readRegister())
-  document.addEventListener('click', (e) => {
-    const b = (e.target as Element).closest<HTMLElement>('[data-register-choice]')
-    const r = REGISTERS.find((x) => x === b?.dataset.registerChoice)
-    if (!r) return
-    setRegister(r)
-    saveRegister(r)
-  })
   // Mark for the e2e specs: the deferred module script took over the page.
   document.documentElement.dataset.ready = 'city-card'
   // The optional guess to the question at the top (nothing is fetched or sent).

@@ -6,11 +6,13 @@
 import cdnImportMap from 'virtual:cdn-importmap'
 import 'virtual:theme.css'
 import '../styles/global.css'
-import { siteHref } from '@/paths'
-import type { PreviewHead } from '@/lib/link-preview'
-import { DESKTOP_SHELL_FILE } from '../../integrations/desktop-shell'
+import { siteBase } from '@/paths'
+import { pagePreview, type PreviewHead } from '@/lib/link-preview'
+import { siteOrigin } from '@/lib/share-url'
 import DocHead from '@/components/DocHead.astro'
 import TopBar from '@/components/TopBar.astro'
+import AppHeader from '@/components/AppHeader.astro'
+import ShellScript from '@/components/ShellScript.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { FOOTER_LINK } from '@/shared/link-classes'
 import { QUIET_FOOTER_CLASS } from '@/shared/page-shell'
@@ -23,26 +25,25 @@ interface Props {
   preview?: PreviewHead
 }
 const { title, description, preview } = Astro.props
-// Dev serves the source module; a build serves the entry integrations/desktop-shell.ts emits under the site base.
-const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : siteHref(DESKTOP_SHELL_FILE)
+// Every public page carries a link preview (#151): its own when the page gives one (the city card), else the generic one; a noindex page has none.
+const head = preview ?? pagePreview({ title, description, pathname: Astro.url.pathname, origin: siteOrigin(), base: siteBase() })
 ---
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <DocHead title={title} description={description} preview={preview} importMap={cdnImportMap} />
+    <DocHead title={title} description={description} preview={head} importMap={cdnImportMap} />
   </head>
   <body>
     {/* Skip link (issue #19): keyboard/screen-reader users reach the content without the tabs/grid. */}
     <a class="sr-only focus:not-sr-only focus:z-50 focus:fixed focus:top-2 focus:left-2 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-step-2 font-bold focus:text-foreground focus:outline-2 focus:outline-primary" href="#main">Pular para o conteúdo</a>
     <div class="flex min-h-screen min-w-0 flex-col">
       <TopBar />
+      <AppHeader />
       <slot />
       {/* One line: edition #59, privacy #20, donation #36 — the shared footer component with its QuietDoc variant (no chip line, plain links). */}
       <SiteFooter class={QUIET_FOOTER_CLASS} linkClass="" donationClass={FOOTER_LINK} chip={false} links={[]} />
     </div>
-    {/* Desktop shell (#51: the "/" shortcut and the top bar's search): a 1024 px viewport loads its module, a phone downloads nothing for it. */}
-    <script is:inline define:vars={{ shell }}>
-      if (matchMedia('(min-width: 1024px)').matches) import(shell)
-    </script>
+    {/* Desktop shell (#51: the "/" shortcut and the header search): loaded at once from 1024 px, on a phone at the first touch of the search. */}
+    <ShellScript />
   </body>
 </html>

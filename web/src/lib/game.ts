@@ -2,9 +2,17 @@
  * The daily game "Adivinhe a cidade" (#69), PURE: the daily pick (deterministic by date, from a precomputed order), the closed list of five clues, the feedback of a guess
  * (distance and direction from the municipality centres, turnout and size) and the result grid (#70, never the city name). Nothing here reads the network or the clock.
  */
-import { distanceKm } from './nearest-city'
 import { DEFAULT_VOICE, message as say, type MessageKey } from './sentences/catalog'
 import './sentences/catalog-game'
+
+const EARTH_KM = 6371
+const rad = (d: number) => (d * Math.PI) / 180
+
+/** Great-circle distance (haversine), in kilometres. */
+export function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const a = Math.sin(rad(lat2 - lat1) / 2) ** 2 + Math.cos(rad(lat1)) * Math.cos(rad(lat2)) * Math.sin(rad(lon2 - lon1) / 2) ** 2
+  return 2 * EARTH_KM * Math.asin(Math.min(1, Math.sqrt(a)))
+}
 
 /** One city of the game's data file: `[uf, slug, name, lat, lon, aptos, turnoutPct, swings, region]`; `swings` is -1 when the city has a cycle missing or a tie (never the daily city). */
 export type GameCity = [uf: string, slug: string, name: string, lat: number, lon: number, aptos: number, turnoutPct: number, swings: number, region: string]

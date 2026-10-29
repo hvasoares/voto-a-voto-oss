@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { allowedOrigins, base, collectRequests, violations } from './helpers'
+import { allowedOrigins, base, collectRequests, expectHeaderWayHome, violations } from './helpers'
 import { noJs } from './presets'
 
 /*
@@ -20,11 +20,11 @@ test.describe('reports hub page', () => {
     await expect(page.locator('#main h1')).toHaveText('Relatórios')
     await expect(page.locator('#main > p').first()).toHaveText('2º turno de 2026 e comparação com 2022')
     const rows = page.locator('nav[aria-label="Relatórios"] > ul > li')
-    await expect(rows).toHaveCount(8)
+    await expect(rows).toHaveCount(7)
     await expect(page.getByRole('link', { name: /Cidades que viraram no 2º turno/ })).toHaveText('Cidades que viraram no 2º turnoCandidato A virou 2 cidades; Candidato B virou 1')
     for (const title of STUB_TITLES) await expect(rows.filter({ hasText: title }), title).toHaveCount(0)
     await expect(page.locator('[data-report="cidades-que-viraram"]')).toHaveAttribute('href', base + 'relatorios/cidades-que-viraram/')
-    await expect(page.locator('[data-report="comparar"]')).toHaveAttribute('href', base + 'comparar/2022/')
+    await expect(page.locator('[data-report="comparar"]')).toHaveCount(0)
   })
 
   test('links every row of the hub', async ({ page }) => {
@@ -40,14 +40,13 @@ test.describe('reports hub page', () => {
       `disputas-mais-apertadas${base}relatorios/disputas-mais-apertadas/`,
       `comparecimento${base}relatorios/comparecimento/`,
       `cidades-fora-da-curva${base}relatorios/cidades-fora-da-curva/`,
-      `comparar${base}comparar/2022/`,
       `como-cada-grupo-votou${base}relatorios/como-cada-grupo-votou/`,
     ])
   })
 
-  test('backs to the home page and cites the source with the data page', async ({ page }) => {
+  test('has the header\'s way home and cites the source with the data page', async ({ page }) => {
     await page.goto(base + 'relatorios/')
-    await expect(page.locator('#main').getByRole('link', { name: '‹ Início' })).toHaveAttribute('href', base)
+    await expectHeaderWayHome(page)
     await expect(page.locator('footer[data-component="source-footer"]')).toHaveText('Fonte: TSE, dados finais · Sobre os dados ›')
     await expect(page.locator('footer[data-component="source-footer"]').getByRole('link', { name: 'Sobre os dados' })).toHaveAttribute('href', base + 'sobre-os-dados/')
   })
@@ -60,6 +59,26 @@ test.describe('reports hub page', () => {
     await expect(page.locator('#main h1')).toBeVisible()
     expect(violations(seen, await allowedOrigins(baseURL!))).toEqual([])
   })
+})
+
+test.describe('no report links to the Comparar cycle page (#158)', () => {
+  const REPORT_PAGES = [
+    'relatorios/',
+    'relatorios/cidades-que-viraram/',
+    'relatorios/maiores-viradas/',
+    'relatorios/votos-ganhos-e-perdidos/',
+    'relatorios/disputas-mais-apertadas/',
+    'relatorios/comparecimento/',
+    'relatorios/cidades-fora-da-curva/',
+    'relatorios/como-cada-grupo-votou/',
+  ]
+  for (const path of REPORT_PAGES) {
+    test(`${path} has no link to /comparar/<year>/`, async ({ page }) => {
+      await page.goto(base + path)
+      await expect(page.locator('#main h1')).toBeVisible()
+      await expect(page.locator('a[href*="/comparar/"]')).toHaveCount(0)
+    })
+  }
 })
 
 test.describe('cidades que viraram page', () => {
@@ -174,7 +193,8 @@ test.describe('disputas mais apertadas page', () => {
     await expect(rows.first()).toContainText('Diferença de 31 votos — Candidato B à frente (12.215 a 12.184)')
     await expect(rows.first()).toContainText('margem -0,1 pp · 24.399 votos válidos')
     await expect(rows.first().locator('a').first()).toHaveAttribute('href', base + 'rj/cidade-exemplo-a/')
-    await expect(rows.first().locator('a.calc')).toHaveAttribute('href', base + 'fato/relatorios/disputas-mais-apertadas/cidades/#rj-cidade-exemplo-a')
+    await expect(rows.first().locator('a.calc')).toHaveCount(0)
+    await expect(page.locator('a.calc')).toHaveAttribute('href', /^.*\/fato\/relatorios\/disputas-mais-apertadas\/cidades\/#/)
     await expect(page.locator('[data-notice]')).toContainText('Empate = o mesmo número de votos')
   })
 

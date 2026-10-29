@@ -16,6 +16,9 @@ const PAGES = {
   relatório: `${base}relatorios/cidades-que-viraram/`,
   'Sobre os dados': `${base}sobre-os-dados/`,
   'Dados para nerds': `${base}dados-para-nerds/`,
+  'API (Usar os dados)': `${base}api/`,
+  Edições: `${base}edicoes/`,
+  Imprensa: `${base}imprensa/`,
 } as const
 
 const TASKS: [string, string][] = [

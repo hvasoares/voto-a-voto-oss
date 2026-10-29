@@ -125,8 +125,6 @@ export interface MeuStoryText {
   big: string
   sentence: string
   kicker: string
-  /** Where the number is explained: the page of the fact record that covers it (the calculation link), relative to the site root; `anchor` is its fragment. */
-  calc?: { path: string; anchor: string }
 }
 
 /** The words and the record of a card. Throws for a sentence over the limit (a test runs every city name through it). */
@@ -148,11 +146,11 @@ function write(step: MeuStep, input: MeuStoryInput, cards: number, v: Voice, nam
         return { big: num(input.places.length), sentence: say(v, 'mbstory.card.places', { names: list(v, input.places.map(label)) }), kicker: say(v, 'mbstory.kicker.places') }
       case 'turnout': {
         const r = place!.results[step.ano!]!
-        return { big: `${r.votedPct}%`, sentence: say(v, 'mbstory.card.turnout', { place: label(place!), ano: step.ano! }), kicker: say(v, 'mbstory.kicker.turnout', { ano: step.ano! }), calc: calcOf(place!.key, step.ano!, 'votaram') }
+        return { big: `${r.votedPct}%`, sentence: say(v, 'mbstory.card.turnout', { place: label(place!), ano: step.ano! }), kicker: say(v, 'mbstory.kicker.turnout', { ano: step.ano! }) }
       }
       case 'nonvoters': {
         const r = place!.results[step.ano!]!
-        return { big: num(r.naoVotaram), sentence: say(v, 'mbstory.card.nonvoters', { place: label(place!), ano: step.ano! }), kicker: say(v, 'mbstory.kicker.nonvoters', { ano: step.ano! }), calc: calcOf(place!.key, step.ano!, 'naoVotaram') }
+        return { big: num(r.naoVotaram), sentence: say(v, 'mbstory.card.nonvoters', { place: label(place!), ano: step.ano! }), kicker: say(v, 'mbstory.kicker.nonvoters', { ano: step.ano! }) }
       }
       case 'arc': {
         const arc = place!.arc
@@ -161,12 +159,12 @@ function write(step: MeuStep, input: MeuStoryInput, cards: number, v: Voice, nam
       }
       case 'twin': {
         const twin = input.twin!
-        return { big: `${twin.result.votedPct}%`, sentence: say(v, 'mbstory.card.twin', { twin: label(twin), place: label(place!), ano: 2026 }), kicker: say(v, 'mbstory.kicker.twin'), calc: calcOf(twin.key, 2026, 'votaram') }
+        return { big: `${twin.result.votedPct}%`, sentence: say(v, 'mbstory.card.twin', { twin: label(twin), place: label(place!), ano: 2026 }), kicker: say(v, 'mbstory.kicker.twin') }
       }
       case 'curiosity': {
         const f = input.curiosity!
         const line = curiosityLine(f, voice(v).register, voice(v).locale)
-        return { big: say(v, 'curio.rank', { n: f.rank }), sentence: say(v, 'mbstory.card.curiosity', { what: line.what, group: line.group }), kicker: say(v, 'mbstory.kicker.curiosity'), calc: { path: `fato/${place!.key}/comparacoes/`, anchor: f.code } }
+        return { big: say(v, 'curio.rank', { n: f.rank }), sentence: say(v, 'mbstory.card.curiosity', { what: line.what, group: line.group }), kicker: say(v, 'mbstory.kicker.curiosity') }
       }
       case 'share': {
         const named = say(v, 'mbstory.card.share', { places: list(v, input.places.map((p) => p.name)) })
@@ -177,7 +175,5 @@ function write(step: MeuStep, input: MeuStoryInput, cards: number, v: Voice, nam
   })()
 }
 
-/** The 2026 cycle has a fact page per city and round; the earlier ones are explained by the page of the rules (the same split as the city card: `olderCyclesFacts`). */
-function calcOf(key: string, ano: number, anchor: 'votaram' | 'naoVotaram'): { path: string; anchor: string } {
-  return ano >= 2026 ? { path: `fato/${key}/${ano}-2/`, anchor } : { path: 'fato/metodo/ciclos-anteriores/', anchor }
-}
+/** The page's one calculation entry (#155): the 2026 runoff record of the first place, relative to the site root, with the fragment of its turnout figure. */
+export const meuCalcPath = (key: string): string => `fato/${key}/2026-2/#votaram`

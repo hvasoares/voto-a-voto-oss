@@ -42,12 +42,11 @@ for (const turno of [1, 2] as const) {
 }
 const other = DEFAULT_TURNO === 2 ? 1 : 2
 ---
-<Base title={`Três ciclos · ${name} · Voto a Voto`}>
+<Base title={`Três ciclos · ${name} · Voto a Voto`} header="screen">
   <div class="screen cycles-page">
-    <AppHeader />
+    <AppHeader variant="screen" />
     <FixtureBanner show={fixture} class="banner" role="note" wideSeparator />
     <main class="page__main" id="main">
-      <a class="back" href={href('/')}>‹ Início</a>
       <h1 class="page__title">Três ciclos</h1>
       <div class="cycles" data-cycles data-turno={DEFAULT_TURNO} data-path={here} data-uf={city.uf} data-slug={city.slug} data-name={name}>
         {panels.map((p) => <Fragment set:html={p} />)}

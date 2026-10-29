@@ -7,11 +7,12 @@
  * Result first, participation after (#91): each region draws ONE bar, its valid votes by candidate; who turned out and who did not are numbers in text.
  * Used as the page body of /brasil/ and, inert and aria-hidden (`backdrop`), behind the share sheet at /brasil/compartilhar/ (the City card's pattern).
  */
-import { sideTone } from '@/shared/candidates'
 import { formatInt } from '@/shared/city-model'
 import { siteBase, siteHref } from '@/paths'
 import { FOOTER_LINK } from '@/shared/link-classes'
 import { isFixtureDataset, loadBrasil } from '@/lib/brasil-load'
+import ResultBar from '@/components/ResultBar.astro'
+import PlaceLink from '@/components/PlaceLink'
 import PageDataDownload from '@/components/PageDataDownload.astro'
 import Seal from '@/components/Seal.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
@@ -20,7 +21,6 @@ import { factLinks } from '@/lib/facts/gate'
 import { getFactPage, sealOf } from '@/lib/facts/pages'
 import { nerdsPath } from '@/lib/nerds/paths'
 import { placesWithShards } from '@/lib/nerds/shards'
-import { barText } from '@/lib/brasil-label'
 import { brasilBlanks, brasilLegend, brasilRegionShare, brasilShareLabel, brasilTurnout, brasilVotes } from '@/lib/sentences/brasil'
 import { fixtureBannerText } from '@/shared/fixture-banner'
 import { mainClass } from '@/shared/page-shell'
@@ -37,40 +37,27 @@ const href = siteHref
 const view = await loadBrasil()
 const fixture = await isFixtureDataset()
 const nerds = placesWithShards()
-// Fact records (#62): every bar and region links to its record; the seal is written from the build's checks.
+// Fact records (#62): the page's one calculation entry (#155) opens them; the seal is written from the build's checks.
 const facts = await getFactPage('brasil', `${view.ano}-${view.turno}`)
 const links = factLinks(facts.facts, '/brasil/', base)
 const seal = await sealOf(facts)
 
-// Colours of the Sketch frame 8: the first candidate of a bar (lower ballot number) is the red one, the second the blue one. The colour is the candidate's own
-// (identity table, #84): the pair's red or blue; anyone else (a round 1 runner-up) is neutral. Bars carry the 2 px paper gap the frame shows between slices.
-// The text in a bar is 13 px bold (the type scale's step 1) and fitted to the segment (`barText`): nothing in a bar is smaller.
-const SEG = {
-  a: 'bg-[var(--c-lula)] text-[var(--c-accent-fg)]',
-  b: 'bg-[var(--c-bolsonaro)] text-[var(--c-accent-fg)]',
-  outros: 'bg-[var(--c-cand-outros)] text-[var(--c-ink)]',
-}
-const segOf = (cs: readonly { numero: number }[], i: number) => SEG[sideTone(view.ano, cs[i]!.numero, cs[1 - i]?.numero, i === 0 ? 'a' : 'b')]
-const segBase = 'flex min-w-0 items-center justify-center overflow-hidden whitespace-nowrap text-step-1 font-bold'
-const totalOf = (cs: readonly { pctScaled: number }[]) => cs.reduce((n, c) => n + c.pctScaled, 0) || 1
 const Wrapper = backdrop ? 'div' : 'main'
 const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
 ---
 <Wrapper
   {...main}
-  class={mainClass({ top: 'bar', md: '760', padBottom: true })}
+  class={mainClass({ md: '760', padBottom: true })}
   aria-hidden={backdrop ? 'true' : undefined}
   inert={backdrop}
 >
   {/* The banner's words are the catalog's; the element stays here: this page's scoped-style marker (data-astro-cid) prints bare only on an element of its own template. */}
-  {fixture && <p role="note" class="-mx-5 -mt-16 mb-10 lg:-mt-8 lg:mb-6 bg-[var(--c-flag)] px-[var(--gutter)] py-2 text-center font-bold text-step-1 text-[var(--c-ink)]">{fixtureBannerText()}</p>}
-  <p class="mb-3 print:hidden">
-    <a class="-ml-2 inline-flex min-h-12 min-w-[116px] items-center rounded-[var(--radius)] border border-border bg-background px-4 text-step-2 text-[var(--c-ink)] lg:ml-0 lg:min-h-8 lg:min-w-0 lg:border-0 lg:px-0 lg:text-step-1 lg:text-primary" href={href('/')}>‹ Início</a>
-  </p>
+  {fixture && <p role="note" class="-mx-5 mb-3 -mt-3 lg:-mt-8 lg:mb-6 bg-[var(--c-flag)] px-[var(--gutter)] py-2 text-center font-bold text-step-1 text-[var(--c-ink)]">{fixtureBannerText()}</p>}
   <div class="brasil-top">
   <div class="min-w-0">
     <h1 class="font-serif text-step-4 font-normal wrap-anywhere">Brasil e regiões</h1>
     <p class="text-step-1 text-muted-foreground">2º turno de {view.ano}</p>
+    {!backdrop && <Fragment set:html={calcLink(links(`pais-${view.nationalCandidates[0]!.numero}`))} />}
   </div>
   <div class="brasil-top__links">
     <a class="inline-flex min-h-11 items-center text-step-2 font-bold text-primary" data-link="nerds" href={href(`/${nerdsPath({ level: 'brasil' })}`)}>Dados para nerds ›</a>
@@ -86,23 +73,19 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
 
   <section class="pt-6" aria-labelledby="brasil-votos-validos" data-brasil-national>
     <h2 id="brasil-votos-validos" class="brasil-h2">Brasil, votos válidos</h2>
-    <div class="mt-2 flex h-7 gap-[2px]" role="img" aria-label="Votos válidos no Brasil, por candidato" data-brasil-bar>
-      {view.nationalCandidates.map((c, i) => (
-        <span
-          class={`${segBase} ${segOf(view.nationalCandidates, i)}`}
-          style={`flex-grow:${c.pctScaled};flex-basis:0`}
-          title={`${c.labelFull}: ${formatInt(c.votos)} votos (${c.pctText}%)`}
-        >
-          {barText(c, (c.pctScaled / totalOf(view.nationalCandidates)) * 100)}
-        </span>
-      ))}
-    </div>
+    <ResultBar
+      class="mt-2"
+      candidates={view.nationalCandidates}
+      ano={view.ano}
+      label="Votos válidos no Brasil, por candidato"
+      titles={view.nationalCandidates.map((c) => `${c.labelFull}: ${formatInt(c.votos)} votos (${c.pctText}%)`)}
+      data-brasil-bar
+    />
     <p class="mt-2 text-step-1 text-[var(--c-ink)]" data-brasil-votos>
       {view.nationalCandidates.map((c, i) => (
         <>{i > 0 && ' · '}{brasilVotes(c.labelFull, formatInt(c.votos))}</>
       ))}
     </p>
-    <p class="mt-1"><Fragment set:html={calcLink(links(`pais-${view.nationalCandidates[0]!.numero}`))} /></p>
   </section>
 
   <section class="pt-6" aria-labelledby="brasil-por-regiao" data-brasil-regioes>
@@ -112,26 +95,20 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
       {view.regions.map((r) => (
         <li class="pt-2" data-regiao={r.regiao}>
           <div class="flex items-baseline justify-between gap-2">
-            <h3 class="font-sans text-step-1 font-bold">{r.label}</h3>
+            <h3 class="font-sans text-step-1 font-bold"><PlaceLink place={{ kind: "regiao", regiao: r.regiao }} text={`${r.label} ›`} className={FOOTER_LINK} /></h3>
             <p class="text-right text-step-1 text-[var(--c-ink)]">{brasilRegionShare(r)}</p>
           </div>
-          <div class="mt-1 flex h-7 gap-[2px]" role="img" aria-label={`${r.label}: votos válidos, por candidato`} data-regiao-bar>
-            {r.candidates.map((c, i) => (
-              <span
-                class={`${segBase} ${segOf(r.candidates, i)}`}
-                style={`flex-grow:${c.pctScaled};flex-basis:0`}
-                title={`${c.labelFull}: ${c.pctText}% dos votos válidos da região`}
-              >
-                {barText(c, (c.pctScaled / totalOf(r.candidates)) * 100)}
-              </span>
-            ))}
-          </div>
+          <ResultBar
+            class="mt-1"
+            candidates={r.candidates}
+            ano={view.ano}
+            label={`${r.label}: votos válidos, por candidato`}
+            titles={r.candidates.map((c) => `${c.labelFull}: ${c.pctText}% dos votos válidos da região`)}
+            data-regiao-bar
+          />
           <p class="mt-1 text-step-1 text-[var(--c-ink)]" data-participacao>{brasilTurnout(r)}</p>
           <p class="text-step-1 text-muted-foreground" data-brancos-nulos>{brasilBlanks(r)}</p>
-          <div class="flex items-center justify-between">
-            <span class="brasil-calc"><Fragment set:html={calcLink(links(`${r.regiao}-parcela`))} /></span>
-            {nerds.regioes.includes(r.regiao) && <a class="inline-flex min-h-11 items-center text-step-1 font-bold text-primary" data-link="nerds-regiao" href={href(`/${nerdsPath({ level: 'regiao', id: r.regiao })}`)}>Dados da região ›</a>}
-          </div>
+          {nerds.regioes.includes(r.regiao) && <a class="inline-flex min-h-11 items-center text-step-1 font-bold text-primary" data-link="nerds-regiao" href={href(`/${nerdsPath({ level: 'regiao', id: r.regiao })}`)}>Dados da região ›</a>}
         </li>
       ))}
     </ul>
@@ -165,7 +142,6 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
   .brasil-h2 { font: 700 var(--step-1) / var(--lh-1) var(--font-sans); }
   .brasil-h2--region { font: 400 var(--step-3) / var(--lh-3) var(--font-serif); }
   .brasil-top__links { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; }
-  .brasil-calc :global(a) { display: inline-flex; align-items: center; min-height: 44px; }
   @media (min-width: 1024px) {
     .brasil-top { display: flex; align-items: flex-start; justify-content: space-between; }
     .brasil-top__links { flex: none; justify-content: flex-end; gap: 24px; }

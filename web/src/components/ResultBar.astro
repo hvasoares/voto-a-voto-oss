@@ -1,0 +1,42 @@
+---
+/**
+ * The two-candidate result bar (ticket #91, shared by #183): the valid votes of a place split by candidate, the first (lower ballot number) in the red
+ * of the Sketch frame 8 and the second in the blue. Drawn by "Brasil e regiões" (the national bar and one bar per region) and by the region page.
+ * The colour is the candidate's own (identity table, #84): the pair's red or blue; anyone else (a round 1 runner-up) is neutral. The bar carries the
+ * 2 px paper gap between slices. The text in a bar is 13 px bold (the type scale's step 1) and fitted to the segment (`barText`): nothing in a bar is smaller.
+ *
+ *  - `candidates`  the two candidates in ballot-number order (`BrasilView.nationalCandidates` or a region's `candidates`);
+ *  - `ano`         the cycle (the identity table is per cycle);
+ *  - `label`       the accessible name of the picture;
+ *  - `titles`      the tooltip of each segment, in the order of `candidates`.
+ * Every other attribute (`class`, the page's `data-*` marker) goes to the bar element.
+ */
+import { sideTone } from '@/shared/candidates'
+import type { BrasilCandidate } from '@/lib/brasil'
+import { barText } from '@/lib/brasil-label'
+
+interface Props {
+  candidates: readonly BrasilCandidate[]
+  ano: number
+  label: string
+  titles: readonly string[]
+  [attr: string]: unknown
+}
+const { candidates, ano, label, titles, class: extra, ...attrs } = Astro.props
+
+const SEG = {
+  a: 'bg-[var(--c-lula)] text-[var(--c-accent-fg)]',
+  b: 'bg-[var(--c-bolsonaro)] text-[var(--c-accent-fg)]',
+  outros: 'bg-[var(--c-cand-outros)] text-[var(--c-ink)]',
+}
+const segOf = (i: number) => SEG[sideTone(ano, candidates[i]!.numero, candidates[1 - i]?.numero, i === 0 ? 'a' : 'b')]
+const segBase = 'flex min-w-0 items-center justify-center overflow-hidden whitespace-nowrap text-step-1 font-bold'
+const total = candidates.reduce((n, c) => n + c.pctScaled, 0) || 1
+---
+<div class:list={['flex h-7 gap-[2px]', extra]} role="img" aria-label={label} {...attrs}>
+  {candidates.map((c, i) => (
+    <span class={`${segBase} ${segOf(i)}`} style={`flex-grow:${c.pctScaled};flex-basis:0`} title={titles[i]}>
+      {barText(c, (c.pctScaled / total) * 100)}
+    </span>
+  ))}
+</div>

@@ -1,5 +1,5 @@
 /**
- * Weight budgets for the four audited routes (ticket #19). PURE + static: no browser, no server.
+ * Weight budgets for the five audited routes (ticket #19). PURE + static: no browser, no server.
  *
  * For each route the script reads the BUILT `index.html` out of the dist directory and sums,
  * gzipped, what the browser transfers:
@@ -28,14 +28,15 @@ const here = dirname(fileURLToPath(import.meta.url))
 const distDir = process.env.OUT_DIR ?? resolve(here, '..', 'dist')
 const recordFile = process.env.PERF_RECORD ?? resolve(here, '..', 'perf-record.json')
 
-export type RouteId = 'home' | 'city' | 'mapa' | 'report'
+export type RouteId = 'home' | 'city' | 'mapa' | 'report' | 'region'
 
-/** The four audited routes, as paths under the dist root. */
+/** The five audited routes, as paths under the dist root. */
 export const ROUTES: Record<RouteId, string> = {
   home: 'index.html',
   city: 'rj/cidade-exemplo/index.html',
   mapa: 'mapa/index.html',
   report: 'relatorios/cidades-que-viraram/index.html',
+  region: 'brasil/sudeste/index.html',
 }
 
 export interface Budget {
@@ -59,9 +60,12 @@ export const BUDGETS: Record<RouteId, Budget> = {
   // in the page, in both registers (~0.95 KB gzip: curiosities 0.4, margin 0.27, twin 0.15, arc 0.13); no script, no new request.
   // City html 6.2 -> 6.4 KB (G6, #61): the the calculation link links, 54 of them in the six pre-rendered views (1 per figure, the sentence and the margin line), +369 B gzip (6106 -> 6475 B);
   // no script, no new request, and the css grew by 92 B gzip (the .calc rules), still under its 16 KB budget (docs/perf-budgets.md).
+  // City html 6.4 -> measured 6.17 KB (#155): the 54 per-figure links give way to the page's one calculation entry (-305 B gzip); the budget stays, the script grew ~40 B (eagerJs 3054 of 3072).
   city: { html: 6.4, css: 16, eagerJs: 3, islandJs: 3 },
   mapa: { html: 12, css: 16, eagerJs: 3, islandJs: 85 },
   report: { html: 12, css: 16, eagerJs: 3, islandJs: 3 },
+  // The region page (#183): the report shell (ReportLayout), no island, no script of its own; html 6 KB (measured 3.7 KB gzip on the fixtures; the real Nordeste has nine rows).
+  region: { html: 6, css: 16, eagerJs: 3, islandJs: 3 },
 }
 
 export interface Metric {

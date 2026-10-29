@@ -2,14 +2,11 @@
    (so also on the share sheet that uses the card as its backdrop). The bars, the legend and the tabs it reuses are in screens.css, which
    Astro links BEFORE this file (CityCard imports global.css first; e2e/css-groups.spec.ts keeps the order): the rules here may tie the
    shared ones on specificity and win by coming later (#119). */
-.city-sentence + .calc, .city-margin ~ .calc { display: block; margin-top: 6px; }
-
 /* The card's base is the scale's small step (#86); only what is larger or bolder says so. */
 .city-page { font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); }
 .city-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
 .city-page .banner { letter-spacing: 0; padding: 6px var(--gutter); margin: 0 calc(-1 * var(--gutter)); }
 .city-page .page__main { padding: 0 var(--gutter) var(--sp-4); }
-.city-page .back { min-width: 84px; margin: 4px 0 8px -8px; padding: 0 12px; }
 .city-page .tabs { margin-top: 14px; padding: 2px 4px; }
 .city-page .tabs + .tabs { margin-top: 6px; }
 .city-page .tabs__tab { min-height: 44px; }
@@ -19,12 +16,6 @@
 .city-card .legend { margin-top: 12px; }
 .city-card .legend__row { padding: 4px 0; }
 .city-page .city-headline { font: 400 var(--step-3)/var(--lh-3) var(--font-serif); margin: 26px 0 0; }
-.city-page .register { display: flex; gap: 4px; margin: 18px 0 0; padding: 2px 4px; background: var(--c-paper-2); border-radius: var(--radius); }
-.city-page .register[hidden] { display: none; }
-.city-page .register__choice { flex: 1; min-height: 44px; padding: 0 8px; border: 0; border-radius: var(--radius); background: transparent; color: var(--c-muted); cursor: pointer; }
-.city-page .register__choice[aria-pressed="true"] { background: var(--c-accent); color: var(--c-accent-fg); font-weight: 700; }
-.city-page .register__choice:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 2px; }
-.city-page .register:not([hidden]) + .city-sentence .city-headline { margin-top: 14px; }
 .city-page .city-headline__note { color: var(--c-ink); margin: 6px 0 0; }
 .city-page .city-margin, .city-page .city-arc__pill, .city-page .city-twin { font-size: var(--step-2); line-height: var(--lh-2); }
 .city-page .city-margin { color: var(--c-ink); margin: 12px 0 0; }
@@ -32,11 +23,18 @@
 .city-page .city-arc__pill { margin: 0; color: var(--c-ink); }
 .city-page .city-twin { display: block; margin-top: 12px; color: var(--c-accent); }
 .city-page .city-twin__reason { display: block; margin-top: 1px; color: var(--c-muted); }
+.city-page .city-q__needs { margin: 8px 0 0; font-size: var(--step-1); line-height: var(--lh-1); }
 .city-page .city-arc__note { margin: 0; color: var(--c-muted); }
 .city-page .city-q__q { margin: 16px 0 0; font: 400 var(--step-3)/var(--lh-3) var(--font-serif); }
 .city-page .city-q__q::before, .city-page .city-q .city-arc::before { display: block; font: var(--fw-bold) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); }
 .city-page .city-q__q::before { content: "PERGUNTA"; }
 .city-page .city-q .city-arc::before { content: "RESPOSTA"; }
+/* Without scripts the answer is shown (#149); same layer trick as the cycles page: the preflight's [hidden] is layered and important. */
+@layer base {
+  @media (scripting: none) {
+    .city-page .city-q .city-arc[hidden], .city-page .city-q .city-q__needs[hidden] { display: block !important; }
+  }
+}
 .city-page .city-q__yn { float: left; margin: 0 .3em 0 0; font: 700 var(--step-2)/var(--lh-2) var(--font-sans); }
 .city-page .city-q__btn { min-width: 80px; min-height: 44px; margin: 6px 8px 0 0; border: 1px solid var(--c-accent); border-radius: var(--radius); background: none; color: var(--c-accent); font: 700 var(--step-2)/var(--lh-2) var(--font-sans); }
 .city-page .city-q__btn[aria-pressed="true"] { background: var(--c-accent); color: var(--c-accent-fg); }
@@ -61,7 +59,6 @@
   .city-left { grid-column: 1; grid-row: 1 / 3; }
   .city-right { grid-column: 2; grid-row: 2; }
   .city-page .banner { grid-column: 2; grid-row: 1; justify-self: start; width: auto; height: auto; margin: 26px 0 0; padding: 3px 6px; border-radius: 3px; white-space: normal; }
-  .city-page .back { min-width: 0; margin: 0; min-height: 28px; padding: 0; border: 0; background: none; font-size: var(--step-1); color: var(--c-accent); }
   .city-page .tabs { margin-top: 24px; }
   .city-page .tabs + .tabs { margin-top: 10px; }
   .city-card { margin-top: 20px; padding: 4px 24px 20px; border: 1px solid var(--c-rule); border-radius: 12px; }
@@ -75,8 +72,6 @@
   .city-page .city-words { margin-top: 12px; }
   .city-page .city-headline { font-size: var(--step-4); line-height: var(--lh-4); margin: 0; }
   .city-page .city-headline__note { margin-top: 10px; color: var(--c-muted); }
-  .city-page .register { margin: 0 0 14px; }
-  .city-page .register:not([hidden]) + .city-sentence .city-headline { margin-top: 0; }
   .city-page .city-twin { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--c-rule); font-size: var(--step-3); line-height: var(--lh-3); }
   .city-page .city-twin__reason { margin-top: 2px; font-size: var(--step-1); line-height: var(--lh-1); }
   .city-page .city-margin { font-size: var(--step-2); line-height: var(--lh-2); margin-top: 18px; }
@@ -92,7 +87,6 @@
 @media (max-width: 1023.98px) {
   .city-body { display: flex; flex-direction: column; }
   .city-left, .city-right { display: contents; }
-  .city-page .back { align-self: flex-start; }
   .screen .city-curio { order: 1; margin-top: 20px; }
   .city-share, .city-links { order: 2; }
 }

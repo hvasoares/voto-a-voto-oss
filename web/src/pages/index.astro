@@ -12,7 +12,6 @@ import TaskRow from '@/components/TaskRow.astro'
 import { loadStateCodes } from '@/lib/states'
 import { loadUfMap } from '@/lib/uf-map'
 import { UF_NOME, ufFullLabel } from '@/lib/uf-names'
-import { LOCATE_HINT } from '@/lib/locate-messages'
 import Base from '@/layouts/Base.astro'
 
 const base = siteBase()
@@ -24,7 +23,7 @@ const href = siteHref
 const firstUf = [...available].sort()[0] ?? 'rj'
 const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md border-border text-step-2! font-bold text-foreground pb-0.5')
 ---
-<Base title="Voto a Voto">
+<Base title="Voto a Voto" header="none">
   {/* Phone: one column. 768 px: the same column, centered. 1024 px and up (#51): the title, search and the task block on the
       left, the state picker on the right; the shell's top bar carries the wordmark, so the h1 stays for screen readers only. */}
   <main class="mx-auto w-full min-w-0 max-w-[720px] flex-1 px-5 pt-16 lg:grid lg:max-w-[1240px] lg:grid-cols-[560px_1fr] lg:gap-x-20 lg:gap-y-0 lg:pt-16" id="main">
@@ -33,7 +32,7 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
     <p class="font-serif text-step-2 lg:text-step-4">Eleição presidencial 2026, cidade por cidade.</p>
     <p class="mt-0.5 text-step-1 text-muted-foreground lg:mt-2 lg:text-step-2">Compare com 2018 e 2022.</p>
     <p class="mt-0.5 text-step-1 text-muted-foreground lg:text-step-2" data-finality>Final, não ao vivo.</p>
-    <div id="busca" class="scroll-mt-4 lg:mt-4 lg:[&_[data-slot=input-group]]:h-14!"><CitySearch client:interaction base={base} /></div>
+    <div id="busca" class="scroll-mt-4 lg:mt-4 lg:[&_[data-slot=input-group]]:h-14!"><p class="text-step-1 text-muted-foreground [&:not(:empty)]:mt-2" aria-live="polite" data-search-hint></p><CitySearch client:interaction base={base} /></div>
     <p class="mt-1.5 text-step-1" data-island-failed hidden>A busca não está disponível agora. Escolha um estado abaixo.</p>
     <noscript><p class="mt-1.5 text-step-1">A busca precisa de JavaScript. Escolha um estado abaixo.</p></noscript>
     <div class="relative mb-[-2px] mt-[10px] flex h-14 items-start rounded-lg border border-border bg-secondary pl-[11px]" data-place-shortcut data-base={base} hidden>
@@ -42,14 +41,6 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
         <a class="text-step-2 font-bold wrap-anywhere text-primary" data-place-link href={href('/')}></a>
       </span>
       <button type="button" class="absolute bottom-[-1px] right-[11px] h-11 cursor-pointer border-0 bg-transparent p-0 pt-[10px] text-step-1 text-muted-foreground underline" data-place-forget>esquecer meus dados</button>
-    </div>
-    <div class="mt-[10px] [[data-place-shortcut]:not([hidden])+&]:mt-3" data-locate data-base={base} hidden>
-      <button type="button" class="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-[1.5px] border-primary bg-background px-3 text-step-2 font-bold text-primary disabled:opacity-60" data-locate-button>
-        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.4"></circle><circle cx="8" cy="8" r="2.4" fill="currentColor"></circle></svg>
-        Usar minha localização
-      </button>
-      <p class="mt-1.5 text-step-1 text-muted-foreground">{LOCATE_HINT}</p>
-      <p class="mt-1.5 text-step-1" role="status" aria-live="polite" data-locate-status hidden></p>
     </div>
     </div>
     <div class="lg:col-start-2 lg:row-span-2 lg:row-start-1">
@@ -73,8 +64,8 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
     {/* The entries in the order a visit unfolds (data-task is the stable hook); "comparar" (id="comparar") is the chooser (#101). #102 inserts
         "Usar os dados" (done, after "entender") and #103 anything else after it. A link to a screen that does not exist yet is not shown. */}
     <ul class="mt-[5px] list-none p-0 lg:mt-3">
-      <li data-task="ver-cidade"><TaskRow href="#busca" title="Ver minha cidade" sub="Busque pelo nome ou use a localização" /></li>
-      <li data-task="compartilhar"><TaskRow href={href('/') + destinationLink('compartilhar')} title="Compartilhar um resultado" sub="Escolha a cidade e toque em Compartilhar" asksCity /></li>
+      <li data-task="ver-cidade"><TaskRow href={href('/') + destinationLink('cidade')} title="Ver minha cidade" sub="Busque pelo nome" data={{ 'place-to': DESTINATIONS.cidade.to }} /></li>
+      <li data-task="compartilhar"><TaskRow href={href('/') + destinationLink('compartilhar')} title="Compartilhar um resultado" sub="Escolha a cidade e toque em Compartilhar" asksCity data={{ 'place-to': DESTINATIONS.compartilhar.to }} /></li>
       <li data-task="comparar" id="comparar" class="border-t border-border pt-3 scroll-mt-4">
         <strong class="block text-step-2 font-bold lg:text-step-3" id="comparar-titulo">Comparar</strong>
         <span class="block text-step-1 text-muted-foreground">O que você quer comparar?</span>
@@ -111,6 +102,5 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
   <script>
     import '@/scripts/tile-analytics'
     import '@/scripts/home-place'
-    import '@/scripts/home-locate'
   </script>
 </Base>

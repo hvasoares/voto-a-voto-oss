@@ -10,8 +10,8 @@ import { useNoJs } from './presets'
  */
 const CITY = 'mt/boa-esperanca-do-norte'
 const NEEDS_CITY = [
-  ['Minha cidade em 2018, 2022 e 2026', 'tres-ciclos', `${CITY}/tres-ciclos/`, 'os três ciclos da cidade'],
-  ['Duas cidades lado a lado', 'cara-a-cara', `cara-a-cara/?nivel=cidade&a=${CITY}`, 'o Cara a cara, com essa cidade'],
+  ['Minha cidade em 2018, 2022 e 2026', 'tres-ciclos', `${CITY}/tres-ciclos/`, 'Escolha a cidade para ver 2018, 2022 e 2026 lado a lado.'],
+  ['Duas cidades lado a lado', 'cara-a-cara', `cara-a-cara/?nivel=cidade&a=${CITY}`, 'Escolha a primeira cidade; a segunda vem depois.'],
 ] as const
 const STRAIGHT = [
   ['Dois estados ou duas regiões', 'cara-a-cara/?nivel=estado'],
@@ -100,14 +100,16 @@ test.describe('the Comparar chooser', () => {
 })
 
 test.describe('options that need a city ask for it through the search', () => {
-  for (const [label, para, target, goes] of NEEDS_CITY) {
+  for (const [label, para, target, hint] of NEEDS_CITY) {
     test(`${label}: note, click and Enter land on the right page with the city filled in`, async ({ page }) => {
       await ready(page)
       await option(page, label).click()
       await waitReady(page)
+      // #147: the cursor is already in the search and the hint line says what the pick will do.
+      await expect(page.getByRole('combobox', { name: 'Busque sua cidade' })).toBeFocused()
+      await expect(page.locator('[data-search-hint]')).toHaveText(hint)
       const hit = await pick(page)
       await expect(page.locator('[data-city-search="main"]')).toHaveAttribute('data-destination', para)
-      await expect(page.locator('[data-destination-note]')).toHaveText(`Ao escolher a cidade, você vai direto para ${goes}.`)
       await expect(hit).toHaveAttribute('href', `${base}${target}`)
       await hit.click()
       await expect(page).toHaveURL(`${base}${target}`)
@@ -155,7 +157,7 @@ test.describe('options that need a city ask for it through the search', () => {
     test(`a near-miss destination (${JSON.stringify(value)}) is ignored: the pick opens the card`, async ({ page }) => {
       await page.goto(`${base}?para=${encodeURIComponent(value)}`)
       const hit = await pick(page)
-      await expect(page.locator('[data-destination-note]')).toHaveCount(0)
+      await expect(page.locator('[data-search-hint]')).toBeEmpty()
       await expect(hit).toHaveAttribute('href', `${base}${CITY}/`)
     })
   }

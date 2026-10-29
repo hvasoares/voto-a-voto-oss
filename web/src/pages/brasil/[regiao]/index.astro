@@ -1,0 +1,81 @@
+---
+/**
+ * A region page (ticket #183, Sketch frames 38 and 39 without the first-visit offer #181 and without the report cards #178): the region's result
+ * for the cycle (the two-candidate bar of "Brasil e regiões", `ResultBar`), its states as rows (`ListRow`, each one the link to the state page), the link
+ * to the region's page of "Dados para nerds" and the footer links. It counts states, municipalities and votes, never people's reasons, and ranks nothing.
+ * Complete without scripts: no island, every state and every link is in the HTML. The shell is `ReportLayout` (header, title, calculation entry, seal, footer).
+ * "Ver os cartões da região" is not drawn: no region cards route exists yet, and a link to nothing is worse than none.
+ */
+import ReportLayout from '@/layouts/ReportLayout.astro'
+import FixtureBanner from '@/components/FixtureBanner.astro'
+import ListRow from '@/components/ListRow'
+import ResultBar from '@/components/ResultBar.astro'
+import { siteHref } from '@/paths'
+import { formatInt } from '@/shared/city-model'
+import { brasilVotes } from '@/lib/sentences/brasil'
+import { regionAhead, regionCompare, regionCounts, regionDescription, regionList, regionMore, regionNerds, regionTitle } from '@/lib/sentences/region'
+import { formatSwing } from '@/lib/margins'
+import { BIN_COLOR, marginBin } from '@/lib/scale'
+import { nerdsPath } from '@/lib/nerds/paths'
+import { placesWithShards } from '@/lib/nerds/shards'
+import { loadRegionPages } from '@/lib/region-page'
+import { isFixtureDataset } from '@/lib/brasil-load'
+import { reportFacts } from '@/lib/reports/page'
+
+export async function getStaticPaths() {
+  return (await loadRegionPages()).map((page) => ({ params: { regiao: page.regiao }, props: { page } }))
+}
+
+const { page } = Astro.props
+const { region } = page
+const href = siteHref
+const heading = regionTitle(page.label)
+const fixture = await isFixtureDataset()
+// Fact records (#62): the page's one calculation entry (#155) opens them; the seal is written from the build's checks.
+const { calc, seal } = await reportFacts(`regiao/${page.regiao}`, `${page.ano}-${page.turno}`)
+const hasNerds = placesWithShards().regioes.includes(page.regiao)
+---
+<ReportLayout title={`${heading} · Voto a Voto`} heading={heading} description={regionDescription(page.label, page.ano)} calc={calc} seal={seal} back={null} report="regiao" page="regiao" main={{ 'data-regiao': page.regiao }}>
+  <Fragment slot="banner">
+    <FixtureBanner show={fixture} tag="p" class="mt-2 border border-border bg-secondary px-3 py-2 text-step-2 font-bold" role="note" />
+  </Fragment>
+  <p class="text-step-1 text-muted-foreground" data-region-counts>{regionCounts(page.states.length, page.municipios)}</p>
+
+  <section class="pt-4" aria-label={`${page.label}, votos válidos`} data-region-result>
+    <ResultBar
+      class="mt-1"
+      candidates={region.candidates}
+      ano={page.ano}
+      label={`${page.label}: votos válidos, por candidato`}
+      titles={region.candidates.map((c) => `${c.labelFull}: ${c.pctText}% dos votos válidos da região`)}
+      data-regiao-bar
+    />
+    <p class="mt-2 text-step-1 text-[var(--c-ink)]" data-region-votes>
+      {region.candidates.map((c, i) => (
+        <>{i > 0 && ' · '}{brasilVotes(c.labelFull, formatInt(c.votos))}</>
+      ))}
+    </p>
+  </section>
+
+  <nav class="mt-3" aria-label={regionList(page.label)} data-region-states>
+    {page.states.map((s) => (
+      <ListRow
+        href={href(`/${s.uf}/`)}
+        chip={BIN_COLOR[marginBin(s.margin2)]}
+        name={`${s.nome} · ${s.uf.toUpperCase()}`}
+        figure={`${formatSwing(s.margin2)} pp`}
+        figureSr={regionAhead(s.margin2 < 0 ? page.ladoB.short : page.ladoA.short)}
+        votes={formatInt(s.validos2)}
+        data-uf={s.uf}
+      />
+    ))}
+  </nav>
+  {hasNerds && (
+    <a class="mt-1 inline-flex min-h-11 items-center text-step-1 font-bold text-primary" data-link="nerds-regiao" href={href(`/${nerdsPath({ level: 'regiao', id: page.regiao })}`)}>{regionNerds()}</a>
+  )}
+
+  <nav class="mt-5 flex flex-wrap items-center justify-between gap-x-4 border-t border-border pt-2" aria-label={regionMore(page.label)}>
+    <a class="inline-flex min-h-11 items-center text-step-2 font-bold text-foreground" data-link="map" href={href('/mapa/')}>Ver mapa por estado ›</a>
+    <a class="inline-flex min-h-11 items-center text-step-2 font-bold text-foreground" data-link="compare" href={href(`/cara-a-cara/?nivel=regiao&a=${page.regiao}`)}>{regionCompare()}</a>
+  </nav>
+</ReportLayout>

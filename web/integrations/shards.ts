@@ -9,7 +9,6 @@
  *   v<fingerprint>/peers.json             the closest peer cities of every city (ticket #23, src/lib/peers.ts)
  *   v<fingerprint>/arcs.json              how many cities have each arc (the sequence of 2nd-round winners, ticket #41, src/lib/arcs.ts)
  *   v<fingerprint>/curiosities.json       up to three rank facts per city against the cities of its size band (ticket #33, src/lib/curiosities.ts)
- *   v<fingerprint>/centroids.json         the IBGE centre of every city that has one, by state (ticket #40, src/lib/nearest-city.ts)
  *
  * The fingerprint is a sha256 over the six dataset files, so the paths change whenever the dataset changes and
  * a stale copy is never served (web/docs/shards.md records layout and budgets). Everything here is deterministic:
@@ -26,8 +25,7 @@ import {
   type Turno,
   type Turnout,
 } from '@/data'
-import { parseCandidates, parseCentroids, parseCities, parseTurnout, parseVotes } from '@/data/csv'
-import { encodeCentroids } from './centroids'
+import { parseCandidates, parseCities, parseTurnout, parseVotes } from '@/data/csv'
 import { dataDir } from '../src/lib/data-dir'
 import { countArcs } from '../src/lib/arcs'
 import type { CityShard } from '../src/lib/city-shard'
@@ -165,11 +163,6 @@ export function buildShards(sources: ShardSources): BuiltShards {
   const files = composeShards(`v${fingerprint}`, byCity, national, regions, candidatesByRound, minGroup)
   // Peer cities (#23): one small index-encoded file; overseas posts are left out by the method itself.
   files.push({ path: `v${fingerprint}/peers.json`, json: JSON.stringify(encodePeers(computePeers({ cities, turnout, votes }))) })
-  // City centres (#40): fetched only when a visitor taps "Usar minha localização".
-  const centres = encodeCentroids(cities, parseCentroids(sources['centroids.csv']), (message) => {
-    throw new ShardError(message)
-  })
-  files.push({ path: `v${fingerprint}/centroids.json`, json: JSON.stringify(centres) })
   return { fingerprint, files }
 }
 

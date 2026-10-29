@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import type { Arc, ArcKind } from './arcs'
 import { buildCityResult, type CityResult } from '@/shared/city-model'
 import { viewFacts } from './facts/model'
-import { meuStoryFits, meuStoryPlan, meuStoryText, MEU_STORY_MAX, MEU_STORY_MIN, sideChanges, type MeuStoryInput, type StoryPlace } from './meu-story'
+import { meuCalcPath, meuStoryFits, meuStoryPlan, meuStoryText, MEU_STORY_MAX, MEU_STORY_MIN, sideChanges, type MeuStoryInput, type StoryPlace } from './meu-story'
 import { STORY_PLAIN, STORY_STANDARD } from './sentences/catalog-story'
 import { STORY_TEXT_MAX } from './story'
 
@@ -94,16 +94,10 @@ describe('Meu Brasil as a story: the words', () => {
     expect(t['curiosity0']!.big).toBe('7ª')
     expect(t['share']!.big).toBe('8')
   })
-  it('every number has its fact record: the 2026 figures link the city\'s own fact page at an anchor the records have, the earlier cycles the page of the rules', () => {
+  it('the page has one calculation entry, the first place\'s 2026 runoff record, at an anchor the records have', () => {
     const anchors = viewFacts(result(2026), { uf: 'rj', slug: 'x', name: 'X' }).map((f) => f.anchor)
     expect(anchors).toEqual(expect.arrayContaining(['votaram', 'naoVotaram']))
-    const calc = Object.fromEntries(cards().map((c) => [`${c.step.kind}${c.step.place ?? ''}${c.step.ano ?? ''}`, c.t.calc]))
-    expect(calc['turnout02026']).toEqual({ path: 'fato/rj/cidade-exemplo/2026-2/', anchor: 'votaram' })
-    expect(calc['nonvoters02026']).toEqual({ path: 'fato/rj/cidade-exemplo/2026-2/', anchor: 'naoVotaram' })
-    expect(calc['twin0']).toEqual({ path: 'fato/sp/vila-modelo/2026-2/', anchor: 'votaram' })
-    expect(calc['curiosity0']).toEqual({ path: 'fato/rj/cidade-exemplo/comparacoes/', anchor: 'td' })
-    const older = meuStoryText({ kind: 'turnout', place: 0, ano: 2022 }, input, 8)
-    expect(older.calc).toEqual({ path: 'fato/metodo/ciclos-anteriores/', anchor: 'votaram' })
+    expect(meuCalcPath('rj/cidade-exemplo')).toBe('fato/rj/cidade-exemplo/2026-2/#votaram')
     // the number printed is the number of the record: the whole percent the city card shows
     expect(anchors.length).toBeGreaterThan(0)
     expect(result(2026).votedPct).toBe(70)

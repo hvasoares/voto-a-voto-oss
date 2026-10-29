@@ -18,6 +18,6 @@ interface Props {
 const { config } = Astro.props
 const { title, description, noindex, wrapper } = config
 ---
-<Base title={title} description={description} noindex={noindex}>
+<Base title={title} description={description} noindex={noindex} header="none">
   {wrapper.tag === 'main' ? <main class={wrapper.class}><ShareSheetFrame config={config}><slot name="backdrop" slot="backdrop" /></ShareSheetFrame></main> : <div class={wrapper.class}><ShareSheetFrame config={config}><slot name="backdrop" slot="backdrop" /></ShareSheetFrame></div>}
 </Base>

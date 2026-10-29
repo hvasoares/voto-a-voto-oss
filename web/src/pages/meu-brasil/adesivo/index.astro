@@ -5,28 +5,22 @@
  * "Baixar adesivo" button of the Meu Brasil card, which carries the places in the address.
  */
 import Base from '@/layouts/Base.astro'
-import PhoneHeader from '@/components/PhoneHeader.astro'
 import MeuBrasilSticker from '@/components/MeuBrasilSticker'
 import SiteFooter from '@/components/SiteFooter.astro'
-import { siteBase, siteHref } from '@/paths'
+import { siteBase } from '@/paths'
 import { datasetFixture } from '@/lib/shard-files'
 import { siteOrigin } from '@/lib/share-url'
 import { currentEdition } from '@/lib/editions-load'
 import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
-import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import '@/lib/sentences/catalog-meu-brasil'
 import PageMain from '@/components/PageMain.astro'
 
 const base = siteBase()
-// The #113 base-path helper (`base` stays for the MeuBrasilSticker island, which takes the base argument).
-const href = siteHref
 const fixture = await datasetFixture()
 const edition = await currentEdition()
 ---
 <Base title={`${message(DEFAULT_VOICE, 'mb.sticker.title')} · Voto a Voto`} description={message(DEFAULT_VOICE, 'mb.sticker.sub')}>
-  <PhoneHeader />
   <PageMain md="480" data-page="meu-brasil-adesivo">
-    <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{message(DEFAULT_VOICE, 'mb.sticker.title')}</h1>
     <p class="mt-1 text-step-1 text-muted-foreground">{message(DEFAULT_VOICE, 'mb.sticker.sub')}</p>
     <MeuBrasilSticker client:load base={base} origin={siteOrigin()} fixture={fixture} edition={edition.id} />

@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
-import { base, collectRequests, expectNoHorizontalScroll, resizeTo, violations, waitReady, WIDTHS } from './helpers'
+import { base, collectRequests, expectNoHorizontalScroll, resizeTo, violations, waitReady, WIDTHS, expectHeaderWayHome } from './helpers'
 import { useNoJs } from './presets'
 
 /*
@@ -266,7 +266,7 @@ test.describe('state links and map area', () => {
     await waitReady(page)
     await expect(page.getByRole('link', { name: 'Ver mapa por estado ›' })).toHaveAttribute('href', `${base}mapa/`)
     await expect(page.getByRole('link', { name: 'Ver os três ciclos do estado ›' })).toHaveAttribute('href', `${base}tres-ciclos/rj/`)
-    await expect(page.getByRole('link', { name: '‹ Início' })).toHaveAttribute('href', base)
+    await expectHeaderWayHome(page)
     await expect(page.locator('[data-placeholder="state-map"][data-uf="rj"]')).toBeVisible()
   })
 

@@ -17,6 +17,7 @@ import { CALLOUT_LEFT, CALLOUT_RIGHT, UF_SHAPES } from '@/lib/uf-polygons'
 import { labelUnits } from '@/lib/map-hit'
 import { toPath } from '@/lib/map-path'
 import { keepVistaInUrl, useMapView } from './use-map-view'
+import PlaceText from './PlaceText'
 
 export interface StayHomeMapProps {
   model: StayHomeModel
@@ -155,8 +156,7 @@ export default function StayHomeMap({ model, base, viewPaths }: StayHomeMapProps
         <div className="mt-2 border-t border-border pt-2" data-slot="mapa-selecionado">
           <div className="flex items-baseline justify-between gap-3">
             <p aria-live="polite" className="font-serif text-step-2 font-bold">
-              {cell.selected}
-              <span className="sr-only">{` · ${cell.name}`}</span>
+              <PlaceText text={cell.selected} />
             </p>
             <p className="font-serif text-step-4 font-bold" aria-hidden="true">{cell.text}</p>
           </div>

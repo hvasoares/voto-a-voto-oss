@@ -58,12 +58,11 @@ const cityMap = await loadCityMapData(uf!)
 // comes out if the build really has margins for this state's municipalities.
 const showMap = cityMap.rows.length > 0
 ---
-<Base title={`${pageTitle} · Voto a Voto`}>
+<Base title={`${pageTitle} · Voto a Voto`} header="screen">
   <div class="screen state-page">
-    <AppHeader />
+    <AppHeader variant="screen" />
     <FixtureBanner show={fixture} class="banner" role="note" />
     <main class="page__main" id="main">
-      <a class="back" href={href('/')}>‹ Início</a>
       <h1 class="page__title">{pageTitle}</h1>
       <p class="page__subtitle">{countLabel(rows.length)}</p>
       <Fragment set:html={calcLink(links('municipios'))} />

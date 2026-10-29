@@ -17,7 +17,7 @@ test.describe('static JSON API', () => {
     await page.goto(base + 'api/')
     await expect(page.locator('h1')).toHaveText('API de dados abertos')
     await expect(page.locator('[data-api-edition]')).toHaveAttribute('data-api-edition', '2026-10-26')
-    await expect(page.locator('[data-component="api-endpoints"] [data-endpoint]')).toHaveText([/Cidade/, /Estado/, /Totais/, /Busca/, /Centros/])
+    await expect(page.locator('[data-component="api-endpoints"] [data-endpoint]')).toHaveText([/Cidade/, /Estado/, /Totais/, /Busca/])
     await expect(page.locator('[data-endpoint="Cidade"]')).toContainText(`${base}data/v${version}/city/{uf}/{slug}.json`)
     await expect(page.locator('[data-endpoint="Cidade"]')).toContainText('anuladosApuSep')
     await expect(page.locator('[data-component="api-rules"]')).toContainText('CORS aberto')

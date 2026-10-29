@@ -3,6 +3,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { fileURLToPath } from 'node:url'
 import { activateSearch, base, waitReady } from './helpers'
 import { measureMap } from './map-touch'
+import { DESKTOP } from './presets'
 import { footerLinkPagesOnDisk } from './routes-inventory'
 
 /*
@@ -236,3 +237,23 @@ test.describe('tap targets: the footer link on every page (390x844)', () => {
     })
   }
 })
+
+/* #154: the way home is the "Voto a Voto" wordmark, a 44 px target in the app header on a phone (390x844) and in the top bar at desktop width; no page draws an "Início" link. */
+const HEADER_PAGES = ['rj/', 'rj/cidade-exemplo/', 'rj/cidade-exemplo/tres-ciclos/', 'brasil/', 'gerador/', 'cara-a-cara/', 'meu-brasil/', 'widget/', 'imprensa/', 'relatorios/', 'sobre-os-dados/', 'mapa/']
+for (const [label, wordmark, viewport] of [
+  ['390x844', 'header[data-app-header] a:has-text("Voto a Voto")', undefined],
+  ['1440x900', '[data-component="top-bar"] [data-wordmark]', DESKTOP],
+] as const) {
+  test.describe(`the wordmark is the way home, a 44 px target (${label})`, () => {
+    if (viewport) test.use({ viewport })
+    for (const path of HEADER_PAGES) {
+      test(`${path}: the wordmark links Home, is 44 px high, and no "Início" link is drawn`, async ({ page }) => {
+        await page.goto(`${base}${path}`)
+        const mark = page.locator(wordmark).first()
+        await expect(mark).toHaveAttribute('href', base)
+        expect((await mark.boundingBox())!.height).toBeGreaterThanOrEqual(MIN)
+        await expect(page.getByRole('link', { name: /Início/ })).toHaveCount(0)
+      })
+    }
+  })
+}

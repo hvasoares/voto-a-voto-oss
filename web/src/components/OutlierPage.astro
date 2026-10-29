@@ -6,6 +6,7 @@
  * shows the valid-vote count next to the rate, links to the city card and has its fact record (the calculation link) and the page its "conferido" seal.
  */
 import { candidateName } from '@/shared/candidate-name'
+import PlaceText from '@/components/PlaceText.astro'
 import ReportLayout from '@/layouts/ReportLayout.astro'
 import ReportShare from '@/components/ReportShare.astro'
 import { siteBase, siteHref } from '@/paths'
@@ -33,10 +34,11 @@ const share = outlierShare(`${siteOrigin()}${href(outlierPath(uf, min))}`)
 const summary = 'flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 rounded-md border border-border bg-background px-3 text-step-1 font-bold [&::-webkit-details-marker]:hidden'
 const menu = 'absolute left-0 right-0 z-10 mt-1 max-h-72 overflow-auto rounded-md border border-border bg-background p-1 shadow-md'
 const item = 'flex min-h-11 items-center rounded px-2 text-step-1 aria-[current=true]:bg-secondary aria-[current=true]:font-bold'
-const cols = 'lg:grid lg:grid-cols-[2rem_minmax(0,1.7fr)_repeat(5,minmax(0,1fr))_5.5rem] lg:items-center lg:gap-x-4'
+const cols = 'lg:grid lg:grid-cols-[2rem_minmax(0,1.7fr)_repeat(5,minmax(0,1fr))] lg:items-center lg:gap-x-4'
 ---
 
 <ReportLayout
+  calc={calc}
   title="Cidades fora da curva · Voto a Voto"
   description={view.screening}
   heading="Cidades fora da curva"
@@ -72,7 +74,7 @@ const cols = 'lg:grid lg:grid-cols-[2rem_minmax(0,1.7fr)_repeat(5,minmax(0,1fr))
     </div>
 
     <p class="mt-3 text-step-1 text-muted-foreground lg:hidden" data-legend>{view.legend}</p>
-    <p class="mt-1 text-step-1 text-muted-foreground" data-count>{view.count} <Fragment set:html={calc(`filtro-${uf ?? 'todos'}-${min}`)} /></p>
+    <p class="mt-1 text-step-1 text-muted-foreground" data-count><PlaceText text={view.count} /></p>
 
     {view.empty && <p class="mt-3 text-step-2" data-empty>{view.empty}</p>}
     {view.rows.length > 0 && (
@@ -85,7 +87,6 @@ const cols = 'lg:grid lg:grid-cols-[2rem_minmax(0,1.7fr)_repeat(5,minmax(0,1fr))
           <span class="text-center">{view.columns.gap}</span>
           <span class="text-center">{view.columns.swing}</span>
           <span class="text-center">{view.columns.validos}</span>
-          <span></span>
         </div>
         <ol class="mt-1 list-none p-0 lg:mt-0" data-outliers>
           {view.rows.map((r) => (
@@ -103,8 +104,6 @@ const cols = 'lg:grid lg:grid-cols-[2rem_minmax(0,1.7fr)_repeat(5,minmax(0,1fr))
                   <span class="hidden text-center text-step-2 font-bold lg:block">{r.gap}</span>
                   <span class="hidden text-center text-step-2 lg:block">{r.swing}</span>
                   <span class="hidden text-center text-step-2 text-muted-foreground lg:block">{r.validos}</span>
-                  <span class="hidden whitespace-nowrap text-center lg:block"><Fragment set:html={calc(r.anchor)} /></span>
-                  <span class="block lg:hidden"><Fragment set:html={calc(r.anchor)} /></span>
                 </div>
               </div>
             </li>

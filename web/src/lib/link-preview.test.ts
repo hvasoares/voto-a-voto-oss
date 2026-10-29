@@ -10,6 +10,7 @@ import { headline } from './sentences/headline'
 import {
   PREVIEW_HEIGHT,
   PREVIEW_WIDTH,
+  pagePreview,
   previewDescription,
   previewHead,
   previewPath,
@@ -119,5 +120,19 @@ describe('the head of edge-case cities', () => {
   it('overseas posts read "Exterior" as their UF', () => {
     const head = previewHead({ uf: 'zz', slug: 'exterior-exemplo', nome: 'EXTERIOR (POSTO EXEMPLO)' }, undefined, opts)
     expect(head.title).toBe('Exterior (posto Exemplo) (Exterior): resultados das eleições · Voto a Voto')
+  })
+})
+describe('the generic preview of every other public page (#151)', () => {
+  it('carries its own title, address and the one site picture at 1200x630, absolute under the base', () => {
+    const head = pagePreview({ title: 'Mapa por estado · Voto a Voto', pathname: '/voto-a-voto/mapa/', ...opts })
+    expect(head.ogTitle).toBe('Mapa por estado · Voto a Voto')
+    expect(head.url).toBe('https://votoavoto.org.br/voto-a-voto/mapa/')
+    expect(head.image).toMatchObject({ url: 'https://votoavoto.org.br/voto-a-voto/preview.png', type: 'image/png', width: 1200, height: 630 })
+    expect(head.image?.alt).not.toBe('')
+  })
+
+  it('keeps the page description when it has one and says the site sentence when it has none', () => {
+    expect(pagePreview({ title: 'x', description: 'Do próprio.', pathname: '/', ...opts }).description).toBe('Do próprio.')
+    expect(pagePreview({ title: 'x', pathname: '/', ...opts }).description).toMatch(/eleições presidenciais/)
   })
 })

@@ -16,6 +16,7 @@
  */
 import { DEFAULT_REGISTER, REGISTERS, type Register } from './register'
 import { DEFAULT_LOCALE } from './voice'
+import { HOME_HINT_KEYS } from './catalog-home'
 
 export const KEYS = [
   /** Shown instead of a sentence when the city has no data in the cycle, on the card and in the share and generator islands. */
@@ -313,10 +314,6 @@ export const KEYS = [
   'seal.field.comparecimento',
   'seal.field.validos',
   'seal.note',
-  /** The register switch of the city card: the sentences live in `catalog-register.ts`, loaded only by the city card's own slot. */
-  'register.label',
-  'register.standard',
-  'register.plain',
   /** The meta description of a city page (what a link preview says): the sentences live in `catalog-preview.ts`, loaded only by the link preview's own module. */
   'preview.fixture',
   'preview.intro',
@@ -325,6 +322,9 @@ export const KEYS = [
   'preview.noValidVotes',
   'preview.default',
   'preview.pair',
+  /** The generic preview of every other public page (#151): the description a page with none of its own gets, and the picture's alt. */
+  'preview.site',
+  'preview.siteAlt',
   /** The head-to-head (#30, #39): the sentences live in `catalog-duel.ts`, loaded only by the head-to-head's own modules. */
   'duel.title',
   'duel.sub.cidade',
@@ -417,6 +417,17 @@ export const KEYS = [
   'fact.count.outliers',
   'fact.out.where.all',
   'fact.out.where.uf',
+  'fact.in.states',
+  'fact.region.states',
+  'fact.region.cities',
+  'fact.region.row',
+  'fact.f.regionStates',
+  'fact.w.regionStates',
+  'fact.f.regionCities',
+  'fact.w.regionCities',
+  'fact.f.regionRow',
+  'fact.sub.regiao',
+  'fact.back.regiao',
   'fact.f.outlier',
   'fact.f.outCount',
   'fact.w.outTurnout',
@@ -438,6 +449,21 @@ export const KEYS = [
   'brasil.share.note',
   'brasil.base',
   'brasil.nojs',
+  /** The region page (#183): the sentences live in `catalog-region.ts`, loaded only by that page's own modules. */
+  'region.title',
+  'region.counts',
+  'region.states.one',
+  'region.states.other',
+  'region.cities.one',
+  'region.cities.other',
+  'region.list',
+  'region.row.ahead',
+  'region.nerds',
+  'region.more',
+  'region.compare',
+  'region.description',
+  'place.uf',
+  'place.region',
   /** Cidades fora da curva (#34): the sentences live in `catalog-outliers.ts`, loaded only by that report's own modules. */
   'outlier.screening',
   'outlier.legend',
@@ -466,9 +492,10 @@ export const KEYS = [
   'outlier.method',
   'outlier.share',
   'outlier.share.text',
-  'outlier.calc',
   /** The page shell (#136): the fixture banner, said by `components/FixtureBanner.astro`; the sentence lives in `catalog-shell.ts`. */
   'shell.fixtureBanner',
+  /** The hint above the Home search (#147): one per destination; the words and the one list of their keys are data in `catalog-home.ts`, registered by `catalog-hint.ts`. */
+  ...HOME_HINT_KEYS,
 ] as const
 
 export type Key = (typeof KEYS)[number]
@@ -490,10 +517,6 @@ export const STANDARD_ONLY_KEYS = [
   'card.brand',
   'card.brand.fixture',
   'card.desc',
-  // The register switch names itself.
-  'register.label',
-  'register.standard',
-  'register.plain',
   // The fact records (#62, #63), the seal table and the link preview: tables, formulas and sources, one wording each.
   'fact.f.race',
   'fact.sub.report',
@@ -783,7 +806,7 @@ export function fill(tpl: string, params: Record<string, string | number>): stri
 }
 
 /** The keys that come as a `.one` / `.other` pair. */
-export type PluralKey = 'nobodyTurnedOut' | 'nonVoters.count' | 'votes.count' | 'margin.gap' | 'margin.fits' | 'stat.margin'
+export type PluralKey = 'region.states' | 'region.cities' | 'nobodyTurnedOut' | 'nonVoters.count' | 'votes.count' | 'margin.gap' | 'margin.fits' | 'stat.margin'
 
 /** Zero reads as "other" ("0 votos"), although CLDR files 0 under "one" for Portuguese. */
 export function pluralCategory(locale: Locale, count: number): 'one' | 'other' {

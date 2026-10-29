@@ -31,6 +31,7 @@ import { BIN_COLOR, marginBin, marginLegend, fgOf, type DivBin } from '@/lib/sca
 import { meshShapes, parseMunicipalityMesh, type MunicipalityMesh } from '@/lib/municipality-geo'
 import { toPath } from '@/lib/map-path'
 import { useMapView } from './use-map-view'
+import ListRow from './ListRow'
 
 export interface CityMapProps {
   data: CityMapData
@@ -283,25 +284,17 @@ function Lista({ rows, base, uf, ladoANome, ladoBNome }: { rows: CityMarginRow[]
       {sorted.map((row) => {
         const bin = binOf(row)
         return (
-          <a
+          <ListRow
             key={row.cdMunicipio}
-            className="flex min-h-11 items-center gap-2 border-t border-border px-1 text-left text-foreground [content-visibility:auto] [contain-intrinsic-size:auto_45px] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary"
             data-cd={row.cdMunicipio}
             data-cd-ibge={row.cdIbge}
             href={`${baseTrunk}/${uf}/${row.slug}/`}
-          >
-            <span aria-hidden="true" className="w-4 shrink-0 self-center rounded-sm border border-border" style={{ background: bin ? BIN_COLOR[bin] : 'var(--muted)', height: 18 }} />
-            <span className="min-w-0 flex-1 text-step-2 wrap-anywhere">{displayName(row.nome)}</span>
-            {/* The row's name is its own text (label in name): the figures are visible, and the words that say who is ahead are read, not seen. */}
-            <span className="text-step-1">
-              {row.margin2 === null ? 'sem dados' : `${fmt(row.margin2)} pp`}
-              <span className="sr-only">{row.margin2 === null ? ' do 2º turno' : `, ${row.margin2 < 0 ? ladoBNome : ladoANome} à frente`}</span>
-            </span>
-            <span className="text-step-1 text-muted-foreground">
-              {fmtInt(row.validos2)}
-              <span className="sr-only"> votos válidos</span>
-            </span>
-          </a>
+            chip={bin ? BIN_COLOR[bin] : 'var(--muted)'}
+            name={displayName(row.nome)}
+            figure={row.margin2 === null ? 'sem dados' : `${fmt(row.margin2)} pp`}
+            figureSr={row.margin2 === null ? ' do 2º turno' : `, ${row.margin2 < 0 ? ladoBNome : ladoANome} à frente`}
+            votes={fmtInt(row.validos2)}
+          />
         )
       })}
     </nav>

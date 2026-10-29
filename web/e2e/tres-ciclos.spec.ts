@@ -17,7 +17,7 @@ test.describe('tres-ciclos (fixture build)', () => {
     await expect(page.locator('[data-component="intro"]')).toContainText('Presidente 2026 (2º turno) comparado com 2022 e 2018, no mesmo estado.')
     const cycles = page.locator('[data-component="cycles"]')
     for (const ano of ['2018', '2022', '2026']) {
-      await expect(cycles.getByRole('heading', { name: `SP · ${ano}` })).toBeVisible()
+      await expect(cycles.locator('h2', { hasText: `SP · ${ano}` })).toBeVisible()
       const block = cycles.locator(`[data-cycle="${ano}"]`)
       if (ano !== '2018') await expect(block).toContainText(new RegExp(`pp vs ${ano === '2022' ? '2018' : '2022'}`))
     }
@@ -71,7 +71,7 @@ test.describe('tres-ciclos (fixture build)', () => {
     await page.goto(url('/tres-ciclos/mt/'))
     const cycles = page.locator('[data-component="cycles"]')
     await expect(cycles.getByText('sem dados')).toHaveCount(2)
-    await expect(cycles.getByRole('heading', { name: 'MT · 2026' })).toBeVisible()
+    await expect(cycles.locator('h2', { hasText: 'MT · 2026' })).toBeVisible()
     // no zero anywhere in the cycles section: sem dados is not a 0%
     await expect(cycles).not.toContainText('0,0%')
     await expect(page.getByRole('link', { name: 'Ver o estado ›' })).toHaveAttribute('href', `${base}mt/`)

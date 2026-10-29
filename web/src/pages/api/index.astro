@@ -23,12 +23,11 @@ const rows: { name: string; path: string; what: string; fields: string }[] = [
   { name: 'Estado', path: endpoints.state, what: 'As cidades de um estado.', fields: 'uf, regiao, cities[] (nome, slug)' },
   { name: 'Totais', path: endpoints.totals, what: 'Somas nacionais e por região, por ciclo e turno.', fields: 'national, regions[região], cada um com os mesmos campos de cycles[ano][turno]' },
   { name: 'Busca', path: endpoints.search, what: 'Todas as cidades, uma linha cada.', fields: '[nome, slug, uf]' },
-  { name: 'Centros', path: endpoints.centroids, what: 'O centro IBGE de cada município, por estado.', fields: '{ uf: [[slug, lat, lon], ...] }' },
 ]
 ---
 
 <Base title="API de dados abertos · Voto a Voto">
-  <PageMain top="bar" md="760" data-page="api">
+  <PageMain md="760" data-page="api">
     <a class={NAV_CHIP_QUIET} href={href('sobre-os-dados/')}>‹ Sobre os dados</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">API de dados abertos</h1>
     <p class="mt-[5px]">Os mesmos arquivos JSON que as páginas leem, abertos a qualquer site ou programa, sem servidor nosso e sem chave. Só leitura: GET.</p>

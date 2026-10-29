@@ -121,7 +121,6 @@ describe('the content of a sequence', () => {
   it('every card has one number and the number of a data card has its record', () => {
     const cards = storyContent({ ...o, arcs: a, recapData })!
     expect(cards.filter((c) => c.kind !== 'recap').map((c) => [...c.svg.matchAll(/font-size="(\d+)"[^>]*fill="#14505c"[^>]*>([^<]*)</g)].length)).toEqual([1, 1, 1, 1, 1, 1])
-    expect(cards.map((c) => c.calc)).toEqual(['municipios', '2022-viradas', '2026-viradas', 'voltaram', 'sem-mudanca', undefined, undefined])
   })
   it('without the recap the sequence still has six cards; without arcs there is no sequence', () => {
     expect(storyContent({ ...o, arcs: a })!.map((c) => c.kind)).toEqual(['cities', 'turned2022', 'turned2026', 'returned', 'steady', 'share'])

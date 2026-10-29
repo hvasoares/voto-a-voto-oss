@@ -10,8 +10,8 @@
 /** The phone column every page draws in: centred, at most 430 px, the gutter of the type scale. */
 const COLUMN = 'mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5'
 
-/** Top padding of `<main>`: `bar` clears the fixed phone bar (no header of the page's own), `header` sits under the phone header. */
-const TOP = { bar: 'pt-16', header: 'pt-3' } as const
+/** Top padding of `<main>`: every page has the app header above it (`components/AppHeader.astro`, #153), so the column starts just under it. */
+const TOP = 'pt-3'
 
 /** The width the column grows to from 768 px up (md). Absent: it stays 430 px. */
 const MD = {
@@ -27,13 +27,10 @@ const LG = {
   '1240': 'lg:max-w-[1240px]',
 } as const
 
-export type MainTop = keyof typeof TOP
 export type MainMd = keyof typeof MD
 export type MainLg = keyof typeof LG
 
 export interface MainShell {
-  /** Default `header`. */
-  top?: MainTop
   md?: MainMd
   lg?: MainLg
   /** The two-column grid from 1024 px (the map pages). */
@@ -47,8 +44,8 @@ export interface MainShell {
 }
 
 /** The class of a page's `<main>`, tokens in one fixed order. Pure. */
-export function mainClass({ top = 'header', md, lg, grid = false, padBottom = false, deskTop = true, extra }: MainShell = {}): string {
-  return [COLUMN, TOP[top], padBottom && 'pb-2', md && MD[md], grid && 'lg:grid', lg && LG[lg], deskTop && 'lg:pt-8', extra].filter(Boolean).join(' ')
+export function mainClass({ md, lg, grid = false, padBottom = false, deskTop = true, extra }: MainShell = {}): string {
+  return [COLUMN, TOP, padBottom && 'pb-2', md && MD[md], grid && 'lg:grid', lg && LG[lg], deskTop && 'lg:pt-8', extra].filter(Boolean).join(' ')
 }
 
 /** The footer's column variants: the md width, the lg width and its bottom padding. */

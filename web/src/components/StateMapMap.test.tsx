@@ -12,6 +12,7 @@ import { noopAnalytics, setAnalytics, type Analytics } from '@/analytics'
 import StateMapMap, { type StateMapProps } from './StateMapMap'
 import type { StateMapData } from '@/lib/state-map-data'
 import { UF_SHAPES } from '@/lib/uf-polygons'
+import { selectedState } from '@/test/selected-state'
 
 const DATA: StateMapData = {
   ano: 2026,
@@ -53,7 +54,7 @@ describe('StateMapMap island (mosaico)', () => {
     const section = host.querySelector('[data-slot="state-map"]')!
     expect(section.getAttribute('data-ready')).toBe('yes')
     // The tap the page script kept arrived before the readiness did: mg is the selection the visitor tapped.
-    expect(screen.getAllByText(/MG · selecionado/)[0]).toBeTruthy()
+    expect(selectedState('MG')).toBeTruthy()
     expect(events).toEqual([['map_state_tap', { uf: 'mg' }]])
     expect(host.getAttribute('data-pending-uf')).toBeNull()
     host.remove()
@@ -71,7 +72,7 @@ describe('StateMapMap island (mosaico)', () => {
 
   it('selects the state with most valid votes by default and shows its details', () => {
     setup('margin')
-    expect(screen.getAllByText(/SP · selecionado/)[0]).toBeTruthy()
+    expect(selectedState('SP')).toBeTruthy()
     expect(screen.getAllByText(/Votos válidos \(2º turno\): 150/)[0]).toBeTruthy()
     expect(screen.getAllByText(/Margem \(Maria Souza − João Costa\): -18,0 pp\. Na eleição anterior: \+12,0 pp/)[0]).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Abrir estado' }).getAttribute('href')).toBe('/s/sp/')
@@ -80,7 +81,7 @@ describe('StateMapMap island (mosaico)', () => {
   it('a hydrated tap selects the state and fires map_state_tap, staying on the page', async () => {
     const { user } = setup('margin')
     await user.click(screen.getByRole('link', { name: /Rio de Janeiro: -6,2 pp, João à frente; 120 votos válidos/ }))
-    expect(screen.getAllByText(/RJ · selecionado/)[0]).toBeTruthy()
+    expect(selectedState('RJ')).toBeTruthy()
     expect(events).toContainEqual(['map_state_tap', { uf: 'rj' }])
     expect(screen.getByRole('link', { name: 'Abrir estado' }).getAttribute('href')).toBe('/s/rj/')
   })
@@ -124,7 +125,7 @@ describe('StateMapMap island (virada)', () => {
   it('the default selection is again the biggest round-2 turnout, with both margins in the panel', () => {
     setup('swing')
     expect(screen.getAllByText(/A margem de Maria Souza sobre João Costa era de \+12,0 pp e passou para -18,0 pp\. Variação: -30,0 pp/)[0]).toBeTruthy()
-    expect(screen.getAllByText(/SP · selecionado/)[0]).toBeTruthy()
+    expect(selectedState('SP')).toBeTruthy()
   })
 })
 
@@ -195,9 +196,9 @@ describe('state map touch targets (#88)', () => {
   it('a tap on a hit path selects its state (hydrated: no navigation); a tap on a callout row margin does too', async () => {
     const { user, svg } = mapView()
     await user.click(svg.querySelector('path[data-hit="al"]')!)
-    expect(screen.getAllByText(/AL · selecionado/)[0]).toBeTruthy()
+    expect(selectedState('AL')).toBeTruthy()
     await user.click(svg.querySelector('rect[data-hit="se"]')!)
-    expect(screen.getAllByText(/SE · selecionado/)[0]).toBeTruthy()
+    expect(selectedState('SE')).toBeTruthy()
     expect(events.filter(([n]) => n === 'map_state_tap').map(([, p]) => (p as { uf: string }).uf)).toEqual(['al', 'se'])
   })
 })

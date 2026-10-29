@@ -28,6 +28,8 @@
  *    no completeness rule, only staleness: a listed route that no longer exists fails.
  *  - footer-finality PAGES: the chip'd global footer lives in a layout; one listed page per layout whose
  *    source carries `data-finality-chip`.
+ *  - CALC_ENTRY_PAGES (#155): the templates that print figures and carry the ONE "De onde vem este número?" entry;
+ *    every other template carries none. The count spec (fatos-paginas.spec.ts) walks the whole EXAMPLE_URLS list.
  */
 import { relative, sep } from 'node:path'
 import { walkFiles } from '../scripts/walk'
@@ -99,6 +101,7 @@ export const EXAMPLE_URLS: Readonly<Record<string, string>> = {
   '/adivinhe/': 'adivinhe/',
   '/api/': 'api/',
   '/brasil/': 'brasil/',
+  '/brasil/:regiao/': 'brasil/sudeste/',
   '/brasil/compartilhar/': 'brasil/compartilhar/',
   '/brasil/qr/': 'brasil/qr/',
   '/cara-a-cara/': 'cara-a-cara/',
@@ -153,7 +156,6 @@ export const EXAMPLE_URLS: Readonly<Record<string, string>> = {
  * stale — the guard fails, naming it.
  */
 export const KNOWN_ROUTES_EXTRA: Readonly<Record<string, string>> = {
-  '/brasil/:regiao/': 'the region detail page has no file yet: declared so the 404 classifier can answer "valid" the day it is ported (fallback.spec.ts opens /brasil/norte/)',
   '/relatorios/:report/': 'declared param route with no page file: reports are concrete pages today; the classifier rejects unknown :report values until a page declares them',
 }
 
@@ -206,9 +208,57 @@ export const FOOTER_EXCLUSIONS: Readonly<Record<string, string>> = {
 }
 
 /**
+ * Page templates that do NOT carry the app header (#153; e2e/app-header.spec.ts checks every other template at the phone and at the desktop
+ * frame, at its EXAMPLE_URLS URL). Every public page carries it, so each entry here is a page that is not a plain public page.
+ */
+export const APP_HEADER_EXCLUSIONS: Readonly<Record<string, string>> = {
+  '/': "Home: its own city search stands where the header's would (Base `header=\"none\"`); the desktop top bar still carries the wordmark and the search",
+  '/:uf/:slug/compartilhar/': 'a full-screen share sheet over an inert backdrop (the approved frame); the backdrop card keeps its own inert header',
+  '/brasil/compartilhar/': 'a full-screen share sheet over an inert backdrop (the approved frame)',
+  '/compartilhar/': 'the demo of the share sheet: noindex, linked from nowhere, a full-screen sheet',
+  '/:uf/:slug/qr/': 'a full-screen QR screen (the approved frame)',
+  '/brasil/qr/': 'a full-screen QR screen (the approved frame)',
+  '/qr/': 'the demo of the QR screen: noindex, linked from nowhere, a full-screen sheet',
+  '/embed/:uf/:slug/': 'an EmbedDoc document made to be framed by another site: noindex, no shell at all',
+  '/overlay/tela/': 'an EmbedDoc broadcast overlay: noindex, no shell at all',
+  '/fragmentos/mapa-por-estado/ficaram-em-casa/:ciclo/': 'a FragmentDoc fragment framed by a page: no shell at all',
+  '/fragmentos/mapa-por-estado/margem/': 'a FragmentDoc fragment framed by a page: no shell at all',
+  '/fragmentos/mapa-por-estado/virada/': 'a FragmentDoc fragment framed by a page: no shell at all',
+  '/fragmentos/mapa-uf/': 'a FragmentDoc fragment framed by a page: no shell at all',
+}
+
+/** The pages that must carry the app header: every template not excluded above, at its fixture URL. */
+export function appHeaderPages(pages: readonly PageFile[]): string[] {
+  return pageTemplates(pages)
+    .filter((t) => !(t in APP_HEADER_EXCLUSIONS))
+    .map((t) => EXAMPLE_URLS[t]!)
+    .sort()
+}
+
+/** The pages the app-header spec walks, from the tree on disk. */
+export function appHeaderPagesOnDisk(webRoot: string): string[] {
+  return appHeaderPages(pagesFromFs(pageFilesOnDisk(webRoot)))
+}
+
+/**
  * The sample of the a11y audit (e2e/a11y.spec.ts): axe is slow, so the audited routes are chosen by hand —
  * no completeness rule, only staleness (the guard fails when a listed route no longer exists).
  */
+/**
+ * Page templates that carry NO link preview, each with the reason (#151): every other template in EXAMPLE_URLS must carry the og/twitter tags
+ * (e2e/city-preview.spec.ts walks the list). A page kept out must be noindex, so the spec checks both halves.
+ */
+export const NO_PREVIEW_EXCLUSIONS: Readonly<Record<string, string>> = {
+  '/compartilhar/': 'the share-sheet demo (#137): noindex, linked from nowhere',
+  '/qr/': 'the QR demo (#137): noindex, linked from nowhere',
+  '/embed/:uf/:slug/': 'an EmbedDoc document: a part of other pages, not a page to be shared',
+  '/overlay/tela/': 'an EmbedDoc broadcast overlay: a part of other pages, not a page to be shared',
+  '/fragmentos/mapa-por-estado/ficaram-em-casa/:ciclo/': 'a FragmentDoc fragment: noindex, drawn inside a lazy iframe',
+  '/fragmentos/mapa-por-estado/margem/': 'a FragmentDoc fragment: noindex, drawn inside a lazy iframe',
+  '/fragmentos/mapa-por-estado/virada/': 'a FragmentDoc fragment: noindex, drawn inside a lazy iframe',
+  '/fragmentos/mapa-uf/': 'a FragmentDoc fragment: noindex, drawn inside a lazy iframe',
+}
+
 export const A11Y_ROUTES: readonly { route: string; name: string }[] = [
   { route: '/', name: 'home' },
   { route: 'rj/cidade-exemplo/', name: 'city card' },
@@ -234,6 +284,36 @@ export const FINALITY_PAGES: readonly { name: string; route: string }[] = [
   { name: 'Sobre os dados', route: 'sobre-os-dados/' },
   { name: 'Dados para nerds', route: 'dados-para-nerds/' },
 ]
+
+/**
+ * The page templates with the page's one calculation entry (#155: a 🔍 with the accessible name "De onde vem este número?", `a[data-calc]`),
+ * each with the URL the count spec opens: its EXAMPLE_URLS URL, or the one that gives the page its figures (the Meu Brasil story is
+ * drawn by its island from the places in the address, so it opens with a place). Any template not listed carries none.
+ */
+export const CALC_ENTRY_PAGES: Readonly<Record<string, string>> = {
+  '/:uf/': 'rj/',
+  '/:uf/:slug/': 'rj/cidade-exemplo/',
+  '/:uf/historia/': 'rj/historia/',
+  '/:uf/resumo/': 'rj/resumo/',
+  '/brasil/': 'brasil/',
+  '/brasil/:regiao/': 'brasil/sudeste/',
+  '/comparar/:ciclo/': 'comparar/2022/',
+  '/meu-brasil/historia/': 'meu-brasil/historia/?mora=rj/cidade-exemplo',
+  '/relatorios/': 'relatorios/',
+  '/relatorios/cidades-fora-da-curva/': 'relatorios/cidades-fora-da-curva/',
+  '/relatorios/cidades-fora-da-curva/:uf/:min/': 'relatorios/cidades-fora-da-curva/rj/5000/',
+  '/relatorios/cidades-que-viraram/': 'relatorios/cidades-que-viraram/',
+  '/relatorios/como-cada-grupo-votou/': 'relatorios/como-cada-grupo-votou/',
+  '/relatorios/comparecimento/': 'relatorios/comparecimento/',
+  '/relatorios/disputas-mais-apertadas/': 'relatorios/disputas-mais-apertadas/',
+  '/relatorios/maiores-viradas/': 'relatorios/maiores-viradas/',
+  '/relatorios/votos-ganhos-e-perdidos/': 'relatorios/votos-ganhos-e-perdidos/',
+  '/tres-ciclos/:uf/': 'tres-ciclos/rj/',
+}
+
+/** The URL the count spec opens for a template, and how many entries it must hold: one for a CALC_ENTRY_PAGES template, none for the rest. */
+export const calcEntryExpectation = (template: string): { url: string; count: 0 | 1 } =>
+  template in CALC_ENTRY_PAGES ? { url: CALC_ENTRY_PAGES[template]!, count: 1 } : { url: EXAMPLE_URLS[template]!, count: 0 }
 
 /** A tap-targets footer page: every template not excluded above, at its fixture URL. */
 export function footerLinkPages(pages: readonly PageFile[]): string[] {
@@ -326,6 +406,22 @@ export function checkTypeScaleScreens(pages: readonly PageFile[], screenPaths: r
 /** FOOTER_PAGES is derived; the exclusion map is the hand-kept part, guarded as a list of reasons. */
 export function checkFooterExclusions(pages: readonly PageFile[]): string[] {
   return checkExclusions('FOOTER_PAGES (e2e/tap-targets.spec.ts)', FOOTER_EXCLUSIONS, pageTemplates(pages))
+}
+
+/** The app-header list is derived; the exclusion map is the hand-kept part, guarded as a list of reasons. */
+export function checkAppHeaderExclusions(pages: readonly PageFile[]): string[] {
+  return checkExclusions('APP_HEADER_PAGES (e2e/app-header.spec.ts)', APP_HEADER_EXCLUSIONS, pageTemplates(pages))
+}
+
+/** CALC_ENTRY_PAGES: every key a live template, every URL on that template's own route (no orphan, no stray address). */
+export function checkCalcEntryPages(pages: readonly PageFile[]): string[] {
+  const live = new Set(pageTemplates(pages))
+  return Object.entries(CALC_ENTRY_PAGES).flatMap(([template, url]) => {
+    const out: string[] = []
+    if (!live.has(template)) out.push(`CALC_ENTRY_PAGES (e2e/routes-inventory.ts): ${template} matches no page (renamed or deleted: an orphan)`)
+    else if (stripQuery(url).split('/').length !== EXAMPLE_URLS[template]!.split('/').length) out.push(`CALC_ENTRY_PAGES (e2e/routes-inventory.ts): ${url} is not an address of ${template}`)
+    return out
+  })
 }
 
 /** The sampled lists fail only on staleness: a listed URL must open a page that still exists. */

@@ -27,18 +27,6 @@ const segments = (page: Page) =>
   )
 
 test.describe('labels in the visitor\'s words (phone)', () => {
-  test('the register pair says "Texto integral" and "Linguagem simples"; the stored value is unchanged', async ({ page }) => {
-    await page.goto(`${city}?turno=1`)
-    await waitReady(page)
-    const standard = page.locator('[data-register-choice="standard"]:visible')
-    const plain = page.locator('[data-register-choice="plain"]:visible')
-    await expect(standard).toHaveText('Texto integral')
-    await expect(plain).toHaveText('Linguagem simples')
-    await plain.click()
-    expect(await page.evaluate(() => localStorage.getItem('voto-a-voto:register'))).toBe('plain')
-    await expect(plain).toHaveAttribute('aria-pressed', 'true')
-  })
-
   test('the comparison link names 2022 and 2018 and opens the page that offers both', async ({ page }) => {
     await page.goto(`${city}?turno=1`)
     const link = page.locator('.city-links a', { hasText: 'Comparar com 2022 e 2018' })
@@ -48,16 +36,16 @@ test.describe('labels in the visitor\'s words (phone)', () => {
     await expect(page.locator('a[data-tab="2018"]')).toHaveAttribute('href', `${base}comparar/2018/`)
   })
 
-  test('every calculation link of the card reads "De onde vem este número?", in both registers, with its own address', async ({ page }) => {
+  test('the card has the one calculation entry, named "De onde vem este número?", with the address of the view shown (#155)', async ({ page }) => {
     await page.goto(`${city}?turno=1`)
     await waitReady(page)
-    const calcs = page.locator('.city-page a.calc')
-    const n = await calcs.count()
-    expect(n).toBeGreaterThan(10)
-    expect(await calcs.evaluateAll((els) => els.filter((e) => e.textContent !== 'De onde vem este número?').length)).toBe(0)
-    expect(await calcs.evaluateAll((els) => els.every((e) => /\/fato\//.test(e.getAttribute('href') ?? '')))).toBe(true)
-    await page.locator('[data-register-choice="plain"]:visible').click()
-    await expect(calcs.first()).toHaveText('De onde vem este número?')
+    const calc = page.locator('.city-page a.calc')
+    await expect(calc).toHaveCount(1)
+    await expect(calc).toHaveAttribute('aria-label', 'De onde vem este número?')
+    await expect(calc).toHaveAttribute('href', `${base}fato/rj/cidade-exemplo/2026-1/#votaram`)
+    await expect(page.getByRole('link', { name: 'De onde vem este número?' })).toHaveCount(1)
+    await page.getByRole('link', { name: '2º turno' }).click()
+    await expect(calc).toHaveAttribute('href', `${base}fato/rj/cidade-exemplo/2026-2/#votaram`)
   })
 
   for (const turno of [1, 2]) {

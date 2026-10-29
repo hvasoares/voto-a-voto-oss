@@ -338,29 +338,3 @@ describe('curiosities.json (#33)', () => {
   })
 })
 
-describe('centroids.json (#40)', () => {
-  const built = buildFixture()
-  const shard = jsonOf(built, 'centroids.json') as Record<string, [string, number, number][]>
-
-  it('has, per state, the cities that have an IBGE centre: [slug, lat, lon], sorted, the overseas post and a city without a centre left out', () => {
-    expect(Object.keys(shard)).toEqual(['rj', 'sp'])
-    expect(shard.rj!.map(([slug]) => slug)).toEqual(['cidade-exemplo', 'cidade-exemplo-a', 'cidade-exemplo-b', 'cidade-exemplo-c', 'cidade-exemplo-d', 'cidade-exemplo-e'])
-    expect(shard.sp!.map(([slug]) => slug)).toEqual(['cidade-exemplo-paulista'])
-    for (const rows of Object.values(shard)) for (const [, lat, lon] of rows) expect(Number.isFinite(lat) && Number.isFinite(lon)).toBe(true)
-  })
-
-  it('regenerating gives the same bytes, and the file is versioned like the others', () => {
-    expect(fileOf(buildFixture(), 'centroids.json')).toBe(fileOf(built, 'centroids.json'))
-    expect(built.files.some((f) => f.path === `v${built.fingerprint}/centroids.json`)).toBe(true)
-  })
-
-  it('a centre for a city the dataset does not have breaks the build', () => {
-    const sources = { ...synthetic(), 'centroids.csv': 'cd_ibge,lat,lon\n9,-1,-1\n' }
-    expect(() => buildShards(sources)).toThrow(ShardError)
-  })
-
-  it('a dataset without centres still builds, with an empty file', () => {
-    const empty = JSON.parse(fileOf(buildShards(synthetic()), 'centroids.json')!)
-    expect(empty).toEqual({})
-  })
-})

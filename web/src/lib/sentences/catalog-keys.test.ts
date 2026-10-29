@@ -13,14 +13,16 @@ import { STAT_KEYS } from './catalog-stat'
 import { RECAP_KEYS } from './catalog-recap'
 import { MEUBRASIL_KEYS } from './catalog-meu-brasil'
 import { PREVIEW_KEYS } from './catalog-preview'
-import { REGISTER_KEYS } from './catalog-register'
 import { HEADLINE_KEYS } from './catalog-headline'
 import { DUEL_KEYS } from './catalog-duel'
 import { STAYHOME_KEYS } from './catalog-stayhome'
 import { OUTLIER_KEYS } from './catalog-outliers'
 import { BRASIL_KEYS } from './catalog-brasil'
+import { REGION_KEYS } from './catalog-region'
 import { FACTS_KEYS } from './catalog-facts'
 import { SHELL_KEYS } from './catalog-shell'
+import './catalog-hint'
+import { HOME_HINT_KEYS } from './catalog-home'
 
 /** The modules that compose the catalog: the core and one per feature, in the order KEYS lists them. */
 const MODULES: readonly (readonly Key[])[] = [
@@ -33,13 +35,14 @@ const MODULES: readonly (readonly Key[])[] = [
   RECAP_KEYS,
   MEUBRASIL_KEYS,
   PREVIEW_KEYS,
-  REGISTER_KEYS,
   DUEL_KEYS,
   STAYHOME_KEYS,
   OUTLIER_KEYS,
   BRASIL_KEYS,
+  REGION_KEYS,
   FACTS_KEYS,
   SHELL_KEYS,
+  HOME_HINT_KEYS,
 ]
 
 describe('the catalog partition', () => {

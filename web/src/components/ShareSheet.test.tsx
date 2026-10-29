@@ -7,6 +7,9 @@
 import { render } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { buildCityResult } from '@/shared/city-model'
+import { shareContent } from '@/lib/share-model'
+import { noopAnalytics, setAnalytics, type Analytics } from '@/analytics'
 import ShareSheet from './ShareSheet'
 
 vi.mock('@/lib/share-raster', () => ({
@@ -43,5 +46,41 @@ describe('the share sheet island', () => {
     expect(node().getAttribute('data-error')).toBeNull()
     // no guess kept here: the nodata card of the pre-rendered view stays.
     expect(node().getAttribute('data-nodata')).not.toBeNull()
+  })
+
+  it('with a guess kept, both cards are drawn, each with its own actions, and the city card keeps its normal picture', async () => {
+    localStorage.setItem('voto-a-voto:guess', '{"rj/cidade-exemplo":"yes"}')
+    const result = buildCityResult({
+      turnout: { ano: 2026, turno: 2, uf: 'rj', cdMunicipio: '1', aptos: 1000, comparecimento: 900, abstencoes: 100, brancos: 0, nulos: 0, anuladosApuSep: 0, validos: 900 },
+      votes: [1, 2].map((n, i) => ({ ano: 2026, turno: 2 as const, uf: 'rj', cdMunicipio: '1', candidatoNumero: n, votos: 500 - i * 100 })),
+      candidates: [1, 2].map((n) => ({ ano: 2026, turno: 2 as const, candidatoNumero: n, nomeUrna: `C${n}`, partido: 'P' })),
+    })
+    const initial = shareContent(result, { uf: 'rj', slug: 'cidade-exemplo', nome: 'Cidade Exemplo' }, { origin: props.origin, base: props.base, fixture: true })
+    render(<ShareSheet {...props} initial={initial} />)
+    await vi.waitFor(() => expect(document.querySelectorAll('[data-card-block]')).toHaveLength(2))
+    expect([...document.querySelectorAll('[data-share-picture]')].map((n) => n.getAttribute('data-card'))).toEqual(['guess', 'city'])
+    expect(document.querySelectorAll('[data-share-actions]')).toHaveLength(2)
+    expect(document.querySelector('[data-card-block="guess"] [data-act="share"]')!.textContent).toBe('Compartilhar o palpite')
+    expect(document.querySelector('[data-card-block="city"] [data-act="share"]')!.textContent).toBe('Compartilhar')
+  })
+
+  it('with a guess kept the sheet counts one share_opened, not one per card', async () => {
+    const events: string[] = []
+    setAnalytics({ pageView() {}, event: (n) => void events.push(n) } satisfies Analytics)
+    try {
+      localStorage.setItem('voto-a-voto:guess', '{"rj/cidade-exemplo":"yes"}')
+      const result = buildCityResult({
+        turnout: { ano: 2026, turno: 2, uf: 'rj', cdMunicipio: '1', aptos: 1000, comparecimento: 900, abstencoes: 100, brancos: 0, nulos: 0, anuladosApuSep: 0, validos: 900 },
+        votes: [1, 2].map((n, i) => ({ ano: 2026, turno: 2 as const, uf: 'rj', cdMunicipio: '1', candidatoNumero: n, votos: 500 - i * 100 })),
+        candidates: [1, 2].map((n) => ({ ano: 2026, turno: 2 as const, candidatoNumero: n, nomeUrna: `C${n}`, partido: 'P' })),
+      })
+      const initial = shareContent(result, { uf: 'rj', slug: 'cidade-exemplo', nome: 'Cidade Exemplo' }, { origin: props.origin, base: props.base, fixture: true })
+      render(<ShareSheet {...props} initial={initial} />)
+      await vi.waitFor(() => expect(document.querySelectorAll('[data-share-actions]')).toHaveLength(2))
+      await vi.waitFor(() => expect([...document.querySelectorAll('[data-share-actions]')].map((n) => n.getAttribute('data-png'))).toEqual(['ready', 'ready']))
+      expect(events.filter((n) => n === 'share_opened')).toHaveLength(1)
+    } finally {
+      setAnalytics(noopAnalytics)
+    }
   })
 })

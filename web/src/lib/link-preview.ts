@@ -58,6 +58,34 @@ export interface PreviewHead {
   image?: PreviewAsset
 }
 
+/** The one generic picture every other public page shares (#151): a file of `public/`, drawn like the widget (the site's colours, flat), at the size WhatsApp and the other crawlers show. */
+export const SITE_PREVIEW_FILE = 'preview.png'
+export const SITE_PREVIEW_WIDTH = 1200
+export const SITE_PREVIEW_HEIGHT = 630
+
+export interface PagePreviewInput {
+  /** The document title (it is also the og:title). */
+  title: string
+  /** The page's own meta description; absent: the site's generic sentence from the catalog. */
+  description?: string
+  /** The page's path as the browser asks it, base included (`Astro.url.pathname`). */
+  pathname: string
+  origin?: string
+  base?: string
+}
+
+/** The preview contract of every public page that is not a city card: its own title and address with the one generic picture. Pure; the layouts are the only callers (DocHead writes the tags). */
+export function pagePreview({ title, description, pathname, origin = siteOrigin(), base = '/' }: PagePreviewInput): PreviewHead {
+  const say = (key: Parameters<typeof message>[1]) => message(DEFAULT_VOICE, key)
+  return {
+    title,
+    ogTitle: title,
+    description: description || say('preview.site'),
+    url: `${origin}${pathname}`,
+    image: { url: `${origin}${linkHref(SITE_PREVIEW_FILE, base)}`, type: PREVIEW_TYPE, width: SITE_PREVIEW_WIDTH, height: SITE_PREVIEW_HEIGHT, alt: say('preview.siteAlt') },
+  }
+}
+
 export interface PreviewCity extends Pick<City, 'uf' | 'slug' | 'nome'> {}
 
 /** The meta description, from the numbers of the result only (fixture cities say the data is fictitious). */

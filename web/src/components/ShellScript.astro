@@ -1,0 +1,17 @@
+---
+/**
+ * The loader of the shell module (`scripts/desktop-shell.ts`: the "/" shortcut and the header search), once for `Base.astro` and
+ * `QuietDoc.astro` (#51, #153). A 1024 px viewport loads it at once. A phone loads nothing at page load: the header's search field
+ * (`[data-topbar-search]`, one per header drawn) asks for the module on its first focus, touch or key, so a phone that never searches
+ * downloads no byte of it; the module then mounts the real search into the field the visitor touched.
+ */
+import { siteHref } from '@/paths'
+import { DESKTOP_SHELL_FILE } from '../../integrations/desktop-shell'
+
+// Dev serves the source module; a build serves the entry integrations/desktop-shell.ts emits under the site base.
+const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : siteHref(DESKTOP_SHELL_FILE)
+---
+<script is:inline define:vars={{ shell }}>
+  if (matchMedia('(min-width: 1024px)').matches) import(shell)
+  else for (const host of document.querySelectorAll('[data-topbar-search]')) for (const e of ['focusin', 'pointerdown', 'keydown']) host.addEventListener(e, () => import(shell), { once: true })
+</script>

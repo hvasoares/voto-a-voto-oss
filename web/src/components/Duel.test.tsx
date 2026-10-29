@@ -124,6 +124,29 @@ describe('Cara a cara: the cases that need a clear message', () => {
     await vi.waitFor(() => expect(screen.getByText(/Escolha dois lugares diferentes/)).toBeTruthy())
     expect(root.getAttribute('data-ready')).toBe('no')
   })
+  it.each([['estado', 'rj', 'Estado B', 'Rio de Janeiro'], ['regiao', 'sudeste', 'Região B', 'Sudeste']])('%s: the place picked in A stays offered in B, and picking it there says to choose two different places', async (level, a, name, label) => {
+    const root = open(`?nivel=${level}&a=${a}`)
+    const select = screen.getAllByRole('combobox', { name })[0] as HTMLSelectElement
+    expect([...select.options].some((o) => o.value === a && o.textContent!.includes(label))).toBe(true)
+    await userEvent.setup().selectOptions(select, a)
+    await vi.waitFor(() => expect(screen.getByText(/Escolha dois lugares diferentes/)).toBeTruthy())
+    expect(root.getAttribute('data-places')).toBe('2')
+    expect(root.querySelector('[data-rows]')).toBeNull()
+  })
+  it('cities: the city picked in A is found in B, picking it there shows no card, and changing B later brings the card back', async () => {
+    const root = open('?nivel=cidade&a=rj/cidade-exemplo')
+    const user = userEvent.setup()
+    const b = screen.getByRole('combobox', { name: 'Cidade B' })
+    await user.type(b, 'cidade exemplo')
+    await user.click(await screen.findByRole('option', { name: /^Cidade Exemplo\s*RJ/ }))
+    await vi.waitFor(() => expect(screen.getByText(/Escolha dois lugares diferentes/)).toBeTruthy())
+    expect(root.querySelector('[data-rows]')).toBeNull()
+    await user.type(b, 'boa esperanca')
+    await user.click(await screen.findByRole('option', { name: /Boa Esperança do Norte/ }))
+    await vi.waitFor(() => expect(root.querySelector('[data-rows]')).not.toBeNull())
+    expect(location.search).toBe('?nivel=cidade&a=rj%2Fcidade-exemplo&b=mt%2Fboa-esperanca-do-norte'.replace(/%2F/g, '/'))
+    expect(screen.queryByText(/Escolha dois lugares diferentes/)).toBeNull()
+  })
   it('a place with no 2nd round of the cycle: no card, and the message names the place and the cycle', async () => {
     const shard = structuredClone(shards['sp/cidade-exemplo-paulista']!)
     delete shard.cycles['2026']!['2']

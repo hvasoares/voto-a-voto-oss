@@ -26,14 +26,18 @@ import {
   EXAMPLE_URLS,
   FINALITY_PAGES,
   KNOWN_ROUTES_EXTRA,
+  checkCalcEntryPages,
   checkDiscovery,
   checkExclusions,
+  NO_PREVIEW_EXCLUSIONS,
   checkFinalityPages,
+  checkAppHeaderExclusions,
   checkFooterExclusions,
   checkKnownRoutes,
   checkPerfRoutes,
   checkSampledRoutes,
   checkTypeScaleScreens,
+  appHeaderPages,
   footerLinkPages,
   layoutHasFinalityChip,
   layoutsImported,
@@ -91,12 +95,28 @@ describe('the route inventory of the site (#110)', () => {
     expect(checkTypeScaleScreens(pages, SCREENS.map((s) => s.path))).toEqual([])
   })
 
+  it('the app-header pages are derived: templates minus APP_HEADER_EXCLUSIONS, no dupes, every one a live URL', () => {
+    expect(checkAppHeaderExclusions(pages)).toEqual([])
+    const list = appHeaderPages(pages)
+    const urls = new Set(Object.values(EXAMPLE_URLS))
+    expect(list.every((u) => urls.has(u)), 'a derived app-header page URL that no EXAMPLE_URLS entry provides').toBe(true)
+    expect(new Set(list).size, 'APP_HEADER_PAGES duplicates a URL').toBe(list.length)
+  })
+
+  it('the pages with the calculation entry (#155) are live templates, each opened at an address of its own', () => {
+    expect(checkCalcEntryPages(pages)).toEqual([])
+  })
+
   it('the tap-target footer pages are derived: templates minus FOOTER_EXCLUSIONS, no dupes, every one a live URL', () => {
     expect(checkFooterExclusions(pages)).toEqual([])
     const list = footerLinkPages(pages)
     const urls = new Set(Object.values(EXAMPLE_URLS))
     expect(list.every((u) => urls.has(u)), 'a derived footer page URL that no EXAMPLE_URLS entry provides').toBe(true)
     expect(new Set(list).size, 'FOOTER_PAGES duplicates a URL').toBe(list.length)
+  })
+
+  it('the pages without a link preview are named templates, each with a reason', () => {
+    expect(checkExclusions('NO_PREVIEW_EXCLUSIONS (e2e/routes-inventory.ts)', NO_PREVIEW_EXCLUSIONS, pageTemplates(pages))).toEqual([])
   })
 
   it('the a11y sample still opens real pages (sampled on purpose; only staleness fails)', () => {
@@ -157,21 +177,19 @@ describe('guards of the guard (synthetic inputs, no disk)', () => {
 
   it('the known routes: an entry with no page and no declaration fails, and a duplicated entry fails', () => {
     expect(checkKnownRoutes(real, ['/', '/rj/', '/rj/:cidade/', '/fantasma/'])).toEqual([
-      expect.stringContaining('/brasil/:regiao/ (web/e2e/routes-inventory.ts) is not in the list'),
       expect.stringContaining('/relatorios/:report/ (web/e2e/routes-inventory.ts) is not in the list'),
       expect.stringContaining('/fantasma/ matches no page and is not declared in KNOWN_ROUTES_EXTRA'),
     ])
     expect(checkKnownRoutes(real, ['/', '/rj/', '/rj/', '/rj/:cidade/'])).toEqual([
-      expect.stringContaining('/brasil/:regiao/ (web/e2e/routes-inventory.ts) is not in the list'),
       expect.stringContaining('/relatorios/:report/ (web/e2e/routes-inventory.ts) is not in the list'),
       'KNOWN_ROUTES (src/lib/fallback.ts): /rj/ is listed twice',
     ])
   })
 
   it('a declared KNOWN_ROUTES_EXTRA that grew a page is a stale exemption and fails', () => {
-    const tree = pagesFromFs(['index.astro', 'brasil/[regiao]/index.astro'])
-    const out = checkKnownRoutes(tree, ['/', '/brasil/:regiao/'])
-    expect(out.some((m) => m.includes('/brasil/:regiao/') && m.includes('stale'))).toBe(true)
+    const tree = pagesFromFs(['index.astro', 'relatorios/[report]/index.astro'])
+    const out = checkKnownRoutes(tree, ['/', '/relatorios/:report/'])
+    expect(out.some((m) => m.includes('/relatorios/:report/') && m.includes('stale'))).toBe(true)
   })
 
   it('a type-scale screen that starts covering an excluded template is a stale exemption and fails', () => {

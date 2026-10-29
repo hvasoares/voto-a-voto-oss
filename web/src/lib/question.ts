@@ -47,6 +47,11 @@ export function questionText(q: Question, cityName: string, v: Voice = {}): stri
   return message(voice(v), `question.${q.kind}${q.overseas ? '.o' : ''}` as MessageKey, { city: cityName, years })
 }
 
+/** The note shown where scripts are off: the question cannot be asked, the answer is shown (#149). */
+export function noscriptText(v: Voice = {}): string {
+  return message(voice(v), 'question.noscript' as MessageKey)
+}
+
 /** "Sim" or "Não". */
 export function yesNo(value: boolean, v: Voice = {}): string {
   return message(voice(v), (value ? 'question.yes' : 'question.no') as MessageKey)

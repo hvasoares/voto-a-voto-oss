@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
-import { allowedOrigins, base, collectRequests, violations } from './helpers'
+import { allowedOrigins, base, collectRequests, violations, expectHeaderWayHome } from './helpers'
 import { useNoJs } from './presets'
 
 /*
@@ -32,7 +32,7 @@ test.describe('brasil: content (fixture build)', () => {
 
   test('navigation back home and the two regions of the fixture dataset, the overseas one never listed', async ({ page }) => {
     await page.goto(`${base}brasil/`)
-    await expect(page.getByRole('link', { name: '‹ Início' })).toHaveAttribute('href', base)
+    await expectHeaderWayHome(page)
     const regioes = await page.locator('[data-regiao]').evaluateAll((els) => els.map((e) => e.getAttribute('data-regiao')))
     expect(regioes).toEqual(['sudeste', 'centro-oeste'])
     await expect(page.locator('[data-regiao="exterior"]')).toHaveCount(0)
@@ -91,7 +91,7 @@ test.describe('brasil: type and targets (#91)', () => {
 
   test('the links of the region rows and the page keep a 44 px hit height', async ({ page }) => {
     await page.goto(`${base}brasil/`)
-    for (const sel of ['[data-link="nerds"]', '[data-share]', '[data-brasil-regioes] li .calc', '[data-link="compare"]', 'footer a']) {
+    for (const sel of ['[data-link="nerds"]', '[data-share]', '.calc', '[data-link="compare"]', 'footer a']) {
       for (const link of await page.locator(sel).all()) {
         expect((await link.boundingBox())!.height, sel).toBeGreaterThanOrEqual(44)
       }

@@ -5,9 +5,8 @@ import { createSearchController } from '@/slots/home/search-ui'
 import { Card } from '@/components/ui/card'
 import { Command, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 import { loadSearchCities } from '@/lib/search-data'
-import { savePlace } from '@/lib/place-store'
-import { cityTarget, readDestination, type Destination } from '@/lib/destinations'
-import { DESTINATION_GOES } from '@/lib/destination-notes'
+import { readPlace, savePlace } from '@/lib/place-store'
+import { cityTarget, landingDestination, readDestination, type Destination } from '@/lib/destinations'
 import { useIslandReady } from './use-island-ready'
 
 /** One `search` event once typing pauses, not one per keystroke (same as the vanilla home). */
@@ -21,8 +20,8 @@ const FIELD = [
 ].join(' ')
 const SHORT = { state: 'short', total: 0, hits: [] } as const
 
-/** The slim top-bar variant (desktop shell, #51): 40 px field, the results float over the page instead of pushing it. */
-const BAR_FIELD = '[&_[data-slot=input-group]]:h-10!'
+/** The slim header variant (#51, #153): a 44 px field on a phone, 40 px in the desktop top bar, the results float over the page instead of pushing it. */
+const BAR_FIELD = '[&_[data-slot=input-group]]:h-11! lg:[&_[data-slot=input-group]]:h-10!'
 const BAR_LIST = 'absolute inset-x-0 top-full z-30'
 
 /**
@@ -51,7 +50,7 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
     )
     const typed = root.current?.querySelector('input')?.value || root.current?.closest('astro-island')?.getAttribute('data-pending')
     if (typed) setText(typed)
-    if (autoFocus) root.current?.querySelector('input')?.focus()
+    if (autoFocus || (!bar && landingDestination(location.search, readPlace()?.kind === 'city'))) root.current?.querySelector('input')?.focus()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [base, bar, autoFocus])
 
@@ -68,7 +67,7 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
 
   return (
     <div ref={root} className={bar ? 'relative' : 'relative mt-2'} data-city-search={bar ? 'bar' : 'main'} data-ready={island.dataReady} data-error={island.dataError} data-destination={destination}>
-      <svg className={`pointer-events-none absolute left-[14px] z-10 text-muted-foreground ${bar ? 'top-[10px]' : 'top-[12px] lg:hidden'}`} viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="6.5" cy="6.5" r="6" fill="none" stroke="currentColor" strokeWidth="1.9" /><path d="M16.2 12.2 12.4 16.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
+      <svg className={`pointer-events-none absolute left-[14px] z-10 text-muted-foreground ${bar ? 'top-[12px] lg:top-[10px]' : 'top-[12px] lg:hidden'}`} viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="6.5" cy="6.5" r="6" fill="none" stroke="currentColor" strokeWidth="1.9" /><path d="M16.2 12.2 12.4 16.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
       <Command
         shouldFilter={false}
         label={bar ? 'Ver minha cidade' : 'Busque sua cidade'}
@@ -119,7 +118,6 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
         </CommandList>
       </Command>
       <div aria-live="polite" className={bar ? BAR_LIST : undefined}>
-        {destination && <p className="mt-2 text-step-1 text-muted-foreground" data-destination-note>Ao escolher a cidade, você vai direto para {DESTINATION_GOES[destination]}.</p>}
         {view.state === 'empty' && <p className="mt-2 text-step-1 text-muted-foreground">Nenhuma cidade encontrada. Confira a grafia ou escolha um estado abaixo.</p>}
         {view.state === 'results' && view.total > view.hits.length && (
           <p className="mt-2 text-step-1 text-muted-foreground">Mostrando {view.hits.length} de {view.total}. Digite mais letras para refinar.</p>

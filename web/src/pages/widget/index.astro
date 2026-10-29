@@ -4,24 +4,18 @@
  * copy the one-line snippet. Reached from "Para jornalistas e associações" on "Sobre os dados".
  */
 import Base from '@/layouts/Base.astro'
-import PhoneHeader from '@/components/PhoneHeader.astro'
 import WidgetBuilder from '@/components/WidgetBuilder'
 import SiteFooter from '@/components/SiteFooter.astro'
-import { siteBase, siteHref } from '@/paths'
+import { siteBase } from '@/paths'
 import { datasetFixture } from '@/lib/shard-files'
 import { siteOrigin } from '@/lib/share-url'
-import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import PageMain from '@/components/PageMain.astro'
 
 const base = siteBase()
-// The #113 base-path helper (`base` stays for the WidgetBuilder island, which takes the base argument).
-const href = siteHref
 const fixture = await datasetFixture()
 ---
 <Base title="Widget da cidade · Voto a Voto" description="Cole no seu site o resultado de uma cidade e um link de volta.">
-  <PhoneHeader />
   <PageMain md="480" data-page="widget">
-    <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Widget da cidade</h1>
     <p class="mt-1 text-step-1 text-muted-foreground">Cole no seu site: o resultado de uma cidade e um link de volta.</p>
     <WidgetBuilder client:load base={base} origin={siteOrigin()} />

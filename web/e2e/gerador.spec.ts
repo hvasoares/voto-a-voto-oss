@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { expect, test, type Page } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
-import { noJs } from './presets'
+import { acknowledgeNotice, noJs } from './presets'
 import { shareMock } from './share-mock'
 
 /*
@@ -24,6 +24,8 @@ test.describe('card generator', () => {
     const errors: string[] = []
     page.on('pageerror', (e) => errors.push(String(e)))
     await shareMock(page).install('absent')
+    // The header made the page 52 px taller: the download buttons now scroll to where the fixed metrics notice covers them.
+    await acknowledgeNotice(page)
     await open(page)
     await ready(page)
     for (const [size, label, button, w, h, file] of [

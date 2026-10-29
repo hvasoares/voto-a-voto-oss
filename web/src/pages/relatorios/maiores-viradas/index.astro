@@ -13,7 +13,7 @@ import { displayName, ufLabel } from '@/shared/city-search'
 
 const { margins, lula, flavio } = await loadReports()
 const { toward, awayCount } = rankedBigSwings(margins)
-// Fact records (#62): every listed figure links to its record; the seal is written from the build's checks.
+// Fact records (#62): the page's one calculation entry (#155) opens its records; the seal is written from the build's checks.
 const { calc, seal } = await reportFacts('relatorios/maiores-viradas', 'cidades')
 const minMilhares = `${formatInt(MIN_BIG_SWING_VALIDOS / 1000)} mil`
 const awayLine =
@@ -26,11 +26,11 @@ const rows = toward.map((r) => ({
   slug: r.slug,
   name: `${displayName(r.nome)}/${ufLabel(r.uf)}`,
   detail: `Virada ${formatSignedPp(r.swing)} · Margem ${formatSignedPp(r.margin1)} → ${formatSignedPp(r.margin2)} (${outcome(r.margin2)}) · ${formatInt(r.validos2)} votos válidos`,
-  factKey: `${r.uf}-${r.slug}`,
 }))
 ---
 
 <ReportLayout
+  calc={calc}
   title="Maiores viradas, cidades de 100 mil+ votos · Voto a Voto"
   heading="Maiores viradas, cidades de 100 mil+ votos"
   report="maiores-viradas"
@@ -45,12 +45,10 @@ const rows = toward.map((r) => ({
   <p class="mt-1 text-step-1 text-muted-foreground" data-sized>
     {formatInt(toward.length)} cidades no filtro · {awayLine}. Margem = % de {lula} menos % de {flavio} dos votos válidos.
   </p>
-  <p class="mt-1 text-step-1" data-count-links><Fragment set:html={calc('filtro')} /> <Fragment set:html={calc('contrario')} /></p>
 
   <section class="mt-2" aria-label="Maiores viradas">
     <ReportTable
       rows={rows}
-      calc={calc}
       tableAttr="data-swing-table"
       rowAttr="data-swing"
       caption="Virada (pp), margem no 1º e no 2º turno e votos válidos de cada cidade"

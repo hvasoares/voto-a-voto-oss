@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import type { Page } from '@playwright/test'
+import { expect, type Page } from '@playwright/test'
 import { normalizeBase } from '../src/paths'
 import { viewport } from './presets'
 
@@ -99,4 +99,10 @@ export async function maybeThrottleCpu(page: Page): Promise<void> {
   const rate = Number(process.env.E2E_CPU_RATE ?? 0)
   if (!rate || rate <= 1) return
   await (await page.context().newCDPSession(page)).send('Emulation.setCPUThrottlingRate', { rate })
+}
+
+/** The way home of a phone page is the app header's wordmark (#153): it links Home, and the page draws no "Início" link at all (#154). */
+export async function expectHeaderWayHome(page: Page): Promise<void> {
+  await expect(page.locator('header[data-app-header]').getByRole('link', { name: 'Voto a Voto' })).toHaveAttribute('href', base)
+  await expect(page.getByRole('link', { name: /Início/ })).toHaveCount(0)
 }

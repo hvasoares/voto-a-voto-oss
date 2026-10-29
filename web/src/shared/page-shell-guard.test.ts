@@ -5,7 +5,10 @@
  *  - the column:   `max-w-[430px]` is written in `shared/page-shell.ts` (`mainClass`, `footerClass`) and drawn by `components/PageMain.astro`;
  *  - the head:     `<meta charset>`, the viewport, the robots and `<base target>` tags, only in `components/DocHead.astro`;
  *  - the banner:   the fixture banner's words are the catalog's (`shell.fixtureBanner`), drawn by `components/FixtureBanner.astro`;
- *  - the header:   `<header class="app-header">` only in `components/AppHeader.astro`;
+ *  - the header:   `<header class="app-header">` and the `<AppHeader>` tag only in `components/AppHeader.astro` and the places named below (#153: the layouts
+ *                  draw it, so no page adds its own; the screen pages place the screen variant inside their `.screen`); a page opts out of the
+ *                  layout's header (`header="none"`) only where named below;
+ *  - the search:   the header's plain city-search field (`data-topbar-search`) only in `components/HeaderSearch.astro`;
  *  - the seal:     the "conferido" aside (`class="seal"`, `seal__title|lines|note`) only in `components/Seal.astro`.
  *
  * Token based (the pattern is the token, never a long class literal, so a reordered class is still caught). Every non-test source
@@ -18,13 +21,16 @@ import { join, relative, sep } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { walkFiles } from '../../scripts/walk'
 
-type Rule = 'column' | 'head' | 'banner' | 'app-header' | 'seal'
+type Rule = 'column' | 'head' | 'banner' | 'app-header' | 'no-header' | 'search-field' | 'seal' | 'home-link'
 
 const RULES: { rule: Rule; pattern: RegExp; use: string }[] = [
   { rule: 'column', pattern: /max-w-\[430px\]/, use: 'a page draws <PageMain> (components/PageMain.astro) and a page footer takes footerClass() — both built from shared/page-shell.ts' },
   { rule: 'head', pattern: /<meta\s+charset|name="viewport"|<base\s+target|name="robots"/, use: 'a layout draws <DocHead> (components/DocHead.astro) inside its document' },
   { rule: 'banner', pattern: /EXEMPLO\s*·\s*DADOS FICT[ÍI]CIOS/, use: 'the fixture banner is <FixtureBanner> (components/FixtureBanner.astro); its words are the catalog key shell.fixtureBanner' },
-  { rule: 'app-header', pattern: /<header[^>]*class="app-header"|\bapp-header__sep\b/, use: 'the screen pages draw <AppHeader> (components/AppHeader.astro)' },
+  { rule: 'app-header', pattern: /<header[^>]*class="app-header"|\bapp-header__sep\b|<AppHeader\b|<header[^>]*data-component="phone-header"/, use: 'the layout draws the one <AppHeader> (components/AppHeader.astro) for the page: do not add a header to a page' },
+  { rule: 'no-header', pattern: /header="none"/, use: 'every public page carries the app header (the layout draws it); a page opts out only where the guard names it' },
+  { rule: 'search-field', pattern: /<[a-z]+\s[^>]*data-topbar-search/, use: 'the header search field is <HeaderSearch> (components/HeaderSearch.astro), drawn by the app header and the top bar' },
+  { rule: 'home-link', pattern: /‹\s*Início/, use: 'the way home is the wordmark of the app header (components/AppHeader.astro) on every page; no page draws an "Início" link of its own' },
   { rule: 'seal', pattern: /class="seal\b|\bseal__(?:title|lines|note)\b/, use: 'a page draws <Seal lines={...}> (components/Seal.astro)' },
 ]
 
@@ -33,15 +39,30 @@ const ALLOWED: Record<Rule, Record<string, string>> = {
   column: {
     'shared/page-shell.ts': 'the builders: the one place the column class is written',
     'shared/footer.ts': 'the default class of the global footer lines (SiteFooter), a different element from the page footer',
-    'components/PhoneHeader.astro': 'the phone header is one component, the only element of its class',
+    'components/AppHeader.astro': 'the app header is one component; its phone variant is the only element of its class',
     'components/ConsentBanner.astro': 'the metrics notice is one component; its inner column is its own element',
   },
   head: { 'components/DocHead.astro': 'the one document head' },
   banner: {
     'lib/sentences/catalog-shell.ts': 'the catalog holds the sentence',
   },
-  'app-header': { 'components/AppHeader.astro': 'the one app header' },
+  'app-header': {
+    'components/AppHeader.astro': 'the one app header',
+    'layouts/Base.astro': 'the layout of every page draws it above the page',
+    'layouts/QuietDoc.astro': 'the quiet layout draws it above the page',
+    'components/CityCard.astro': 'the city card draws the screen variant inside its `.screen` (the stylesheet scopes it there)',
+    'pages/[uf]/index.astro': 'the state page draws the screen variant inside its `.screen`',
+    'pages/[uf]/[slug]/tres-ciclos/index.astro': 'the three-cycles page draws the screen variant inside its `.screen`',
+    'pages/fato/[...path]/index.astro': 'the fact record draws the screen variant inside its `.screen`',
+  },
+  'no-header': {
+    'pages/index.astro': 'Home: its own city search stands where the header search would (a second search field would stack on the first)',
+    'components/ShareScreen.astro': 'the share sheet is a full-screen sheet over an inert backdrop (the approved frame)',
+    'components/QrScreen.astro': 'the QR screen is a full-screen sheet (the approved frame)',
+  },
+  'search-field': { 'components/HeaderSearch.astro': 'the one header search field' },
   seal: { 'components/Seal.astro': 'the one seal block' },
+  'home-link': { 'components/ShareDemoBackdrop.astro': 'an inert, aria-hidden picture of the card behind the share demo: text, not a link' },
 }
 
 /** The source with comments blanked (same length, newlines kept), so doc comments never classify. */
@@ -80,7 +101,7 @@ describe('no page keeps its own shell (#136), source layer', () => {
   })
 
   it('the shared pieces exist', () => {
-    for (const piece of ['shared/page-shell.ts', 'components/PageMain.astro', 'components/DocHead.astro', 'components/FixtureBanner.astro', 'components/AppHeader.astro', 'components/Seal.astro'])
+    for (const piece of ['shared/page-shell.ts', 'components/PageMain.astro', 'components/DocHead.astro', 'components/FixtureBanner.astro', 'components/AppHeader.astro', 'components/HeaderSearch.astro', 'components/Seal.astro'])
       expect(text.has(piece), piece).toBe(true)
   })
 
@@ -94,6 +115,11 @@ describe('no page keeps its own shell (#136), source layer', () => {
     ['a page with the banner words', "const banner = 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS'", 'banner'],
     ['a banner written in a paragraph', '<p class="x">EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS</p>', 'banner'],
     ['a page with its own app header', '<header class="app-header"><a class="brand">Voto a Voto</a></header>', 'app-header'],
+    ['a page drawing the header component', '<Base title="x"><AppHeader /><PageMain /></Base>', 'app-header'],
+    ['a page with its own phone header markup', '<header class="flex h-11" data-component="phone-header">', 'app-header'],
+    ['a page that opts out of the header', '<Base title="x" header="none">', 'no-header'],
+    ['a page with its own search field', '<div data-topbar-search data-base="/"><input /></div>', 'search-field'],
+    ['a page with its own Início link', '<a href="/">‹ Início</a>', 'home-link'],
     ['a page with its own seal', '<aside class="seal" data-seal><h2 class="seal__title">x</h2></aside>', 'seal'],
   ])('flags %s', (_label, source, rule) => {
     expect(findShellCopies(source).map((c) => c.rule)).toContain(rule)
@@ -106,7 +132,9 @@ describe('no page keeps its own shell (#136), source layer', () => {
   })
 
   it.each([
-    ['the shell components', '<PageMain md="480" data-page="x" /><FixtureBanner show={fixture} /><AppHeader /><Seal lines={seal} />'],
+    ['the shell components', '<PageMain md="480" data-page="x" /><FixtureBanner show={fixture} /><Seal lines={seal} />'],
+    ['a layout prop that keeps the header', '<Base title="x" header="screen">'],
+    ['the header selector in a script', "document.querySelectorAll('[data-topbar-search]')"],
     ['a column named in a comment', '// the max-w-[430px] column is PageMain\n/* <meta charset> is DocHead */'],
     ['the 1240 px top bar', '<div class="mx-auto flex h-full w-full max-w-[1240px] items-center px-5">'],
     ['a seal component import', "import Seal from '@/components/Seal.astro'"],

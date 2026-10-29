@@ -17,6 +17,7 @@
  */
 import { candidateName } from '@/shared/candidate-name'
 import { formatInt } from '@/shared/city-model'
+import { regionName } from './regions'
 import type { Candidate, State, Turno, Turnout, Vote } from '@/data'
 
 /** Largest-remainder split of 100 among the parts' shares of their sum, kept with `decimals` decimal
@@ -99,16 +100,7 @@ export interface BrasilView {
 
 /** The region of the dataset's region keys ("Sudeste", ...). Fixed pt-BR geography, not election numbers. */
 export function regionLabel(regiao: string): string {
-  return (
-    {
-      norte: 'Norte',
-      nordeste: 'Nordeste',
-      'centro-oeste': 'Centro-Oeste',
-      sudeste: 'Sudeste',
-      sul: 'Sul',
-      exterior: 'Exterior',
-    }[regiao] ?? regiao
-  )
+  return regiao === 'exterior' ? 'Exterior' : regionName(regiao)
 }
 
 /** An uf the dataset's state list does not carry (the overseas posts, uf "zz") belongs to no region:

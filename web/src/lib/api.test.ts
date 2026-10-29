@@ -5,7 +5,7 @@ import { loadEditions } from './editions-load'
 describe('the static API paths', () => {
   it('lists the shards of a dataset version', () => {
     expect(shardEndpoints('abc')).toEqual({
-      search: 'data/vabc/search.json', totals: 'data/vabc/totals.json', centroids: 'data/vabc/centroids.json',
+      search: 'data/vabc/search.json', totals: 'data/vabc/totals.json',
       state: 'data/vabc/state/{uf}.json', city: 'data/vabc/city/{uf}/{slug}.json',
     })
   })

@@ -1,6 +1,7 @@
 ---
 import { CANDIDATES } from '@/shared/candidates'
 import Base from '@/layouts/Base.astro'
+import PlaceText from '@/components/PlaceText.astro'
 import { formatBytes, sourceRow } from '@/lib/about'
 import {
   BR_CITIES_2018_2022,
@@ -28,7 +29,6 @@ import { currentEdition } from '@/lib/editions-load'
 import { siteOrigin } from '@/lib/share-url'
 import { siteHref } from '@/paths'
 import SiteFooter from '@/components/SiteFooter.astro'
-import { NAV_CHIP_QUIET } from '@/shared/link-classes'
 import PageMain from '@/components/PageMain.astro'
 import { footerClass } from '@/shared/page-shell'
 
@@ -60,8 +60,7 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
 ---
 
 <Base title="Sobre os dados · Voto a Voto">
-  <PageMain top="bar" md="760" data-page="sobre-os-dados">
-    <a class={NAV_CHIP_QUIET} href={href('/')}>‹ Início</a>
+  <PageMain md="760" data-page="sobre-os-dados">
     <h1 class="mt-2 font-serif text-step-4 font-normal">Sobre os dados</h1>
 
     {/* The five task sections, in the order a visitor checks a number (#98). Their ids are public addresses: do not rename. */}
@@ -88,7 +87,7 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
 
     <section class={sec} aria-labelledby="de-onde-vem">
       <h2 class={h2} id="de-onde-vem">De onde vêm os números</h2>
-      <p class="mt-[5px]">Todos os números de eleição do site vêm de publicações oficiais do Tribunal Superior Eleitoral (TSE). Não há pesquisa própria nem estimativa. A única outra fonte é geográfica, do Instituto Brasileiro de Geografia e Estatística (IBGE), e não traz nenhum resultado: o centro de cada município, usado só pelo botão "Usar minha localização".</p>
+      <p class="mt-[5px]">Todos os números de eleição do site vêm de publicações oficiais do Tribunal Superior Eleitoral (TSE). Não há pesquisa própria nem estimativa. A única outra fonte é geográfica, do Instituto Brasileiro de Geografia e Estatística (IBGE), e não traz nenhum resultado: o centro de cada município.</p>
       <p class="mt-1">Resultados de 2026: arquivos oficiais assinados, um por município, do site de resultados do TSE (resultados.tse.jus.br), coletados em {COLLECTION_DATE}. Estão finalizados nos dois turnos: {fmt(BR_CITIES_2026)} municípios, {fmt(SECTIONS_APURADAS.counted)} de {fmt(SECTIONS_APURADAS.total)} seções apuradas, mais {OVERSEAS_POSTS_2026} postos de votação no exterior.</p>
       <p class="mt-1">Resultados de 2018 e 2022: bases de dados abertos do TSE com a votação de presidente por município e zona, coletadas em {COLLECTION_DATE} e somadas por município — {fmt(BR_CITIES_2018_2022)} municípios por ciclo, só as linhas de presidente do arquivo nacional.</p>
 
@@ -105,7 +104,7 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
         ))}
       </ul>
       <p class="mt-1 text-step-1 text-muted-foreground">O <code>digest</code> da linha de 2026 reúne em um único SHA-256 o hash de cada arquivo coletado, ordenado por nome, e a <code>geração</code> é a data mais recente que o TSE marcou em um arquivo coletado. Manifesto no GitHub: <a href={githubManifest}>data/manifest.json ›</a></p>
-      <p class="mt-1">O site lê só as tabelas que o pipeline grava somadas por município: {tables}, todas conferidas contra o manifesto. Os centros dos municípios (centroids.csv) vêm do serviço de malhas do IBGE, um arquivo por estado; o município de Boa Esperança do Norte/MT, criado depois da malha que o IBGE publica, não tem centro e por isso nunca é oferecido como a cidade mais próxima. Os arquivos originais do TSE ficam no cache da coleta, não no site: nada aqui baixa de novo um arquivo do TSE para mostrar um número.</p>
+      <p class="mt-1">O site lê só as tabelas que o pipeline grava somadas por município: {tables}, todas conferidas contra o manifesto. Os centros dos municípios (centroids.csv) vêm do serviço de malhas do IBGE, um arquivo por estado. Os arquivos originais do TSE ficam no cache da coleta, não no site: nada aqui baixa de novo um arquivo do TSE para mostrar um número.</p>
       <section aria-labelledby="calculo">
         <h3 class={h3} id="calculo">Como os números do site são calculados</h3>
         <ul class="mt-[5px] list-disc space-y-1 pl-5">
@@ -127,8 +126,8 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
         <h3 class={h3} id="limites">Limites</h3>
         <ul class="mt-[5px] list-disc space-y-1 pl-5">
           <li>Os percentuais de 2018 e 2022 usam como base os dois candidatos do 2º turno de cada ciclo.</li>
-          <li>{CITY_WITHOUT_DATA_BEFORE_2026} existe só em 2026 e não tem dados nos ciclos anteriores: {fmt(BR_CITIES_2018_2022)} de {fmt(BR_CITIES_2026)} municípios por ciclo. O site mostra "sem dados", não zero.</li>
-          <li>Salvador/BA, 1º turno de 2018, zona 18: o comparecimento inclui {fmt(SALVADOR_ANULADOS_APU_SEP)} votos que não são válidos, brancos nem nulos — o TSE os marca como anulados em apuração separada. Os arquivos deste projeto têm uma coluna só para esses votos, e a conta acima só fecha com ela.</li>
+          <li><PlaceText text={CITY_WITHOUT_DATA_BEFORE_2026} /> existe só em 2026 e não tem dados nos ciclos anteriores: {fmt(BR_CITIES_2018_2022)} de {fmt(BR_CITIES_2026)} municípios por ciclo. O site mostra "sem dados", não zero.</li>
+          <li><PlaceText text="Salvador/BA" />, 1º turno de 2018, zona 18: o comparecimento inclui {fmt(SALVADOR_ANULADOS_APU_SEP)} votos que não são válidos, brancos nem nulos — o TSE os marca como anulados em apuração separada. Os arquivos deste projeto têm uma coluna só para esses votos, e a conta acima só fecha com ela.</li>
           <li>Eleitorado apto nem sempre fecha com comparecimento + abstenção: em 2018 restam {TURNOUT_REMAINDER['2018']} eleitores e, em 2022, {TURNOUT_REMAINDER['2022']} — seções não instaladas, que o TSE informa; em 2026 restam {TURNOUT_REMAINDER['2026']}, sem campo correspondente nos arquivos. Como "Não votaram" parte do eleitorado apto, esse resto está contado ali.</li>
           <li>Postos do exterior em 2026: {OVERSEAS_NOT_INSTALLED_2026.posts} deles (de {OVERSEAS_POSTS_2026}) não estavam instalados — eleitorado declarado, comparecimento zero em {OVERSEAS_NOT_INSTALLED_2026.postRounds} postos-turno.</li>
           <li>Constantes nacionais de 2018 e 2022 do manifesto foram copiadas das páginas de resultados do TSE na coleta de {COLLECTION_DATE} e não puderam ser re-verificadas em outra fonte nesse dia (arquivos históricos do TSE fora do ar). Exceção: o eleitorado de 2022 ({fmt(ELECTORATE_2022_RECONFIRMED)}), re-verificado no arquivo de perfil de comparecimento do TSE.</li>
@@ -215,9 +214,6 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
       <ul class="mt-1 list-disc space-y-1 pl-5 text-step-1">
         <li>A navegação é estática; não há conta nem formulário.</li>
         <li>O texto digitado na busca não é enviado: a busca roda no próprio navegador.</li>
-        <li>O botão "Usar minha localização" só pede a posição ao navegador depois do seu toque. A posição é usada
-          no seu aparelho, contra o centro de cada município, para abrir a cidade mais próxima; ela não é enviada
-          nem guardada, e o site só baixa a lista dos centros (um arquivo igual para todos).</li>
         <li>Para medir como o site é usado, este site usa o Google Analytics — páginas vistas, cidades e
           relatórios abertos, quantos resultados uma busca mostrou (nunca o texto digitado), imagens
           baixadas, a tela do QR e a impressão do pôster. Ao utilizar nossos serviços, você está ciente

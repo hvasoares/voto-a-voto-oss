@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
-import { allowedOrigins, base, collectRequests, violations } from './helpers'
+import { allowedOrigins, base, collectRequests, expectHeaderWayHome, violations } from './helpers'
 import { noJs } from './presets'
 
 /*
@@ -107,10 +107,9 @@ test.describe('sobre os dados page', () => {
     await context.close()
   })
 
-  test('backs to the home page and links the GitHub repo without leaving the page', async ({ page }) => {
+  test('has the header\'s way home and links the GitHub repo without leaving the page', async ({ page }) => {
     await page.goto(path)
-    const back = page.locator('#main').getByRole('link', { name: '‹ Início' })
-    await expect(back).toHaveAttribute('href', base)
+    await expectHeaderWayHome(page)
     const repo = page.getByRole('link', { name: 'github.com/hvasoares/voto-a-voto-oss' })
     await expect(repo).toHaveAttribute('href', 'https://github.com/hvasoares/voto-a-voto-oss')
        const manifestLink = page.getByRole('link', { name: 'manifesto do repositório' })

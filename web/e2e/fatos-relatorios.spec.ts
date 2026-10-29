@@ -2,26 +2,26 @@ import { expect, test } from '@playwright/test'
 import { base, collectRequests } from './helpers'
 
 /*
- * Fact records on the rest of the reports, the hub, the state page and the state recap (#62): "De onde vem este número?" beside every listed figure, to a record
+ * Fact records on the rest of the reports, the hub, the state page and the state recap (#62): "De onde vem este número?" once per page (#155), to a record
  * that exists, the "conferido" seal written from the build's checks, and the neutrality of "Como cada grupo votou" (it counts cities).
  */
 const linksOf = async (page: import('@playwright/test').Page) => page.locator('a.calc').evaluateAll((els) => els.map((e) => e.getAttribute('href')!))
 
 test.describe('De onde vem este número? and the seal on the reports, the hub, the state page and the recap', () => {
-  for (const [name, path, min] of [
-    ['Cidades que viraram', 'relatorios/cidades-que-viraram/', 0],
-    ['Maiores viradas', 'relatorios/maiores-viradas/', 2],
-    ['Comparecimento', 'relatorios/comparecimento/', 3],
-    ['Votos ganhos e perdidos', 'relatorios/votos-ganhos-e-perdidos/', 2],
-    ['Como cada grupo votou', 'relatorios/como-cada-grupo-votou/', 2],
-    ['Relatórios (hub)', 'relatorios/', 4],
-    ['página do estado', 'rj/', 1],
-    ['resumo do estado', 'rj/resumo/', 1],
+  for (const [name, path] of [
+    ['Cidades que viraram', 'relatorios/cidades-que-viraram/'],
+    ['Maiores viradas', 'relatorios/maiores-viradas/'],
+    ['Comparecimento', 'relatorios/comparecimento/'],
+    ['Votos ganhos e perdidos', 'relatorios/votos-ganhos-e-perdidos/'],
+    ['Como cada grupo votou', 'relatorios/como-cada-grupo-votou/'],
+    ['Relatórios (hub)', 'relatorios/'],
+    ['página do estado', 'rj/'],
+    ['resumo do estado', 'rj/resumo/'],
   ] as const) {
-    test(`${name}: every link goes to a record that exists and the seal names its checks`, async ({ page, request }) => {
+    test(`${name}: the one link goes to a record that exists and the seal names its checks`, async ({ page, request }) => {
       await page.goto(`${base}${path}`)
       const hrefs = await linksOf(page)
-      expect(hrefs.length).toBeGreaterThanOrEqual(min)
+      expect(hrefs).toHaveLength(1)
       for (const h of new Set(hrefs)) {
         const [target, fragment] = h.split('#')
         const res = await request.get(target!)

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CLUE_IDS, MAX_GUESSES, brazilDate, clueText, countdown, dailyIndex, dayNumber, direction, feedback, gridRow, msToNext, outcome, shareText, sizeBand, unlockedClues, type GameCity } from './game'
+import { CLUE_IDS, MAX_GUESSES, brazilDate, clueText, countdown, dailyIndex, dayNumber, direction, distanceKm, feedback, gridRow, msToNext, outcome, shareText, sizeBand, unlockedClues, type GameCity } from './game'
 
 const city = (uf: string, slug: string, name: string, lat: number, lon: number, aptos: number, turnout: number, swings: number, region: string): GameCity => [uf, slug, name, lat, lon, aptos, turnout, swings, region]
 const secret = city('mg', 'cidade-secreta', 'Cidade Secreta', -19.9, -43.9, 30000, 72, 1, 'sudeste')
@@ -103,5 +103,13 @@ describe('result grid and share text', () => {
     expect(outcome(lost)).toEqual({ won: false, finished: true, guesses: 6 })
     expect(outcome(feedbacks)).toEqual({ won: true, finished: true, guesses: 3 })
     expect(outcome([feedback(far, secret)])).toEqual({ won: false, finished: false, guesses: 1 })
+  })
+})
+
+describe('distance', () => {
+  it('is zero to itself and about 357 km from Rio to São Paulo', () => {
+    expect(distanceKm(-22.9, -43.2, -22.9, -43.2)).toBe(0)
+    expect(distanceKm(-22.9068, -43.1729, -23.5505, -46.6333)).toBeGreaterThan(350)
+    expect(distanceKm(-22.9068, -43.1729, -23.5505, -46.6333)).toBeLessThan(365)
   })
 })

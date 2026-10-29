@@ -5,6 +5,7 @@ import { cycleBlocksFor, labelsOf, otherLargestStates, stateOrder, stateStats, t
 import { siteBase, siteHref } from '@/paths'
 import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
 import Seal from '@/components/Seal.astro'
+import PlaceLink from '@/components/PlaceLink'
 import SiteFooter from '@/components/SiteFooter.astro'
 import FactHighlight from '@/components/FactHighlight'
 import { calcLink } from '@/lib/facts/link'
@@ -12,7 +13,6 @@ import { factLinks } from '@/lib/facts/gate'
 import { getFactPage, sealOf } from '@/lib/facts/pages'
 import { loadArcsFile, loadStateShard } from '@/lib/shard-files'
 import { episodeLabel, pivotText, seasonPivot, seasonSay } from '@/lib/season'
-import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import '@/styles/season.css'
 import PageMain from '@/components/PageMain.astro'
 import { footerClass } from '@/shared/page-shell'
@@ -33,7 +33,7 @@ const order = stateOrder(all)
 const chips = order // every state the dataset has; the row scrolls sideways on the phone
 const outros = otherLargestStates(all, uf)
 const blocks = cycleBlocksFor(state)
-// Fact records (#62): every cycle links to its records; the seal is written from the build's checks.
+// Fact records (#62): the page's one calculation entry (#155) opens them; the seal is written from the build's checks.
 const facts = await getFactPage(`estado/${uf}`, 'tres-ciclos')
 const links = factLinks(facts.facts, `/tres-ciclos/${uf}/`, base)
 const seal = await sealOf(facts)
@@ -52,14 +52,15 @@ const arcsFile = await loadArcsFile()
 const cityCount = (await loadStateShard(uf))?.cities.length ?? 0
 const pivot = seasonPivot(blocks, arcsFile?.byState[uf], cityCount)
 const pivotLine = pivotText(pivot)
-const pivotRecord = facts.facts.some((f) => f.anchor === '2026-viradas')
 const miniRows = (st: StateStats) => Array.from({ length: CYCLES.length }, (_, i) => ({ i, b: cycleBlocksFor(st)[i]! }))
 ---
 
 <Base title={`Três ciclos por estado · ${uf.toUpperCase()} · Voto a Voto`}>
-  <PageMain top="bar" md="760" data-page="tres-ciclos-estado">
-    <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
-    <h1 class="mt-2 font-serif text-step-4 font-normal">Três ciclos por estado</h1>
+  <PageMain md="760" data-page="tres-ciclos-estado">
+    <div class="mt-2 flex items-center justify-between gap-2">
+      <h1 class="font-serif text-step-4 font-normal">Três ciclos por estado</h1>
+      <Fragment set:html={calcLink(links(facts.facts[0]!.anchor))} />
+    </div>
     <p class="mt-1 text-step-1 text-muted-foreground lg:text-step-2" data-component="intro">Presidente 2026 (2º turno) comparado com 2022 e 2018, no mesmo estado. Barra = % dos votos válidos do 2º turno.</p>
 
     <nav class="mt-3 -mx-5 flex min-h-11 items-center gap-1.5 overflow-x-auto px-5 pb-1 lg:mx-0 lg:mt-5 lg:flex-wrap lg:gap-2.5 lg:overflow-visible lg:px-0" aria-label="Estados" data-component="uf-chips">
@@ -85,7 +86,7 @@ const miniRows = (st: StateStats) => Array.from({ length: CYCLES.length }, (_, i
         const episode = (
           <div class="season-ep py-[2px] lg:py-3" id={String(b.ano)} data-cycle={String(b.ano)} data-episode={i + 1}>
             <p class="season-ep__head"><span>{episodeLabel(i + 1, b.ano)}</span><a href={`#${b.ano}`}>#{b.ano}</a></p>
-            <h2 class="text-step-1 font-bold lg:font-serif lg:text-step-4 lg:font-normal">{uf.toUpperCase()} · {b.ano}</h2>
+            <h2 class="text-step-1 font-bold lg:font-serif lg:text-step-4 lg:font-normal"><PlaceLink place={{ kind: 'uf', uf }} /> · {b.ano}</h2>
             {b.status === 'data' ? (
               <>
                 <div class="mt-[4px] flex h-[26px] min-w-0 overflow-hidden rounded lg:h-[36px]" role="img" aria-label={`Barras: ${b.left!.label} ${b.left!.pct}%, ${b.rival!.label} ${b.rival!.pct}% dos votos válidos`}>
@@ -102,14 +103,13 @@ const miniRows = (st: StateStats) => Array.from({ length: CYCLES.length }, (_, i
                     <>{message(DEFAULT_VOICE, 'recap.start')}</>
                   )}
                 </p>
-                <p class="mt-[2px] text-right"><Fragment set:html={calcLink(links(`${b.ano}-a`))} /></p>
               </>
             ) : (
               <p class="mt-1 text-step-1 text-muted-foreground">sem dados</p>
             )}
           </div>
         )
-        return i === 1 ? [episode, <aside class="season-pivot" data-pivot={pivot.kind}><p>{pivotLine}</p>{pivotRecord && <p class="mt-[2px] text-right"><Fragment set:html={calcLink(links('2026-viradas'))} /></p>}</aside>] : [episode]
+        return i === 1 ? [episode, <aside class="season-pivot" data-pivot={pivot.kind}><p>{pivotLine}</p></aside>] : [episode]
       })}
     </section>
     <p class="season-note" data-season-note data-chrono={seasonSay('season.order.note.chrono')} data-reverse={seasonSay('season.order.note.reverse')}>{seasonSay('season.order.note.chrono')}</p>
@@ -122,7 +122,7 @@ const miniRows = (st: StateStats) => Array.from({ length: CYCLES.length }, (_, i
     </p>
 
     {/* The one island of the page: from 1024 px, the sentences light the bar segment and the table cell and write the calculation beside them; a phone loads none of it. */}
-    <FactHighlight client:media="(min-width: 1024px)" href={href(`/fato/estado/${uf}/tres-ciclos/`)} calcLabel={message(DEFAULT_VOICE, 'fact.link')} />
+    <FactHighlight client:media="(min-width: 1024px)" href={href(`/fato/estado/${uf}/tres-ciclos/`)} />
 
     <Seal lines={seal} />
 

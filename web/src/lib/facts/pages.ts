@@ -8,6 +8,7 @@ import { buildCompareRows, cycleBlocksFor, stateOrder, stateStats } from '../com
 import { COMPARE_CYCLES } from '../compare'
 import { isFixtureDataset, loadBrasil } from '../brasil-load'
 import { loadCityRoutes } from '../city-routes'
+import { loadRegionPages } from '../region-page'
 import { currentEdition } from '../editions-load'
 import { datasetFixture, loadArcsFile, loadStateShard, loadStateUfs } from '../shard-files'
 import { CHECK_KINDS, sealLines, sealProblems, type CheckKind } from './checks'
@@ -15,7 +16,7 @@ import { loadChecks } from './checks-load'
 import { assertPublishable } from './gate'
 import { loadCityFacts } from './load'
 import { CURIOSITIES_PAGE, LATEST_CYCLE } from './model'
-import { brasilFacts, cohortFacts, compareFacts, deltaFacts, hubFacts, olderCyclesFacts, outlierFactPages, raceFacts, stateCountFacts, stateCyclesFacts, swingFacts, turnoutListFacts, type FactPage } from './other'
+import { brasilFacts, regionFacts, cohortFacts, compareFacts, deltaFacts, hubFacts, olderCyclesFacts, outlierFactPages, raceFacts, stateCountFacts, stateCyclesFacts, swingFacts, turnoutListFacts, type FactPage } from './other'
 import { biggestSwing, closestRaces, computeReports, flipsToFlavio, flipsToLula, MIN_BIG_SWING_VALIDOS, MIN_FLIP_VALIDOS, MIN_TURNOUT_APTOS, rankedBigSwings, rankedFlipsToLula, rankedTurnout, rankedVoteDeltas, turnoutExtremes } from '../reports/compute'
 import { loadCohortData } from '../cohorts-load'
 import { stateRows } from '../../slots/state/state-list'
@@ -80,6 +81,7 @@ export function loadFactPages(): Promise<FactPage[]> {
     }
     out.push(olderCyclesFacts(fixture, CYCLES.filter((a) => a < LATEST_CYCLE).flatMap((ano) => [1, 2].map((turno) => ({ ano, turno })))))
     out.push(brasilFacts(await loadBrasil(), await isFixtureDataset()))
+    for (const region of await loadRegionPages()) out.push(regionFacts(region, fixture))
     const stats = await stateStats()
     for (const ciclo of COMPARE_CYCLES) out.push(compareFacts((await buildCompareRows(stats, ciclo)).slice(0, 6), ciclo, fixture))
     const reportsData = await loadReportsData()
