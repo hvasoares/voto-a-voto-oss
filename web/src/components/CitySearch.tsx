@@ -5,9 +5,8 @@ import { createSearchController } from '@/slots/home/search-ui'
 import { Card } from '@/components/ui/card'
 import { Command, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 import { loadSearchCities } from '@/lib/search-data'
-import { savePlace } from '@/lib/place-store'
-import { cityTarget, readDestination, type Destination } from '@/lib/destinations'
-import { DESTINATION_GOES } from '@/lib/destination-notes'
+import { readPlace, savePlace } from '@/lib/place-store'
+import { cityTarget, landingDestination, readDestination, type Destination } from '@/lib/destinations'
 import { useIslandReady } from './use-island-ready'
 
 /** One `search` event once typing pauses, not one per keystroke (same as the vanilla home). */
@@ -51,7 +50,7 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
     )
     const typed = root.current?.querySelector('input')?.value || root.current?.closest('astro-island')?.getAttribute('data-pending')
     if (typed) setText(typed)
-    if (autoFocus) root.current?.querySelector('input')?.focus()
+    if (autoFocus || (!bar && landingDestination(location.search, readPlace()?.kind === 'city'))) root.current?.querySelector('input')?.focus()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [base, bar, autoFocus])
 
@@ -119,7 +118,6 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
         </CommandList>
       </Command>
       <div aria-live="polite" className={bar ? BAR_LIST : undefined}>
-        {destination && <p className="mt-2 text-step-1 text-muted-foreground" data-destination-note>Ao escolher a cidade, você vai direto para {DESTINATION_GOES[destination]}.</p>}
         {view.state === 'empty' && <p className="mt-2 text-step-1 text-muted-foreground">Nenhuma cidade encontrada. Confira a grafia ou escolha um estado abaixo.</p>}
         {view.state === 'results' && view.total > view.hits.length && (
           <p className="mt-2 text-step-1 text-muted-foreground">Mostrando {view.hits.length} de {view.total}. Digite mais letras para refinar.</p>
