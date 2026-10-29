@@ -49,9 +49,17 @@ jobs:
       # if: always(): roda mesmo com e2e vermelho. Lê o web/dist que o webServer construiu acima (o script
       # lança "route not built" se dist ou uma rota faltar, então não passa no vácuo) e o output — medido /
       # orçamento por métrica — vai para o resumo da run (a margem visível no verde). Local: `make perf`.
+      # The script itself appends the headroom table to $GITHUB_STEP_SUMMARY (no tee) and writes web/perf-record.json
+      # (#120), uploaded below whatever the verdict; a run over a limit exits 1 and the message names budget, measured, limit.
       - name: check:perf on the fixture build (base /)
         if: always()
-        run: npm run check:perf 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+        run: npm run check:perf
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: perf-record
+          path: web/perf-record.json
+          if-no-files-found: warn
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

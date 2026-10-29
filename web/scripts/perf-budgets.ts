@@ -14,16 +14,19 @@
  *
  * All numbers are gzip (node:zlib on the built bytes) — what a 4G phone would download with the
  * server's plain compression. Run after a build: `npm run build && npm run check:perf`. Exits 1
- * when a budget is exceeded. Budgets live in BUDGETS below and are documented, with the measured
- * numbers, in docs/perf-budgets.md.
+ * when a budget is exceeded. Budgets live in BUDGETS below; the measured numbers and the headroom are not
+ * in the docs but in `web/perf-record.json`, which every run writes (git-ignored, deterministic; ticket #120).
+ * The judging is pure and lives in `perf-judge.ts`; this file is the shell (measure, write, print, exit).
  */
-import { existsSync, readFileSync } from 'node:fs'
+import { appendFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { gzipSync } from 'node:zlib'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { buildRecord, judge, renderTable, serializeRecord, type Measured } from './perf-judge'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const distDir = process.env.OUT_DIR ?? resolve(here, '..', 'dist')
+const recordFile = process.env.PERF_RECORD ?? resolve(here, '..', 'perf-record.json')
 
 export type RouteId = 'home' | 'city' | 'mapa' | 'report'
 
@@ -117,27 +120,36 @@ export function measureDist(distRoot: string): Record<RouteId, Metric> {
 }
 
 function main(distRoot: string): void {
-  const failures: string[] = []
-  const runs = (m: number, b: number): string => `${kb(m)} / ${kb(b)} ${m <= b ? 'OK' : 'OVER'}`
-  for (const [id, metric] of Object.entries(measureDist(distRoot)) as [RouteId, Metric][]) {
-    const b = BUDGETS[id]
+  const metrics = measureDist(distRoot)
+  for (const [id, metric] of Object.entries(metrics) as [RouteId, Metric][]) {
     console.log(`\n${id} (${ROUTES[id]})`)
     for (const part of metric.parts) console.log(`  ${part.kind.padEnd(8)} ${kb(part.gzip).padStart(6)}  ${part.path}`)
-    console.log(`  html     ${runs(metric.html, b.html * 1024)}`)
-    console.log(`  css      ${runs(metric.css, b.css * 1024)}`)
-    console.log(`  eagerJs  ${runs(metric.eagerJs, b.eagerJs * 1024)}`)
-    console.log(`  islandJs ${runs(metric.islandJs, b.islandJs * 1024)} (hydration JS; not loaded at parse for client:interaction islands)`)
-    console.log(`  total    ${kb(metric.total)} gzip`)
-    for (const [key, kind] of [['html', metric.html], ['css', metric.css], ['eagerJs', metric.eagerJs], ['islandJs', metric.islandJs]] as const) {
-      if (kind > b[key] * 1024) failures.push(`${id}.${key}: ${kb(kind)} > budget ${kb(b[key] * 1024)}`)
-    }
+    console.log(`  total    ${kb(metric.total)} gzip (islandJs is hydration JS; not loaded at parse for client:interaction islands)`)
   }
+  const { rows, failures, warnings } = judge(metrics as Record<RouteId, Measured>, BUDGETS)
+  const table = renderTable(rows)
+  // The record is written before the verdict, so a red run still leaves the numbers behind.
+  writeFileSync(recordFile, serializeRecord(buildRecord(rows, ROUTES, sharedCssBytes(metrics))), 'utf8')
+  console.log(`\n${table}\n\nrecord: ${recordFile}`)
+  const summary = process.env.GITHUB_STEP_SUMMARY
+  if (summary) {
+    const run = [process.env.GITHUB_SHA?.slice(0, 7), process.env.GITHUB_RUN_ID && `run ${process.env.GITHUB_RUN_ID}`].filter(Boolean).join(', ')
+    appendFileSync(summary, `### check:perf (fixture build, base /, gzip bytes${run ? `; ${run}` : ''})\n\n${table}\n`)
+  }
+  if (warnings.length) console.warn(`\nWARN (headroom below max(3%, 100 B)):\n${warnings.join('\n')}`)
   if (failures.length) {
     console.error(`\nBUDGET EXCEEDED:\n${failures.join('\n')}`)
     process.exit(1)
-  } else {
-    console.log('\nAll budgets met.')
   }
+  console.log('\nAll budgets met.')
+}
+
+/** The one stylesheet linked from every audited route (what #119 measures); anything else is an error, never a guess. */
+export function sharedCssBytes(metrics: Record<RouteId, Metric>): number {
+  const sets = Object.values(metrics).map((m) => new Map(m.parts.filter((p) => p.kind === 'css').map((p) => [p.path, p.gzip])))
+  const common = [...sets[0]!.keys()].filter((path) => sets.every((set) => set.has(path)))
+  if (common.length !== 1) throw new Error(`expected exactly one stylesheet shared by all routes, found ${common.length}: ${common.join(', ') || '(none)'}`)
+  return sets[0]!.get(common[0]!)!
 }
 
 // CLI: `tsx scripts/perf-budgets.ts` (npm run check:perf). The route-inventory guard (#110) imports ROUTES

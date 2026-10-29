@@ -14,3 +14,4 @@ public/edicoes/
 .sample-data/
 .sample-editions/
 .sample-backtest/
+perf-record.json

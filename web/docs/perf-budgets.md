@@ -23,12 +23,14 @@ O que o script soma por rota:
 
 ## Orçamentos
 
-| Rota | html | css | eagerJs | islandJs | total medido |
-|---|---|---|---|---|---|
-| `/` (home) | 12 KB | 16 KB | 4.2 KB (#35/#40: era 3 KB) | 120 KB | **101.0K** |
-| `/rj/cidade-exemplo/` (cartão) | 6.4 KB (G6: +0.2 KB, ver abaixo; G2: +1 KB, ver abaixo; #58: a frase pronta nos dois registros; #51: a barra superior de desktop, pré-renderizada em todas as páginas; #52: a segunda coluna do cartão) | 16 KB | 3 KB | 3 KB | **15.2K** |
-| `/mapa/` (tile map por estado) | 12 KB | 16 KB | 3 KB | 85 KB | **92.9K** |
-| `/relatorios/cidades-que-viraram/` (relatório) | 12 KB | 16 KB | 3 KB | 3 KB | **14.1K** |
+| Rota | html | css | eagerJs | islandJs |
+|---|---|---|---|---|
+| `/` (home) | 12 KB | 16 KB | 4.2 KB (#35/#40: era 3 KB) | 120 KB |
+| `/rj/cidade-exemplo/` (cartão) | 6.4 KB (G6: +0.2 KB, ver abaixo; G2: +1 KB, ver abaixo; #58: a frase pronta nos dois registros; #51: a barra superior de desktop, pré-renderizada em todas as páginas; #52: a segunda coluna do cartão) | 16 KB | 3 KB | 3 KB |
+| `/mapa/` (tile map por estado) | 12 KB | 16 KB | 3 KB | 85 KB |
+| `/relatorios/cidades-que-viraram/` (relatório) | 12 KB | 16 KB | 3 KB | 3 KB |
+
+Os números medidos e a folga de cada orçamento **não** ficam neste documento: `npm run check:perf` os escreve em `web/perf-record.json` (git-ignorado, determinístico; no CI, a tabela está no resumo do job e o arquivo é um artefato). Um orçamento estoura quando medido > limite; folga abaixo de max(3% do limite, 100 B) aparece como `WARN`. Para subir um limite, edite `BUDGETS` em `scripts/perf-budgets.ts` com um comentário que cite o ticket, em um commit revisado que diga o valor antigo e o novo.
 
 **Mudança de orçamento (#35, #40):** o `eagerJs` da home passou de 3 KB para 4.2 KB. A home agora lê o aparelho ao carregar
 (o atalho "Sua cidade" e o "esquecer meus dados", ~0.6 KB gzip) e traz o botão "Usar minha localização"; o código que pede a posição
@@ -60,24 +62,11 @@ Os orçamentos foram calibrados para o site já passar de folga — a intenção
 **fixar o piso atual como linha de base**, para que regressões de peso (voltar a CDNs, importar
 uma biblioteca de animação, soltar um CSS duplicado) quebrem o CI em vez de entrar mudo.
 
-## Números medidos (build do fixture)
-
-As quatro rotas atendem aos orçamentos. Em K gzip:
-
-| Rota | html | css | eagerJs | islandJs | **No carregamento** (html+css+eagerJs) |
-|---|---|---|---|---|---|
-| home | 8.7K | 13.9K | 3.0K | 1.0K (CitySearch 0.1K + client 0.9K) | **25.6K** |
-| cartão da cidade | 6.4K | 13.9K | 2.9K | 0 | **23.2K** |
-| mapa | 6.9K | 13.9K | 1.6K | 4.8K (StateMapMap 3.8K + client 0.9K) | **22.4K** |
-| relatório | 3.8K | 13.9K | 1.6K | 0 | **19.3K** |
-
-Proveniência: `npm run build && npm run check:perf` (em `web/`); commit: f2f16b5 (base, com as mudanças deste ticket, que só tocam docs e testes); dados: fixture; data: 2026-10-29. As somas usam os valores já arredondados (±0.1K).
-
 Duas notas que o orçamento não esconde:
 
-- **react-dom (o `client.` de 0.9K na medição acima) é o custo fixo das páginas com ilha.** As ilhas desta base são
+- **react-dom (o `client.` de ~0.9K, ver `web/perf-record.json`) é o custo fixo das páginas com ilha.** As ilhas desta base são
   todas `client:interaction`, então esse download só sai quando o campo de busca da home ou a
-  malha/troca de vista do mapa é tocado; está contabilizado no "total" e separado acima.
+  malha/troca de vista do mapa é tocado; está contabilizado no islandJs da rota.
 - A home carrega **um único shard** de dados (`search.json`) e **só quando o campo ganha foco** —
   isso é pinado em e2e (`home.spec`); o mapa puxa a malha de municípios **só quando a vista Mapa
   abre** — pinado em `mapa-rj.spec`.
