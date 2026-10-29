@@ -32,6 +32,8 @@ O que o script soma por rota:
 
 Os números medidos e a folga de cada orçamento **não** ficam neste documento: `npm run check:perf` os escreve em `web/perf-record.json` (git-ignorado, determinístico; no CI, a tabela está no resumo do job e o arquivo é um artefato). Um orçamento estoura quando medido > limite; folga abaixo de max(3% do limite, 100 B) aparece como `WARN`. Para subir um limite, edite `BUDGETS` em `scripts/perf-budgets.ts` com um comentário que cite o ticket, em um commit revisado que diga o valor antigo e o novo.
 
+**Medição (#147, sem mudança de orçamento):** a dica acima da busca da home (uma linha por destino, nos dois registros) e o foco ao chegar de uma entrada que pede cidade entram no script da página. Celular, `scripts/measure.ts` na home: antes html 8823 B, JS 4276 B (gzip), css 13141 B; depois html 8872 B, JS 4910 B, css 13160 B. `check:perf`: eagerJs da home 3204 B -> 3478 B (limite 4300 B), html 8823 B -> 8872 B (limite 12 KB). Só a home muda neste ticket.
+
 **Mudança de orçamento (#35, #40):** o `eagerJs` da home passou de 3 KB para 4.2 KB. A home agora lê o aparelho ao carregar
 (o atalho "Sua cidade" e o "esquecer meus dados", ~0.6 KB gzip) e traz o botão "Usar minha localização"; o código que pede a posição
 e o arquivo dos centros (70 KB gzip) só carregam no toque, mas o `import()` dinâmico faz o Vite acrescentar seu carregador (~0.9 KB gzip) ao script
