@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { useNoJs } from './presets'
 
@@ -12,30 +11,27 @@ import { useNoJs } from './presets'
  */
 test('capture cohorts / phone full page', async ({ page }) => {
   await page.goto(base + 'relatorios/como-cada-grupo-votou/')
-  await page.evaluate(() => document.fonts.ready)
   await page.evaluate(() => window.scrollTo(0, 0))
-  const dir = resolve('.captures', 'cohorts')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'phone-full.png')
-  await page.screenshot({ path: file, animations: 'disabled', fullPage: true })
-  writeFileSync(
-    resolve(dir, 'phone-full.json'),
-    JSON.stringify({ slot: 'cohorts', state: 'default', route: base + 'relatorios/como-cada-grupo-votou/', viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: true, reference: 'site/reference/12-como-cada-grupo-votou.png', capture: file }, null, 2) + '\n',
-  )
+  await capture(page, {
+    dir: 'cohorts',
+    name: 'phone-full',
+    route: base + 'relatorios/como-cada-grupo-votou/',
+    scrollY: 'page',
+    fullPage: true,
+    extra: { slot: 'cohorts', state: 'default', reference: 'site/reference/12-como-cada-grupo-votou.png' },
+  })
 })
 
 test.describe('cohorts without JavaScript', () => {
   useNoJs()
   test('capture cohorts / without JavaScript', async ({ page }) => {
     await page.goto(base + 'relatorios/como-cada-grupo-votou/')
-    await page.evaluate(() => document.fonts.ready)
-    const dir = resolve('.captures', 'cohorts')
-    mkdirSync(dir, { recursive: true })
-    const file = resolve(dir, 'phone-nojs.png')
-    await page.screenshot({ path: file, animations: 'disabled', fullPage: true })
-    writeFileSync(
-      resolve(dir, 'phone-nojs.json'),
-      JSON.stringify({ slot: 'cohorts', state: 'no-js', route: base + 'relatorios/como-cada-grupo-votou/', viewport: page.viewportSize(), fullPage: true, reference: 'site/reference/12-como-cada-grupo-votou.png', capture: file }, null, 2) + '\n',
-    )
+    await capture(page, {
+      dir: 'cohorts',
+      name: 'phone-nojs',
+      route: base + 'relatorios/como-cada-grupo-votou/',
+      fullPage: true,
+      extra: { slot: 'cohorts', state: 'no-js', reference: 'site/reference/12-como-cada-grupo-votou.png' },
+    })
   })
 })

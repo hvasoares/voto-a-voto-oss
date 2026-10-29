@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { PHONE, DESKTOP, viewport } from './presets'
 
@@ -21,12 +20,15 @@ for (const size of sizes) {
     const page = await context.newPage()
     await page.goto(`${base}brasil/`)
     await page.getByRole('button', { name: 'Prosseguir' }).click() // the metrics notice covers the footer on a first visit
-    await page.evaluate(() => document.fonts.ready)
-    const dir = resolve('.captures', 'page-data')
-    mkdirSync(dir, { recursive: true })
-    const file = resolve(dir, `${size.name}.png`)
-    await page.screenshot({ path: file, animations: 'disabled', fullPage: size.fullPage })
-    writeFileSync(resolve(dir, `${size.name}.json`), JSON.stringify({ route: `${base}brasil/`, viewport: viewport(size.width, size.height), scrollY: 0, fullPage: size.fullPage }, null, 2) + '\n')
+    await capture(page, {
+      dir: 'page-data',
+      name: size.name,
+      route: `${base}brasil/`,
+      viewport: viewport(size.width, size.height),
+      scrollY: 0,
+      fullPage: size.fullPage,
+      omit: ['capture'],
+    })
     const link = page.locator('[data-page-data-download]')
     if (size.width >= 1024) await expect(link).toBeVisible()
     else await expect(link).toBeHidden()

@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { SOBRE_FRAME } from './presets'
 
@@ -11,29 +10,28 @@ import { SOBRE_FRAME } from './presets'
  */
 test('capture about / phone full page', async ({ page }) => {
   await page.goto(base + 'sobre-os-dados/')
-  await page.evaluate(() => document.fonts.ready)
   await page.evaluate(() => window.scrollTo(0, 0))
-  const dir = resolve('.captures', 'about')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'phone-full.png')
-  await page.screenshot({ path: file, animations: 'disabled', fullPage: true })
-  writeFileSync(
-    resolve(dir, 'phone-full.json'),
-    JSON.stringify({ slot: 'about', state: 'default', route: base + 'sobre-os-dados/', viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: true, reference: 'web/reference/14-sobre-os-dados.png', capture: file }, null, 2) + '\n',
-  )
+  await capture(page, {
+    dir: 'about',
+    name: 'phone-full',
+    route: base + 'sobre-os-dados/',
+    scrollY: 'page',
+    fullPage: true,
+    extra: { slot: 'about', state: 'default', reference: 'web/reference/14-sobre-os-dados.png' },
+  })
 })
 
 test('capture about / desktop', async ({ page }) => {
   await page.setViewportSize(SOBRE_FRAME)
   await page.goto(base + 'sobre-os-dados/')
-  await page.evaluate(() => document.fonts.ready)
   await page.evaluate(() => window.scrollTo(0, 0))
-  const dir = resolve('.captures', 'about')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'desktop-full.png')
-  await page.screenshot({ path: file, animations: 'disabled', fullPage: true })
-  writeFileSync(
-    resolve(dir, 'desktop-full.json'),
-    JSON.stringify({ slot: 'about', state: 'desktop', route: base + 'sobre-os-dados/', viewport: SOBRE_FRAME, scrollY: await page.evaluate(() => window.scrollY), fullPage: true, reference: 'web/reference/14-sobre-os-dados.png', capture: file }, null, 2) + '\n',
-  )
+  await capture(page, {
+    dir: 'about',
+    name: 'desktop-full',
+    route: base + 'sobre-os-dados/',
+    viewport: SOBRE_FRAME,
+    scrollY: 'page',
+    fullPage: true,
+    extra: { slot: 'about', state: 'desktop', reference: 'web/reference/14-sobre-os-dados.png' },
+  })
 })

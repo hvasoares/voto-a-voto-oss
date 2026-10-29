@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { acknowledgeNotice } from './presets'
 
@@ -12,10 +11,5 @@ test('capture resumo / phone', async ({ page }) => {
   })
   await page.goto(`${base}rj/resumo/`)
   await page.waitForSelector('[data-share-actions][data-png="ready"]')
-  await page.evaluate(() => document.fonts.ready)
-  const dir = resolve('.captures', 'resumo')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'phone.png')
-  await page.screenshot({ path: file, animations: 'disabled' })
-  writeFileSync(resolve(dir, 'phone.json'), JSON.stringify({ route: 'rj/resumo/', viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), capture: file }, null, 2) + '\n')
+  await capture(page, { dir: 'resumo', name: 'phone', route: 'rj/resumo/', scrollY: 'page' })
 })

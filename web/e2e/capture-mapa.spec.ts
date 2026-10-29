@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { useNoJs } from './presets'
 
@@ -21,21 +20,20 @@ for (const [state, reference] of Object.entries(refs)) {
   const url = state.startsWith('virada') ? `${base}mapa/virada/${state.endsWith('-mapa') ? '?vista=mapa' : ''}` : `${base}mapa/${state === 'mapa' ? '?vista=mapa' : ''}`
   test(`capture mapa / ${state}`, async ({ page }) => {
     await page.goto(url)
-    await page.evaluate(() => document.fonts.ready)
     await page.evaluate(() => window.scrollTo(0, 0))
     if (state.endsWith('-mapa')) {
       // the map view is hydration-only: tap the toggle and wait for React
       await page.getByRole('link', { name: 'Mapa', exact: true }).click()
       await page.getByRole('img', { name: /^Mapa do Brasil por estado/ }).waitFor()
     }
-    const dir = resolve('.captures', 'mapa')
-    mkdirSync(dir, { recursive: true })
-    const file = resolve(dir, `${state}.png`)
-    await page.screenshot({ path: file, animations: 'disabled' })
-    writeFileSync(
-      resolve(dir, `${state}.json`),
-      JSON.stringify({ slot: 'state-map', state, route: url, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference, capture: file }, null, 2) + '\n',
-    )
+    await capture(page, {
+      dir: 'mapa',
+      name: state,
+      route: url,
+      scrollY: 'page',
+      fullPage: false,
+      extra: { slot: 'state-map', state, reference },
+    })
   })
 }
 
@@ -44,15 +42,14 @@ test.describe('no-JS render', () => {
   test('capture mapa / no-js', async ({ page }) => {
     const url = `${base}mapa/`
     await page.goto(url)
-    await page.evaluate(() => document.fonts.ready)
     await page.evaluate(() => window.scrollTo(0, 0))
-    const dir = resolve('.captures', 'mapa')
-    mkdirSync(dir, { recursive: true })
-    const file = resolve(dir, 'no-js.png')
-    await page.screenshot({ path: file, animations: 'disabled' })
-    writeFileSync(
-      resolve(dir, 'no-js.json'),
-      JSON.stringify({ slot: 'state-map', state: 'no-js', route: url, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'site/reference/10-mapa-por-estado-mosaico.png', capture: file }, null, 2) + '\n',
-    )
+    await capture(page, {
+      dir: 'mapa',
+      name: 'no-js',
+      route: url,
+      scrollY: 'page',
+      fullPage: false,
+      extra: { slot: 'state-map', state: 'no-js', reference: 'site/reference/10-mapa-por-estado-mosaico.png' },
+    })
   })
 })

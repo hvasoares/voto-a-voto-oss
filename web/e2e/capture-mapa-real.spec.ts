@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { dataGuard } from './presets'
 
@@ -21,19 +20,18 @@ const routes: Record<string, string> = {
 for (const [state, url] of Object.entries(routes)) {
   test(`capture mapa / ${state}`, async ({ page }) => {
     await page.goto(url)
-    await page.evaluate(() => document.fonts.ready)
     await page.evaluate(() => window.scrollTo(0, 0))
     if (state.endsWith('-mapa')) {
       await page.getByRole('link', { name: 'Mapa', exact: true }).click()
       await page.getByRole('img', { name: /^Mapa do Brasil por estado/ }).waitFor()
     }
-    const dir = resolve('.captures', 'mapa')
-    mkdirSync(dir, { recursive: true })
-    const file = resolve(dir, `${state}.png`)
-    await page.screenshot({ path: file, animations: 'disabled', fullPage: false })
-    writeFileSync(
-      resolve(dir, `${state}.json`),
-      JSON.stringify({ slot: 'state-map', state, route: url, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'site/reference/10*.png' }, null, 2) + '\n',
-    )
+    await capture(page, {
+      dir: 'mapa',
+      name: state,
+      route: url,
+      scrollY: 'page',
+      fullPage: false,
+      extra: { slot: 'state-map', state, reference: 'site/reference/10*.png' },
+    })
   })
 }

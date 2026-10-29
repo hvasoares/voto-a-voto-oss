@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { dataGuard } from './presets'
 
@@ -12,14 +11,13 @@ test.skip(...dataGuard('cities.csv', process.env.DATA_DIR === '../data' ? '../da
 
 test('capture cohorts on the real dataset / phone full page', async ({ page }) => {
   await page.goto(base + 'relatorios/como-cada-grupo-votou/')
-  await page.evaluate(() => document.fonts.ready)
   await page.evaluate(() => window.scrollTo(0, 0))
-  const dir = resolve('.captures', 'cohorts')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'phone-real-data.png')
-  await page.screenshot({ path: file, animations: 'disabled', fullPage: true })
-  writeFileSync(
-    resolve(dir, 'phone-real-data.json'),
-    JSON.stringify({ slot: 'cohorts', state: 'real-data', route: base + 'relatorios/como-cada-grupo-votou/', viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: true, reference: 'site/reference/12-como-cada-grupo-votou.png', capture: file }, null, 2) + '\n',
-  )
+  await capture(page, {
+    dir: 'cohorts',
+    name: 'phone-real-data',
+    route: base + 'relatorios/como-cada-grupo-votou/',
+    scrollY: 'page',
+    fullPage: true,
+    extra: { slot: 'cohorts', state: 'real-data', reference: 'site/reference/12-como-cada-grupo-votou.png' },
+  })
 })

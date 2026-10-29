@@ -1,16 +1,11 @@
-import { mkdirSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { DESKTOP } from './presets'
 
 /* #83 gate 2: the state page at 390x844 (list, filtered, map view, empty) and at 1440x900, on the fixture build. Output .captures/state-83/ (not committed). */
-const dir = resolve('.captures', 'state-83')
-mkdirSync(dir, { recursive: true })
-const shot = async (page: import('@playwright/test').Page, name: string) => {
-  await page.evaluate(() => document.fonts.ready)
-  await page.screenshot({ path: resolve(dir, `${name}.png`), animations: 'disabled', fullPage: false })
-}
+const DIR = 'state-83'
+const shot = (page: import('@playwright/test').Page, name: string) => capture(page, { dir: DIR, name, fullPage: false, sidecar: false })
 
 test('capture state-83 / phone', async ({ page }) => {
   await page.goto(`${base}rj/`)

@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { acknowledgeNotice } from './presets'
 
@@ -15,11 +14,13 @@ test('capture home / sua cidade', async ({ page }) => {
     localStorage.setItem('voto-a-voto:place', JSON.stringify({ kind: 'city', uf: 'rj', slug: 'cidade-exemplo', nome: 'Cidade Exemplo' }))
   })
   await page.goto(base)
-  await page.evaluate(() => document.fonts.ready)
   await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
-  const dir = resolve('.captures', 'home')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'sua-cidade.png')
-  await page.screenshot({ path: file, animations: 'disabled', fullPage: true })
-  writeFileSync(resolve(dir, 'sua-cidade.json'), JSON.stringify({ slot: 'home', state: 'sua-cidade', route: base, viewport: page.viewportSize(), scrollY: 0, fullPage: true, reference: 'Sketch: 1 Home, with the Sua cidade shortcut', capture: file }, null, 2) + '\n')
+  await capture(page, {
+    dir: 'home',
+    name: 'sua-cidade',
+    route: base,
+    scrollY: 0,
+    fullPage: true,
+    extra: { slot: 'home', state: 'sua-cidade', reference: 'Sketch: 1 Home, with the Sua cidade shortcut' },
+  })
 })

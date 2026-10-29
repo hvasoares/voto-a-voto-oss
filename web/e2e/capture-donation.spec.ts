@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { acknowledgeNotice } from './presets'
 
@@ -14,24 +13,28 @@ import { acknowledgeNotice } from './presets'
 test('capture about / donation footer', async ({ page }) => {
   await acknowledgeNotice(page)
   await page.goto(`${base}sobre-os-dados/`)
-  await page.evaluate(() => document.fonts.ready)
   const height = await page.evaluate(() => document.documentElement.scrollHeight)
-  const dir = resolve('.captures', 'about')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'donation.png')
-  await page.screenshot({ path: file, animations: 'disabled', fullPage: true, clip: { x: 0, y: height - 330, width: 390, height: 330 } })
-  writeFileSync(resolve(dir, 'donation.json'), JSON.stringify({ slot: 'about', state: 'donation', route: `${base}sobre-os-dados/`, viewport: page.viewportSize(), clip: { y: height - 330, height: 330 }, reference: 'Sketch: 14 Sobre os dados, with donation footer (bottom 160 px)', capture: file }, null, 2) + '\n')
+  await capture(page, {
+    dir: 'about',
+    name: 'donation',
+    route: `${base}sobre-os-dados/`,
+    fullPage: true,
+    omit: ['fullPage'],
+    clip: { x: 0, y: height - 330, width: 390, height: 330 },
+    extra: { slot: 'about', state: 'donation', clip: { y: height - 330, height: 330 }, reference: 'Sketch: 14 Sobre os dados, with donation footer (bottom 160 px)' },
+  })
 })
 
 test('capture home / donation footer', async ({ page }) => {
   await acknowledgeNotice(page)
   await page.goto(base)
-  await page.evaluate(() => document.fonts.ready)
   await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
-  const dir = resolve('.captures', 'home')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'donation-footer.png')
-  await page.screenshot({ path: file, animations: 'disabled' })
-  writeFileSync(resolve(dir, 'donation-footer.json'), JSON.stringify({ slot: 'home', state: 'donation-footer', route: base, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), reference: 'none (no frame for the footer line)', capture: file }, null, 2) + '\n')
+  await capture(page, {
+    dir: 'home',
+    name: 'donation-footer',
+    route: base,
+    scrollY: 'page',
+    extra: { slot: 'home', state: 'donation-footer', reference: 'none (no frame for the footer line)' },
+  })
 })

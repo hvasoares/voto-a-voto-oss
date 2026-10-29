@@ -9,6 +9,7 @@ import { join, resolve } from 'node:path'
 import type { Page } from '@playwright/test'
 import { afterEach, describe, expect, it } from 'vitest'
 import { capture, captureDir, captureFiles, captureRef, findRawCaptureSteps, sidecar, waitFonts } from './capture'
+import { PHONE, viewport } from './presets'
 
 const tmpDirs: string[] = []
 const tmp = () => {
@@ -44,7 +45,7 @@ describe('sidecar', () => {
   it('writes the standard keys in contract order, extras last, pretty-printed with a trailing newline', () => {
     const text = sidecar({
       route: 'rj/',
-      viewport: { width: 390, height: 844 },
+      viewport: PHONE,
       scrollY: 0,
       fullPage: false,
       capture: 'state/default.png',
@@ -66,9 +67,9 @@ describe('sidecar', () => {
   })
 
   it('omits the keys the block never records', () => {
-    expect(sidecar({ route: 'rf/', viewport: { width: 1, height: 2 }, fontsReady: true })).toContain('"fontsReady"')
-    expect(sidecar({ route: 'rf/', viewport: { width: 1, height: 2 } })).not.toContain('fontsReady')
-    expect(sidecar({ route: 'rf/', viewport: { width: 1, height: 2 } })).not.toContain('capture')
+    expect(sidecar({ route: 'rf/', viewport: viewport(1, 2), fontsReady: true })).toContain('"fontsReady"')
+    expect(sidecar({ route: 'rf/', viewport: viewport(1, 2) })).not.toContain('fontsReady')
+    expect(sidecar({ route: 'rf/', viewport: viewport(1, 2) })).not.toContain('capture')
   })
 })
 

@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { acknowledgeNotice } from './presets'
 
@@ -12,11 +11,13 @@ import { acknowledgeNotice } from './presets'
 test('capture home / localizacao', async ({ page }) => {
   await acknowledgeNotice(page)
   await page.goto(base)
-  await page.evaluate(() => document.fonts.ready)
   await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
-  const dir = resolve('.captures', 'home')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'localizacao.png')
-  await page.screenshot({ path: file, animations: 'disabled', fullPage: true })
-  writeFileSync(resolve(dir, 'localizacao.json'), JSON.stringify({ slot: 'home', state: 'localizacao', route: base, viewport: page.viewportSize(), scrollY: 0, fullPage: true, reference: 'Sketch: 1 Home, with the location button', capture: file }, null, 2) + '\n')
+  await capture(page, {
+    dir: 'home',
+    name: 'localizacao',
+    route: base,
+    scrollY: 0,
+    fullPage: true,
+    extra: { slot: 'home', state: 'localizacao', reference: 'Sketch: 1 Home, with the location button' },
+  })
 })

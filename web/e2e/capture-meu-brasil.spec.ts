@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { PHONE, DESKTOP, acknowledgeNotice } from './presets'
 
@@ -15,10 +14,5 @@ for (const [name, size] of [['phone', PHONE], ['desktop', DESKTOP]] as const)
     })
     await page.goto(`${base}meu-brasil/${THREE}`)
     await page.waitForSelector('[data-meu-brasil][data-ready="yes"]')
-    await page.evaluate(() => document.fonts.ready)
-    const dir = resolve('.captures', 'meu-brasil')
-    mkdirSync(dir, { recursive: true })
-    const file = resolve(dir, `${name}.png`)
-    await page.screenshot({ path: file, animations: 'disabled', fullPage: name === 'desktop' })
-    writeFileSync(resolve(dir, `${name}.json`), JSON.stringify({ route: `meu-brasil/${THREE}`, viewport: size, capture: file }, null, 2) + '\n')
+    await capture(page, { dir: 'meu-brasil', name, route: `meu-brasil/${THREE}`, viewport: size, fullPage: name === 'desktop', omit: ['fullPage'] })
   })

@@ -1,6 +1,5 @@
-import { mkdirSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { viewport } from './presets'
 
@@ -21,11 +20,8 @@ for (const [name, route, spot, desktop] of SPOTS) {
       await page.goto(base + route)
       if (name === 'meu-brasil') await page.locator('[data-meu-brasil][data-drawn="2"]').waitFor()
       if (name === 'gerador') await page.waitForFunction(() => document.querySelector('[data-card-generator]')?.getAttribute('data-ready') === 'yes')
-      await page.evaluate(() => document.fonts.ready)
-      const dir = resolve('.captures', 'followup-links')
-      mkdirSync(dir, { recursive: true })
       await page.locator(spot).first().scrollIntoViewIfNeeded()
-      await page.screenshot({ path: resolve(dir, `${name}-${size[0]}.png`), animations: 'disabled' })
+      await capture(page, { dir: 'followup-links', name: `${name}-${size[0]}`, sidecar: false })
     })
   }
 }

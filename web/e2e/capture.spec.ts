@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { PRINT_A4 } from './presets'
 
@@ -11,96 +10,90 @@ import { PRINT_A4 } from './presets'
  */
 test('capture home / default', async ({ page }) => {
   await page.goto(base)
-  await page.evaluate(() => document.fonts.ready)
   await page.evaluate(() => window.scrollTo(0, 0))
-  const dir = resolve('.captures', 'home')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'default.png')
-  await page.screenshot({ path: file, animations: 'disabled' })
-  writeFileSync(
-    resolve(dir, 'default.json'),
-    JSON.stringify({ slot: 'home', state: 'default', route: base, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'web/reference/01-home.png', capture: file }, null, 2) + '\n',
-  )
+  await capture(page, {
+    dir: 'home',
+    name: 'default',
+    route: base,
+    scrollY: 'page',
+    fullPage: false,
+    extra: { slot: 'home', state: 'default', reference: 'web/reference/01-home.png' },
+  })
 })
 
 /* Ticket #7: the share sheet demo route (fixture city, 2026 · 1º turno), next to web/reference/03-compartilhamento.png. */
 test('capture share / default', async ({ page }) => {
   await page.goto(`${base}compartilhar/`)
-  await page.evaluate(() => document.fonts.ready)
   await page.waitForFunction(() => { const i = document.querySelector('astro-island'); return !!i && !i.hasAttribute('ssr') })
   await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
   await page.evaluate(() => window.scrollTo(0, 0))
-  const dir = resolve('.captures', 'share')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'default.png')
-  await page.screenshot({ path: file, animations: 'disabled' })
-  writeFileSync(
-    resolve(dir, 'default.json'),
-    JSON.stringify({ slot: 'share', state: 'default', route: `${base}compartilhar/`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'web/reference/03-compartilhamento.png', capture: file }, null, 2) + '\n',
-  )
+  await capture(page, {
+    dir: 'share',
+    name: 'default',
+    route: `${base}compartilhar/`,
+    scrollY: 'page',
+    fullPage: false,
+    extra: { slot: 'share', state: 'default', reference: 'web/reference/03-compartilhamento.png' },
+  })
 })
 
 /* State page (#50, the ported Sketch frame "5 Estado"), next to web/reference/05-estado.png. */
 test('capture state / default', async ({ page }) => {
   await page.goto(`${base}rj/`)
-  await page.evaluate(() => document.fonts.ready)
   await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
   await page.evaluate(() => window.scrollTo(0, 0))
-  const dir = resolve('.captures', 'state')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'default.png')
-  await page.screenshot({ path: file, animations: 'disabled' })
-  writeFileSync(
-    resolve(dir, 'default.json'),
-    JSON.stringify({ slot: 'state', state: 'default', route: `${base}rj/`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'web/reference/05-estado.png', capture: file }, null, 2) + '\n',
-  )
+  await capture(page, {
+    dir: 'state',
+    name: 'default',
+    route: `${base}rj/`,
+    scrollY: 'page',
+    fullPage: false,
+    extra: { slot: 'state', state: 'default', reference: 'web/reference/05-estado.png' },
+  })
 })
 
 /* City card (#50, the ported Sketch frame "2 Cartão da cidade"; ?turno=1 is the frame's round), next to web/reference/02-cartao-da-cidade.png. */
 test('capture city / card, 1º turno', async ({ page }) => {
   await page.goto(`${base}rj/cidade-exemplo/?turno=1`)
-  await page.evaluate(() => document.fonts.ready)
   await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
   await page.evaluate(() => window.scrollTo(0, 0))
-  const dir = resolve('.captures', 'city')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'card-turno-1.png')
-  await page.screenshot({ path: file, animations: 'disabled' })
-  writeFileSync(
-    resolve(dir, 'card-turno-1.json'),
-    JSON.stringify({ slot: 'city', state: 'card, 1º turno', route: `${base}rj/cidade-exemplo/?turno=1`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'web/reference/02-cartao-da-cidade.png', capture: file }, null, 2) + '\n',
-  )
+  await capture(page, {
+    dir: 'city',
+    name: 'card-turno-1',
+    route: `${base}rj/cidade-exemplo/?turno=1`,
+    scrollY: 'page',
+    fullPage: false,
+    extra: { slot: 'city', state: 'card, 1º turno', reference: 'web/reference/02-cartao-da-cidade.png' },
+  })
 })
 
 /* Three cycles of a city (#50, the ported Sketch frame "9 Três ciclos (cidade)", ?turno=1 again the frame's round), next to web/reference/09-tres-ciclos-cidade.png. */
 test('capture city cycles / 1º turno', async ({ page }) => {
   await page.goto(`${base}rj/cidade-exemplo/tres-ciclos/?turno=1`)
-  await page.evaluate(() => document.fonts.ready)
   await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
   await page.evaluate(() => window.scrollTo(0, 0))
-  const dir = resolve('.captures', 'city-cycles')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'turno-1.png')
-  await page.screenshot({ path: file, animations: 'disabled' })
-  writeFileSync(
-    resolve(dir, 'turno-1.json'),
-    JSON.stringify({ slot: 'city-cycles', state: '1º turno', route: `${base}rj/cidade-exemplo/tres-ciclos/?turno=1`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'web/reference/09-tres-ciclos-cidade.png', capture: file }, null, 2) + '\n',
-  )
+  await capture(page, {
+    dir: 'city-cycles',
+    name: 'turno-1',
+    route: `${base}rj/cidade-exemplo/tres-ciclos/?turno=1`,
+    scrollY: 'page',
+    fullPage: false,
+    extra: { slot: 'city-cycles', state: '1º turno', reference: 'web/reference/09-tres-ciclos-cidade.png' },
+  })
 })
 
 /* Ticket #9: the Mostrar QR demo screen (fixture city), next to site/reference/04-mostrar-qr.png. */
 test('capture qr / default', async ({ page }) => {
   await page.goto(`${base}qr/`)
-  await page.evaluate(() => document.fonts.ready)
   await page.evaluate(() => window.scrollTo(0, 0))
-  const dir = resolve('.captures', 'qr')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'default.png')
-  await page.screenshot({ path: file, animations: 'disabled' })
-  writeFileSync(
-    resolve(dir, 'default.json'),
-    JSON.stringify({ slot: 'qr', state: 'default', route: `${base}qr/`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'site/reference/04-mostrar-qr.png', capture: file }, null, 2) + '\n',
-  )
+  await capture(page, {
+    dir: 'qr',
+    name: 'default',
+    route: `${base}qr/`,
+    scrollY: 'page',
+    fullPage: false,
+    extra: { slot: 'qr', state: 'default', reference: 'site/reference/04-mostrar-qr.png' },
+  })
 })
 
 /* Ticket #9: the printable poster, A4 emulated (print media at 794x1123 CSS px = 210x297 mm at 96 dpi). */
@@ -108,15 +101,14 @@ test('capture qr / poster-print', async ({ page }) => {
   await page.setViewportSize(PRINT_A4)
   await page.emulateMedia({ media: 'print' })
   await page.goto(`${base}qr/`)
-  await page.evaluate(() => document.fonts.ready)
   await expect(page.locator('[data-poster]')).toBeVisible()
   await expect(page.locator('[data-qr-screen]')).toBeHidden()
-  const dir = resolve('.captures', 'qr')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, 'poster-print.png')
-  await page.screenshot({ path: file, animations: 'disabled' })
-  writeFileSync(
-    resolve(dir, 'poster-print.json'),
-    JSON.stringify({ slot: 'qr', state: 'poster-print', route: `${base}qr/`, viewport: page.viewportSize(), scrollY: 0, fullPage: false, media: 'print', reference: 'A4 (210x297) print layer of the same ticket', capture: file }, null, 2) + '\n',
-  )
+  await capture(page, {
+    dir: 'qr',
+    name: 'poster-print',
+    route: `${base}qr/`,
+    scrollY: 0,
+    fullPage: false,
+    extra: { slot: 'qr', state: 'poster-print', media: 'print', reference: 'A4 (210x297) print layer of the same ticket' },
+  })
 })

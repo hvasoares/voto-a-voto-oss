@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { PHONE, DESKTOP, DUEL, acknowledgeNotice } from './presets'
 
@@ -30,11 +29,13 @@ for (const [name, q, size] of SHOTS)
     })
     await page.goto(`${base}cara-a-cara/${q}`)
     await page.waitForSelector(name.endsWith('resposta') ? '[data-duel][data-places="1"]' : '[data-duel][data-ready="yes"]')
-    await page.evaluate(() => document.fonts.ready)
     await page.waitForTimeout(300)
-    const dir = resolve('.captures', 'cara-a-cara')
-    mkdirSync(dir, { recursive: true })
-    const file = resolve(dir, `${name}.png`)
-    await page.screenshot({ path: file, animations: 'disabled', fullPage: size.width === 1440 })
-    writeFileSync(resolve(dir, `${name}.json`), JSON.stringify({ route: `cara-a-cara/${q}`, viewport: size, capture: file }, null, 2) + '\n')
+    await capture(page, {
+      dir: 'cara-a-cara',
+      name,
+      route: `cara-a-cara/${q}`,
+      viewport: size,
+      fullPage: size.width === 1440,
+      omit: ['fullPage'],
+    })
   })

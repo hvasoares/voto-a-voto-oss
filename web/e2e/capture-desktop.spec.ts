@@ -1,6 +1,5 @@
-import { mkdirSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { viewport, acknowledgeNotice } from './presets'
 
@@ -40,11 +39,8 @@ for (const [name, path] of Object.entries(SCREENS)) {
       await acknowledgeNotice(page)
       if (name === 'compartilhar-sem-share') await page.addInitScript(() => Object.defineProperty(navigator, 'share', { value: undefined, configurable: true }))
       await page.goto(base + path)
-      await page.evaluate(() => document.fonts.ready)
       await page.waitForTimeout(300)
-      const dir = resolve('.captures', 'desktop')
-      mkdirSync(dir, { recursive: true })
-      await page.screenshot({ path: resolve(dir, `${name}-${width}.png`), animations: 'disabled', fullPage: process.env.FULL === '1' })
+      await capture(page, { dir: 'desktop', name: `${name}-${width}`, fullPage: process.env.FULL === '1', sidecar: false })
     })
   }
 }

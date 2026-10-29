@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 
 /*
@@ -21,29 +20,29 @@ const SHOTS = [
 for (const { slot, route, reference } of SHOTS) {
   test(`capture reports / ${slot} / phone full page`, async ({ page }) => {
     await page.goto(base + route)
-    await page.evaluate(() => document.fonts.ready)
     await page.evaluate(() => window.scrollTo(0, 0))
-    const dir = resolve('.captures', 'reports', 'fixture')
-    mkdirSync(dir, { recursive: true })
-    const file = resolve(dir, `${slot}-phone-full.png`)
-    await page.screenshot({ path: file, animations: 'disabled', fullPage: true })
-    writeFileSync(
-      resolve(dir, `${slot}-phone-full.json`),
-      JSON.stringify({ slot, state: 'fixture', route: base + route, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: true, reference }, null, 2) + '\n',
-    )
+    await capture(page, {
+      dir: 'reports/fixture',
+      name: `${slot}-phone-full`,
+      route: base + route,
+      scrollY: 'page',
+      fullPage: true,
+      omit: ['capture'],
+      extra: { slot, state: 'fixture', reference },
+    })
   })
 
   test(`capture reports / ${slot} / phone open viewport`, async ({ page }) => {
     await page.goto(base + route)
-    await page.evaluate(() => document.fonts.ready)
     await page.evaluate(() => window.scrollTo(0, 0))
-    const dir = resolve('.captures', 'reports', 'fixture')
-    mkdirSync(dir, { recursive: true })
-    const file = resolve(dir, `${slot}-phone-844.png`)
-    await page.screenshot({ path: file, animations: 'disabled' })
-    writeFileSync(
-      resolve(dir, `${slot}-phone-844.json`),
-      JSON.stringify({ slot, state: 'fixture', route: base + route, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference }, null, 2) + '\n',
-    )
+    await capture(page, {
+      dir: 'reports/fixture',
+      name: `${slot}-phone-844`,
+      route: base + route,
+      scrollY: 'page',
+      fullPage: false,
+      omit: ['capture'],
+      extra: { slot, state: 'fixture', reference },
+    })
   })
 }

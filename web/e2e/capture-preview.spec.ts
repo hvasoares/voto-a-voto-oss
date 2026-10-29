@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
+import { capture } from './capture'
 import { base } from './helpers'
 import { OG_CARD } from './presets'
 
@@ -44,50 +43,32 @@ test('capture city-preview / og-image raster vs the same svg rendered by the bro
   await page2.setContent(
     `<!doctype html><html><head><meta name="viewport" content="width=480"></head><body style="margin:0"><img width="480" height="476" src="data:image/svg+xml;base64,${encoded}"></body></html>`,
   )
-  const renderedPath = resolve('.captures', 'city-preview', 'svg-rendered.png')
-  await page2.evaluate(() => document.fonts.ready)
-  await page2.screenshot({ path: renderedPath, animations: 'disabled' })
+  await capture(page2, {
+    dir: 'city-preview',
+    name: 'svg-rendered',
+    route: `${base}rj/cidade-exemplo/compartilhar/`,
+    viewport: page.viewportSize() ?? undefined,
+    fullPage: false,
+    extra: { slot: 'city-preview', state: 'svg-rendered', reference: 'the built og:image raster (og-image.png, 480x476)', note: 'the island’s pre-printed share svg rendered by Chromium at the og:image size' },
+  })
   await browser2.close()
 
-  const rasterPath = resolve('.captures', 'city-preview', 'og-image.png')
-  const dir = resolve('.captures', 'city-preview')
-  mkdirSync(dir, { recursive: true })
-  writeFileSync(rasterPath, raster)
-  writeFileSync(
-    resolve(dir, 'og-image.json'),
-    JSON.stringify(
-      {
-        slot: 'city-preview',
-        state: 'og-image',
-        route,
-        viewport: page.viewportSize(),
-        ogImage: promised,
-        bytes: raster.length,
-        type: response.headers()['content-type'],
-        fullPage: false,
-        reference: 'the same drawing rendered by the browser in this capture (svg-rendered.png)',
-        capture: rasterPath,
-        note: 'the picture of ticket #8: shareCardSvg (via previewSvg) rasterised by sharp at 480x476; compare with svg-rendered.png — the identical svg rendered by Chromium (fonts of the browser vs the rasteriser)',
-      },
-      null,
-      2,
-    ) + '\n',
-  )
-  writeFileSync(
-    resolve(dir, 'svg-rendered.json'),
-    JSON.stringify(
-      {
-        slot: 'city-preview',
-        state: 'svg-rendered',
-        route: `${base}rj/cidade-exemplo/compartilhar/`,
-        viewport: page.viewportSize(),
-        fullPage: false,
-        reference: 'the built og:image raster (og-image.png, 480x476)',
-        capture: renderedPath,
-        note: 'the island’s pre-printed share svg rendered by Chromium at the og:image size',
-      },
-      null,
-      2,
-    ) + '\n',
-  )
+  // the picture of ticket #8: the raster itself (already drawn; no fonts to wait on)
+  await capture(page, {
+    dir: 'city-preview',
+    name: 'og-image',
+    route,
+    fullPage: false,
+    png: raster,
+    fonts: false,
+    extra: {
+      slot: 'city-preview',
+      state: 'og-image',
+      ogImage: promised,
+      bytes: raster.length,
+      type: response.headers()['content-type'],
+      reference: 'the same drawing rendered by the browser in this capture (svg-rendered.png)',
+      note: 'the picture of ticket #8: shareCardSvg (via previewSvg) rasterised by sharp at 480x476; compare with svg-rendered.png — the identical svg rendered by Chromium (fonts of the browser vs the rasteriser)',
+    },
+  })
 })

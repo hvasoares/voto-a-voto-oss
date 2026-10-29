@@ -1,6 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
 import { expect, test, type Page } from '@playwright/test'
-import { resolve } from 'node:path'
+import { capture } from './capture'
 import { base } from './helpers'
 import { useNoJs } from './presets'
 
@@ -12,22 +11,21 @@ import { useNoJs } from './presets'
  * island; the check documents that server-rendering alone shows the screen). The real-data state is
  * captured by e2e/real-data-brasil.spec.ts (data directory ../data).
  */
-const capture = async (page: Page, state: string) => {
-  await page.evaluate(() => document.fonts.ready)
+const shoot = async (page: Page, state: string) => {
   await page.evaluate(() => window.scrollTo(0, 0))
-  const dir = resolve('.captures', 'brasil')
-  mkdirSync(dir, { recursive: true })
-  const file = resolve(dir, `${state}.png`)
-  await page.screenshot({ path: file, animations: 'disabled' })
-  writeFileSync(
-    resolve(dir, `${state}.json`),
-    JSON.stringify({ slot: 'brasil (issue 10)', state, route: `${base}brasil/`, viewport: page.viewportSize(), scrollY: await page.evaluate(() => window.scrollY), fullPage: false, reference: 'site/reference/08-brasil-e-regioes.png', capture: file }, null, 2) + '\n',
-  )
+  await capture(page, {
+    dir: 'brasil',
+    name: state,
+    route: `${base}brasil/`,
+    scrollY: 'page',
+    fullPage: false,
+    extra: { slot: 'brasil (issue 10)', state, reference: 'site/reference/08-brasil-e-regioes.png' },
+  })
 }
 
 test('capture /brasil/ fixture state', async ({ page }) => {
   await page.goto(`${base}brasil/`)
-  await capture(page, 'fixture')
+  await shoot(page, 'fixture')
   // the capture spec is also the review gate: the slot must actually have rendered something
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Brasil e regiões')
   await expect(page.locator('[data-regiao]')).toHaveCount(2)
@@ -38,7 +36,7 @@ test.describe('with JavaScript off', () => {
 
   test('capture /brasil/ no-JS state', async ({ page }) => {
     await page.goto(`${base}brasil/`)
-    await capture(page, 'no-js')
+    await shoot(page, 'no-js')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Brasil e regiões')
     await expect(page.locator('[data-regiao]')).toHaveCount(2)
   })
