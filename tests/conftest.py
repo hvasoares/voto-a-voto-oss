@@ -70,3 +70,6 @@ def munzona_rows(fixtures_dir):
         return read_semicolon_csv(fixtures_dir / "munzona" / f"{kind}_{year}_BR_sample.csv")
 
     return load
+
+
+from synthetic_tse import legislative_zips  # noqa: E402,F401  (fixture)

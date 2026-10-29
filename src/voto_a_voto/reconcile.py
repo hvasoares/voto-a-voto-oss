@@ -1,6 +1,11 @@
 """Consistency checks over the assembled tables. Pure functions: each returns a list of findings (empty = pass)."""
+import csv
+import hashlib
+import json
 from collections import defaultdict
+from collections.abc import Iterator
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from voto_a_voto.cities import OVERSEAS, region_of
 from voto_a_voto.dataset import Dataset
@@ -161,3 +166,103 @@ def check_national_totals(dataset: Dataset, reference: dict[tuple[int, int], Nat
             if votes[number] != wanted:
                 findings.append(Finding("national_totals", f"{ano} turno {turno} candidate {number}: data {votes[number]}, {expected.source} {wanted}"))
     return findings
+
+
+# -- data/legislative/: Senador and Deputado Federal per municipality (see legislative.py) ----------------------------------------
+
+EXAMPLES = 3
+
+
+def _csv_rows(path: Path) -> Iterator[dict]:
+    with open(path, encoding="utf-8", newline="") as handle:
+        yield from csv.DictReader(handle)
+
+
+def _file_facts(path: Path) -> tuple[str, int, int]:
+    """SHA-256, bytes and data rows of a file, read in chunks."""
+    digest, size, newlines = hashlib.sha256(), 0, 0
+    with open(path, "rb") as handle:
+        while chunk := handle.read(1 << 20):
+            digest.update(chunk)
+            size += len(chunk)
+            newlines += chunk.count(b"\n")
+    return digest.hexdigest(), size, max(newlines - 1, 0)
+
+
+def check_legislative(directory, known_cities: set[tuple[str, int]]) -> list[Finding]:
+    """Validates ``data/legislative/`` with no network. Without its manifest nothing was built there and nothing is checked.
+
+    Per file: it exists and matches the manifest (sha256, bytes, rows). Per year and cargo, on the files themselves:
+    no negative count; every ``(uf, cd_municipio)`` is in ``cities.csv``; every voted candidate is in the candidates file;
+    per municipality, the candidates' valid nominal votes equal the detail file's ``nominais_validos``, ``nominais_validos +
+    legenda_validos = validos``, and ``validos + brancos + nulos + anulados + anulados_apu_sep = votos``."""
+    directory = Path(directory)
+    manifest_path = directory / "manifest.json"
+    if not manifest_path.exists():
+        return []
+    findings = []
+    for year, entry in sorted(json.loads(manifest_path.read_text(encoding="utf-8"))["years"].items()):
+        intact = True
+        for name, recorded in sorted(entry["outputs"].items()):
+            path = directory / name
+            if not path.exists():
+                findings.append(Finding("legislative_manifest", f"{name} is missing"))
+                intact = False
+                continue
+            sha, size, rows = _file_facts(path)
+            for label, actual, wanted in (("sha256", sha, recorded["sha256"]), ("bytes", size, recorded["bytes"]), ("rows", rows, recorded["rows"])):
+                if actual != wanted:
+                    findings.append(Finding("legislative_manifest", f"{name}: {label} {actual}, manifest.json says {wanted}"))
+                    intact = False
+        if intact:
+            for name in sorted(entry["outputs"]):
+                if name.endswith(f"-{year}-votos.csv"):
+                    findings += _legislative_identities(directory, int(year), name.removesuffix(f"-{year}-votos.csv"), known_cities)
+    return findings
+
+
+def _legislative_identities(directory: Path, year: int, cargo: str, known_cities: set[tuple[str, int]]) -> list[Finding]:
+    label = f"{cargo} {year}"
+    problems: dict[str, list[str]] = defaultdict(list)
+    counted: dict[str, int] = defaultdict(int)
+
+    def flag(rule: str, detail: str) -> None:
+        counted[rule] += 1
+        if len(problems[rule]) < EXAMPLES:
+            problems[rule].append(detail)
+
+    candidates = {(row["uf"], int(row["candidato_numero"])) for row in _csv_rows(directory / f"{cargo}-{year}-candidatos.csv")}
+    summed: dict[tuple[str, int], int] = defaultdict(int)
+    for row in _csv_rows(directory / f"{cargo}-{year}-votos.csv"):
+        key = (row["uf"], int(row["cd_municipio"]))
+        nominais, validos = int(row["votos_nominais"]), int(row["votos_nominais_validos"])
+        if nominais < 0 or validos < 0 or validos > nominais:
+            flag("negative_or_inconsistent_votes", f"{key[0]}/{key[1]} candidate {row['candidato_numero']}: nominais {nominais}, validos {validos}")
+        if key not in known_cities:
+            flag("unknown_city", f"{key[0]}/{key[1]} (votos)")
+        if (row["uf"], int(row["candidato_numero"])) not in candidates:
+            flag("unknown_candidate", f"{key[0]} candidate {row['candidato_numero']}")
+        summed[key] += validos
+    seen = set()
+    for row in _csv_rows(directory / f"{cargo}-{year}-totais.csv"):
+        key = (row["uf"], int(row["cd_municipio"]))
+        seen.add(key)
+        values = {name: int(value) for name, value in row.items() if name not in ("uf", "cd_municipio")}
+        where = f"{key[0]}/{key[1]}"
+        if min(values.values()) < 0:
+            flag("negative_totals", where)
+        if key not in known_cities:
+            flag("unknown_city", f"{where} (totais)")
+        if summed.get(key, 0) != values["nominais_validos"]:
+            flag("candidates_vs_nominais_validos", f"{where}: candidates {summed.get(key, 0)}, detail {values['nominais_validos']}")
+        if values["nominais_validos"] + values["legenda_validos"] != values["validos"]:
+            flag("nominais_plus_legenda", f"{where}: {values['nominais_validos']} + {values['legenda_validos']} != {values['validos']}")
+        accounted = values["validos"] + values["brancos"] + values["nulos"] + values["anulados"] + values["anulados_apu_sep"]
+        if accounted != values["votos"]:
+            flag("votos_accounted", f"{where}: validos+brancos+nulos+anulados+apu_sep {accounted}, votos {values['votos']}")
+    for key in sorted(set(summed) - seen):
+        flag("votes_without_totals", f"{key[0]}/{key[1]}")
+    return [
+        Finding("legislative", f"{label} {rule}: {counted[rule]} case(s), e.g. " + "; ".join(examples))
+        for rule, examples in problems.items()
+    ]

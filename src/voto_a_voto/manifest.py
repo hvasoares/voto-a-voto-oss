@@ -1,5 +1,6 @@
 """The hashed manifest of ``data/``: where every number came from, and a self-check of the committed files."""
 import hashlib
+import json
 from collections import defaultdict
 from collections.abc import Iterable
 from datetime import datetime
@@ -77,3 +78,61 @@ def check_manifest(manifest: dict, data_dir) -> list[Finding]:
             if rows != recorded["rows"]:
                 findings.append(Finding("manifest", f"{name}: {rows} rows, manifest.json says {recorded['rows']}"))
     return findings
+
+
+# -- data/legislative/manifest.json: its own manifest, so the committed tables, their fingerprint and the editions stay untouched --
+
+LEGISLATIVE_SCHEMA_VERSION = 1
+LEGISLATIVE_MANIFEST = "manifest.json"
+
+
+def legislative_source(kind: str, member: str, cached, used: bool) -> dict:
+    """One source zip as the cache knows it: the revision (etag, last-modified, sha256) a file was built from. ``used`` is False for
+    files that are downloaded and fingerprinted but not read by the extraction (the registration, ``consulta_cand``)."""
+    return {
+        "id": cached.path.name.removesuffix(".zip"), "kind": kind, "url": cached.url, "member": member, "bytes": cached.bytes,
+        "sha256": cached.sha256, "etag": cached.etag, "last_modified": cached.last_modified, "retrieved_at": cached.retrieved_at, "used": used,
+    }
+
+
+def legislative_entry(fingerprint: str, status: str, sources: list[dict], extraction: dict) -> dict:
+    return {
+        "fingerprint": fingerprint, "status": status, "sources": sources, "outputs": dict(sorted(extraction["outputs"].items())),
+        "newest_totalization": extraction["newest_totalization"], "elected": extraction["elected"],
+    }
+
+
+def read_legislative_manifest(directory) -> dict:
+    path = Path(directory) / LEGISLATIVE_MANIFEST
+    if not path.exists():
+        return {"schema_version": LEGISLATIVE_SCHEMA_VERSION, "years": {}}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def write_legislative_manifest(directory, manifest: dict) -> bool:
+    """Writes the manifest unless it already holds exactly these bytes; returns whether anything changed."""
+    path = Path(directory) / LEGISLATIVE_MANIFEST
+    content = (json.dumps(manifest, indent=2, sort_keys=True, ensure_ascii=False) + "\n").encode("utf-8")
+    if path.exists() and path.read_bytes() == content:
+        return False
+    path.write_bytes(content)
+    return True
+
+
+def sha256_of_file(path) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        while chunk := handle.read(1 << 20):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def legislative_up_to_date(entry: dict | None, fingerprint: str, directory) -> bool:
+    """The recorded extraction was built from these sources by this code version and its files are still the ones recorded."""
+    if entry is None or entry["fingerprint"] != fingerprint:
+        return False
+    for name, recorded in entry["outputs"].items():
+        path = Path(directory) / name
+        if not path.exists() or path.stat().st_size != recorded["bytes"] or sha256_of_file(path) != recorded["sha256"]:
+            return False
+    return True

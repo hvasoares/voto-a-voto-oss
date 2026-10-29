@@ -148,7 +148,7 @@ def test_cycles_limit_the_network_and_the_others_must_already_be_cached(services
     code = run(["build", "--cycles", "2026"], svc, tmp_path)
 
     assert code == 1  # 2018/2022 are not cached and not allowed to download
-    assert cdn.requests == []
+    assert all("_2026.zip" in url for url in cdn.requests)  # only 2026 may touch the network, legislative zips included
 
 
 def test_check_passes_on_a_fresh_build(services, tmp_path, capsys):

@@ -9,13 +9,16 @@ import io
 from collections.abc import Iterable, Sequence
 
 
+def encode_rows(rows: Iterable[Sequence]) -> bytes:
+    """The lines of ``write_rows`` without the header, so a large file can be written in chunks."""
+    buffer = io.StringIO(newline="")
+    csv.writer(buffer, lineterminator="\n").writerows(rows)
+    return buffer.getvalue().encode("utf-8")
+
+
 def write_rows(header: Sequence[str], rows: Iterable[Sequence]) -> bytes:
     """UTF-8, LF, the header first and then one line per row, in the order given."""
-    buffer = io.StringIO(newline="")
-    writer = csv.writer(buffer, lineterminator="\n")
-    writer.writerow(header)
-    writer.writerows(rows)
-    return buffer.getvalue().encode("utf-8")
+    return encode_rows([header]) + encode_rows(rows)
 
 
 def read_rows(content: bytes) -> list[dict]:

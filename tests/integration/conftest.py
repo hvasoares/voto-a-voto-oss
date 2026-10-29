@@ -4,6 +4,7 @@ import zipfile
 
 import pytest
 
+from synthetic_tse import legislative_zip_pair, tse_zip
 from voto_a_voto.cli import Services
 from voto_a_voto.opendata import StreamResponse
 from voto_a_voto.tse_scrape import decode_jws
@@ -99,15 +100,16 @@ def make_site(fixtures_dir, make_jws, config_jws, sao_paulo_round_two):
 
 @pytest.fixture
 def fake_cdn(munzona_rows, fixtures_dir):
+    """The three zips of each cycle. 2018 and 2022 also carry the trimmed real president rows (``_BR``) next to the synthetic UF member."""
     archives = {}
-    for year in (2018, 2022):
-        for kind in ("votacao_candidato_munzona", "detalhe_votacao_munzona"):
-            member = f"{kind}_{year}_BR.csv"
-            raw = (fixtures_dir / "munzona" / f"{kind}_{year}_BR_sample.csv").read_bytes()
-            buffer = io.BytesIO()
-            with zipfile.ZipFile(buffer, "w") as archive:
-                archive.writestr(member, raw)
-            archives[CDN.format(kind=kind, year=year)] = buffer.getvalue()
+    for year in (2018, 2022, 2026):
+        candidate_zip, detail_zip = legislative_zip_pair(year)
+        for kind, built in (("votacao_candidato_munzona", candidate_zip), ("detalhe_votacao_munzona", detail_zip)):
+            members = {name: zipfile.ZipFile(io.BytesIO(built)).read(name) for name in zipfile.ZipFile(io.BytesIO(built)).namelist()}
+            if year != 2026:
+                members[f"{kind}_{year}_BR.csv"] = (fixtures_dir / "munzona" / f"{kind}_{year}_BR_sample.csv").read_bytes()
+            archives[CDN.format(kind=kind, year=year)] = tse_zip(members)
+        archives[CDN.format(kind="consulta_cand", year=year)] = tse_zip({f"consulta_cand_{year}_BR.csv": b'"X"\r\n'})
     return FakeCdn(archives)
 
 

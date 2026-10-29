@@ -18,11 +18,11 @@ from collections import Counter
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
-from voto_a_voto import centroids, editions, nerds, nonvoters, outlines, reconcile
+from voto_a_voto import centroids, editions, legislative, nerds, nonvoters, outlines, reconcile
 from voto_a_voto.cities import City, parse_cities
 from voto_a_voto.dataset import CycleData, Dataset, assemble, cycle_from_munzona, cycle_from_results, read_dataset, write_dataset, write_manifest
 from voto_a_voto.manifest import build_manifest, check_manifest, summarize_results_files, turnout_identity
-from voto_a_voto.munzona import parse_candidates, parse_city_names, parse_turnout, parse_votes, read_rows
+from voto_a_voto.munzona import CandidateConflictError, MissingColumnError, parse_candidates, parse_city_names, parse_turnout, parse_votes, read_rows
 from voto_a_voto.opendata import DownloadError, OpenDataCache, https_stream
 from voto_a_voto.reconcile import Finding, NationalTotals
 from voto_a_voto.reference import PUBLISHED_2018_2022, from_manifest, parse_national
@@ -63,6 +63,7 @@ class BuildOptions:
     cycles: tuple[int, ...] = ALL_CYCLES
     offline: bool = False
     allow_partial: bool = False
+    legislative: bool = False  # `voto-data build` turns it on (library callers such as publish-auto do not): also fetch the Senador and Deputado Federal zips and extract data/legislative/
     data_dir: Path = Path("data")
     cache_dir: Path = Path(".cache")
 
@@ -74,6 +75,7 @@ class BuildResult:
     findings: list[Finding] = field(default_factory=list)
     failures: list[str] = field(default_factory=list)
     summary: list[str] = field(default_factory=list)
+    legislative: dict = field(default_factory=dict)  # {year: {kind: CachedFile}} for write_legislative
 
 
 def load_2026(options: BuildOptions, services: Services, result: BuildResult):
@@ -103,21 +105,27 @@ def load_2026(options: BuildOptions, services: Services, result: BuildResult):
     return cycle_from_results(2026, results), cities, reference, source
 
 
-def load_open_data(year: int, options: BuildOptions, services: Services, result: BuildResult):
+def fetch_open_data(year: int, kinds: tuple[str, ...], options: BuildOptions, services: Services, result: BuildResult) -> dict:
+    """Every open-data zip of a year through the one cache: downloaded, revalidated by etag/last-modified, or read from disk."""
     online = year in options.cycles and not options.offline
     cache = OpenDataCache(options.cache_dir / "tse-opendata", transport=services.stream_transport, offline=not online,
                           clock=services.clock, sleep=services.sleep)
+    cached = {}
+    for kind in kinds:
+        cached[kind] = cache.fetch(OPEN_DATA_URL.format(kind=kind, year=year), member=legislative.member_of(kind, year))
+        result.summary.append(f"{kind}_{year}.zip: {cached[kind].source} ({cached[kind].bytes:,} bytes)")
+    return cached
+
+
+def load_open_data(year: int, cached: dict, result: BuildResult):
     rows, sources = {}, []
     for kind in OPEN_DATA_KINDS:
-        url = OPEN_DATA_URL.format(kind=kind, year=year)
-        member = f"{kind}_{year}_BR.csv"
-        cached = cache.fetch(url, member=member)
-        rows[kind] = list(read_rows(cached.path, member))
+        member = legislative.member_of(kind, year)
+        rows[kind] = list(read_rows(cached[kind].path, member))
         sources.append({
-            "id": f"{kind}_{year}", "kind": "opendata", "url": url, "member": member, "retrieved_at": cached.retrieved_at,
-            "bytes": cached.bytes, "sha256": cached.sha256, "rows": sum(row["CD_CARGO"] == "1" for row in rows[kind]),
+            "id": f"{kind}_{year}", "kind": "opendata", "url": cached[kind].url, "member": member, "retrieved_at": cached[kind].retrieved_at,
+            "bytes": cached[kind].bytes, "sha256": cached[kind].sha256, "rows": sum(row["CD_CARGO"] == "1" for row in rows[kind]),
         })
-        result.summary.append(f"{kind}_{year}.zip: {cached.source} ({cached.bytes:,} bytes)")
     turnout = parse_turnout(rows["detalhe_votacao_munzona"])
     not_installed = Counter()
     for (ano, turno, _, _), counts in turnout.items():
@@ -151,12 +159,16 @@ def build(options: BuildOptions, services: Services) -> BuildResult:
     config_cities: list[City] = []
     for year in sorted(set(ALL_CYCLES)):
         try:
+            kinds = (() if year == 2026 else OPEN_DATA_KINDS) + (legislative.SOURCE_KINDS if options.legislative else ())
+            cached = fetch_open_data(year, tuple(dict.fromkeys(kinds)), options, services, result)
+            if options.legislative:
+                result.legislative[year] = cached
             if year == 2026:
                 cycle, config_cities, reference_2026, source = load_2026(options, services, result)
                 reference.update(reference_2026)
                 sources.append(source)
             else:
-                cycle, year_sources, year_reported = load_open_data(year, options, services, result)
+                cycle, year_sources, year_reported = load_open_data(year, cached, result)
                 sources.extend(year_sources)
                 reported.update(year_reported)
         except NonFinalResultsError:
@@ -207,6 +219,7 @@ def check(data_dir: Path, services: Services) -> list[Finding]:
         return [*findings, Finding("tables", str(error))]
     reference = from_manifest(manifest["national_reference"])
     findings += all_findings(dataset, reference, services.brazilian_cities)
+    findings += reconcile.check_legislative(data_dir / "legislative", {(city.uf, city.cd_municipio) for city in dataset.cities})
     recorded = {(item["ano"], item["turno"]): item for item in manifest["turnout_identity"]}
     for item in turnout_identity(dataset, {}):
         key = (item["ano"], item["turno"])
@@ -217,6 +230,23 @@ def check(data_dir: Path, services: Services) -> list[Finding]:
         elif saved["eleitores_secoes_nao_instaladas_informado"] not in (None, item[name]):
             findings.append(Finding("turnout_identity", f"{key[0]} turno {key[1]}: remainder {item[name]} != electorate of sections not installed reported by the TSE ({saved['eleitores_secoes_nao_instaladas_informado']})"))
     return findings
+
+
+def build_legislative(result: BuildResult, options: BuildOptions, services: Services) -> int:
+    """Extracts (only what changed) and then validates data/legislative/, exactly as ``check`` would."""
+    directory = Path(options.data_dir) / "legislative"
+    try:
+        for line in legislative.update(directory, result.legislative):
+            print(line)
+    except (legislative.LegislativeError, MissingColumnError, CandidateConflictError, OSError) as error:
+        print(f"legislative FAILED: {error}", file=sys.stderr)
+        return 1
+    findings = reconcile.check_legislative(directory, {(city.uf, city.cd_municipio) for city in result.dataset.cities})
+    if findings:
+        print(f"legislative FAILED: {len(findings)} finding(s) in {directory}", file=sys.stderr)
+        print_findings(findings)
+        return 1
+    return 0
 
 
 def print_findings(findings: list[Finding], limit: int = 30) -> None:
@@ -234,6 +264,7 @@ def main(argv=None, services: Services | None = None) -> int:
     build_parser.add_argument("--cycles", default=",".join(map(str, ALL_CYCLES)), help="ciclos a baixar (os demais vêm do cache); padrão: todos")
     build_parser.add_argument("--offline", action="store_true", help="não usa a rede; falha se algo não estiver no cache")
     build_parser.add_argument("--allow-partial", action="store_true", help="aceita cidades sem resultado final em 2026")
+    build_parser.add_argument("--no-legislative", action="store_true", help="não baixa nem extrai Senador e Deputado Federal (data/legislative/)")
     build_parser.add_argument("--data-dir", default="data")
     build_parser.add_argument("--cache-dir", default=".cache")
     check_parser = commands.add_parser("check", help="valida data/ sem rede")
@@ -304,7 +335,7 @@ def main(argv=None, services: Services | None = None) -> int:
     if args.command == "publish-auto":
         from voto_a_voto import publishing
 
-        options = BuildOptions(ALL_CYCLES, args.offline, False, Path(args.data_dir), Path(args.cache_dir))
+        options = BuildOptions(ALL_CYCLES, args.offline, False, False, Path(args.data_dir), Path(args.cache_dir))
         outcome = publishing.run_gate(publishing.options_builder(options, services), options.data_dir, Path(args.editions_dir), options.cache_dir)
         for step in outcome.checks:
             print(f"{'ok  ' if step.ok else 'FAIL'} {step.name}: {step.detail}")
@@ -340,7 +371,7 @@ def main(argv=None, services: Services | None = None) -> int:
         return 0
 
     cycles = tuple(int(year) for year in args.cycles.split(","))
-    options = BuildOptions(cycles, args.offline, args.allow_partial, Path(args.data_dir), Path(args.cache_dir))
+    options = BuildOptions(cycles, args.offline, args.allow_partial, not args.no_legislative, Path(args.data_dir), Path(args.cache_dir))
     try:
         result = build(options, services)
     except NonFinalResultsError as error:
@@ -362,6 +393,8 @@ def main(argv=None, services: Services | None = None) -> int:
     for name, output in manifest["outputs"].items():
         print(f"{options.data_dir}/{name}: {output['rows']:,} rows, {output['bytes']:,} bytes")
     print(f"{options.data_dir}/manifest.json written")
+    if options.legislative:
+        return build_legislative(result, options, services)
     return 0
 
 
