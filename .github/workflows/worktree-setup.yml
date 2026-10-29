@@ -1,0 +1,40 @@
+name: worktree-setup
+# Só roda quando o próprio setup de worktree pode ter mudado (#126): os scripts, o lockfile do web
+# (troca o que `npm ci` instala) ou o .nvmrc (troca a versão exigida).
+on:
+  push:
+    paths:
+      - 'scripts/worktree-setup.sh'
+      - 'scripts/worktree-setup.test.sh'
+      - 'web/package.json'
+      - 'web/package-lock.json'
+      - '.nvmrc'
+      - '.github/workflows/worktree-setup.yml'
+  pull_request:
+    paths:
+      - 'scripts/worktree-setup.sh'
+      - 'scripts/worktree-setup.test.sh'
+      - 'web/package.json'
+      - 'web/package-lock.json'
+      - '.nvmrc'
+      - '.github/workflows/worktree-setup.yml'
+
+jobs:
+  # Cria uma worktree real fora do checkout, roda nela o scripts/worktree-setup.sh duas vezes
+  # (fresca, depois idempotente) e a remove; veja scripts/worktree-setup.test.sh.
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.4
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      # Aquece o cache compartilhado do Playwright com --with-deps: o script de setup instala o
+      # chromium sem as dependências de sistema (essas são da imagem), e o cache é por usuário, então
+      # o install_browser da worktree encontra o browser pronto — e o spec de smoke consegue rodá-lo.
+      # No runner isso custa: deps npm no checkout principal + chromium com deps de sistema.
+      - run: npm --prefix web ci
+      - run: npx --prefix web playwright install --with-deps chromium
+      - run: bash scripts/worktree-setup.test.sh

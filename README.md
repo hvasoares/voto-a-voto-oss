@@ -21,10 +21,31 @@ The open dataset published with each edition (`editions/<id>/release/`) is relea
 - `src/voto_a_voto/cli.py` is the `voto-data` command (`build`, `check`, `publish-edition`, `rollback-edition`, `publish-auto`).
 - `src/voto_a_voto/nonvoters.py` is the measure of ticket #24 (`make nonvoters`, note in `docs/nonvoters-vs-margin.md`): in what share of cities the people who did not vote outnumber the winning margin.
 - `scripts/munzona_to_municipios.py` is the old 2018/2022 aggregation script, kept until the new pipeline replaces it.
+- `scripts/worktree-setup.sh` prepares a fresh worktree in one command (`make worktree-setup`, see below); `scripts/worktree-setup.test.sh` exercises it end to end.
 
 ## Deploy
 
 `make deploy` pushes `main` to `origin` — the public `voto-a-voto-oss` repository — where GitHub Actions builds the site from the committed dataset and publishes it to GitHub Pages.
+
+## Worktrees
+
+`git worktree add` gives a second checkout of this repository (a parallel agent, a stacked ticket). Create it OUTSIDE the main checkout's directory tree — Node resolves packages by walking up parent directories, so a nested worktree can silently use the parent's `node_modules` and hide a missing dependency. One command then makes it ready to run specs: Node checked, the `web` dependencies installed into the worktree itself (never a shared or symlinked `node_modules`), the Playwright chromium browser ready (browsers live in the shared per-user cache, so a second worktree adds seconds), the checkout's e2e port printed, and a smoke run of one unit file plus one fixture spec:
+
+```
+git worktree add ../voto-a-voto-wt-x my-branch
+cd ../voto-a-voto-wt-x
+make worktree-setup            # or: bash scripts/worktree-setup.sh
+```
+
+Node must satisfy `web/package.json` `engines.node` (>= 22.12); `.nvmrc` pins 22.23.4, the CI version, for version managers. Expect under 90 s with a warm npm and browser cache, under 5 minutes cold (the browser download dominates). Each step prints `[step]` and its seconds; a run stops at the first failing step, whose message names it — fix what it names and re-run `make worktree-setup`: finished steps print `skipped (already done)`, the failed step resumes and the smoke runs again.
+
+The e2e port the script prints is derived from the checkout path (#124) — there is no port file and nothing to edit; only set `E2E_PORT` yourself if you want one pinned.
+
+Teardown removes the worktree and nothing else — the setup writes nothing outside it:
+
+```
+git worktree remove ../voto-a-voto-wt-x          # from the main checkout
+```
 
 ## Editions (`editions/`)
 

@@ -1,5 +1,6 @@
 .PHONY: test tse-scrape data data-outlines data-nerds data-2018 data-2022 data-2026 data-check publish-edition rollback-edition nonvoters deploy \
-        install typecheck web-test browser e2e e2e-port e2e-pages e2e-real build-deploy ci web-install pytest perf
+        install typecheck web-test browser e2e e2e-port e2e-pages e2e-real build-deploy ci web-install pytest perf \
+        worktree-setup worktree-teardown
 
 test:
 	uv run pytest
@@ -42,6 +43,18 @@ rollback-edition:
 # Reproduz as tabelas de docs/nonvoters-vs-margin.md (não-votantes maiores que a margem, por ciclo, turno e estado) a partir de data/.
 nonvoters:
 	uv run voto-data nonvoters
+
+# Prepara uma worktree nova de uma vez (#126): confere o Node, instala as deps do web NA worktree
+# (nunca node_modules compartilhado), baixa o chromium do Playwright (cache compartilhado por
+# usuário), imprime a porta e2e derivada desta cópia e roda um smoke (um unit + uma spec).
+# Rodar DE DENTRO da worktree nova, que deve ficar FORA da árvore do checkout principal.
+worktree-setup:
+	bash scripts/worktree-setup.sh
+
+# Desfazer: `git worktree remove <caminho>` a partir do checkout principal. Nada mais a limpar —
+# o setup não escreve nada fora da worktree (os browsers ficam no cache compartilhado por usuário).
+worktree-teardown:
+	@echo "git worktree remove <caminho>   # a partir do checkout principal; nada mais a limpar"
 
 # ── Paridade CI/CD ──────────────────────────────────────────────────────────────────────────────
 # Cada passo dos workflows do GitHub Actions tem aqui o seu comando local equivalente.
