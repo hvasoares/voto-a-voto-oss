@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildCityResult } from '@/shared/city-model'
+import { sentenceInput } from '@/test/sentence-input'
 import { CATALOG, KEYS, STANDARD_ONLY_KEYS, message, pluralCategory, template, type Key, type Voice } from './catalog'
 import './catalog-facts'
 import './catalog-duel'
@@ -45,11 +45,7 @@ describe('fallback', () => {
     expect(template(plain('es'), 'register.plain')).toBe('Linguagem simples')
   })
   it('a whole sentence in an unfinished locale reads in Portuguese where it must and never throws', () => {
-    const r = buildCityResult({
-      turnout: { ano: 2026, turno: 1, uf: 'rj', cdMunicipio: '1', aptos: 1000, comparecimento: 900, abstencoes: 100, brancos: 0, nulos: 0, anuladosApuSep: 0, validos: 900 },
-      votes: [{ ano: 2026, turno: 1, uf: 'rj', cdMunicipio: '1', candidatoNumero: 1, votos: 500 }, { ano: 2026, turno: 1, uf: 'rj', cdMunicipio: '1', candidatoNumero: 2, votos: 400 }],
-      candidates: [1, 2].map((n) => ({ ano: 2026, turno: 1 as const, candidatoNumero: n, nomeUrna: `C${n}`, partido: 'P' })),
-    })
+    const r = sentenceInput({ aptos: 1000, votos: [500, 400], comparecimento: 900, nomes: ['C1', 'C2'] })
     expect(headline(r, { cityName: 'X', locale: 'en' })).toBe('In X, in round 1 of 2026, 10% do eleitorado não votou, menos do que C2, o segundo mais votado, recebeu (40%).')
     expect(headline(undefined, { cityName: 'X', locale: 'es' })).toBe('Sin datos en este ciclo.')
     expect(() => headline(r, { cityName: 'X', locale: 'en', register: 'plain' })).not.toThrow()
