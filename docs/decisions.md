@@ -323,7 +323,7 @@ D-010 (ballot-number order) and D-011 (type scale) come from the code and its co
 
 ### D-032 Small ticket: phone footer, legend and Brasil picture
 - Date: 2026-10-28
-- Status: active
+- Status: superseded by D-038
 - Decision: The phone footer grows by one 44 px line, a legend goes under the long Estado list, and the Brasil picture is 1080x1710 against the fixed 1080x1350.
 - Reason: Leftovers of the 1.13.0 review.
 - Supersedes: none
@@ -374,3 +374,12 @@ D-010 (ballot-number order) and D-011 (type scale) come from the code and its co
 - Supersedes: none
 - Tickets: none
 - Source: apuracao-playback-data
+
+### D-038 Small ticket: the phone footer is not taller, the legend goes above the list, Brasil is 1080x1350
+- Date: 2026-10-29
+- Status: active
+- Decision: The phone page footer keeps the height it had before the type-scale pass while its "Sobre os dados" link stays a 44 px target. The colour legend of the Estado page goes above the long city list, not under it. The Brasil share picture is exactly 1080x1350, the fixed share format, and its goldens are recaptured once for that layout.
+- Reason: The 1.13.0 review leftovers were not to be accepted as they were: D-032 took a taller footer, a legend under the list and a 1080x1710 picture; the owner asked for the three to be fixed.
+- Supersedes: D-032
+- Tickets: private#106
+- Source: owner decision after the 1.13.0 review
