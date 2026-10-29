@@ -34,7 +34,7 @@ const cardHref = siteHref(`/${uf}/${slug}/?ciclo=${view.ano}&turno=${view.turno}
 <EmbedDoc title={`Resultado de ${name} · Voto a Voto`}>
   <article class="box-border min-w-0 border border-foreground bg-background p-3 font-sans text-foreground" data-widget data-uf={uf} data-slug={slug} lang="pt-BR">
     <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-step-1 text-muted-foreground">
-      {fixture && <span class="rounded-sm px-1.5 py-px font-bold" style="background: var(--sketch-color-flag); color: var(--sketch-color-ink)">EXEMPLO</span>}
+      {fixture && <span class="rounded-sm px-1.5 py-px font-bold" style="background: var(--c-flag); color: var(--c-ink)">EXEMPLO</span>}
       <span data-source>{widgetSource(edition)}</span>
     </div>
     <h1 class="mt-1.5 font-serif text-step-3 font-normal wrap-anywhere">{name} · {ufLabel(shard.city.uf)}</h1>

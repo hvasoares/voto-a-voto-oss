@@ -39,7 +39,6 @@ export function shadcnVariables(): Record<string, string> {
     '--sketch-bolsonaro': colors.bolsonaro,
     '--gutter': `${layout.gutter}px`,
     '--min-tap': `${layout.minTap}px`,
-    ...Object.fromEntries(Object.entries(colors).map(([k, v]) => [`--sketch-color-${k}`, v])),
     // Diverging scale swatches (state map, ticket #11): zero-centred, neg = Flavio side, pos = Lula side.
     ...Object.fromEntries(
       Object.entries(colors)

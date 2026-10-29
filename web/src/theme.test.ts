@@ -20,11 +20,17 @@ describe('Sketch tokens mapped onto the shadcn theme variables', () => {
   it('uses the Sketch fonts, the 4 px radius and the 20 px gutter', () => {
     expect(vars['--sketch-font-sans']).toBe(fonts.sans)
     expect(vars['--sketch-font-serif']).toBe(fonts.serif)
-    // the two party swatches the compare screens and screen 13 paint bars with (sketch tokens)
+    // the two party swatches the compare screens and screen 13 paint bars with
     expect(vars['--sketch-lula']).toBe(colors.lula)
     expect(vars['--sketch-bolsonaro']).toBe(colors.bolsonaro)
     expect(vars['--radius']).toBe(`${radius.control}px`)
     expect(vars['--gutter']).toBe(`${layout.gutter}px`)
+  })
+
+  // Every page inlines this block (City card HTML margin, private#121): a swatch is emitted once, as --c-<name>.
+  it('emits each swatch once: no second copy of the palette under another prefix', () => {
+    const names = Object.keys(vars)
+    expect(names.filter((n) => n.startsWith('--sketch-color-'))).toEqual([])
   })
 
   it('emits one :root block with all the variables', () => {
