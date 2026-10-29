@@ -32,7 +32,7 @@ const tile = cn(buttonVariants({ variant: 'secondary' }), 'h-11 w-11 rounded-md 
     <p class="font-serif text-step-2 lg:text-step-4">Eleição presidencial 2026, cidade por cidade.</p>
     <p class="mt-0.5 text-step-1 text-muted-foreground lg:mt-2 lg:text-step-2">Compare com 2018 e 2022.</p>
     <p class="mt-0.5 text-step-1 text-muted-foreground lg:text-step-2" data-finality>Final, não ao vivo.</p>
-    <div id="busca" class="scroll-mt-4 lg:mt-4 lg:[&_[data-slot=input-group]]:h-14!"><p class="text-step-1 text-muted-foreground [&:not(:empty)]:mt-2" aria-live="polite" data-search-hint data-destination-note></p><CitySearch client:interaction base={base} /></div>
+    <div id="busca" class="scroll-mt-4 lg:mt-4 lg:[&_[data-slot=input-group]]:h-14!"><p class="text-step-1 text-muted-foreground [&:not(:empty)]:mt-2" aria-live="polite" data-search-hint></p><CitySearch client:interaction base={base} /></div>
     <p class="mt-1.5 text-step-1" data-island-failed hidden>A busca não está disponível agora. Escolha um estado abaixo.</p>
     <noscript><p class="mt-1.5 text-step-1">A busca precisa de JavaScript. Escolha um estado abaixo.</p></noscript>
     <div class="relative mb-[-2px] mt-[10px] flex h-14 items-start rounded-lg border border-border bg-secondary pl-[11px]" data-place-shortcut data-base={base} hidden>

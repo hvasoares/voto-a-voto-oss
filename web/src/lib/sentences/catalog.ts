@@ -16,6 +16,7 @@
  */
 import { DEFAULT_REGISTER, REGISTERS, type Register } from './register'
 import { DEFAULT_LOCALE } from './voice'
+import { HOME_HINT_KEYS } from './catalog-home'
 
 export const KEYS = [
   /** Shown instead of a sentence when the city has no data in the cycle, on the card and in the share and generator islands. */
@@ -468,11 +469,8 @@ export const KEYS = [
   /** The page shell (#136): the fixture banner, said by `components/FixtureBanner.astro`; the sentence lives in `catalog-shell.ts`. */
   'shell.fixtureBanner',
   'shell.backHome',
-  /** The hint above the Home search (#147): one per destination; the words are data in `catalog-home.ts`, registered by `catalog-hint.ts`. */
-  'home.hint.cidade',
-  'home.hint.compartilhar',
-  'home.hint.tres-ciclos',
-  'home.hint.cara-a-cara',
+  /** The hint above the Home search (#147): one per destination; the words and the one list of their keys are data in `catalog-home.ts`, registered by `catalog-hint.ts`. */
+  ...HOME_HINT_KEYS,
 ] as const
 
 export type Key = (typeof KEYS)[number]
