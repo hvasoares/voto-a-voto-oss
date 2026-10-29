@@ -6,7 +6,6 @@
  * own shard. Reached from the "Comparar com outra cidade" link of the city card (and, by address, from a shared card: #39).
  */
 import Base from '@/layouts/Base.astro'
-import PhoneHeader from '@/components/PhoneHeader.astro'
 import Duel from '@/components/Duel'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { siteBase, siteHref } from '@/paths'
@@ -28,7 +27,6 @@ const edition = await currentEdition()
 const data = await loadDuelData()
 ---
 <Base title={`${duelSay({}, 'duel.title')} · Voto a Voto`} description={duelSay({}, 'duel.sub.cidade', { ano: data.ano })}>
-  <PhoneHeader />
   <PageMain md="480" lg="1240" extra="duel-main" data-page="cara-a-cara">
     <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <Duel client:load base={base} origin={siteOrigin()} fixture={fixture} editionDate={editionLabel(edition)} data={data} />

@@ -5,14 +5,14 @@
  * por estado left the bar: Home's "Entender o país e os estados" block and the footer line keep them reachable.
  * Pre-rendered HTML, readable and usable without scripts (the search needs them, as everywhere); the search is the
  * existing CitySearch component, but it is NOT an Astro island: an island would put the island runtime and its props in the
- * HTML of every page, phones included. The bar draws a plain field instead; on a 1024 px and wider viewport
+ * HTML of every page, phones included. The bar draws a plain field instead (`HeaderSearch.astro`, the same one the phone header draws, #153); on a 1024 px and wider viewport
  * `scripts/desktop-shell.ts` mounts the real CitySearch (React, cmdk) into it on first focus, so nothing of it downloads
  * before the first interaction, and a phone never downloads it at all. Hidden below 1024 px: a phone keeps each page's
  * own header, and the bar costs it a few hundred HTML bytes (no script of its own).
  */
-import { siteBase, siteHref } from '@/paths'
+import { siteHref } from '@/paths'
+import HeaderSearch from '@/components/HeaderSearch.astro'
 
-const base = siteBase()
 const links = [
   { label: 'Comparar', to: '/#comparar' },
   { label: 'Conferir', to: 'sobre-os-dados/#confira-voce-mesmo' },
@@ -22,15 +22,7 @@ const links = [
 <header class="hidden h-16 border-b border-border lg:block" data-component="top-bar">
   <div class="mx-auto flex h-full w-full max-w-[1240px] items-center px-5">
     <a class="flex min-h-11 w-[280px] flex-none items-center rounded-sm font-serif text-step-4 text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" href={siteHref('/')} data-wordmark>Voto a Voto</a>
-    <div class="relative w-[420px] flex-none">
-      <div data-topbar-search data-base={base}>
-        <div class="relative" data-city-search="bar">
-          <svg class="pointer-events-none absolute left-[14px] top-[10px] text-muted-foreground" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="6.5" cy="6.5" r="6" fill="none" stroke="currentColor" stroke-width="1.9"></circle><path d="M16.2 12.2 12.4 16.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path></svg>
-          <input class="h-10 w-full rounded-md border border-border bg-transparent pl-[39px] pr-10 text-step-2 placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-primary" type="text" aria-label="Ver minha cidade" placeholder="Ver minha cidade" autocomplete="off" />
-        </div>
-      </div>
-      <kbd class="pointer-events-none absolute right-3 top-[10px] rounded-sm border border-border bg-secondary px-2 text-step-1 text-muted-foreground" aria-hidden="true">/</kbd>
-    </div>
+    <div class="w-[420px] flex-none"><HeaderSearch kbd /></div>
     <nav class="ml-auto flex items-center gap-1" aria-label="Principal">
       {links.map((l) => (
         <a class="inline-flex min-h-11 items-center rounded-sm px-4 text-step-2 text-foreground underline-offset-8 hover:underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary" href={l.href}>{l.label}</a>

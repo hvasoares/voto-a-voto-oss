@@ -5,7 +5,6 @@
  * No page links here yet: the address is the way in (an entry point is for the user to decide).
  */
 import Base from '@/layouts/Base.astro'
-import PhoneHeader from '@/components/PhoneHeader.astro'
 import { siteHref } from '@/paths'
 import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
 import '@/lib/sentences/catalog-press'
@@ -28,7 +27,6 @@ const example = first ? `?mora=${first.uf}/${first.slug}` : '?mora=uf/cidade'
 const exampleHref = first ? href(`/imprensa/folha/${example}`) : undefined
 ---
 <Base title={`${say('press.title')} · Voto a Voto`} description={say('press.sub')}>
-  <PhoneHeader />
   <PageMain md="880" data-page="imprensa">
     <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{say('press.title')}</h1>

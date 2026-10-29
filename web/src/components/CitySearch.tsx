@@ -20,8 +20,8 @@ const FIELD = [
 ].join(' ')
 const SHORT = { state: 'short', total: 0, hits: [] } as const
 
-/** The slim top-bar variant (desktop shell, #51): 40 px field, the results float over the page instead of pushing it. */
-const BAR_FIELD = '[&_[data-slot=input-group]]:h-10!'
+/** The slim header variant (#51, #153): a 44 px field on a phone, 40 px in the desktop top bar, the results float over the page instead of pushing it. */
+const BAR_FIELD = '[&_[data-slot=input-group]]:h-11! lg:[&_[data-slot=input-group]]:h-10!'
 const BAR_LIST = 'absolute inset-x-0 top-full z-30'
 
 /**
@@ -67,7 +67,7 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
 
   return (
     <div ref={root} className={bar ? 'relative' : 'relative mt-2'} data-city-search={bar ? 'bar' : 'main'} data-ready={island.dataReady} data-error={island.dataError} data-destination={destination}>
-      <svg className={`pointer-events-none absolute left-[14px] z-10 text-muted-foreground ${bar ? 'top-[10px]' : 'top-[12px] lg:hidden'}`} viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="6.5" cy="6.5" r="6" fill="none" stroke="currentColor" strokeWidth="1.9" /><path d="M16.2 12.2 12.4 16.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
+      <svg className={`pointer-events-none absolute left-[14px] z-10 text-muted-foreground ${bar ? 'top-[12px] lg:top-[10px]' : 'top-[12px] lg:hidden'}`} viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="6.5" cy="6.5" r="6" fill="none" stroke="currentColor" strokeWidth="1.9" /><path d="M16.2 12.2 12.4 16.8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
       <Command
         shouldFilter={false}
         label={bar ? 'Ver minha cidade' : 'Busque sua cidade'}

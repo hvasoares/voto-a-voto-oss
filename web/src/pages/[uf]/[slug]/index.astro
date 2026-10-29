@@ -35,7 +35,7 @@ const view = shard && defaultView((ano, turno) => !!cityShardResult(shard, ano, 
 const result = shard && view ? cityShardResult(shard, view.ano, view.turno) : undefined
 const head = previewHead({ uf: uf!, slug: slug!, nome }, result, { origin: siteOrigin(), base, fixture })
 ---
-<Base title={head.title} description={head.description} preview={head}>
+<Base title={head.title} description={head.description} preview={head} header="screen">
   <CityCard uf={uf!} slug={slug!}>
     <script>
       import '@/scripts/city-card'

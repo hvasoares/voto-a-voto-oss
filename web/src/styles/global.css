@@ -63,3 +63,9 @@
     }
   }
 }
+
+/* The header's search field (#153, `components/HeaderSearch.astro`): drawn in every page, so its long utility lists live here once instead of in every document (the phone first load is budgeted). 44 px on a phone, 40 px in the top bar. */
+@layer components {
+  .hs-icon { @apply pointer-events-none absolute left-[14px] top-[12px] text-muted-foreground lg:top-[10px]; }
+  .hs-input { @apply h-11 w-full rounded-md border border-border bg-transparent pl-[39px] pr-10 text-step-2 placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-primary lg:h-10; }
+}

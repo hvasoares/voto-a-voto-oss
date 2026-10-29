@@ -18,7 +18,7 @@ interface Props {
 const { cityName, url, qr, fixture, closeHref, backHref, noindex } = Astro.props.config
 const address = shortAddress(url)
 ---
-<Base title={`Mostrar QR · ${cityName}`} noindex={noindex}>
+<Base title={`Mostrar QR · ${cityName}`} noindex={noindex} header="none">
   <main class="min-w-0 flex-1" id="main">
     <section data-qr-screen class="print:hidden" aria-label="Mostrar QR">
       {/* Header metrics match the frame exactly (brand band y14-29; divider a 1px rule at x132 spanning it). */}

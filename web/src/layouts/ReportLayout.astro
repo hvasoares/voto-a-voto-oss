@@ -4,6 +4,8 @@
  * repeated -- the document, the `<main>` shell, the back chip, the title, the seal, the notice, the share block and
  * the page footer. A page brings its DATA and COPY (title, lead, rows, notice words); it draws no shell of its own.
  *
+ * The app header (the Voto a Voto link home and the city search, #153) comes from `Base`, like every page's: this layout draws none of its own.
+ *
  * Input contract (typed; `assertReportPage` fails the build with the page named when a field is malformed):
  *  - `title`, `heading`  the document title and the h1; `description` the meta description (optional);
  *  - `seal`              `reportFacts().seal`, the "conferido" lines (an empty list draws nothing);
@@ -79,7 +81,7 @@ assertReportPage({ title, heading, seal, report, notice })
 const footerShell = footerClass(wide ? { md: '760', lg: '1200', leftFromDesktop: true } : { md: '760' })
 ---
 <Base title={title} description={description}>
-  <PageMain top="bar" md="760" lg={wide ? '1200' : undefined} padBottom={bottomPad} extra={wide ? 'lg:px-0' : undefined} data-page={page} data-report={report} {...main}>
+  <PageMain md="760" lg={wide ? '1200' : undefined} padBottom={bottomPad} extra={wide ? 'lg:px-0' : undefined} data-page={page} data-report={report} {...main}>
     <a class={NAV_CHIP_QUIET} href={siteHref(back.to)}>{back.label}</a>
     <slot name="banner" />
     <h1 class="mt-2 font-serif text-step-4 font-normal">{heading}</h1>

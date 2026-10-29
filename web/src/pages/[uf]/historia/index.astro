@@ -5,7 +5,6 @@
  * (`/<uf>/historia/#2`). Built for the states whose sequence has six to eight cards (`story-data.ts`). No entry point links here yet: the page is reached by its address.
  */
 import Base from '@/layouts/Base.astro'
-import PhoneHeader from '@/components/PhoneHeader.astro'
 import StorySequence from '@/components/StorySequence'
 import Seal from '@/components/Seal.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
@@ -43,7 +42,6 @@ const seal = await sealOf(pages['tres-ciclos'])
 const words = { region: storySay('story.region', {}, { name: story.stateName }), dots: storySay('story.dots'), dot: storySay('story.dot', {}, {}), share: storySay('story.share'), linkNote: storySay('story.link.note'), nojs: storySay('story.nojs') }
 ---
 <Base title={`${storySay('story.title', {}, { name: story.stateName })} · Voto a Voto`} description={story.cards[1]!.variants.standard.alt}>
-  <PhoneHeader />
   <PageMain md="480" data-page="historia" data-uf={uf}>
     <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{story.stateName}</h1>

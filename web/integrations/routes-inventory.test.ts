@@ -30,11 +30,13 @@ import {
   checkExclusions,
   NO_PREVIEW_EXCLUSIONS,
   checkFinalityPages,
+  checkAppHeaderExclusions,
   checkFooterExclusions,
   checkKnownRoutes,
   checkPerfRoutes,
   checkSampledRoutes,
   checkTypeScaleScreens,
+  appHeaderPages,
   footerLinkPages,
   layoutHasFinalityChip,
   layoutsImported,
@@ -90,6 +92,14 @@ describe('the route inventory of the site (#110)', () => {
 
   it('every page template has a type-scale screen or a reasoned exclusion, and no screen is stale', () => {
     expect(checkTypeScaleScreens(pages, SCREENS.map((s) => s.path))).toEqual([])
+  })
+
+  it('the app-header pages are derived: templates minus APP_HEADER_EXCLUSIONS, no dupes, every one a live URL', () => {
+    expect(checkAppHeaderExclusions(pages)).toEqual([])
+    const list = appHeaderPages(pages)
+    const urls = new Set(Object.values(EXAMPLE_URLS))
+    expect(list.every((u) => urls.has(u)), 'a derived app-header page URL that no EXAMPLE_URLS entry provides').toBe(true)
+    expect(new Set(list).size, 'APP_HEADER_PAGES duplicates a URL').toBe(list.length)
   })
 
   it('the tap-target footer pages are derived: templates minus FOOTER_EXCLUSIONS, no dupes, every one a live URL', () => {

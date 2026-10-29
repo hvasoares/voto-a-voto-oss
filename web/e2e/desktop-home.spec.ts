@@ -91,7 +91,7 @@ test.describe('"/" shortcut', () => {
     await page.goto(`${base}relatorios/`)
     await page.waitForLoadState('networkidle')
     await page.keyboard.press('/')
-    await expect(page.locator('[data-city-search="bar"] input')).toBeFocused()
+    await expect(page.locator('[data-component="top-bar"] [data-city-search="bar"] input')).toBeFocused()
     await page.keyboard.type('cidade')
     await expect(page.locator('[data-component="top-bar"] a[data-position]').first()).toBeVisible()
   })

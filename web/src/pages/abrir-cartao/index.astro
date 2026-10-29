@@ -5,7 +5,6 @@
  * is read in the browser and never inserted into the page. No entry point is linked yet (the address is the way in).
  */
 import Base from '@/layouts/Base.astro'
-import PhoneHeader from '@/components/PhoneHeader.astro'
 import CardDrop from '@/components/CardDrop'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { siteBase, siteHref } from '@/paths'
@@ -22,7 +21,6 @@ const fixture = await datasetFixture()
 const edition = await currentEdition()
 ---
 <Base title="Abrir um cartão · Voto a Voto" description="Solte o arquivo de um cartão do Voto a Voto para abrir a mesma vista, refeita com os dados do site.">
-  <PhoneHeader />
   <PageMain md="480" data-page="abrir-cartao">
     <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Abrir um cartão</h1>
