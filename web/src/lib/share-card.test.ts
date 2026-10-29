@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 import type { Candidate, Turnout, Vote } from '@/data'
 import { loadCityResult } from './shard-files'
 import { buildCityResult, type CityResult } from '@/shared/city-model'
-import { candidateLabel, shareCardSvg, SHARE_CARD_SIZE, textWidth } from './share-card'
+import { shareCardSvg, SHARE_CARD_SIZE } from './share-card'
+import { candidateLabel, textWidth } from './share-picture'
 
 const turnout = (o: Partial<Turnout> = {}): Turnout => ({ ano: 2026, turno: 2, uf: 'rj', cdMunicipio: '1', aptos: 1000, comparecimento: 800, abstencoes: 200, brancos: 20, nulos: 30, anuladosApuSep: 0, validos: 750, ...o })
 const cand = (numero: number, nome: string, turno: 1 | 2 = 2): Candidate => ({ ano: 2026, turno, candidatoNumero: numero, nomeUrna: nome, partido: 'X' })

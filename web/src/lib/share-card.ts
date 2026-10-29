@@ -23,8 +23,7 @@
  */
 import type { CityResult, Segment, SegmentKey } from '@/shared/city-model'
 import { colors } from '@/shared/tokens'
-export { candidateLabel, esc, fit, labelText, rect, SANS, SERIF, stripControl, text, textWidth, wrap, type Anchor } from './share-picture'
-import { candidateLabel, cardSvg, centredLabel, esc, fit, fitLines, INNER, largestFit, LEFT, rect, SEGMENT_FILL, stripControl, text, textWidth, wrap } from './share-picture'
+import { candidateLabel, cardSvg, centredLabel, esc, exampleTag, fit, fitLines, INNER, largestFit, LEFT, rect, SEGMENT_FILL, stripControl, text, textWidth, wrap } from './share-picture'
 import { DEFAULT_LOCALE, message, type Locale, type MessageKey } from './sentences/catalog'
 
 /** The fields of a CityResult the picture and the share text read. A CityResult is one. */
@@ -153,7 +152,7 @@ export function shareCardSvg(r: PictureResult, o: ShareCardOptions): string {
   // Header: fictitious tag and "Presidente {ano}".
   let hx = LEFT
   if (o.fixture) {
-    out.push(rect(LEFT, 69, 285, 78, colors.flag, ' rx="10"'), text(LEFT + 142, 122, 44, say('card.example'), { weight: 700, anchor: 'middle' }))
+    out.push(exampleTag(LEFT, 69, say('card.example')))
     hx = 422
   }
   out.push(text(hx, 122, 44, say('card.president', { ano: r.ano }), { weight: 600, fill: colors.muted }))

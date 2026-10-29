@@ -9,7 +9,7 @@ import { brasilCardSvg } from './brasil-card'
 import { brasilContent, brasilUrl } from './brasil-content'
 import { barText } from './brasil-label'
 import { readSvgKeys, svgTexts } from './card-keys'
-import { textWidth } from './share-card'
+import { textWidth } from './share-picture'
 import { brasilAlt, brasilHeadline, regionSentence } from './sentences/brasil'
 
 /*

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { buildCityResult } from '@/shared/city-model'
 import { statCard } from './sentences/stat'
 import { STAT_SIZES, STAT_SIZE_IDS, statCardSvg, type StatSize } from './stat-card'
-import { textWidth } from './share-card'
+import { textWidth } from './share-picture'
 
 const r = buildCityResult({
   turnout: { ano: 2026, turno: 1, uf: 'rj', cdMunicipio: '1', aptos: 1000, comparecimento: 700, abstencoes: 300, brancos: 0, nulos: 0, anuladosApuSep: 0, validos: 700 },

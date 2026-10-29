@@ -1,5 +1,5 @@
 import { colors } from '@/shared/tokens'
-import { esc, fit, rect, text, wrap } from '../share-card'
+import { esc, fit, rect, text, wrap } from '../share-picture'
 import type { ExportTable, Panel } from './actions'
 
 /**

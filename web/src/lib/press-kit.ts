@@ -5,7 +5,7 @@
 import { DEFAULT_VOICE, message as say, type MessageKey, type Voice } from './sentences/catalog'
 import './sentences/catalog-press'
 import { citation, editionLabel } from './editions'
-import { esc } from './share-card'
+import { esc } from './share-picture'
 
 const sayer = (voice: Voice = DEFAULT_VOICE) => (key: string, params: Record<string, string | number> = {}) => say(voice, key as MessageKey, params)
 

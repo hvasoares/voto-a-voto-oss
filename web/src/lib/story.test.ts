@@ -5,7 +5,7 @@ import { STORY_PLAIN, STORY_STANDARD } from './sentences/catalog-story'
 import { UF_NOME } from './uf-names'
 import { storyCardSvg } from './story-card'
 import { storyContent } from './story-content'
-import { textWidth } from './share-card'
+import { textWidth } from './share-picture'
 
 const arcs = (a: Partial<ArcCounts>): ArcCounts => ({ same: 0, switched2022: 0, switched2026: 0, returned: 0, switchedTwice: 0, tie: 0, missing: 0, ...a })
 const kinds = (a: Partial<ArcCounts>, cities = 600, recap = true) => storyPlan({ cities, arcs: arcs(a), recap }).map((s) => s.kind)

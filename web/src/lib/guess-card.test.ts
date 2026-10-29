@@ -4,7 +4,7 @@ import { guessContent, guessResult } from './guess-card'
 import { questionOf } from './question'
 import { buildCityResult } from '@/shared/city-model'
 import { shareContent } from './share-model'
-import { textWidth } from './share-card'
+import { textWidth } from './share-picture'
 
 const o = { origin: 'https://votoavoto.exemplo.br', base: '/', fixture: true }
 const city = { uf: 'rj', slug: 'cidade-exemplo', nome: 'Cidade Exemplo' }
