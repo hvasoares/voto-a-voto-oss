@@ -1,0 +1,32 @@
+[
+  {
+    "file": "e2e/replay.spec.ts",
+    "rule": "fixed-wait",
+    "match": "await page.waitForTimeout(2200)",
+    "reason": "A paused replay cancels its stepper, so when the code is right NOTHING observable happens after the picked cycle; the window exists so a stale step of the old schedule has its chance to wrongly override the pick. No attribute marks 'one step window passed'."
+  },
+  {
+    "file": "e2e/share.spec.ts",
+    "rule": "fixed-wait",
+    "match": "await page.waitForTimeout(300)",
+    "reason": "A cancelled share sheet must stay silent: the share callback has already rejected (the poll above), and the code raises nothing at all on AbortError, so there is no state or attribute to wait on; the window gives a wrongly late status text its chance to be caught."
+  },
+  {
+    "file": "e2e/capture-desktop.spec.ts",
+    "rule": "fixed-wait",
+    "match": "await page.waitForTimeout(300)",
+    "reason": "Screenshot tooling: the ready flags and document.fonts.ready are awaited just above; the remaining settle is the last paint landing on the compositor, which exposes no attribute."
+  },
+  {
+    "file": "e2e/capture-widget.spec.ts",
+    "rule": "fixed-wait",
+    "match": "await page.waitForTimeout(300)",
+    "reason": "Screenshot tooling: the island's data-ready=yes and document.fonts.ready are awaited just above; the remaining settle is the last paint landing on the compositor, which exposes no attribute."
+  },
+  {
+    "file": "e2e/capture-cara-a-cara.spec.ts",
+    "rule": "fixed-wait",
+    "match": "await page.waitForTimeout(300)",
+    "reason": "Screenshot tooling: the duel's data-ready (or data-places) and document.fonts.ready are awaited just above; the remaining settle is the last paint landing on the compositor, which exposes no attribute."
+  }
+]
