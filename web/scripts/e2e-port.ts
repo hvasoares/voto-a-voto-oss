@@ -73,6 +73,21 @@ export function tcpTaken(port: number): boolean {
   return spawnSync(process.execPath, ['-e', probe]).status !== 0
 }
 
+/**
+ * Playwright evaluates the config module in the runner and again in every worker, and each probe is a real
+ * (if brief) bind — racing workers would bump one another to different ports while the webServer sits on
+ * the runner's choice. The first evaluation computes the port and plants it in the environment; workers
+ * fork later, inherit it, and every evaluation of the same invocation agrees.
+ */
+export function resolvedPort(key: string, compute: () => number, env: Record<string, string | undefined> = process.env): number {
+  const memo = `E2E_PORT_RESOLVED_${key}`
+  const planted = env[memo]
+  if (planted !== undefined && planted !== '') return Number(planted)
+  const port = compute()
+  env[memo] = String(port)
+  return port
+}
+
 // Only when run as a script (`npm run e2e:port`): print the port for the current checkout.
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   console.log(portFor(process.cwd(), process.env, tcpTaken, offsetFrom(process.env)))

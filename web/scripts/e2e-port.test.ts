@@ -1,7 +1,7 @@
 import { createServer } from 'node:net'
 import type { AddressInfo } from 'node:net'
 import { describe, expect, it } from 'vitest'
-import { fnv1a32, offsetFrom, portFor, PORT_MIN, PORT_SPAN, tcpTaken } from './e2e-port'
+import { fnv1a32, offsetFrom, portFor, PORT_MIN, PORT_SPAN, resolvedPort, tcpTaken } from './e2e-port'
 
 const free = () => false
 // Non-existent absolute paths: portFor falls back to resolve(), so the hash is deterministic without a disk.
@@ -91,6 +91,26 @@ describe('portFor', () => {
       })
     ).toThrow(inUseText(start, fake('full')))
     expect(probes).toBe(50)
+  })
+})
+
+describe('resolvedPort', () => {
+  // Playwright re-evaluates the config in the runner and in every worker; the memo makes one probe serve all.
+  it('computes once and plants the result in the environment for sibling evaluations', () => {
+    const env: Record<string, string | undefined> = {}
+    let probes = 0
+    const first = resolvedPort('MAIN', () => portFor(fake('memo'), {}, () => (probes++, false)), env)
+    const again = resolvedPort('MAIN', () => portFor(fake('memo'), {}, () => (probes++, false)), env)
+    expect(again).toBe(first)
+    expect(probes).toBe(1)
+    expect(env.E2E_PORT_RESOLVED_MAIN).toBe(String(first))
+  })
+
+  it('keeps separate memos per caller', () => {
+    const env: Record<string, string | undefined> = {}
+    resolvedPort('A', () => 21001, env)
+    expect(resolvedPort('B', () => 21002, env)).toBe(21002)
+    expect(resolvedPort('A', () => 21003, env)).toBe(21001)
   })
 })
 
