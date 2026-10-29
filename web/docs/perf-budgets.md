@@ -119,3 +119,14 @@ Números por página em `docs/checkpoints/issue-32.md` e `issue-34.md`.
 (budget 16 KB = 16384 B: the old pill rules became the answer box, the desktop overrides they made dead were removed), JS 5130 -> 6087 B (the guess is a static import of `city-card`'s own script: a dynamic import cost 2.3 KB because of Vite's preload helper). The replay (#46) and the season (#42, #43) have their own stylesheets
 (`replay.css`, `season.css`, loaded by those pages only), the story pages (#47, #97) have `story.css`; none touches the shared stylesheet or an audited route. The three-cycle page of a city carries +1967 B of JS gzip for the replay. The Meu Brasil page (#97 button): JS +101 B gzip.
 Per ticket numbers: `docs/checkpoints/issue-44.md`, `issue-46.md`, `issue-97.md`.
+
+**Mudança de orçamento (#122), nenhum orçamento mudou:** todas as ilhas hidratadas passaram a publicar `data-ready`/`data-error` pelo mesmo portão (`lib/island-ready.ts` + `components/use-island-ready.ts`), e os dois scripts de retenção de toques (`map-pending.ts`, `overlay-pending.ts`) viraram um só (`scripts/island-pending.ts`). Medido nos builds do merge base (`d4f2524`) e do branch, gzip (`node:zlib` sobre os bytes construídos), eagerJs das quatro rotas auditadas:
+
+| Rota | eagerJs antes | eagerJs depois | delta |
+|---|---|---|---|
+| home (`/`) | 3126 B (shim `Di_RWPze.js` 1516 B + `Base` 1610 B) | 3126 B (os dois arquivos idênticos, hash igual) | **+0 B** |
+| cartão (`/rj/cidade-exemplo/`) | 3016 B (shim `Br5BTUab.js` 1406 B + `Base`) | 3016 B (idênticos) | **+0 B** |
+| mapa (`/mapa/`) | 1664 B (shim `CtULk5vW.js` 54 B + `Base`) | 1667 B (shim `CNy9O-Ne.js` 57 B + `Base`) | **+3 B** |
+| relatório (`/relatorios/cidades-que-viraram/`) | 1666 B (shim `h1UuuPsj.js` 56 B + `Base`) | 1666 B (idênticos) | **+0 B** |
+
+`check:perf`: "All budgets met." antes e depois; o crescimento do helper ficou ≤150 B por rota (máximo +3 B, dentro da folga dos orçamentos de 3 KB/4.2 KB) e a home não cresceu (regra do dono, 2026-10-28). O script do portão de toques retidos carrega nas seis páginas com ilha que recebe toque pré-hidratação (`/mapa/`, `/mapa/<uf>/`, `/mapa/virada/`, `/overlay/`, `/<uf>/`, `/mapa/ficaram-em-casa/`): `island-pending.js` (790 B gzip) substitui `map-pending.js` (542 B) como import de módulo do shim da página — módulos importados não entram no eagerJs (como o `map-pending` nunca entrou), mas descem com a página: +248 B gzip reais nessas seis páginas, e só nelas. A ilha do mapa cresce 41 B gzip (`StateMapMap` 3880 → 3921 B, islandJs, orçamento 85 KB).
