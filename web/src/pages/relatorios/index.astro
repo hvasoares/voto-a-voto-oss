@@ -1,8 +1,7 @@
 ---
-// The reports hub (frame "6 Relatórios", ticket #12). Seven rows, each with its headline figure,
-// computed at build time from the dataset (nothing here is a copied constant). Six are built reports
-// and link through (cidades-que-viraram #12; the four of #13; como-cada-grupo-votou #15); the row of
-// #14 stays a stub and shows "Em breve". Shell and footer: ReportLayout (#118).
+// The reports hub (frame "6 Relatórios", ticket #12). Six rows, each with its headline figure,
+// computed at build time from the dataset (nothing here is a copied constant). All are built reports
+// and link through (cidades-que-viraram #12; the four of #13; como-cada-grupo-votou #15); none leads to Comparar (#158). Shell and footer: ReportLayout (#118).
 import ReportLayout from '@/layouts/ReportLayout.astro'
 import { hubRows } from '@/lib/reports/hub'
 import { loadReports, reportFacts } from '@/lib/reports/page'

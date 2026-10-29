@@ -1,5 +1,5 @@
 /**
- * The report list of the hub (frame "6 Relatórios"): seven rows, each with its headline figure,
+ * The report list of the hub (frame "6 Relatórios"): six rows (seven with Cidades fora da curva), each with its headline figure,
  * computed at build time (nothing on the hub is a copied constant). Every row is a built report and links through.
  */
 import { candidateName } from '@/shared/candidate-name'
@@ -82,12 +82,6 @@ export function hubRows(reports: ComputedReports, input: MarginInput, outliers?:
           },
         ]
       : []),
-    {
-      id: 'comparar',
-      title: 'Comparar com 2022 e 2018',
-      headline: `Os seis maiores estados: ${lula} e ${flavio}, votos e percentuais`,
-      to: '/comparar/2022/', // built by ticket #14
-    },
     {
       id: 'como-cada-grupo-votou',
       title: 'Como cada grupo votou',
