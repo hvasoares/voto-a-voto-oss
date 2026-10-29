@@ -11,7 +11,7 @@ import { displayName, ufLabel } from '@/shared/city-search'
 
 const { margins, lula, flavio } = await loadReports()
 const flips = rankedFlipsToLula(margins)
-// Fact records (#62): every listed figure links to its record; the seal is written from the build's checks.
+// Fact records (#62): the page's one calculation entry (#155) opens its records; the seal is written from the build's checks.
 const { calc, seal } = await reportFacts('relatorios/cidades-que-viraram', 'cidades')
 const minMil = `${formatInt(MIN_FLIP_VALIDOS / 1000)} mil`
 const rows = flips.map((r) => ({
@@ -20,11 +20,11 @@ const rows = flips.map((r) => ({
   slug: r.slug,
   name: `${displayName(r.nome)}/${ufLabel(r.uf)}`,
   detail: `Margem ${formatSignedPp(r.margin1)} → ${formatSignedPp(r.margin2)} · ${formatInt(r.validos2)} votos válidos`,
-  factKey: `${r.uf}-${r.slug}`,
 }))
 ---
 
 <ReportLayout
+  calc={calc}
   title="Cidades que viraram no 2º turno · Voto a Voto"
   heading="Cidades que viraram no 2º turno"
   report="cidades-que-viraram"
@@ -40,7 +40,6 @@ const rows = flips.map((r) => ({
   <section class="mt-2" aria-label="Cidades que viraram">
     <ReportTable
       rows={rows}
-      calc={calc}
       tableAttr="data-flip-table"
       rowAttr="data-flip"
       caption="Margem no 1º turno e margem no 2º turno de cada cidade"

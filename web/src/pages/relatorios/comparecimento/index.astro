@@ -15,7 +15,7 @@ const SHOWN = TURNOUT_SHOWN
 
 const { input } = await loadReports()
 const { highest, lowest, compared } = rankedTurnout(input)
-// Fact records (#62): every listed figure links to its record; the seal is written from the build's checks.
+// Fact records (#62): the page's one calculation entry (#155) opens its records; the seal is written from the build's checks.
 const { calc, seal } = await reportFacts('relatorios/comparecimento', 'cidades')
 const minMilhares = `${formatInt(MIN_TURNOUT_APTOS / 1000)} mil`
 const volume = (r: TurnoutExtreme): string => `${formatFixedPct(r.rate)} · ${formatInt(r.comparecimento)} de ${formatInt(r.aptos)} eleitores aptos`
@@ -26,11 +26,11 @@ const rowsOf = (list: TurnoutExtreme[]) =>
     slug: r.slug,
     name: `${displayName(r.nome)}/${ufLabel(r.uf)}`,
     detail: volume(r),
-    factKey: `${r.uf}-${r.slug}`,
   }))
 ---
 
 <ReportLayout
+  calc={calc}
   title="Comparecimento mais alto e mais baixo · Voto a Voto"
   heading="Comparecimento mais alto e mais baixo"
   report="comparecimento"
@@ -45,15 +45,12 @@ const rowsOf = (list: TurnoutExtreme[]) =>
   <p class="mt-1 text-step-1 text-muted-foreground" data-sized>
     Comparecimento = quem votou dividido pelo eleitorado apto, em % · {formatInt(compared)} cidades no filtro, de cada uma o volume embaixo da taxa.
   </p>
-  <p class="mt-1 text-step-1" data-count-links><Fragment set:html={calc('filtro')} /></p>
 
   <section class="mt-2" aria-label="Comparecimento mais alto">
     <h2 class="text-step-2 font-bold">Mais alto</h2>
     <ReportTable
       class="mt-1"
       rows={rowsOf(highest)}
-      calc={calc}
-      factPrefix="alto-"
       tableAttr="data-turnout-high"
       rowAttr="data-turnout"
       caption="As maiores taxas de comparecimento do 2º turno de 2026"
@@ -65,8 +62,6 @@ const rowsOf = (list: TurnoutExtreme[]) =>
     <ReportTable
       class="mt-1"
       rows={rowsOf(lowest)}
-      calc={calc}
-      factPrefix="baixo-"
       tableAttr="data-turnout-low"
       rowAttr="data-turnout"
       caption="As menores taxas de comparecimento do 2º turno de 2026"

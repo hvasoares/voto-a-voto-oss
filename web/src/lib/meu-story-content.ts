@@ -23,8 +23,6 @@ export interface MeuStoryCard {
   address: string
   filename: string
   caption: string
-  /** The page that explains the number, relative to the site root (`fato/rj/x/2026-2/`), and the fragment. */
-  calc?: { path: string; anchor: string }
 }
 
 export interface MeuStoryOptions {
@@ -60,7 +58,6 @@ export function meuStoryContent(input: MeuStoryInput, refs: readonly PlaceRef[],
       address,
       filename: `voto-a-voto-meu-brasil-historia-${n}.png`,
       caption: storySay(step.surprising ? 'story.caption.surprising' : 'story.caption', { locale }, { n, total }),
-      calc: t.calc,
     }
   })
 }

@@ -10,7 +10,7 @@ import { factsOf, type CuriositiesFile } from '@/lib/curiosities'
 import { calcLink } from '@/lib/facts/link'
 import { placesQuery } from '@/lib/meu-brasil'
 import { meuStoryContent } from '@/lib/meu-story-content'
-import type { MeuStoryInput, StoryPlace, StoryTwin } from '@/lib/meu-story'
+import { meuCalcPath, type MeuStoryInput, type StoryPlace, type StoryTwin } from '@/lib/meu-story'
 import { twinOf, type PeersFile } from '@/lib/peers'
 import { storySay } from '@/lib/story'
 import { displayName, ufLabel } from '@/shared/city-search'
@@ -101,7 +101,6 @@ export default function MeuBrasilStory({ base, origin, fixture, words }: MeuBras
       filename: c.filename,
       caption: c.caption,
       address: c.address,
-      calc: c.calc ? calcLink(`${linkHref(`/${c.calc.path}`, base)}#${c.calc.anchor}`).toString() : undefined,
     }))
   }, [ready, places, extras, refs, origin, base, fixture])
 
@@ -135,6 +134,7 @@ export default function MeuBrasilStory({ base, origin, fixture, words }: MeuBras
   if (!cards.length) return <p className="mt-4 text-step-1 text-muted-foreground" data-placeholder role="status" data-ready={island.dataReady}>{words.loading}</p>
   return (
     <>
+      <p dangerouslySetInnerHTML={{ __html: calcLink(linkHref(`/${meuCalcPath(firstKey!)}`, base)).toString() }} />
       <p className="mt-1 text-step-1 text-muted-foreground" data-subtitle>{storySay('mbstory.sub', {}, { n: cards.length })}</p>
       <StorySequence cards={cards} words={wordsOf} onReached={(n) => getAnalytics().event('meu_story_card_reached', { position: n })} onShared={(n) => getAnalytics().event('meu_story_card_shared', { position: n })} onClose={() => location.assign(`${linkHref('/meu-brasil/', base)}${placesQuery(refs)}`)} />
     </>

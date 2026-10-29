@@ -70,7 +70,7 @@ const tieNote = (g: CohortGroup): string => {
 
 const totalLine = `${fmt(report.totals.cities2026)} cidades do 2º turno de 2026 (sem os postos do exterior) = ${fmt(report.totals.grouped)} em grupos${report.tieCases.length ? ` + ${fmt(report.tieCases.length)} com empate antes de 2026` : ''}${report.noData.length ? ` + ${fmt(report.noData.length)} sem dados` : ''}.`
 ---
-<ReportLayout title="Como cada grupo votou · Voto a Voto" heading="Como cada grupo votou" page="cohorts" seal={seal} bottomPad={false} aboutLabel="Sobre os dados">
+<ReportLayout title="Como cada grupo votou · Voto a Voto" heading="Como cada grupo votou" page="cohorts" calc={calc} seal={seal} bottomPad={false} aboutLabel="Sobre os dados">
     <Fragment slot="banner">
       <FixtureBanner show={manifest.fixture} tag="p" class="mt-2 border border-border bg-secondary px-3 py-2 text-step-2 font-bold" data-component="fixture-banner" />
     </Fragment>
@@ -98,7 +98,6 @@ const totalLine = `${fmt(report.totals.cities2026)} cidades do 2º turno de 2026
             ))}
           </ul>
           {g.ties2026 > 0 && <p class="mt-[5px] text-step-1 text-muted-foreground" data-component="group-tie">{tieNote(g)}</p>}
-          <Fragment set:html={calc(`${g.winner2018}-${g.winner2022}`)} />
         </article>
       ))}
     </section>
@@ -106,7 +105,6 @@ const totalLine = `${fmt(report.totals.cities2026)} cidades do 2º turno de 2026
     <section class="mt-2 border-t border-border pt-[7px]" aria-labelledby="fora-dos-grupos">
       <h2 class="font-serif text-step-3 font-normal" id="fora-dos-grupos">Fora dos grupos</h2>
       <p class="mt-[5px]" data-component="total-line">{totalLine}</p>
-      <Fragment set:html={calc('fora')} />
       {outsideLines.length > 0 && (
         <ul class="mt-[5px] list-disc space-y-1 pl-5" data-component="outside-list">
           {outsideLines.map((line) => <li>{line}</li>)}

@@ -18,8 +18,6 @@ export interface ReportRow {
   name: string
   /** The muted second line (the figures), already written by the page. */
   detail: string
-  /** The fact record anchor of the row's figure (the calculation link beside the row). */
-  factKey: string
 }
 
 const blank = (v: unknown): boolean => typeof v !== 'string' || v.trim() === ''
@@ -31,7 +29,7 @@ export function assertReportRows(where: string, rows: readonly ReportRow[]): voi
     const at = `${where}: row ${i}`
     if (r === null || typeof r !== 'object') throw new Error(`${at} is not an object`)
     if (typeof r.id !== 'string' && typeof r.id !== 'number') throw new Error(`${at} has no id`)
-    for (const field of ['uf', 'slug', 'name', 'detail', 'factKey'] as const) if (blank(r[field])) throw new Error(`${at} has an empty ${field}`)
+    for (const field of ['uf', 'slug', 'name', 'detail'] as const) if (blank(r[field])) throw new Error(`${at} has an empty ${field}`)
   })
 }
 

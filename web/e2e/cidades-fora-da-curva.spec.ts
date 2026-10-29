@@ -34,8 +34,8 @@ test.describe('Cidades fora da curva: the hub', () => {
     await expect(row).toHaveAttribute('href', PATH)
     await expect(row).toContainText('Cidades fora da curva')
     await expect(row).toContainText(`Lista de triagem: ${n} cidades comparadas com cidades parecidas`)
-    const li = page.locator('nav[aria-label="Relatórios"] li', { has: row })
-    await expect(li.locator('a.calc')).toHaveAttribute('href', /\/fato\/relatorios\/resumo\/#cidades-fora-da-curva$/)
+    await expect(page.locator('a.calc')).toHaveCount(1)
+    await expect(page.locator('a.calc')).toHaveAttribute('href', /\/fato\/relatorios\/resumo\/#/)
   })
 })
 
@@ -69,15 +69,13 @@ test.describe('Cidades fora da curva: the list', () => {
     }
   })
 
-  test('every row has its "De onde vem este número?", and it lands on a page that has the record with the peers and the calculation', async ({ page }) => {
+  test('the page has the one "De onde vem este número?", and the records of every row are on the page it opens, with the peers and the calculation', async ({ page }) => {
     const { rows } = await outliers
     const first = pickOutliers(rows, { uf: undefined, min: 5_000 }).shown[0]!
     await page.goto(PATH)
-    const links = page.locator('[data-outliers] > li').first().locator('a.calc')
-    await links.first().evaluate((e) => e.removeAttribute('hidden'))
-    const href = (await links.last().getAttribute('href'))!
-    expect(href).toContain(`/fato/relatorios/cidades-fora-da-curva/${first.uf}/#${first.uf}-${first.slug}`)
-    await page.goto(href)
+    await expect(page.locator('[data-outliers] a.calc')).toHaveCount(0)
+    await expect(page.locator('a.calc')).toHaveCount(1)
+    await page.goto(`${base}fato/relatorios/cidades-fora-da-curva/${first.uf}/#${first.uf}-${first.slug}`)
     const record = page.locator(`#${first.uf}-${first.slug}`)
     await expect(record).toContainText('cidade parecida')
     await expect(record).toContainText('mediana de')

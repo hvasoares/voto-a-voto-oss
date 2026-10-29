@@ -8,6 +8,7 @@
  *
  * Input contract (typed; `assertReportPage` fails the build with the page named when a field is malformed):
  *  - `title`, `heading`  the document title and the h1; `description` the meta description (optional);
+ *  - `calc`              `reportFacts().calc`, the page's one calculation entry (#155), drawn beside the title;
  *  - `seal`              `reportFacts().seal`, the "conferido" lines (an empty list draws nothing);
  *  - `report`            the `data-report` key the analytics and the specs read (absent on the hub and the cohorts page);
  *  - `page`              the `data-page` key (default "relatorios");
@@ -38,12 +39,14 @@ import PageMain from '@/components/PageMain.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { assertReportPage } from '@/lib/reports/layout'
 import { siteHref } from '@/paths'
+import type { Raw } from '@/shared/html'
 import { NAV_CHIP_QUIET } from '@/shared/link-classes'
 import { footerClass } from '@/shared/page-shell'
 
 interface Props {
   title: string
   heading: string
+  calc: Raw
   seal: string[]
   description?: string
   report?: string
@@ -62,6 +65,7 @@ interface Props {
 const {
   title,
   heading,
+  calc,
   seal,
   description,
   report,
@@ -84,7 +88,10 @@ const footerShell = footerClass(wide ? { md: '760', lg: '1200', leftFromDesktop:
   <PageMain md="760" lg={wide ? '1200' : undefined} padBottom={bottomPad} extra={wide ? 'lg:px-0' : undefined} data-page={page} data-report={report} {...main}>
     <a class={NAV_CHIP_QUIET} href={siteHref(back.to)}>{back.label}</a>
     <slot name="banner" />
-    <h1 class="mt-2 font-serif text-step-4 font-normal">{heading}</h1>
+    <div class="mt-2 flex items-center justify-between gap-2">
+      <h1 class="font-serif text-step-4 font-normal">{heading}</h1>
+      <Fragment set:html={calc} />
+    </div>
     <slot />
     <Seal lines={seal} />
     {notice && <ReportNotice text={notice} variant={noticeVariant} />}

@@ -28,6 +28,8 @@
  *    no completeness rule, only staleness: a listed route that no longer exists fails.
  *  - footer-finality PAGES: the chip'd global footer lives in a layout; one listed page per layout whose
  *    source carries `data-finality-chip`.
+ *  - CALC_ENTRY_PAGES (#155): the templates that print figures and carry the ONE "De onde vem este número?" entry;
+ *    every other template carries none. The count spec (fatos-paginas.spec.ts) walks the whole EXAMPLE_URLS list.
  */
 import { relative, sep } from 'node:path'
 import { walkFiles } from '../scripts/walk'
@@ -283,6 +285,35 @@ export const FINALITY_PAGES: readonly { name: string; route: string }[] = [
   { name: 'Dados para nerds', route: 'dados-para-nerds/' },
 ]
 
+/**
+ * The page templates with the page's one calculation entry (#155: a 🔍 with the accessible name "De onde vem este número?", `a[data-calc]`),
+ * each with the URL the count spec opens: its EXAMPLE_URLS URL, or the one that gives the page its figures (the Meu Brasil story is
+ * drawn by its island from the places in the address, so it opens with a place). Any template not listed carries none.
+ */
+export const CALC_ENTRY_PAGES: Readonly<Record<string, string>> = {
+  '/:uf/': 'rj/',
+  '/:uf/:slug/': 'rj/cidade-exemplo/',
+  '/:uf/historia/': 'rj/historia/',
+  '/:uf/resumo/': 'rj/resumo/',
+  '/brasil/': 'brasil/',
+  '/comparar/:ciclo/': 'comparar/2022/',
+  '/meu-brasil/historia/': 'meu-brasil/historia/?mora=rj/cidade-exemplo',
+  '/relatorios/': 'relatorios/',
+  '/relatorios/cidades-fora-da-curva/': 'relatorios/cidades-fora-da-curva/',
+  '/relatorios/cidades-fora-da-curva/:uf/:min/': 'relatorios/cidades-fora-da-curva/rj/5000/',
+  '/relatorios/cidades-que-viraram/': 'relatorios/cidades-que-viraram/',
+  '/relatorios/como-cada-grupo-votou/': 'relatorios/como-cada-grupo-votou/',
+  '/relatorios/comparecimento/': 'relatorios/comparecimento/',
+  '/relatorios/disputas-mais-apertadas/': 'relatorios/disputas-mais-apertadas/',
+  '/relatorios/maiores-viradas/': 'relatorios/maiores-viradas/',
+  '/relatorios/votos-ganhos-e-perdidos/': 'relatorios/votos-ganhos-e-perdidos/',
+  '/tres-ciclos/:uf/': 'tres-ciclos/rj/',
+}
+
+/** The URL the count spec opens for a template, and how many entries it must hold: one for a CALC_ENTRY_PAGES template, none for the rest. */
+export const calcEntryExpectation = (template: string): { url: string; count: 0 | 1 } =>
+  template in CALC_ENTRY_PAGES ? { url: CALC_ENTRY_PAGES[template]!, count: 1 } : { url: EXAMPLE_URLS[template]!, count: 0 }
+
 /** A tap-targets footer page: every template not excluded above, at its fixture URL. */
 export function footerLinkPages(pages: readonly PageFile[]): string[] {
   return pageTemplates(pages)
@@ -379,6 +410,17 @@ export function checkFooterExclusions(pages: readonly PageFile[]): string[] {
 /** The app-header list is derived; the exclusion map is the hand-kept part, guarded as a list of reasons. */
 export function checkAppHeaderExclusions(pages: readonly PageFile[]): string[] {
   return checkExclusions('APP_HEADER_PAGES (e2e/app-header.spec.ts)', APP_HEADER_EXCLUSIONS, pageTemplates(pages))
+}
+
+/** CALC_ENTRY_PAGES: every key a live template, every URL on that template's own route (no orphan, no stray address). */
+export function checkCalcEntryPages(pages: readonly PageFile[]): string[] {
+  const live = new Set(pageTemplates(pages))
+  return Object.entries(CALC_ENTRY_PAGES).flatMap(([template, url]) => {
+    const out: string[] = []
+    if (!live.has(template)) out.push(`CALC_ENTRY_PAGES (e2e/routes-inventory.ts): ${template} matches no page (renamed or deleted: an orphan)`)
+    else if (stripQuery(url).split('/').length !== EXAMPLE_URLS[template]!.split('/').length) out.push(`CALC_ENTRY_PAGES (e2e/routes-inventory.ts): ${url} is not an address of ${template}`)
+    return out
+  })
 }
 
 /** The sampled lists fail only on staleness: a listed URL must open a page that still exists. */

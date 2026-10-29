@@ -37,7 +37,7 @@ const href = siteHref
 const view = await loadBrasil()
 const fixture = await isFixtureDataset()
 const nerds = placesWithShards()
-// Fact records (#62): every bar and region links to its record; the seal is written from the build's checks.
+// Fact records (#62): the page's one calculation entry (#155) opens them; the seal is written from the build's checks.
 const facts = await getFactPage('brasil', `${view.ano}-${view.turno}`)
 const links = factLinks(facts.facts, '/brasil/', base)
 const seal = await sealOf(facts)
@@ -68,6 +68,7 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
   <div class="min-w-0">
     <h1 class="font-serif text-step-4 font-normal wrap-anywhere">Brasil e regiões</h1>
     <p class="text-step-1 text-muted-foreground">2º turno de {view.ano}</p>
+    {!backdrop && <Fragment set:html={calcLink(links(`pais-${view.nationalCandidates[0]!.numero}`))} />}
   </div>
   <div class="brasil-top__links">
     <a class="inline-flex min-h-11 items-center text-step-2 font-bold text-primary" data-link="nerds" href={href(`/${nerdsPath({ level: 'brasil' })}`)}>Dados para nerds ›</a>
@@ -99,7 +100,6 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
         <>{i > 0 && ' · '}{brasilVotes(c.labelFull, formatInt(c.votos))}</>
       ))}
     </p>
-    <p class="mt-1"><Fragment set:html={calcLink(links(`pais-${view.nationalCandidates[0]!.numero}`))} /></p>
   </section>
 
   <section class="pt-6" aria-labelledby="brasil-por-regiao" data-brasil-regioes>
@@ -125,10 +125,7 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
           </div>
           <p class="mt-1 text-step-1 text-[var(--c-ink)]" data-participacao>{brasilTurnout(r)}</p>
           <p class="text-step-1 text-muted-foreground" data-brancos-nulos>{brasilBlanks(r)}</p>
-          <div class="flex items-center justify-between">
-            <span class="brasil-calc"><Fragment set:html={calcLink(links(`${r.regiao}-parcela`))} /></span>
-            {nerds.regioes.includes(r.regiao) && <a class="inline-flex min-h-11 items-center text-step-1 font-bold text-primary" data-link="nerds-regiao" href={href(`/${nerdsPath({ level: 'regiao', id: r.regiao })}`)}>Dados da região ›</a>}
-          </div>
+          {nerds.regioes.includes(r.regiao) && <a class="inline-flex min-h-11 items-center text-step-1 font-bold text-primary" data-link="nerds-regiao" href={href(`/${nerdsPath({ level: 'regiao', id: r.regiao })}`)}>Dados da região ›</a>}
         </li>
       ))}
     </ul>
@@ -162,7 +159,6 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
   .brasil-h2 { font: 700 var(--step-1) / var(--lh-1) var(--font-sans); }
   .brasil-h2--region { font: 400 var(--step-3) / var(--lh-3) var(--font-serif); }
   .brasil-top__links { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; }
-  .brasil-calc :global(a) { display: inline-flex; align-items: center; min-height: 44px; }
   @media (min-width: 1024px) {
     .brasil-top { display: flex; align-items: flex-start; justify-content: space-between; }
     .brasil-top__links { flex: none; justify-content: flex-end; gap: 24px; }

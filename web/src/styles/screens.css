@@ -111,11 +111,9 @@ h2, .section-title { font: 400 var(--step-3) var(--font-serif); }
 .legend__swatch--nulos { background: var(--c-nulos); }
 .legend__label { display: contents; min-width: 0; font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); overflow-wrap: anywhere; }
 .legend__value { flex: none; margin-left: auto; font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); }
-/* the calculation link (#61): under the legend label and after the bar titles; the accent colour passes 4.5:1 on the paper. */
-.calc { color: var(--c-accent); font: var(--fw-bold) var(--step-1)/var(--lh-1) var(--font-sans); text-decoration: underline; }
-.legend__label .calc { order: 1; flex: 0 0 100%; padding-left: 22px; } /* the link has its own line under the label and the value (#89): the 24-character wording does not fit beside them */
-.turnout__title .calc { float: right; } /* the title holds its float (#89): a link that wraps below the words must not squeeze the bar beside it */
-.curio__fact .calc { display: block; grid-column: 1 / -1; margin-top: 8px; }
+/* the page's one calculation entry (#155): a 🔍 icon with a 44 px touch target, at the page title. */
+.calc { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; font-size: var(--step-3); line-height: 1; text-decoration: none; }
+.calc[hidden] { display: none; }
 .city-page .tabs, .tabs { display: flex; background: var(--c-paper-2); border-radius: var(--radius); padding: var(--sp-1); gap: var(--sp-1); }
 .tabs__tab {
   flex: 1; display: flex; align-items: center; justify-content: center; min-height: 40px;
@@ -162,11 +160,6 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
 }
 @media (scripting: none) {
   .cycles-switch { display: none !important; }
-}
-
-/* ---- desktop (G10, #52): the calculation link sits beside the legend label from 1024 px (the two-column card is in city.css). ---- */
-@media (min-width: 1024px) {
-  .legend__label .calc { display: inline; order: 0; margin-left: 10px; padding: 0; }
 }
 
 /* ---- desktop (G10, #55): Estado and the three-cycles pages are a centered column of about 720 px from 768 px, and drop the page header

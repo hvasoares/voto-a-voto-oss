@@ -11,36 +11,25 @@ const city = `${base}rj/cidade-exemplo/`
 const fato = (page: string) => `${base}fato/rj/cidade-exemplo/${page}/`
 
 test.describe('city card: De onde vem este número?', () => {
-  test('every figure of the visible view has its link, and each link lands on the record of that figure', async ({ page }) => {
+  test('the card has the one entry, and it lands on the record of the view shown', async ({ page }) => {
     await page.goto(`${city}?ciclo=2026&turno=1`)
     await waitReady(page)
-    const panel = page.locator('.city-card .city-panel:visible')
-    await expect(panel.locator('a.calc')).toHaveCount(7)
-    await expect(panel.locator('.legend__row')).toHaveCount(5)
-    for (const row of await panel.locator('.legend__row').all()) await expect(row.locator('a.calc')).toHaveCount(1)
-    await expect(panel.locator('.turnout__title a.calc')).toHaveCount(2)
-    await expect(page.locator('.city-words .city-panel:visible a.calc')).toHaveCount(1)
-    const hrefs = await panel.locator('a.calc').evaluateAll((els) => els.map((e) => e.getAttribute('href')))
-    expect(hrefs).toEqual(['votaram', 'naoVotaram', 'a', 'b', 'abstencao', 'brancos', 'nulos'].map((a) => `${fato('2026-1')}#${a}`))
+    await expect(page.locator('a.calc')).toHaveCount(1)
+    await expect(page.locator('.city-card a.calc, .city-words a.calc, .city-margin-lines a.calc, .curio a.calc')).toHaveCount(0)
+    await expect(page.locator('a.calc')).toHaveAttribute('href', `${fato('2026-1')}#votaram`)
+    await page.locator('a.calc').click()
+    await expect(page.locator('.fact:target .fact__formula')).toBeVisible()
   })
 
-  test('the sentence and the margin line have theirs; a city with no curiosities has none for them', async ({ page }) => {
-    await page.goto(`${city}?ciclo=2026&turno=1`)
-    const hrefs = await page.locator('.city-words .city-panel:visible a.calc').evaluateAll((els) => els.map((e) => e.getAttribute('href')))
-    expect(hrefs).toEqual([`${fato('2026-1')}#frase`])
-    expect(await page.locator('.city-margin-lines .city-panel:visible a.calc').getAttribute('href')).toBe(`${fato('2026-1')}#margem`)
+  test('the figures of the fact page are still there for the sentence, the margin and the curiosities: only the links went', async ({ page }) => {
+    for (const anchor of ['frase', 'margem']) {
+      await page.goto(`${fato('2026-1')}#${anchor}`)
+      await expect(page.locator(`#${anchor}`)).toBeVisible()
+    }
+    await page.goto(`${fato('comparacoes')}`)
+    await expect(page.locator('.fact').first()).toContainText('posição = 1 + as cidades do grupo')
     await page.goto(`${base}rj/cidade-exemplo-a/?ciclo=2026&turno=1`)
     await expect(page.locator('.curio a.calc')).toHaveCount(0)
-  })
-
-  test('the curiosities have a "De onde vem este número?" each, into the comparisons page of the city', async ({ page }) => {
-    await page.goto(`${base}rj/cidade-exemplo/?ciclo=2026&turno=1`)
-    const hrefs = await page.locator('.curio a.calc').evaluateAll((els) => els.map((e) => e.getAttribute('href')))
-    expect(hrefs.length).toBeGreaterThan(0)
-    for (const h of hrefs) expect(h).toContain(`${fato('comparacoes')}#`)
-    await page.locator('.curio a.calc').first().click()
-    await expect(page.locator('.fact:target .fact__formula')).toBeVisible()
-    await expect(page.locator('.fact:target')).toContainText('posição = 1 + as cidades do grupo')
   })
 
   test('the links add no request and no script on a phone: the page still loads nothing from /data/', async ({ page, baseURL }) => {
@@ -102,10 +91,10 @@ test.describe('the page of the calculation', () => {
   test('the earlier cycles have no page per city: their "De onde vem este número?" opens the one page of the rules, with every kind of figure', async ({ page }) => {
     expect((await page.goto(fato('2022-1')))!.status()).toBe(404)
     await page.goto(`${city}?ciclo=2022&turno=1`)
-    const links = await page.locator('.city-panel[data-view="2022-1"] a.calc').evaluateAll((els) => els.map((e) => e.getAttribute('href')))
-    expect(links.length).toBeGreaterThan(5)
-    for (const href of links) expect(href).toMatch(new RegExp(`^${base}fato/metodo/ciclos-anteriores/#(frase|votaram|naoVotaram|candidato|parte|margem)$`))
-    await page.goto(links[0]!)
+    const link = page.locator('a.calc')
+    await expect(link).toHaveCount(1)
+    expect(await link.getAttribute('href')).toMatch(new RegExp(`^${base}fato/metodo/ciclos-anteriores/#votaram$`))
+    await page.goto((await link.getAttribute('href'))!)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     await expect(page.locator('.fact')).toHaveCount(6)
     await expect(page.locator('.fact__formula').first()).toBeVisible()

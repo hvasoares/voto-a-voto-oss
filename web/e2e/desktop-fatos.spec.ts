@@ -27,7 +27,8 @@ test.describe('desktop: sentence to data', () => {
     await expect(calc).toContainText('Destacado:')
     await expect(calc).toContainText('votos da linha ÷ votos válidos × 100')
     await expect(calc).toContainText('÷')
-    await expect(calc.getByRole('link', { name: 'De onde vem este número? ›' })).toHaveAttribute('href', `${base}fato/estado/rj/tres-ciclos/#2022-a`)
+    await expect(calc.getByRole('link')).toHaveCount(0)
+    await expect(page.locator('a.calc')).toHaveCount(1)
   })
 
   test('the change lights the left segment of its cycle and its cell', async ({ page }) => {

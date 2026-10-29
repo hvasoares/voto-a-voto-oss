@@ -16,7 +16,7 @@ import { DELTAS_SHOWN } from '@/lib/facts/pages'
 const SHOWN = DELTAS_SHOWN
 
 const { voteDeltas, netVotes, lula, flavio } = await loadReports()
-// Fact records (#62): every listed figure links to its record; the seal is written from the build's checks.
+// Fact records (#62): the page's one calculation entry (#155) opens its records; the seal is written from the build's checks.
 const { calc, seal } = await reportFacts('relatorios/votos-ganhos-e-perdidos', 'cidades')
 const minMilhares = `${formatInt(MIN_FLIP_VALIDOS / 1000)} mil`
 
@@ -58,10 +58,11 @@ const totalLine = (s: CandidateSection): string => {
 }
 const deltaLine = (delta: number): string => `${formatSignedInt(delta)} ${Math.abs(delta) === 1 ? 'voto' : 'votos'}`
 const rowsOf = (list: CandidateSection['gains']) =>
-  list.map((r, j) => ({ id: j, uf: r.uf, slug: r.slug, name: `${r.nome}/${r.uf.toUpperCase()}`, detail: `${deltaLine(r.delta)} · ${formatInt(r.votos2026)} em 2026`, factKey: `${r.uf}-${r.slug}` }))
+  list.map((r, j) => ({ id: j, uf: r.uf, slug: r.slug, name: `${r.nome}/${r.uf.toUpperCase()}`, detail: `${deltaLine(r.delta)} · ${formatInt(r.votos2026)} em 2026` }))
 ---
 
 <ReportLayout
+  calc={calc}
   title="Votos ganhos e perdidos vs. 2022 · Voto a Voto"
   heading="Votos ganhos e perdidos vs. 2022"
   report="votos-ganhos-e-perdidos"
@@ -81,15 +82,12 @@ const rowsOf = (list: CandidateSection['gains']) =>
     <section class="mt-3 border-t border-border pt-2" data-candidate-section={s.key}>
       <h2 class="text-step-2 font-bold">{s.candidate}</h2>
       <p class="mt-[3px] text-step-1 text-muted-foreground" data-total>{totalLine(s)}</p>
-      <Fragment set:html={calc(`${s.key}-total`)} />
 
       <h3 class="mt-2 text-step-1 font-bold" data-gains-heading>Maiores altas ({Math.min(SHOWN, s.gains.length)} de {formatInt(s.gained)})</h3>
       <ReportTable
         class="mt-1"
         tight
-        rows={rowsOf(s.gains)}
-        calc={calc}
-        factPrefix={`${s.key}-alta-`}
+        rows={rowsOf(s.gains)}-alta-`}
         tableAttr="data-gains-table"
         rowAttr="data-gain"
         caption="As cidades onde o candidato mais ganhou votos em relação a 2022"
@@ -100,9 +98,7 @@ const rowsOf = (list: CandidateSection['gains']) =>
       <ReportTable
         class="mt-1"
         tight
-        rows={rowsOf(s.losses)}
-        calc={calc}
-        factPrefix={`${s.key}-perda-`}
+        rows={rowsOf(s.losses)}-perda-`}
         tableAttr="data-losses-table"
         rowAttr="data-loss"
         caption="As cidades onde o candidato mais perdeu votos em relação a 2022"

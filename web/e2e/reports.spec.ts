@@ -174,7 +174,8 @@ test.describe('disputas mais apertadas page', () => {
     await expect(rows.first()).toContainText('Diferença de 31 votos — Candidato B à frente (12.215 a 12.184)')
     await expect(rows.first()).toContainText('margem -0,1 pp · 24.399 votos válidos')
     await expect(rows.first().locator('a').first()).toHaveAttribute('href', base + 'rj/cidade-exemplo-a/')
-    await expect(rows.first().locator('a.calc')).toHaveAttribute('href', base + 'fato/relatorios/disputas-mais-apertadas/cidades/#rj-cidade-exemplo-a')
+    await expect(rows.first().locator('a.calc')).toHaveCount(0)
+    await expect(page.locator('a.calc')).toHaveAttribute('href', /^.*\/fato\/relatorios\/disputas-mais-apertadas\/cidades\/#/)
     await expect(page.locator('[data-notice]')).toContainText('Empate = o mesmo número de votos')
   })
 

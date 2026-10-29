@@ -31,7 +31,7 @@ const base = siteBase()
 const href = siteHref
 const rows = (await buildCompareRows(await stateStats(), ciclo)).slice(0, 6)
 // The frame's intro; the 2018 page adds the note that names the 2018 candidates (screen 11b).
-// Fact records (#62): every state row links to the records of its two sides; the seal is written from the build's checks.
+// Fact records (#62): the page's one calculation entry (#155) opens the records of the states' two sides; the seal is written from the build's checks.
 const facts = await getFactPage(`comparar/${ciclo}`, 'estados')
 const links = factLinks(facts.facts, `/comparar/${ciclo}/`, base)
 const seal = await sealOf(facts)
@@ -42,7 +42,10 @@ const intro = `Eleição presidencial 2026 (2º turno) comparada com a de ${cicl
 <Base title={`Comparar com ${ciclo} · Voto a Voto`}>
   <PageMain md="760" data-page={`comparar-${ciclo}`}>
     <a class={NAV_CHIP_QUIET} href={href('/')}>‹ Início</a>
-    <h1 class="mt-2 font-serif text-step-4 font-normal">Comparar com {ciclo}</h1>
+    <div class="mt-2 flex items-center justify-between gap-2">
+      <h1 class="font-serif text-step-4 font-normal">Comparar com {ciclo}</h1>
+      <Fragment set:html={calcLink(links(facts.facts[0]!.anchor))} />
+    </div>
 
     <nav class="mt-1 grid grid-cols-2 rounded-md border border-border p-px lg:mt-5" aria-label="Ciclo de comparação" data-component="cycle-tabs">
       {COMPARE_CYCLES.map((c) =>
@@ -82,7 +85,6 @@ const intro = `Eleição presidencial 2026 (2º turno) comparada com a de ${cicl
               </div>
             ))}
           </div>
-          <p class="pl-[14px] lg:pl-0" style="grid-column: 1 / -1"><Fragment set:html={calcLink(links(`${row.uf}-a`))} /></p>
         </li>
       ))}
     </ul>

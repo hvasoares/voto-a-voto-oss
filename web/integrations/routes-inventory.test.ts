@@ -26,6 +26,7 @@ import {
   EXAMPLE_URLS,
   FINALITY_PAGES,
   KNOWN_ROUTES_EXTRA,
+  checkCalcEntryPages,
   checkDiscovery,
   checkExclusions,
   NO_PREVIEW_EXCLUSIONS,
@@ -100,6 +101,10 @@ describe('the route inventory of the site (#110)', () => {
     const urls = new Set(Object.values(EXAMPLE_URLS))
     expect(list.every((u) => urls.has(u)), 'a derived app-header page URL that no EXAMPLE_URLS entry provides').toBe(true)
     expect(new Set(list).size, 'APP_HEADER_PAGES duplicates a URL').toBe(list.length)
+  })
+
+  it('the pages with the calculation entry (#155) are live templates, each opened at an address of its own', () => {
+    expect(checkCalcEntryPages(pages)).toEqual([])
   })
 
   it('the tap-target footer pages are derived: templates minus FOOTER_EXCLUSIONS, no dupes, every one a live URL', () => {
