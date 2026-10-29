@@ -4,7 +4,7 @@ import { noJs } from './presets'
 
 /*
  * The ready-made texts of a city (#65) on its share page, over the fixture dataset: both texts are printed in the page (readable without
- * scripts), the copy buttons are an enhancement, the plain register changes the words, and one text file per state carries every city.
+ * scripts), the copy buttons are an enhancement, the words are the plain ones (#157), and one text file per state carries every city.
  */
 const share = `${base}rj/cidade-exemplo/compartilhar/`
 
@@ -14,7 +14,7 @@ test.describe('Textos prontos', () => {
     const page = await ctx.newPage()
     await page.goto(share)
     const wa = page.locator('[data-text="whatsapp"]:visible')
-    await expect(wa).toContainText('Votaram 68.434 de 100.000 eleitores')
+    await expect(wa).toContainText('Foram votar 68.434 de 100.000 eleitores')
     await expect(wa).toContainText('Dados fictícios, só de exemplo. Fonte real: TSE.')
     await expect(wa).toContainText('/rj/cidade-exemplo/')
     const radio = page.locator('[data-text="radio"]:visible')
@@ -24,7 +24,7 @@ test.describe('Textos prontos', () => {
     await ctx.close()
   })
 
-  test('the copy buttons copy the text on screen, in the chosen register', async ({ browser }) => {
+  test('the copy buttons copy the plain text on screen', async ({ browser }) => {
     const ctx = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'] })
     const page = await ctx.newPage()
     await page.goto(share)
@@ -32,9 +32,7 @@ test.describe('Textos prontos', () => {
     await expect(page.locator('[data-copy-status]')).toHaveText('Copiado.')
     const copied = await page.evaluate(() => navigator.clipboard.readText())
     expect(copied).toBe(await page.locator('[data-text="whatsapp"]:visible').innerText())
-    expect(copied).toContain('Votaram 68.434')
-    await page.evaluate(() => localStorage.setItem('voto-a-voto:register', 'plain'))
-    await page.reload()
+    expect(copied).toContain('Foram votar 68.434')
     await page.locator('[data-copy="radio"]').click()
     await expect(page.locator('[data-copy-status]')).toHaveText('Copiado.')
     expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('Quer ver os números na tela?')

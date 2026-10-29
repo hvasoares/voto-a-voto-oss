@@ -18,7 +18,6 @@ test.describe('data page: the privacy text lists what is stored', () => {
     await page.locator('a[data-uf="rj"]').click()
     await page.goto(`${base}rj/cidade-exemplo/?turno=1`)
     await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
-    await page.getByRole('button', { name: /Linguagem simples/ }).click()
     await expect(page.locator('[data-question][data-guess-ready="true"]')).toHaveCount(1)
     await page.getByRole('button', { name: 'Sim', exact: true }).click()
     await page.goto(`${base}tres-ciclos/rj/`)

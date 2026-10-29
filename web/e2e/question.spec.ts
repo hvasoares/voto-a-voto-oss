@@ -23,7 +23,7 @@ test.describe('city page: question before the answer', () => {
     const q = page.locator('.city-q__q')
     await expect(q).toHaveText('Cidade Exemplo mudou de lado em 2022?')
     await expect(page.locator('.city-q__yn')).toHaveText('Sim.')
-    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Mudou de lado em 2022')
+    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Em 2022, o lado com mais votos no 2º turno mudou')
     for (const el of [q, page.locator('.city-arc__pill:visible')]) {
       const box = (await el.boundingBox())!
       expect(box.y + box.height).toBeLessThanOrEqual(844)
@@ -54,7 +54,7 @@ test.describe('city page: question before the answer', () => {
     await expect(page.locator('[data-question] .city-margin')).toHaveText('Palpite: Não. Resposta: Sim. O palpite estava errado.')
     await expect(page.getByRole('button', { name: 'Não', exact: true })).toHaveAttribute('aria-pressed', 'true')
     // the answer did not move or change
-    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Mudou de lado em 2022')
+    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Em 2022, o lado com mais votos no 2º turno mudou')
     // a reload remembers it; tapping the same button again takes it back
     await page.reload()
     await ready(page)

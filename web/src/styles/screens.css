@@ -129,7 +129,7 @@ h2, .section-title { font: 400 var(--step-3) var(--font-serif); }
   color: var(--c-muted); border-radius: var(--radius);
 }
 .tabs__tab[aria-current="true"] { background: var(--c-accent); color: var(--c-accent-fg); font-weight: 700; }
-/* The register (linguagem simples): both sentences are pre-rendered; the choice is an attribute of <html> (set by the card's inline script before paint). */
+/* The fact pages print both registers; the standard one shows unless <html> carries an earlier plain choice (set by the page's inline script before paint). */
 html[data-register="plain"] [data-register="standard"], html:not([data-register="plain"]) [data-register="plain"] { display: none; }
 
 /* ---- three cycles of a city (#9, ported by #50): `.cycles-*` and `.cycle*` belong to the city-cycles slot; the bars reuse the shared .bar / .bar__seg ---- */

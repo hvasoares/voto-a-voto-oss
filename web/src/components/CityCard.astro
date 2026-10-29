@@ -12,7 +12,6 @@ import PageDataDownload from '@/components/PageDataDownload.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { cityDataPath, stateDataPath } from '@/lib/api'
 import { SHARD_VERSION } from 'virtual:data-shards'
-import { registerBootScript } from '@/lib/sentences/register-store'
 import { loadCityShard, datasetFixture, loadPeersFile, loadCityNames, loadCuriositiesFile } from '@/lib/shard-files'
 import { factsOf } from '@/lib/curiosities'
 import { twinOf } from '@/lib/peers'
@@ -83,7 +82,6 @@ const shareBase = href(`/${uf}/${slug}/compartilhar/`)
 const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'
 ---
 <div class="screen city-page">
-  <script is:inline set:html={registerBootScript} />
   <AppHeader />
   <main class="page__main" id={backdrop ? undefined : 'main'}>
     {/* One column on a phone; from 1024 px two (#52): the card on the left, the sentence, Compartilhar and the links on the right. */}

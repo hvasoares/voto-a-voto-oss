@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react'
 import { parseView, type View } from '@/slots/city/city-view'
 import { cityShardResult, type CityShard } from '@/lib/city-shard'
 import { pictureSvg, shareContent, type ShareContent } from '@/lib/share-model'
-import { readRegister } from '@/lib/sentences/register-store'
+import { CARD_REGISTER } from '@/lib/sentences/register'
 import { browserStorage, readGuess, type Guess } from '@/lib/guess-store'
 import { guessContent } from '@/lib/guess-card'
 import type { Question } from '@/lib/question'
-import { DEFAULT_LOCALE, message, type MessageKey, type Register } from '@/lib/sentences/catalog'
+import { DEFAULT_LOCALE, message, type MessageKey } from '@/lib/sentences/catalog'
 import { SHARD_VERSION } from 'virtual:data-shards'
 import { useIslandReady } from './use-island-ready'
 import ShareActions from './ShareActions'
@@ -41,9 +41,6 @@ export interface ShareSheetProps {
 export default function ShareSheet({ uf, slug, view, initial, origin, base, fixture, edition, question, cityName }: ShareSheetProps) {
   const [content, setContent] = useState<ShareContent | null>(initial)
   const [viewId, setViewId] = useState(`${view.ano}-${view.turno}`)
-  // The register the reader chose on the city card (remembered in this browser only); the server renders the standard one.
-  const [register, setRegister] = useState<Register>('standard')
-  useEffect(() => setRegister(readRegister()), [])
   // The guess to the city's question (#44), read from this browser only. With none, the normal card; with one, the guess card (#45). Nothing is fetched for it.
   // `undefined` until the browser has been asked (the server cannot know), then the guess or `null`: the picture says so in `data-card`, so a test waits for the real answer.
   const [guess, setGuess] = useState<Guess | null>()
@@ -90,7 +87,7 @@ export default function ShareSheet({ uf, slug, view, initial, origin, base, fixt
     sheet?.setAttribute('data-filename', shown?.filename ?? '')
   }, [viewId, shown?.filename])
 
-  const voice = { locale: DEFAULT_LOCALE, register }
+  const voice = { locale: DEFAULT_LOCALE, register: CARD_REGISTER }
   /** One card of the sheet: its picture, the note and its own ShareActions (the shared island; nothing here is card-specific). */
   const cardBlock = (card: ShareContent, kind: 'guess' | 'city' | 'pending') => (
     <div key={kind === 'guess' ? 'guess' : 'city'} data-card-block={kind}>
@@ -99,12 +96,12 @@ export default function ShareSheet({ uf, slug, view, initial, origin, base, fixt
         data-share-picture
         data-ready={island.dataReady}
         data-card={kind}
-        dangerouslySetInnerHTML={{ __html: pictureSvg(card, register) }}
+        dangerouslySetInnerHTML={{ __html: pictureSvg(card, CARD_REGISTER) }}
       />
       <p className="mt-3 text-step-1 text-muted-foreground" data-note>{NOTE}</p>
       <ShareActions
-        text={card.variants[register].text}
-        svg={pictureSvg(card, register)}
+        text={card.variants[CARD_REGISTER].text}
+        svg={pictureSvg(card, CARD_REGISTER)}
         filename={card.filename}
         link={card.url}
         {...(kind === 'guess' ? { primaryLabel: message(voice, 'guess.card.shareLabel' as MessageKey), downloadLabel: message(voice, 'guess.card.downloadLabel' as MessageKey) } : {})}

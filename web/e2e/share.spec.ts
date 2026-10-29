@@ -193,7 +193,7 @@ test.describe('share: the real route (the city card as backdrop, #50)', () => {
 
   test('an address of another card view without data (Boa Esperança do Norte) says so', async ({ page }) => {
     await openRaw(page, 'absent', `${base}mt/boa-esperanca-do-norte/compartilhar/?ciclo=2022&turno=1`)
-    await expect(page.locator('[data-share-sheet] [data-nodata]')).toHaveText('Sem dados nesse ciclo.')
+    await expect(page.locator('[data-share-sheet] [data-nodata]')).toHaveText('Não temos dados dessa eleição para este lugar.')
   })
 })
 

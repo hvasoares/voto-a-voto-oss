@@ -14,7 +14,7 @@ const figures = (page: Page) => page.locator('[data-city-card] [data-view]:not([
 const cardText = async (page: Page) => (await card(page).allInnerTexts()).join(' ').replace(/\s+/g, ' ')
 
 /** The arc of Cidade Exemplo in the fixture (round-2 winners of 2018, 2022 and 2026). */
-const ARC_LABEL = 'Mudou de lado em 2022'
+const ARC_LABEL = 'Em 2022, o lado com mais votos no 2º turno mudou'
 
 test.describe('city card: fixture route is the frame', () => {
   test('?turno=1 shows round 1 with the numbers of the Sketch frame', async ({ page }) => {
@@ -28,7 +28,7 @@ test.describe('city card: fixture route is the frame', () => {
     expect(t).toContain('Não votaram · 30% do eleitorado')
     expect(t).toContain('Candidato A De onde vem este número? 36.400 · 52% dos votos')
     expect(t).toContain('Nulos De onde vem este número? 3.600 · 12% dos que não votaram')
-    expect(t).toContain('Em Cidade Exemplo, no 1º turno de 2026, 30% do eleitorado não votou, quase tanto quanto o Candidato B recebeu (33,6%).')
+    expect(t).toContain('Em Cidade Exemplo, no 1º turno de 2026, 30% das pessoas que podiam votar não votaram. Isso é quase igual ao que o Candidato B recebeu: 33,6%.')
   })
   test('the bars name the candidates beside the share, in ballot order, with no label clipped (#82)', async ({ page }) => {
     await page.goto(`${city}?turno=1`)
@@ -68,8 +68,6 @@ test.describe('city card: fixture route is the frame', () => {
     await expect(page.locator('.city-arc__pill:visible')).toHaveText(ARC_LABEL)
     await page.getByRole('link', { name: '2018', exact: true }).click()
     await expect(page.locator('.city-arc__pill:visible')).toHaveText(ARC_LABEL)
-    await page.getByRole('button', { name: 'Linguagem simples' }).click()
-    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Em 2022, o lado com mais votos no 2º turno mudou')
     expect(seen.filter((r) => /\/data\//.test(r.url))).toEqual([])
     expect(violations(seen, [new URL(baseURL!).origin])).toEqual([])
   })
@@ -77,8 +75,8 @@ test.describe('city card: fixture route is the frame', () => {
     await page.goto(`${city}?turno=1`)
     await waitReady(page)
     const twin = page.locator('[data-twin]')
-    await expect(twin).toContainText('Cidade gêmea:')
-    await expect(twin).toContainText('Perfil parecido de porte, participação, margem e histórico.')
+    await expect(twin).toContainText('Cidade parecida:')
+    await expect(twin).toContainText('Tem número de eleitores, comparecimento e resultados parecidos nas três eleições.')
     const href = await twin.getAttribute('href')
     expect(href).toMatch(new RegExp(`^${base}(sp|mt)/`))
     await twin.click()
@@ -108,7 +106,7 @@ test.describe('city card: fixture route is the frame', () => {
       expect(text).toMatch(/Grupo: \d+ cidades · /)
       expect(text).toMatch(/20(18|22|26)/)
     }
-    await expect(card.locator('.curio__note:visible')).toContainText('É uma comparação com cidades do mesmo perfil, não um indício de irregularidade.')
+    await expect(card.locator('.curio__note:visible')).toContainText('Isto só compara a cidade com outras parecidas. Não mostra que algo deu errado.')
     const y = async (selector: string) => (await page.locator(selector).first().boundingBox())!.y
     expect(await y('[data-city-card]')).toBeLessThan(await y('.city-curio'))
     expect(await y('[data-twin]')).toBeLessThan(await y('.city-curio'))
@@ -131,7 +129,7 @@ test.describe('city card: fixture route is the frame', () => {
   })
   test('a city with no earlier cycle says which cycles are missing', async ({ page }) => {
     await page.goto(`${base}mt/boa-esperanca-do-norte/`)
-    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Sem dados do 2º turno de 2018 e 2022')
+    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Não temos o resultado do 2º turno de 2018 e 2022')
   })
   test('the fixture banner is shown for fixture data', async ({ page }) => {
     await page.goto(`${city}?turno=1`)
@@ -171,7 +169,7 @@ test.describe('city card: switching', () => {
     await waitReady(page)
     expect(await cardText(page)).toContain('Votaram')
     await page.getByRole('link', { name: '2022', exact: true }).click()
-    await expect(page.locator('[data-nodata]:visible')).toHaveText('Sem dados nesse ciclo.')
+    await expect(page.locator('[data-nodata]:visible')).toHaveText('Não temos dados dessa eleição para este lugar.')
     await expect(page.locator('.bar:visible')).toHaveCount(0)
     await page.getByRole('link', { name: '2º turno' }).click()
     await expect(page.locator('[data-nodata]:visible')).toBeVisible()
@@ -256,10 +254,10 @@ test.describe('city card without JavaScript', () => {
     await expect(card(page).locator('.city-headline:visible')).toContainText('no 2º turno de 2026')
     await expect(page.getByRole('link', { name: 'Compartilhar' })).toBeVisible()
     // The margin line (#26) is in the page too: the default view is round 2 of 2026: 640 votes, which fit 49 times in 31.566 people.
-    await expect(page.locator('[data-margin]:visible')).toHaveText('Faltaram 640 votos para virar: cabem 49 vezes nos 31.566 que não votaram.')
+    await expect(page.locator('[data-margin]:visible')).toHaveText('Faltaram 640 votos para virar o resultado. Esse número cabe 49 vezes nas 31.566 pessoas que não votaram.')
     // The arc label (#41) and its not-the-cause line are in the page too, readable without scripts.
     await expect(page.locator('.city-arc__pill:visible')).toHaveText(ARC_LABEL)
-    await expect(page.locator('.city-arc__note:visible')).toHaveText('Descreve a sequência, não a causa.')
+    await expect(page.locator('.city-arc__note:visible')).toHaveText('Só conta a ordem dos fatos. Não diz o motivo.')
     await expect(page.locator('[data-view][hidden]')).toHaveCount(15) // five other views, in each of the three columns
   })
 })
@@ -269,9 +267,8 @@ test.describe('city card: the headline sentence', () => {
   test('is one sentence under the legend and describes the card (its text alternative)', async ({ page }) => {
     await page.goto(`${city}?turno=1`)
     await waitReady(page)
-    const sentence = 'Em Cidade Exemplo, no 1º turno de 2026, 30% do eleitorado não votou, quase tanto quanto o Candidato B recebeu (33,6%).'
-    await expect(headline(page)).toHaveText(sentence)
-    await expect(card(page).locator('.city-headline__note:visible')).toHaveText('Frase gerada dos números · também o texto alternativo')
+    await expect(headline(page)).toHaveText('Em Cidade Exemplo, no 1º turno de 2026, 30% das pessoas que podiam votar não votaram. Isso é quase igual ao que o Candidato B recebeu: 33,6%.')
+    await expect(card(page).locator('.city-headline__note:visible')).toHaveText('Frase feita com os números desta página · também é a descrição do gráfico')
     const panel = figures(page)
     await expect(panel).toHaveAttribute('role', 'group')
     const id = await card(page).locator('.city-sentence').getAttribute('id')
@@ -293,101 +290,62 @@ test.describe('city card: the headline sentence', () => {
     await waitReady(page)
     await expect(card(page).locator('[data-headline]:visible')).toContainText('No exterior, em Exterior (posto exemplo), no 1º turno de 2026, ')
     await page.goto(`${base}mt/boa-esperanca-do-norte/?ciclo=2022&turno=1`)
-    await expect(page.locator('[data-nodata]:visible')).toHaveText('Sem dados nesse ciclo.')
+    await expect(page.locator('[data-nodata]:visible')).toHaveText('Não temos dados dessa eleição para este lugar.')
   })
 })
 
 const PLAIN = 'Em Cidade Exemplo, no 1º turno de 2026, 30% das pessoas que podiam votar não votaram. Isso é quase igual ao que o Candidato B recebeu: 33,6%.'
-test.describe('city card: linguagem simples', () => {
-  const choice = (page: Page, name: string) => card(page).getByRole('group', { name: 'Estilo da frase' }).getByRole('button', { name })
+test.describe('city card: one text, in plain language (#157)', () => {
   const sentence = (page: Page) => card(page).locator('[data-headline]:visible')
 
-  test('the switch is a labelled group of two toggle buttons; the standard sentence is shown at first', async ({ page }) => {
+  test('shows the plain sentence and no switch between texts', async ({ page }) => {
     await page.goto(`${city}?turno=1`)
     await waitReady(page)
-    await expect(choice(page, 'Texto integral')).toHaveAttribute('aria-pressed', 'true')
-    await expect(choice(page, 'Linguagem simples')).toHaveAttribute('aria-pressed', 'false')
-    await expect(sentence(page)).toContainText('do eleitorado não votou')
-  })
-  test('choosing it shows the plain sentence, is announced, and is reachable and operable by keyboard', async ({ page }) => {
-    await page.goto(`${city}?turno=1`)
-    await waitReady(page)
-    await choice(page, 'Texto integral').focus()
-    await page.keyboard.press('Tab')
-    await expect(choice(page, 'Linguagem simples')).toBeFocused()
-    await page.keyboard.press('Enter')
-    await expect(choice(page, 'Linguagem simples')).toHaveAttribute('aria-pressed', 'true')
-    await expect(choice(page, 'Texto integral')).toHaveAttribute('aria-pressed', 'false')
     await expect(sentence(page)).toHaveText(PLAIN)
+    await expect(card(page).locator('[data-register], [data-register-switch], .register')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /Texto integral|Linguagem simples/ })).toHaveCount(0)
+    await expect(sentence(page)).not.toContainText('eleitorado')
+  })
+  test('the sentence is announced politely, is the picture description and keeps its note', async ({ page }) => {
+    await page.goto(`${city}?turno=1`)
+    await waitReady(page)
     await expect(card(page).locator('.city-sentence')).toHaveAttribute('aria-live', 'polite')
-    await expect(card(page).locator('.city-headline__note:visible')).toHaveText('Frase feita com os números desta página · também é a descrição do gráfico')
-    // the sentence stays the card's text alternative
+    await expect(card(page).locator('.city-headline__note')).toHaveText('Frase feita com os números desta página · também é a descrição do gráfico')
     const id = await card(page).locator('.city-sentence').getAttribute('id')
     await expect(figures(page)).toHaveAttribute('aria-describedby', id!)
     await expect(card(page).locator('.city-sentence')).toContainText(PLAIN)
-    await expect(sentence(page)).not.toContainText('eleitorado')
   })
-  test('the choice is remembered in this browser only: no request carries it and a reload keeps it', async ({ page }) => {
-    const seen = collectRequests(page)
+  test('the share text and the picture text alternative are the plain sentence', async ({ page }) => {
     await page.goto(`${city}?turno=1`)
     await waitReady(page)
-    await choice(page, 'Linguagem simples').click()
-    expect(await page.evaluate(() => localStorage.getItem('voto-a-voto:register'))).toBe('plain')
-    await page.reload()
-    await expect(sentence(page)).toHaveText(PLAIN)
-    await waitReady(page)
-    await expect(choice(page, 'Linguagem simples')).toHaveAttribute('aria-pressed', 'true')
-    await page.goto(`${base}rj/cidade-exemplo-a/?turno=1`)
-    await expect(sentence(page)).toContainText('pessoas que podiam votar')
-    expect(seen.filter((r) => /register|plain|simples/i.test(new URL(r.url).search))).toEqual([])
-    await choice(page, 'Texto integral').click()
-    await expect(sentence(page)).toContainText('do eleitorado')
-  })
-  test('the share text and the picture text alternative follow the chosen register', async ({ page }) => {
-    await page.goto(`${city}?turno=1`)
-    await waitReady(page)
-    await choice(page, 'Linguagem simples').click()
     await page.getByRole('link', { name: 'Compartilhar' }).click()
     await expect(page.locator('[data-text-body]')).toContainText(PLAIN)
     await expect(page.locator('[data-share-picture] svg title')).toHaveText(PLAIN)
-    await page.goto(`${city}?turno=1`)
-    await waitReady(page)
-    await choice(page, 'Texto integral').click()
-    await page.getByRole('link', { name: 'Compartilhar' }).click()
-    await expect(page.locator('[data-text-body]')).toContainText('do eleitorado não votou')
   })
-  test('a cycle without data and an overseas post have a plain version too', async ({ page }) => {
+  test('a cycle without data and an overseas post are told in plain language too', async ({ page }) => {
     await page.goto(`${base}zz/exterior-exemplo/?turno=1`)
     await waitReady(page)
-    await choice(page, 'Linguagem simples').click()
-    await expect(card(page).locator('[data-headline]:visible')).toContainText('No exterior, em Exterior (posto exemplo), no 1º turno de 2026, ')
-    await expect(card(page).locator('[data-headline]:visible')).toContainText('pessoas que podiam votar')
+    await expect(sentence(page)).toContainText('No exterior, em Exterior (posto exemplo), no 1º turno de 2026, ')
+    await expect(sentence(page)).toContainText('pessoas que podiam votar')
     await page.goto(`${base}mt/boa-esperanca-do-norte/?ciclo=2022&turno=1`)
     await expect(page.locator('[data-nodata]:visible')).toHaveText('Não temos dados dessa eleição para este lugar.')
   })
-  test('the switch tap targets are at least 44 px tall', async ({ page }) => {
-    await page.goto(`${city}?turno=1`)
-    await waitReady(page)
-    for (const b of await card(page).locator('.register__choice').all()) expect((await b.boundingBox())!.height).toBeGreaterThanOrEqual(44)
-  })
-  test('storage that is blocked does not break the card', async ({ page }) => {
+  test('an earlier stored choice does not change the card and storage that is blocked does not break it', async ({ page }) => {
     await page.addInitScript(() => Object.defineProperty(window, 'localStorage', { get() { throw new Error('blocked') } }))
     const errors: string[] = []
     page.on('pageerror', (e) => errors.push(String(e)))
     await page.goto(`${city}?turno=1`)
     await waitReady(page)
-    await choice(page, 'Linguagem simples').click()
     await expect(sentence(page)).toHaveText(PLAIN)
     expect(errors).toEqual([])
   })
 })
 
-test.describe('city card without JavaScript: the register', () => {
+test.describe('city card without JavaScript: one text', () => {
   useNoJs()
-  test('the standard sentence is shown, the plain one is not and the switch is not offered', async ({ page }) => {
+  test('the plain sentence is shown and nothing offers another text', async ({ page }) => {
     await page.goto(city)
-    await expect(card(page).locator('[data-headline]:visible')).toContainText('do eleitorado não votou')
-    await expect(card(page).locator('.register')).toBeHidden()
-    for (const plain of await card(page).locator('[data-register="plain"]').all()) await expect(plain).toBeHidden()
+    await expect(card(page).locator('[data-headline]:visible')).toContainText('pessoas que podiam votar')
+    await expect(card(page).locator('[data-register], .register')).toHaveCount(0)
   })
 })

@@ -34,6 +34,8 @@ Os números medidos e a folga de cada orçamento **não** ficam neste documento:
 
 **Medição (#147, sem mudança de orçamento):** a dica acima da busca da home (uma linha por destino, nos dois registros) e o foco ao chegar de uma entrada que pede cidade entram no script da página. Celular, `scripts/measure.ts` na home: antes html 8823 B, JS 4276 B (gzip), css 13141 B; depois html 8872 B, JS 4910 B, css 13160 B. `check:perf`: eagerJs da home 3204 B -> 3478 B (limite 4300 B), html 8823 B -> 8872 B (limite 12 KB). Só a home muda neste ticket.
 
+**Medição (#157, sem mudança de orçamento):** o cartão da cidade passa a ter um só texto (linguagem simples) e perde o seletor de textos: a frase, a linha da margem, o arco, a cidade parecida e as curiosidades deixam de ser impressas duas vezes, e as regras `.register` saem do CSS. Celular (390x844), `scripts/measure.ts`, antes -> depois. Cartão (`/rj/cidade-exemplo/`): html 6432 -> 5657 B gzip (-775 B), JS 7136 -> 6637 B, css 14900 -> 14747 B, dados 0 -> 0. Página de compartilhar (`/rj/cidade-exemplo/compartilhar/`, onde ficam os textos prontos): html 11974 -> 11237 B, JS 107384 -> 107139 B, css 14900 -> 14747 B, dados 0 -> 0. `check:perf`: cartão html 5657 B (limite 6553 B, folga 896 B), eagerJs 2845 B (limite 3072 B); "All budgets met."
+
 **Mudança de orçamento (#35, #40):** o `eagerJs` da home passou de 3 KB para 4.2 KB. A home agora lê o aparelho ao carregar
 (o atalho "Sua cidade" e o "esquecer meus dados", ~0.6 KB gzip) e traz o botão "Usar minha localização"; o código que pede a posição
 e o arquivo dos centros (70 KB gzip) só carregam no toque, mas o `import()` dinâmico faz o Vite acrescentar seu carregador (~0.9 KB gzip) ao script
