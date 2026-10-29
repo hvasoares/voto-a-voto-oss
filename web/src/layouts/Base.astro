@@ -43,7 +43,7 @@ const privacyHref = siteHref('sobre-os-dados/#privacidade')
     {/* Skip link (issue #19): keyboard/screen-reader users reach the content without the tabs/grid. */}
     <a class="sr-only focus:not-sr-only focus:z-50 focus:fixed focus:top-2 focus:left-2 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-step-2 font-bold focus:text-foreground focus:outline-2 focus:outline-primary" href="#main">Pular para o conteúdo</a>
     <div class="flex min-h-screen min-w-0 flex-col">
-      <TopBar back={header !== 'none'} />
+      <TopBar />
       {header === 'phone' && <AppHeader />}
       <slot />
       {/* The global lines (edition #59, privacy #20, donation #36, finality chip #122, Relatórios/Mapa #103): the shared footer component, no <footer> element. */}

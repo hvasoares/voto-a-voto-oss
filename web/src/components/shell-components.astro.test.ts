@@ -9,7 +9,6 @@ import AppHeader from './AppHeader.astro'
 import DocHead from './DocHead.astro'
 import FixtureBanner from './FixtureBanner.astro'
 import PageMain from './PageMain.astro'
-import TopBar from './TopBar.astro'
 
 /** The "‹ Início" link right after the scope, still inside the header. */
 const BACK_HOME = /Presidente 2026<\/span>\s*<a [^>]*href="[^"]*"[^>]*data-back-home[^>]*>‹ Início<\/a>\s*<\/(?:div|header)>/
@@ -41,13 +40,6 @@ describe('AppHeader', () => {
     const html = await container.renderToString(AppHeader, { props: { variant } })
     expect(html).toMatch(BACK_HOME)
     expect(html).toContain('min-h-11')
-  })
-})
-
-describe('TopBar', () => {
-  it('carries the way home next to the wordmark on every page but Home (#154)', async () => {
-    expect(await container.renderToString(TopBar, { props: { back: true } })).toMatch(/data-wordmark>Voto a Voto<\/a>\s*<a [^>]*data-back-home[^>]*>‹ Início<\/a>/)
-    expect(await container.renderToString(TopBar)).not.toContain('data-back-home')
   })
 })
 
