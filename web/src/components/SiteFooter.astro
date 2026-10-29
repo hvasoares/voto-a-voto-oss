@@ -9,9 +9,13 @@
  *                  footer (`<footer data-component="source-footer">`); absent → the GLOBAL lines (the
  *                  Base.astro block: Edição, Privacidade, donation, finality chip, Relatórios/Mapa).
  *  - `aboutLink`   draw "Sobre os dados ›" after the source note (default true, the pilot carries it).
- *  - `aboutClass`  the about link's class (default 'source-footer__about', the card's keyboard-only link).
+ *  - `aboutClass`  the about link's class (default 'source-footer__about', the card's keyboard-only link;
+ *                  pass '' for the plain link of the share sheets / story / recap / three-cycles state page).
  *  - `separator`   text between note and link (default '', the card variant; the standard pages pass ' · ').
  *  - `class`       the <footer>/wrapper class (source footer default 'source-footer', the pilot's own).
+ *  - `ariaHidden`  aria-hidden="true" on the <footer> (the inert backdrop copy behind a share sheet).
+ *  - `scopeMarker` the host template's scoped-style marker ('data-astro-cid-…'), keeping the moved footer's
+ *                  bytes identical when a scoped <style> would have stamped it (BrasilScreen).
  *  - `chip`        the "Final, não ao vivo" chip leading the second global line (default true, Base).
  *  - `donation`    the donation link, drawn when PUBLIC_DONATION_URL configures an address (default true).
  *  - `links`       the second global line's links (default Relatórios + Mapa por estado, base-resolved here).
@@ -33,6 +37,8 @@ interface Props {
   aboutClass?: string
   separator?: string
   class?: string
+  ariaHidden?: boolean
+  scopeMarker?: string
   chip?: boolean
   donation?: boolean
   links?: readonly FooterLink[]
@@ -49,6 +55,8 @@ if (p.source !== undefined) {
     aboutClass: p.aboutClass,
     separator: p.separator,
     class: p.class,
+    ariaHidden: p.ariaHidden,
+    scopeMarker: p.scopeMarker,
   })
 } else {
   // Ticket #59: every page names the edition of the data it shows and links to its immutable address.

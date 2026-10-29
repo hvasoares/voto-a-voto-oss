@@ -53,6 +53,49 @@ describe('sourceFooter — the pilot page variants (the city card /rj/cidade-exe
       '<footer class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary" data-component="source-footer">Fonte: TSE, dados finais</footer>',
     )
   })
+
+  it('the share-sheet/story/recap variant (#114): aboutClass \'\' leaves the about link with NO class attribute', () => {
+    expect(
+      sourceFooter({
+        source: 'Fonte: TSE, dados finais',
+        aboutHref: '/sobre-os-dados/',
+        aboutClass: '',
+        separator: ' · ',
+        class: 'mt-2 border-t border-border pt-2 text-center text-step-1 text-primary',
+      }),
+    ).toBe(
+      '<footer class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary" data-component="source-footer">Fonte: TSE, dados finais · <a href="/sobre-os-dados/">Sobre os dados ›</a></footer>',
+    )
+  })
+
+  it('the BrasilScreen variant (#114): the host template’s scoped-style marker and the backdrop’s aria-hidden', () => {
+    const brasilClass = 'mx-5 mt-2 pb-6 pt-2 text-center text-step-1 md:mx-auto md:max-w-[720px] lg:text-left text-muted-foreground'
+    expect(
+      sourceFooter({
+        source: 'Fonte: TSE, dados finais',
+        aboutHref: '/sobre-os-dados/',
+        aboutClass: FOOTER_LINK,
+        separator: ' · ',
+        class: brasilClass,
+        scopeMarker: 'data-astro-cid-tsexhqgk',
+      }),
+    ).toBe(
+      '<footer class="mx-5 mt-2 pb-6 pt-2 text-center text-step-1 md:mx-auto md:max-w-[720px] lg:text-left text-muted-foreground" data-component="source-footer" data-astro-cid-tsexhqgk>Fonte: TSE, dados finais · <a class="inline-flex min-h-11 items-center" href="/sobre-os-dados/" data-astro-cid-tsexhqgk>Sobre os dados ›</a></footer>',
+    )
+    expect(
+      sourceFooter({
+        source: 'Fonte: TSE, dados finais',
+        aboutHref: '/sobre-os-dados/',
+        aboutClass: FOOTER_LINK,
+        separator: ' · ',
+        class: brasilClass,
+        ariaHidden: true,
+        scopeMarker: 'data-astro-cid-tsexhqgk',
+      }),
+    ).toBe(
+      '<footer class="mx-5 mt-2 pb-6 pt-2 text-center text-step-1 md:mx-auto md:max-w-[720px] lg:text-left text-muted-foreground" data-component="source-footer" aria-hidden="true" data-astro-cid-tsexhqgk>Fonte: TSE, dados finais · <a class="inline-flex min-h-11 items-center" href="/sobre-os-dados/" data-astro-cid-tsexhqgk>Sobre os dados ›</a></footer>',
+    )
+  })
 })
 
 describe('globalFooterLines — the Base.astro block (the pilot page’s second footer)', () => {
