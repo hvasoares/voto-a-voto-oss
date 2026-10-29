@@ -3,7 +3,6 @@ import { expect, test, type Page } from '@playwright/test'
 import { fileURLToPath } from 'node:url'
 import { activateSearch, base, waitReady } from './helpers'
 import { measureMap } from './map-touch'
-import { DESKTOP } from './presets'
 import { footerLinkPagesOnDisk } from './routes-inventory'
 
 /*
@@ -261,7 +260,7 @@ test.describe('the "Início" link shares the line with "Voto a Voto" (390x844)',
 
 /* #154 at desktop width (1440x900): the app header is hidden, the top bar carries the same link on the wordmark's line. */
 test.describe('the "Início" link shares the line with "Voto a Voto" (1440x900)', () => {
-  test.use({ viewport: DESKTOP })
+  test.use({ viewport: { width: 1440, height: 900 } })
   for (const path of HEADER_PAGES) {
     test(`${path}: same line as the top bar's wordmark, 44 px high, to Home, no second link`, async ({ page }) => {
       await page.goto(`${base}${path}`)
