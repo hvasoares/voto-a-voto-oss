@@ -23,7 +23,6 @@ beforeEach(() => {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => (String(url).includes('/city/rj/cidade-exemplo.json') ? new Response(JSON.stringify(shard)) : new Response('', { status: 404 }))))
 })
 afterEach(() => {
-  cleanup()
   setAnalytics(noopAnalytics)
   events.length = 0
   vi.unstubAllGlobals()

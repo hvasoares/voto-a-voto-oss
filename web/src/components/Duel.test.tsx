@@ -31,7 +31,6 @@ beforeEach(() => {
   }))
 })
 afterEach(() => {
-  cleanup()
   setAnalytics(noopAnalytics)
   events.length = 0
   vi.unstubAllGlobals()

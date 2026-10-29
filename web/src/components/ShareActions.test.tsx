@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -20,7 +20,6 @@ vi.mock('@/lib/share-raster', async (importOriginal) => {
 const events: [string, unknown][] = []
 
 afterEach(() => {
-  cleanup()
   setAnalytics(noopAnalytics)
   events.length = 0
   vi.unstubAllGlobals()

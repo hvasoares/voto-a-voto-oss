@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { noopAnalytics, setAnalytics, type Analytics } from '@/analytics'
@@ -24,7 +24,6 @@ beforeEach(() => {
   }))
 })
 afterEach(() => {
-  cleanup()
   setAnalytics(noopAnalytics)
   events.length = 0
   vi.unstubAllGlobals()

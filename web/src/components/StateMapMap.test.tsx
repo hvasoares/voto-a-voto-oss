@@ -4,7 +4,7 @@
  * Synthetic numbers on three real UF codes (so the mosaic grid shows them): rj moved from
  * -13.6 to -6.2 (+7.4 swing), sp +12 -> -18 (-30), mg -4.9 -> +0.9 (+5.8).
  */
-import { cleanup, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -36,7 +36,6 @@ function setup(kind: StateMapProps['kind'], base = '/s/') {
 }
 
 afterEach(() => {
-  cleanup()
   setAnalytics(noopAnalytics)
   events.length = 0
   window.history.replaceState(null, '', '/')

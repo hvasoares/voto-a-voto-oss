@@ -5,7 +5,7 @@
  * three joined shapes and one the dataset does not list: the fixtures pin the interaction, the
  * fetch of the mesh file, the notes and the analytics, never election numbers.
  */
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -86,7 +86,6 @@ function setup(props: Partial<CityMapProps> = {}) {
 }
 
 afterEach(() => {
-  cleanup()
   setAnalytics(noopAnalytics)
   events.length = 0
   vi.unstubAllGlobals()

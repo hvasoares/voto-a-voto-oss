@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 /** The island of "Ficaram em casa" (#32): numbers come from the model, a tap selects, the toggle keeps the address, no candidate anywhere. */
-import { cleanup, render, screen, within } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -23,7 +23,6 @@ function setup(base = '/s/') {
   return { user: userEvent.setup(), ...render(<StayHomeMap model={model} base={base} viewPaths={viewPaths} />) }
 }
 afterEach(() => {
-  cleanup()
   setAnalytics(noopAnalytics)
   events.length = 0
   window.history.replaceState(null, '', '/')
