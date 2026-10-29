@@ -3,23 +3,35 @@ import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
 import { dataGuard } from './presets'
+import { cityBySlug, closestRaces, cityVotes, dec1, flips, int, latestRound, placeLabel, signedDec1, signedInt, swingRows, turnoutRanking, votesChange } from './real-data-oracle'
 
 /*
  * Real-data checks of the report screens (tickets #12 and #13), run with `npm run test:real` (builds
- * with DATA_DIR=../data). The figures are pinned to the source of truth
- * thoughts/team/data-engineering/2026-10-26-runoff-results-highlights.md: Lula flipped 211 cities,
- * Flávio Bolsonaro 1; the top of the list is Itabirito/MG, Barra do Piraí/RJ and João Monlevade/MG;
- * the four reports of #13 pin Campos dos Goytacazes, São Paulo/Itaituba, Maricá/Rio, Marquinho/
- * Apiacá/Anhangüera and Santa Maria do Herval/Itaubal. Real-data screenshots (390x844) are saved
- * to .captures/reports/real/.
+ * with DATA_DIR=../data). Every figure and every city of a ranking is counted by the oracle from the data
+ * directory (real-data-oracle.ts), in the order each report documents; the sentences the pages take from
+ * the catalog are the catalog's. The races with one vote of difference (the tie-breaking order inside the
+ * report is the page's own) are named here by their slugs and their votes counted. Real-data screenshots
+ * (390x844) are saved to .captures/reports/real/.
  */
 test.skip(...dataGuard())
 
+const LULA = '13'
+const FLAVIO = '22'
+const ROUND = { ano: 2026, turno: 2 }
+const BEFORE = { ano: 2022, turno: 2 }
+/** The names the reports print for the two candidates of the runoff. */
+const NAMES: Record<string, string> = { [LULA]: 'Lula', [FLAVIO]: 'Flávio Bolsonaro' }
+/** "N cidades" / "1": the hub headline writes the singular without the noun. */
+const cidades = (n: number) => (n === 1 ? '1' : `${int(n)} cidades`)
+const MIN_FLIP_VALID = 5_000
+const MIN_SWING_VALID = 100_000
+const MIN_TURNOUT_APTOS = 5_000
+
 test.describe('reports hub on the real dataset', () => {
-  test('announces the 211 viradas of the highlights note', async ({ page, baseURL }) => {
+  test('announces the viradas counted from the data', async ({ page, baseURL }) => {
     const seen = collectRequests(page)
     await page.goto(base + 'relatorios/')
-    await expect(page.getByRole('link', { name: /Cidades que viraram no 2º turno/ })).toContainText('Lula virou 211 cidades; Flávio Bolsonaro virou 1')
+    await expect(page.getByRole('link', { name: /Cidades que viraram no 2º turno/ })).toContainText(`Lula virou ${cidades(flips(2026, LULA, FLAVIO).length)}; Flávio Bolsonaro virou ${cidades(flips(2026, FLAVIO, LULA).length)}`)
     await expect(page.locator('nav[aria-label="Relatórios"] > ul > li')).toHaveCount(8)
     expect(violations(seen, await allowedOrigins(baseURL!))).toEqual([])
   })
@@ -36,19 +48,15 @@ test.describe('reports hub on the real dataset', () => {
 })
 
 test.describe('cidades que viraram on the real dataset', () => {
-  test('top of the ranked list: Itabirito/MG, Barra do Piraí/RJ, João Monlevade/MG', async ({ page }) => {
+  test('the ranked list: the flipped cities of 5 mil+ valid votes, biggest swing first', async ({ page }) => {
     await page.goto(base + 'relatorios/cidades-que-viraram/')
+    const list = flips(2026, LULA, FLAVIO, MIN_FLIP_VALID)
     const rows = page.locator('[data-flip]')
-    await expect(rows).toHaveCount(129) // of the 211 flipped cities, 129 pass the 5 mil+ valid-vote filter
-    const first = await rows.first().textContent()
-    expect(first).toContain('Itabirito/MG')
-    expect(first).toContain('Margem -4,5 pp → +5,0 pp · 34.159 votos válidos')
-    const second = await rows.nth(1).textContent()
-    expect(second).toContain('Barra do Piraí/RJ')
-    expect(second).toContain('51.929 votos válidos')
-    const third = await rows.nth(2).textContent()
-    expect(third).toContain('João Monlevade/MG')
-    expect(third).toContain('46.754 votos válidos')
+    await expect(rows).toHaveCount(list.length) // of all the flipped cities, those that pass the valid-vote filter
+    for (const [i, r] of list.slice(0, 3).entries()) {
+      await expect(rows.nth(i)).toContainText(placeLabel(r.city), { ignoreCase: true })
+      await expect(rows.nth(i)).toContainText(`Margem ${signedDec1(r.margin1)} pp → ${signedDec1(r.margin2)} pp · ${int(r.validos)} votos válidos`)
+    }
   })
 
   test('saves the real-data screenshot of the report', async ({ page }) => {
@@ -63,16 +71,17 @@ test.describe('cidades que viraram on the real dataset', () => {
 })
 
 test.describe('maiores viradas on the real dataset', () => {
-  test('the 100 mil+ list: Campos dos Goytacazes still at the top after +9,8 pp', async ({ page }) => {
+  test('the 100 mil+ list: the biggest swings toward Lula, each with its margins and volume', async ({ page }) => {
     await page.goto(base + 'relatorios/maiores-viradas/')
+    const list = swingRows(2026, LULA, FLAVIO).filter((r) => r.validos >= MIN_SWING_VALID && r.swing > 0)
     const rows = page.locator('[data-swing]')
-    await expect(rows).toHaveCount(173) // every 100 mil+ city moved toward Lula; nothing moved away
-    const first = await rows.first().textContent()
-    expect(first).toContain('Campos dos Goytacazes/RJ')
-    expect(first).toContain('Virada +9,8 pp · Margem -25,6 pp → -15,8 pp (perdeu no 2º turno) · 275.397 votos válidos')
-    const second = await rows.nth(1).textContent()
-    expect(second).toContain('Sobral/CE')
-    expect(second).toContain('+8,8 pp')
+    await expect(rows).toHaveCount(list.length) // every 100 mil+ city moved toward Lula in the shipped data; the page lists those that did
+    const outcome = (margin: number) => (margin > 0 ? 'venceu' : margin < 0 ? 'perdeu' : 'empatou')
+    const [first, second] = list
+    await expect(rows.first()).toContainText(placeLabel(first!.city), { ignoreCase: true })
+    await expect(rows.first()).toContainText(`Virada ${signedDec1(first!.swing)} pp · Margem ${signedDec1(first!.margin1)} pp → ${signedDec1(first!.margin2)} pp (${outcome(first!.margin2)} no 2º turno) · ${int(first!.validos)} votos válidos`)
+    await expect(rows.nth(1)).toContainText(placeLabel(second!.city), { ignoreCase: true })
+    await expect(rows.nth(1)).toContainText(`${signedDec1(second!.swing)} pp`)
   })
 
   test('saves the real-data screenshot of the report', async ({ page }) => {
@@ -91,18 +100,19 @@ test.describe('votos ganhos e perdidos on the real dataset', () => {
     await page.goto(base + 'relatorios/votos-ganhos-e-perdidos/')
     const sections = page.locator('[data-candidate-section]')
     await expect(sections).toHaveCount(2)
-    const lula = sections.nth(0)
-    await expect(lula.locator('[data-total]')).toContainText('+3.862.039 votos no país: ganhou em 3.428 cidades, perdeu em 2.132 cidades (de 5.570 comparadas) · 2 cidades mantiveram o mesmo número de votos em 2022.')
-    await expect(lula.locator('[data-gain="0"]')).toContainText('SÃO PAULO/SP')
-    await expect(lula.locator('[data-gain="0"]')).toContainText('+186.433 votos · 3.864.354 em 2026')
-    await expect(lula.locator('[data-loss="0"]')).toContainText('ITAITUBA/PA')
-    await expect(lula.locator('[data-loss="0"]')).toContainText('-2.403 votos · 19.123 em 2026')
-    const flavio = sections.nth(1)
-    await expect(flavio.locator('[data-total]')).toContainText('+1.591.101 votos no país: ganhou em 5.118 cidades, perdeu em 451')
-    await expect(flavio.locator('[data-gain="0"]')).toContainText('MARICÁ/RJ')
-    await expect(flavio.locator('[data-gain="0"]')).toContainText('+14.831 votos · 72.786 em 2026')
-    await expect(flavio.locator('[data-loss="0"]')).toContainText('RIO DE JANEIRO/RJ')
-    await expect(flavio.locator('[data-loss="0"]')).toContainText('-144.011 votos · 1.785.198 em 2026')
+    for (const [i, numero] of [LULA, FLAVIO].entries()) {
+      const change = votesChange(numero, ROUND, BEFORE)
+      // The ranked lists and the "unchanged" count take the cities of 5 mil+ valid votes; the totals take every city compared.
+      const listed = change.rows.filter((r) => r.validos >= MIN_FLIP_VALID)
+      const section = sections.nth(i)
+      const same = i === 0 ? ` (de ${int(change.rows.length)} comparadas) · ${int(listed.filter((r) => r.diff === 0).length)} cidades mantiveram o mesmo número de votos em 2022.` : ''
+      await expect(section.locator('[data-total]')).toContainText(`${signedInt(change.total)} votos no país: ganhou em ${int(change.gained)} cidades, perdeu em ${int(change.lost)} cidades${same}`)
+      const [gain, loss] = [listed[0]!, listed.filter((r) => r.diff < 0).at(-1)!]
+      await expect(section.locator('[data-gain="0"]')).toContainText(placeLabel(gain.city), { ignoreCase: true })
+      await expect(section.locator('[data-gain="0"]')).toContainText(`${signedInt(gain.diff)} votos · ${int(gain.now)} em 2026`)
+      await expect(section.locator('[data-loss="0"]')).toContainText(placeLabel(loss.city), { ignoreCase: true })
+      await expect(section.locator('[data-loss="0"]')).toContainText(`${signedInt(loss.diff)} votos · ${int(loss.now)} em 2026`)
+    }
   })
 
   test('saves the real-data screenshot of the report', async ({ page }) => {
@@ -121,15 +131,20 @@ test.describe('disputas mais apertadas on the real dataset', () => {
     await page.goto(base + 'relatorios/disputas-mais-apertadas/')
     const rows = page.locator('[data-race]')
     await expect(rows).toHaveCount(20) // the shown slice; the total of compared cities is the computed caption
-    const tie = rows.first()
-    await expect(tie).toContainText('Marquinho/PR')
-    await expect(tie).toContainText('Empate: 1.530 a 1.530 votos')
-    const second = await rows.nth(1).textContent()
-    expect(second).toContain('Apiacá/ES')
-    expect(second).toContain('Diferença de 1 voto — Lula à frente (2.366 a 2.365)')
+    const [tie] = closestRaces(ROUND)
+    expect(tie!.diff, 'the data has a tie').toBe(0)
+    await expect(rows.first()).toContainText(placeLabel(tie!.city), { ignoreCase: true })
+    await expect(rows.first()).toContainText(`Empate: ${int(tie!.first)} a ${int(tie!.second)} votos`)
+    // Two of the one-vote races, by slug (their order among the many one-vote races is the page's own): who is ahead is counted.
     // The row id is the city slug: the raw name "ANHANGÜERA" lowercases with "ü", the slug is accent-free.
-    const anhanguera = await page.locator('[data-race="anhanguera"]').textContent()
-    expect(anhanguera).toContain('Diferença de 1 voto — Flávio Bolsonaro à frente (523 a 522)')
+    for (const [uf, slug] of [['es', 'apiaca'], ['go', 'anhanguera']]) {
+      const [lula, flavio] = [cityVotes(ROUND, LULA, uf!, slug!), cityVotes(ROUND, FLAVIO, uf!, slug!)]
+      expect(Math.abs(lula - flavio), `${slug} is a one-vote race`).toBe(1)
+      const ahead = lula > flavio ? LULA : FLAVIO
+      const row = slug === 'apiaca' ? rows.nth(1) : page.locator(`[data-race="${slug}"]`)
+      await expect(row).toContainText(`Diferença de 1 voto — ${NAMES[ahead]} à frente (${int(Math.max(lula, flavio))} a ${int(Math.min(lula, flavio))})`)
+      await expect(row).toContainText(cityBySlug(uf!, slug!).nome, { ignoreCase: true })
+    }
   })
 
   test('saves the real-data screenshot of the report', async ({ page }) => {
@@ -146,15 +161,17 @@ test.describe('disputas mais apertadas on the real dataset', () => {
 test.describe('comparecimento on the real dataset', () => {
   test('top and bottom of the turnout ranking carry their volumes', async ({ page }) => {
     await page.goto(base + 'relatorios/comparecimento/')
-    await expect(page.locator('[data-sized]')).toContainText('4.139 cidades no filtro')
+    const ranking = turnoutRanking(latestRound(), MIN_TURNOUT_APTOS)
+    await expect(page.locator('[data-sized]')).toContainText(`${int(ranking.length)} cidades no filtro`)
     const high = page.locator('[data-turnout-high] [data-turnout]')
     const low = page.locator('[data-turnout-low] [data-turnout]')
     await expect(high).toHaveCount(10)
     await expect(low).toHaveCount(10)
-    await expect(high.first()).toContainText('Santa Maria do Herval/RS')
-    await expect(high.first()).toContainText('90,5% · 4.769 de 5.272 eleitores aptos')
-    await expect(low.first()).toContainText('Itaubal/AP')
-    await expect(low.first()).toContainText('59,0% · 5.239 de 8.881 eleitores aptos')
+    const volume = (r: (typeof ranking)[number]) => `${dec1(r.rate)}% · ${int(r.comparecimento)} de ${int(r.aptos)} eleitores aptos`
+    await expect(high.first()).toContainText(placeLabel(ranking[0]!.city), { ignoreCase: true })
+    await expect(high.first()).toContainText(volume(ranking[0]!))
+    await expect(low.first()).toContainText(placeLabel(ranking.at(-1)!.city), { ignoreCase: true })
+    await expect(low.first()).toContainText(volume(ranking.at(-1)!))
   })
 
   test('saves the real-data screenshot of the report', async ({ page }) => {

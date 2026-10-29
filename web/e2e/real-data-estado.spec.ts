@@ -1,26 +1,28 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, waitReady } from './helpers'
 import { dataGuard } from './presets'
+import { cityCount, latestRound, largestCity } from './real-data-oracle'
 
 /*
- * The state page on the REAL dataset (#83; run with `npm run test:real`): the largest states have hundreds of rows (SP 645, MG 853), so
+ * The state page on the REAL dataset (#83; run with `npm run test:real`): the largest states have hundreds of rows, so
  * the ONE list, the search above it and the tap on a row are checked where it hurts: the order, the count, the filter against an
  * independent oracle, how long one keystroke takes, a tap in a real state, and typing before the island hydrates.
  */
 test.skip(...dataGuard())
 
-const STATES = [
-  { uf: 'sp', count: 645, capital: 'São Paulo', slug: 'sao-paulo' },
-  { uf: 'mg', count: 853, capital: 'Belo Horizonte', slug: 'belo-horizonte' },
-]
+/** The two largest states; the row count and the first row (the municipality with the most valid votes) come from the data directory. */
+const STATES = ['sp', 'mg']
+const capitalOf = (uf: string) => largestCity(uf, latestRound())
 const rows = (page: Page) => page.locator('[data-map-area] nav a[data-cd]')
 const box = (page: Page) => page.locator('[data-state-search]')
 const input = (page: Page) => page.getByRole('searchbox')
 const fold = (s: string) => s.normalize('NFD').replace(/\p{M}+/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 
-for (const { uf, count, capital, slug } of STATES) {
+for (const uf of STATES) {
+  const count = cityCount(uf)
   test.describe(`estado ${uf} (${count} municipalities)`, () => {
     test('the search is above ONE list with every municipality, each row coloured with its figures and a link to its card', async ({ page }) => {
+      const capital = capitalOf(uf)
       await page.goto(`${base}${uf}/`)
       await waitReady(page)
       await expect(rows(page)).toHaveCount(count)
@@ -28,17 +30,18 @@ for (const { uf, count, capital, slug } of STATES) {
       const [field, first] = await Promise.all([input(page).boundingBox(), rows(page).first().boundingBox()])
       expect(field!.y + field!.height).toBeLessThanOrEqual(first!.y)
       const row = rows(page).first()
-      await expect(row).toContainText(capital)
+      await expect(row).toContainText(capital.nome, { ignoreCase: true })
       await expect(row).toContainText(/[+-]\d+,\d pp/)
-      await expect(row).toHaveAttribute('href', `${base}${uf}/${slug}/`)
+      await expect(row).toHaveAttribute('href', `${base}${uf}/${capital.slug}/`)
     })
 
     test('a tap on a row opens its City card (the D1 bug, in a real state)', async ({ page }) => {
+      const capital = capitalOf(uf)
       await page.goto(`${base}${uf}/`)
       await waitReady(page)
       await rows(page).first().tap()
-      await expect(page).toHaveURL(`${base}${uf}/${slug}/`)
-      await expect(page.getByRole('heading', { level: 1 })).toContainText(capital)
+      await expect(page).toHaveURL(`${base}${uf}/${capital.slug}/`)
+      await expect(page.getByRole('heading', { level: 1 })).toContainText(capital.nome, { ignoreCase: true })
     })
 
     test('the filter agrees with an independent count, ignores accents and capitals, and one keystroke is instant', async ({ page }) => {

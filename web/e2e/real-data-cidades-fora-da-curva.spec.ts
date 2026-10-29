@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
 import { dataGuard } from './presets'
+import { catalogText, citiesWithValidVotes, int, latestRound } from './real-data-oracle'
 
 /*
  * "Cidades fora da curva" (#34) on the REAL dataset (run with `npm run test:real`). The method is pinned by src/lib/reports/outliers.test.ts; these are the shape of the
@@ -9,14 +10,16 @@ import { dataGuard } from './presets'
 test.skip(...dataGuard())
 
 const PATH = `${base}relatorios/cidades-fora-da-curva/`
+/** The cities of the default list's filter: 5 mil or more valid votes in the newest round (every one has peers, so all are compared). */
+const compared = () => int(citiesWithValidVotes(latestRound(), 5_000))
 
 test.describe('Cidades fora da curva on the real dataset', () => {
   test('the default list: the screening text first, 25 cities of 5 mil+ valid votes in decreasing distance, each with its volume, its card and its record', async ({ page }) => {
     await page.goto(PATH)
-    await expect(page.locator('[data-screening]')).toHaveText('Lista de triagem, não uma conclusão: cidades mais distantes de cidades parecidas no comparecimento e na virada desde 2022.')
+    await expect(page.locator('[data-screening]')).toHaveText(catalogText('outlier.screening'))
     const items = page.locator('[data-outliers] > li')
     await expect(items).toHaveCount(25)
-    await expect(page.locator('[data-count]')).toContainText('Mostrando 25 de 3.588 cidades com 5 mil ou mais votos válidos')
+    await expect(page.locator('[data-count]')).toContainText(catalogText('outlier.count', { shown: 25, compared: compared(), min: catalogText('outlier.min.k', { n: 5 }), where: catalogText('outlier.where.all') }))
     const valid = await items.evaluateAll((els) => els.map((e) => Number(/([\d.]+) votos válidos/.exec(e.textContent ?? '')![1]!.replace(/\./g, ''))))
     for (const v of valid) expect(v).toBeGreaterThanOrEqual(5_000)
     await expect(items.nth(0)).toContainText('Itaubal/AP')
@@ -38,13 +41,13 @@ test.describe('Cidades fora da curva on the real dataset', () => {
 
   test('the hub row says how many cities the default list compared', async ({ page }) => {
     await page.goto(`${base}relatorios/`)
-    await expect(page.locator('[data-report="cidades-fora-da-curva"]')).toContainText('Lista de triagem: 3.588 cidades comparadas com cidades parecidas')
+    await expect(page.locator('[data-report="cidades-fora-da-curva"]')).toContainText(`Lista de triagem: ${compared()} cidades comparadas com cidades parecidas`)
   })
 
   test('a record page has the five peers and the calculation, for a city of the default list', async ({ page }) => {
     await page.goto(`${base}fato/relatorios/cidades-fora-da-curva/ap/`)
     const record = page.locator('#ap-itaubal')
-    await expect(record).toContainText('5ª cidade parecida')
+    await expect(record).toContainText(catalogText('fact.in.peer', { n: 5 }))
     await expect(record).toContainText('mediana de 5 cidades parecidas')
   })
 })

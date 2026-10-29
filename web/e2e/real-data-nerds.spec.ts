@@ -1,20 +1,17 @@
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { gzipSync } from 'node:zlib'
 import { expect, test } from '@playwright/test'
 import { UF_NOME } from '../src/lib/uf-names'
 import { base } from './helpers'
 import { DESKTOP, dataGuard } from './presets'
+import { cityCount, dec1, int, nationalReference } from './real-data-oracle'
 
 /*
  * "Dados para nerds" on the REAL dataset (G12): all 27 estados, 5 regiões and Brasil have a page, the printed figures equal the national totals published by the TSE
- * (data/manifest.json reference), the 27 UFs are linked on the map, and the largest estado (MG, 853 municípios) stays within the recorded budget.
+ * (data/manifest.json reference, read by the oracle), the 27 UFs are linked on the map, and the largest estado (MG) stays within the recorded budget.
  */
 test.skip(...dataGuard())
 test.use({ viewport: DESKTOP, isMobile: false, hasTouch: false })
 
-const manifest = JSON.parse(readFileSync(resolve('../data/manifest.json'), 'utf8')) as { national_reference: Record<string, { comparecimento: number; validos: number; candidates: Record<string, number> }> }
-const int = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 
 test('every level has its page: Brasil, 5 regiões, 27 estados', async ({ request }) => {
   const urls = ['', ...['norte', 'nordeste', 'centro-oeste', 'sudeste', 'sul'].map((r) => `regiao/${r}/`), ...Object.keys(UF_NOME).filter((u) => u !== 'zz').map((u) => `estado/${u}/`)]
@@ -25,9 +22,9 @@ test('every level has its page: Brasil, 5 regiões, 27 estados', async ({ reques
 test('Brasil prints the national figures published by the TSE for 2022 (comparecimento, brancos + nulos and votos válidos, both turnos)', async ({ page }) => {
   await page.goto(`${base}dados-para-nerds/?ciclo=2022&turno=1&cargo=presidente`)
   const block = page.locator('[data-ciclo-block="2022"]')
-  const pct = (a: number, b: number) => `${(Math.round((a / b) * 1000) / 10).toFixed(1).replace('.', ',')}%`
+  const pct = (a: number, b: number) => `${dec1((a / b) * 100)}%`
   for (const turno of [1, 2]) {
-    const ref = manifest.national_reference[`2022-${turno}`] as unknown as { aptos: number; comparecimento: number; validos: number; brancos: number; nulos: number }
+    const ref = nationalReference({ ano: 2022, turno })
     const dd = (key: string) => block.locator(`[data-panel="placar"] [data-stat="${key}"] dd[data-turno="${turno}"]`)
     await expect(dd('eleitorado')).toHaveAttribute('data-value', int(ref.aptos))
     await expect(dd('comparecimento')).toHaveAttribute('data-value', pct(ref.comparecimento, ref.aptos))
@@ -45,7 +42,7 @@ test('the map shades 27 linked states on Brasil; each prints its value', async (
   for (const uf of Object.keys(UF_NOME).filter((u) => u !== 'zz')) await expect(page.locator(`[data-panel="mapa"] a[data-map-uf="${uf}"]`)).toContainText(/\d+,\d%/)
 })
 
-test('MG (the largest estado): the table is complete (853 municípios + total), the page stays within the recorded budget', async ({ page, request }) => {
+test('MG (the largest estado): the table is complete (every município + total), the page stays within the recorded budget', async ({ page, request }) => {
   const res = await request.get(`${base}dados-para-nerds/estado/mg/`)
   const html = await res.text()
   const gz = gzipSync(html).length
@@ -53,7 +50,7 @@ test('MG (the largest estado): the table is complete (853 municípios + total), 
   expect(gz).toBeLessThan(450_000)
   await page.goto(`${base}dados-para-nerds/estado/mg/`)
   const rows = page.locator('[data-ciclo-block="2026"] [data-panel="detalhe"] [data-set="participacao"] tbody tr')
-  expect(await rows.count()).toBe(854)
+  expect(await rows.count()).toBe(cityCount('mg') + 1)
   console.log(`MG DOM nodes: ${await page.evaluate(() => document.getElementsByTagName('*').length)}`)
   const wrap = page.locator('[data-ciclo-block="2026"] [data-panel="detalhe"] [data-set="participacao"] .nerds-tablewrap')
   await wrap.scrollIntoViewIfNeeded()

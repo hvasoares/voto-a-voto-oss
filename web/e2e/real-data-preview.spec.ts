@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
 import { dataGuard } from './presets'
+import { catalogText, cityBySlug, dataset } from './real-data-oracle'
 
 /*
  * Real-data checks of the city-page head (ticket #8). Run with `npm run test:real` (builds with DATA_DIR=../data,
@@ -13,18 +14,24 @@ import { dataGuard } from './presets'
  */
 test.skip(...dataGuard())
 
-const CITIES: Array<{ uf: string; slug: string; nome: string; label: string; uf_: string; ano: string }> = [
-  { uf: 'sp', slug: 'sao-paulo', nome: 'SÃO PAULO', label: 'São Paulo', uf_: 'SP', ano: '2026' },
-  { uf: 'df', slug: 'brasilia', nome: 'BRASÍLIA', label: 'Brasília', uf_: 'DF', ano: '2026' },
-  { uf: 'al', slug: 'belem', nome: 'BELÉM', label: 'Belém', uf_: 'AL', ano: '2026' },
-  { uf: 'pa', slug: 'belem', nome: 'BELÉM', label: 'Belém', uf_: 'PA', ano: '2026' },
-  { uf: 'pb', slug: 'belem', nome: 'BELÉM', label: 'Belém', uf_: 'PB', ano: '2026' },
-  { uf: 'go', slug: 'abadiania', nome: 'ABADIÂNIA', label: 'Abadiânia', uf_: 'GO', ano: '2026' },
-  { uf: 'ce', slug: 'acarau', nome: 'ACARAÚ', label: 'Acaraú', uf_: 'CE', ano: '2026' },
-  { uf: 'zz', slug: 'abidja', nome: 'ABIDJÃ', label: 'Abidjã', uf_: 'Exterior', ano: '2026' },
-  { uf: 'zz', slug: 'freetown', nome: 'FREETOWN', label: 'Freetown', uf_: 'Exterior', ano: '2018' },
-  { uf: 'zz', slug: 'lethem', nome: 'LETHEM', label: 'Lethem', uf_: 'Exterior', ano: '2018' },
+/** The ten routes: the path of each city and its display name; the rest (the TSE name, the newest cycle with data, the state tag) is read from cities.csv. */
+const SPOTS: Array<{ uf: string; slug: string; label: string }> = [
+  { uf: 'sp', slug: 'sao-paulo', label: 'São Paulo' },
+  { uf: 'df', slug: 'brasilia', label: 'Brasília' },
+  { uf: 'al', slug: 'belem', label: 'Belém' },
+  { uf: 'pa', slug: 'belem', label: 'Belém' },
+  { uf: 'pb', slug: 'belem', label: 'Belém' },
+  { uf: 'go', slug: 'abadiania', label: 'Abadiânia' },
+  { uf: 'ce', slug: 'acarau', label: 'Acaraú' },
+  { uf: 'zz', slug: 'abidja', label: 'Abidjã' },
+  { uf: 'zz', slug: 'freetown', label: 'Freetown' },
+  { uf: 'zz', slug: 'lethem', label: 'Lethem' },
 ]
+/** What the data says about a spot: the TSE name, the state tag the page prints and the newest cycle the city has results for. */
+const CITIES = (dataset().cities.length === 0 ? [] : SPOTS).map((spot) => {
+  const row = cityBySlug(spot.uf, spot.slug)
+  return { ...spot, nome: row.nome, uf_: spot.uf === 'zz' ? 'Exterior' : spot.uf.toUpperCase(), ano: row.ciclos.at(-1)! }
+})
 
 /** The routes of the spot-check open the right page and tag it (10 slugs incl. accents and duplicate names). */
 test.describe('city head spot-check on the real dataset', () => {
@@ -37,7 +44,7 @@ test.describe('city head spot-check on the real dataset', () => {
       await expect(page.locator('h1').first()).toHaveText(c.label)
       await expect(page).toHaveTitle(new RegExp(`${c.label} \\(${c.uf_}\\): resultado das eleições de ${c.ano} · Voto a Voto$`))
       const description = await page.locator('meta[name=description]').getAttribute('content')
-      expect(description, route).toContain(`Resultado de ${c.label} (${c.uf_})`)
+      expect(description, route).toContain(catalogText('preview.intro', { place: `${c.label} (${c.uf_})` }))
       // the og:image is THIS city's file, referenced by tags that resolve on this build
       const promised = await page.locator('meta[property="og:image"]').getAttribute('content')
       expect(promised, route).toBe(`https://votoavoto.exemplo.br/preview/${c.uf}/${c.slug}.png`)

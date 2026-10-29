@@ -1,13 +1,24 @@
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
 import { dataGuard } from './presets'
+import { int, marginPp, signedDec1, swingPp, turnoutSum } from './real-data-oracle'
 
 /*
- * /mapa/ and /mapa/virada/ on the REAL dataset (run with `npm run test:real`). The numbers below
- * are the same pins of src/lib/margins.test.ts (swing/compare note: RJ +7.4, SP +6.0, MG flip).
+ * /mapa/ and /mapa/virada/ on the REAL dataset (run with `npm run test:real`). The margins and swings are counted by the
+ * oracle from the data directory's votes.csv and turnout.csv, never typed.
  * State paths are asserted as PATHS only; state pages are not ported yet (#50).
  */
 test.skip(...dataGuard())
+
+const LULA = '13'
+const FLAVIO = '22'
+const ROUND = { ano: 2026, turno: 2 }
+const ROUND1 = { ano: 2026, turno: 1 }
+/** A state's margin, in the form the maps print it: "-7,7" / "+0,9" (counted from the data directory). */
+const margin = (uf: string) => signedDec1(marginPp(ROUND, LULA, FLAVIO, { uf }))
+const swing = (uf: string) => signedDec1(swingPp(2026, LULA, FLAVIO, { uf }))
+const previous = (uf: string) => signedDec1(marginPp(ROUND1, LULA, FLAVIO, { uf }))
+const valid = (uf: string) => int(turnoutSum(ROUND, { uf }).validos)
 
 test.describe('mapa on the real dataset', () => {
   test('the pair comes from the data: Lula 13 x Flávio 22 in 2026, named in the subtitle', async ({ page }) => {
@@ -20,17 +31,15 @@ test.describe('mapa on the real dataset', () => {
     const ufs = await page.locator('[data-slot="state-map"] nav a[data-uf]').evaluateAll((els) => els.map((e) => e.getAttribute('data-uf')!))
     expect(ufs).toHaveLength(27)
     expect(ufs).not.toContain('zz')
-    await expect(page.locator('a[data-uf="sp"]', { hasText: 'SP' })).toContainText('-7,7')
-    await expect(page.locator('a[data-uf="mg"]', { hasText: 'MG' })).toContainText('+0,9')
-    await expect(page.locator('a[data-uf="rj"]', { hasText: 'RJ' })).toContainText('-6,2')
+    for (const uf of ['sp', 'mg', 'rj']) await expect(page.locator(`a[data-uf="${uf}"]`, { hasText: uf.toUpperCase() })).toContainText(margin(uf))
   })
 
   test('the panel pre-selected the biggest round-2 turnout state (SP) with the note figures', async ({ page }) => {
     await page.goto(`${base}mapa/`)
     const panel = page.locator('[data-slot="mapa-selecionado"]')
     await expect(panel).toContainText('SP · selecionado')
-    await expect(panel).toContainText('Votos válidos (2º turno): 26.258.452')
-    await expect(panel).toContainText('-7,7 pp. Na eleição anterior: -13,7 pp.')
+    await expect(panel).toContainText(`Votos válidos (2º turno): ${valid('sp')}`)
+    await expect(panel).toContainText(`${margin('sp')} pp. Na eleição anterior: ${previous('sp')} pp.`)
     await expect(page.getByRole('link', { name: 'Abrir estado' })).toHaveAttribute('href', `${base}sp/`)
   })
 
@@ -60,16 +69,12 @@ test.describe('mapa/virada on the real dataset', () => {
     const legend = page.locator('[data-slot="mapa-escala"]')
     await expect(legend).toContainText('Sem estados com variação negativa')
     await expect(legend).not.toContainText('-5')
-    await expect(page.locator('a[data-uf="rj"]', { hasText: 'RJ' })).toContainText('+7,4')
-    await expect(page.locator('a[data-uf="sp"]', { hasText: 'SP' })).toContainText('+6,0')
-    await expect(page.locator('a[data-uf="mg"]', { hasText: 'MG' })).toContainText('+5,8')
-    await expect(page.locator('a[data-uf="al"]', { hasText: 'AL' })).toContainText('+7,3')
-    await expect(page.locator('a[data-uf="se"]', { hasText: 'SE' })).toContainText('+6,9')
+    for (const uf of ['rj', 'sp', 'mg', 'al', 'se']) await expect(page.locator(`a[data-uf="${uf}"]`, { hasText: uf.toUpperCase() })).toContainText(swing(uf))
   })
 
   test('the panel tells the two margins of the selected state', async ({ page }) => {
     await page.goto(`${base}mapa/virada/`)
     const panel = page.locator('[data-slot="mapa-selecionado"]')
-    await expect(panel).toContainText('era de -13,7 pp e passou para -7,7 pp. Variação: +6,0 pp.')
+    await expect(panel).toContainText(`era de ${previous('sp')} pp e passou para ${margin('sp')} pp. Variação: ${swing('sp')} pp.`)
   })
 })

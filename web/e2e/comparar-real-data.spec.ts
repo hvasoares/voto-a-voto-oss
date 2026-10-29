@@ -3,41 +3,53 @@ import { resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
 import { dataGuard } from './presets'
+import { candidateName, candidateVotes, dec1, int, signedInt, statesByValidVotes, turnoutSum, twoWayShare } from './real-data-oracle'
 
 /*
- * The compare pages against the real committed dataset (run with `npm run test:real`,
- * DATA_DIR=../data). Every figure below is a figure of the Sketch frames (site/reference/11 and
- * 11b): SP "26.258.452 votos válidos", "Lula 46,2% · 2022: 44,8% · +599.392 votos", etc.
+ * The compare pages against the real committed dataset (run with `npm run test:real`, DATA_DIR=../data). Every figure is counted by the
+ * oracle from the data directory: the six states with the most valid votes in 2026, in that order, each with its valid votes and each
+ * candidate's two-way share and vote change against the earlier cycle (frames site/reference/11 and 11b).
  */
 test.skip(...dataGuard('votes.csv'))
 
+const NOW = { ano: 2026, turno: 2 }
+/** The second finalist of each cycle's runoff (the first is always 13). */
+const SECOND_FINALIST: Record<number, string> = { 2018: '17', 2022: '22', 2026: '22' }
+/** One side of a state row: "46,2% · 2022: 44,8% · +599.392 votos" (two-way share now and then, and the change in votes). */
+function side(uf: string, ano: number, who: 'lula' | 'flavio'): string {
+  const pair = (year: number) => (who === 'lula' ? ['13', SECOND_FINALIST[year]!] : [SECOND_FINALIST[year]!, '13']) as [string, string]
+  const [own, other] = pair(2026)
+  const [ownBefore, otherBefore] = pair(ano)
+  const before = { ano, turno: 2 }
+  return `${dec1(twoWayShare(NOW, own, other, { uf }))}% · ${ano}: ${dec1(twoWayShare(before, ownBefore, otherBefore, { uf }))}% · ${signedInt(candidateVotes(NOW, own, { uf }) - candidateVotes(before, ownBefore, { uf }))} votos`
+}
+
 test.describe('compare pages on the real dataset', () => {
-  test('frame 11: six rows in order, with the SP figures of the frame', async ({ page }) => {
+  test('frame 11: six rows in order, with the figures of the 2022 comparison', async ({ page }) => {
     await page.goto(`${base}comparar/2022/`)
+    const six = statesByValidVotes(NOW).slice(0, 6)
     const rows = page.locator('[data-component="compare-rows"] > li')
     await expect(rows).toHaveCount(6)
     const ufs = await rows.evaluateAll((els) => els.map((e) => e.getAttribute('data-uf')))
-    expect(ufs).toEqual(['sp', 'mg', 'rj', 'ba', 'pr', 'rs'])
-    const sp = rows.nth(0)
-    await expect(sp).toContainText('26.258.452 votos válidos')
-    await expect(sp.locator('[data-side="Lula"]')).toContainText('46,2% · 2022: 44,8% · +599.392 votos')
-    await expect(sp.locator('[data-side="Flávio"]')).toContainText('53,8% · 2022: 55,2% · -77.409 votos')
-    const mg = rows.nth(1)
-    await expect(mg).toContainText('12.592.885 votos válidos')
-    await expect(mg.locator('[data-side="Lula"]')).toContainText('50,4% · 2022: 50,2% · +160.139 votos')
+    expect(ufs).toEqual(six)
+    for (const [i, uf] of six.slice(0, 2).entries()) {
+      await expect(rows.nth(i)).toContainText(`${int(turnoutSum(NOW, { uf }).validos)} votos válidos`)
+      await expect(rows.nth(i).locator('[data-side="Lula"]')).toContainText(side(uf, 2022, 'lula'))
+      await expect(rows.nth(i).locator('[data-side="Flávio"]')).toContainText(side(uf, 2022, 'flavio'))
+    }
   })
 
-  test('frame 11b: the 2018 page pins SP and MG of the frame', async ({ page }) => {
+  test('frame 11b: the 2018 page compares the two biggest states with the 2018 finalists', async ({ page }) => {
     await page.goto(`${base}comparar/2018/`)
     const rows = page.locator('[data-component="compare-rows"] > li')
-    const sp = rows.nth(0)
-    await expect(sp.locator('[data-side="Lula"]')).toContainText('46,2% · 2018: 32,0% · +4.907.142 votos')
-    await expect(sp.locator('[data-side="Flávio"]')).toContainText('53,8% · 2018: 68,0% · -1.166.845 votos')
-    const mg = rows.nth(1)
-    await expect(mg.locator('[data-side="Lula"]')).toContainText('50,4% · 2018: 41,8% · +1.968.147 votos')
-    await expect(mg.locator('[data-side="Flávio"]')).toContainText('49,6% · 2018: 58,2% · +141.679 votos')
-    // and the intro names the 2018 candidates exactly as the frame does
-    await expect(page.locator('[data-component="intro"]')).toContainText('Candidatos de 2018: Fernando Haddad (13) e Jair Bolsonaro (17).')
+    for (const [i, uf] of statesByValidVotes(NOW).slice(0, 2).entries()) {
+      await expect(rows.nth(i).locator('[data-side="Lula"]')).toContainText(side(uf, 2018, 'lula'))
+      await expect(rows.nth(i).locator('[data-side="Flávio"]')).toContainText(side(uf, 2018, 'flavio'))
+    }
+    // and the intro names the 2018 candidates as the frame does
+    const name = (numero: string) => candidateName({ ano: 2018, turno: 2 }, numero)
+    await expect(page.locator('[data-component="intro"]')).toContainText(`Candidatos de 2018: Fernando Haddad (13) e Jair Bolsonaro (17).`)
+    expect([name('13'), name('17')]).toEqual(['FERNANDO HADDAD', 'JAIR BOLSONARO'])
   })
 })
 
