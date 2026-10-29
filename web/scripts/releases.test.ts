@@ -73,6 +73,11 @@ describe('the release map check can fail', () => {
     expect(releaseProblems(md, rows.map((r) => (r.tag === '1.2.0' ? { ...r, commit: 'fffffff' } : r)))).toEqual([expect.stringContaining('1.2.0 points at fffffff')])
   })
 
+  it('does not compare the commit of a tag that lives in two histories (v1.0.0), but still wants its row', () => {
+    expect(releaseProblems(md, rows.map((r) => (r.tag === 'v1.0.0' ? { ...r, commit: 'fffffff' } : r)))).toEqual([])
+    expect(releaseProblems(md.split('\n').filter((l) => !l.startsWith('| `v1.0.0`')).join('\n'), rows)).toEqual([expect.stringContaining('v1.0.0 has no row')])
+  })
+
   it('reports a row for a tag that no longer exists', () => {
     expect(releaseProblems(md, rows.slice(1))).toEqual([expect.stringContaining('1.2.0 is in the map but is not a tag')])
   })

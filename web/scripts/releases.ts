@@ -72,13 +72,20 @@ export function parseRows(md: string): { tag: string; commit: string }[] {
   return [...md.matchAll(/^\| `([^`]+)` \|.*?\| `([0-9a-f]{7,40})` \|/gm)].map((m) => ({ tag: m[1]!, commit: m[2]! }))
 }
 
+/**
+ * Tags that live in two histories: `v1.0.0` points at a different commit in the original history (the private backup) and in
+ * the rewritten one (the public repository), so a checkout of either is right. For these the row must exist, but the commit is
+ * not compared.
+ */
+const TWO_HISTORY_TAGS = new Set(['v1.0.0'])
+
 export function releaseProblems(md: string, tags: { tag: string; commit: string }[]): string[] {
   const rows = parseRows(md)
   const problems: string[] = []
   for (const t of tags) {
     const row = rows.find((r) => r.tag === t.tag)
     if (!row) problems.push(`${t.tag} has no row in docs/releases.md; run \`make releases\``)
-    else if (!t.commit.startsWith(row.commit) && !row.commit.startsWith(t.commit)) problems.push(`${t.tag} points at ${t.commit} but the map says ${row.commit}; run \`make releases\``)
+    else if (!TWO_HISTORY_TAGS.has(t.tag) && !t.commit.startsWith(row.commit) && !row.commit.startsWith(t.commit)) problems.push(`${t.tag} points at ${t.commit} but the map says ${row.commit}; run \`make releases\``)
   }
   for (const r of rows) if (!tags.some((t) => t.tag === r.tag)) problems.push(`${r.tag} is in the map but is not a tag`)
   return problems
