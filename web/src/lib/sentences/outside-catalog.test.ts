@@ -30,17 +30,14 @@
  * classifies as `builder` and can fail guard 2 on a legitimate literal. When that happens the file goes in
  * `ALLOWED_LITERALS` with the reason — the sentence heuristic is never loosened for one file.
  */
-import { readFileSync, readdirSync, statSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { join, posix, relative, sep } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { walkFiles } from '../../../scripts/walk'
 import { CATALOG } from './catalog'
 
 const SRC = join(import.meta.dirname, '..', '..')
-const files = (dir: string): string[] =>
-  readdirSync(dir).flatMap((f) => {
-    const p = join(dir, f)
-    return statSync(p).isDirectory() ? files(p) : /\.(ts|tsx|astro)$/.test(f) && !/\.test\./.test(f) ? [p] : []
-  })
+const files = (dir: string): string[] => walkFiles(dir).filter((p) => /\.(ts|tsx|astro)$/.test(p) && !/\.test\./.test(p))
 const text = new Map(files(SRC).map((p) => [relative(SRC, p).split(sep).join('/'), readFileSync(p, 'utf8')]))
 /** Code without its comments (a comment may quote a sentence to explain it). */
 const code = (src: string) => src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1')
