@@ -5,6 +5,7 @@
  * No page links here yet: the address is the way in (an entry point is for the user to decide).
  */
 import Base from '@/layouts/Base.astro'
+import PlaceLink from '@/components/PlaceLink'
 import { siteHref } from '@/paths'
 import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
 import '@/lib/sentences/catalog-press'
@@ -45,7 +46,7 @@ const exampleHref = first ? href(`/imprensa/folha/${example}`) : undefined
           const state = UF_NOME[uf] ?? uf.toUpperCase()
           return (
             <li class="rounded-md border border-border p-3" data-kit={uf}>
-              <p class="text-step-2 font-bold">{state}</p>
+              <p class="text-step-2"><PlaceLink place={{ kind: 'uf', uf }} text={state} /></p>
               <p class="mt-1 flex flex-wrap gap-x-4 text-step-2">
                 <a class="min-h-11 py-2 font-bold text-primary" href={href(`/imprensa/kit/${uf}/resumo-do-estado.svg`)} download>{say('press.link.chart', { state })}</a>
                 <a class="min-h-11 py-2 font-bold text-primary" href={href(`/imprensa/kit/${uf}/legendas.txt`)} download>{say('press.link.captions', { state })}</a>

@@ -20,6 +20,8 @@ export const REGION_KEYS = [
   'region.more',
   'region.compare',
   'region.description',
+  'place.uf',
+  'place.region',
 ] as const satisfies readonly Key[]
 
 export const REGION_STANDARD: Record<(typeof REGION_KEYS)[number], string> = {
@@ -35,6 +37,8 @@ export const REGION_STANDARD: Record<(typeof REGION_KEYS)[number], string> = {
   'region.more': 'Mais sobre a região {name}',
   'region.compare': 'Comparar regiões ›',
   'region.description': 'Resultado do 2º turno de {ano} na região {name}: votos válidos por candidato e os estados da região.',
+  'place.uf': 'Página do estado {name}',
+  'place.region': 'Página da região {name}',
 }
 
 export const REGION_PLAIN: Record<(typeof REGION_KEYS)[number], string> = {
@@ -50,6 +54,8 @@ export const REGION_PLAIN: Record<(typeof REGION_KEYS)[number], string> = {
   'region.more': 'Mais sobre a região {name}',
   'region.compare': 'Comparar regiões ›',
   'region.description': 'Como foi o 2º turno de {ano} na região {name}: os votos de cada candidato e os estados da região.',
+  'place.uf': 'Página do estado {name}',
+  'place.region': 'Página da região {name}',
 }
 
 registerSentences('pt-BR', 'standard', REGION_STANDARD)

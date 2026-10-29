@@ -5,6 +5,7 @@ import { cycleBlocksFor, labelsOf, otherLargestStates, stateOrder, stateStats, t
 import { siteBase, siteHref } from '@/paths'
 import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
 import Seal from '@/components/Seal.astro'
+import PlaceLink from '@/components/PlaceLink'
 import SiteFooter from '@/components/SiteFooter.astro'
 import FactHighlight from '@/components/FactHighlight'
 import { calcLink } from '@/lib/facts/link'
@@ -85,7 +86,7 @@ const miniRows = (st: StateStats) => Array.from({ length: CYCLES.length }, (_, i
         const episode = (
           <div class="season-ep py-[2px] lg:py-3" id={String(b.ano)} data-cycle={String(b.ano)} data-episode={i + 1}>
             <p class="season-ep__head"><span>{episodeLabel(i + 1, b.ano)}</span><a href={`#${b.ano}`}>#{b.ano}</a></p>
-            <h2 class="text-step-1 font-bold lg:font-serif lg:text-step-4 lg:font-normal">{uf.toUpperCase()} · {b.ano}</h2>
+            <h2 class="text-step-1 font-bold lg:font-serif lg:text-step-4 lg:font-normal"><PlaceLink place={{ kind: 'uf', uf }} /> · {b.ano}</h2>
             {b.status === 'data' ? (
               <>
                 <div class="mt-[4px] flex h-[26px] min-w-0 overflow-hidden rounded lg:h-[36px]" role="img" aria-label={`Barras: ${b.left!.label} ${b.left!.pct}%, ${b.rival!.label} ${b.rival!.pct}% dos votos válidos`}>

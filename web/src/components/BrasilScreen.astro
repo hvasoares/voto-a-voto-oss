@@ -12,6 +12,7 @@ import { siteBase, siteHref } from '@/paths'
 import { FOOTER_LINK } from '@/shared/link-classes'
 import { isFixtureDataset, loadBrasil } from '@/lib/brasil-load'
 import ResultBar from '@/components/ResultBar.astro'
+import PlaceLink from '@/components/PlaceLink'
 import PageDataDownload from '@/components/PageDataDownload.astro'
 import Seal from '@/components/Seal.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
@@ -94,7 +95,7 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
       {view.regions.map((r) => (
         <li class="pt-2" data-regiao={r.regiao}>
           <div class="flex items-baseline justify-between gap-2">
-            <h3 class="font-sans text-step-1 font-bold"><a class="inline-flex min-h-11 items-center text-primary" data-link="regiao" href={href(`/brasil/${r.regiao}/`)}>{r.label} ›</a></h3>
+            <h3 class="font-sans text-step-1 font-bold"><PlaceLink place={{ kind: "regiao", regiao: r.regiao }} text={`${r.label} ›`} className={FOOTER_LINK} /></h3>
             <p class="text-right text-step-1 text-[var(--c-ink)]">{brasilRegionShare(r)}</p>
           </div>
           <ResultBar

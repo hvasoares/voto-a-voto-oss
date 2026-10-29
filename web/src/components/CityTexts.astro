@@ -7,6 +7,7 @@ import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
 import '@/lib/sentences/catalog-texts'
 import type { CityTexts } from '@/lib/city-texts-build'
 import { CARD_REGISTER } from '@/lib/sentences/register'
+import PlaceText from '@/components/PlaceText.astro'
 
 interface Props {
   texts: CityTexts
@@ -26,7 +27,7 @@ const blocks = [
     <div class="mt-3" data-text-block={b.id}>
       <h3 class="text-step-2 font-bold">{b.title}</h3>
       {b.note && <p class="text-step-1 text-muted-foreground">{b.note}</p>}
-      <p class="mt-1 whitespace-pre-line rounded-md border border-border bg-[var(--c-paper-2)] p-3 text-step-2 wrap-anywhere" data-text={b.id}>{b.body[CARD_REGISTER]}</p>
+      <p class="mt-1 whitespace-pre-line rounded-md border border-border bg-[var(--c-paper-2)] p-3 text-step-2 wrap-anywhere" data-text={b.id}><PlaceText text={b.body[CARD_REGISTER]} /></p>
       <button type="button" class="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-step-2 font-bold text-foreground" data-copy={b.id} data-copied={say('text.copied')} data-failed={say('text.copy.failed')} hidden>{say('text.copy')}</button>
     </div>
   ))}

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { useIslandReady } from '@/components/use-island-ready'
 import { performShare, type ShareNavigator } from '@/lib/share-flow'
 import { saveBlob, svgToPng } from '@/lib/share-raster'
+import PlaceText from '@/components/PlaceText'
 
 /**
  * The interactive part of the share sheet (ticket #7): the "Compartilhar" / "Baixar imagem" buttons, "Copiar texto"
@@ -179,7 +180,7 @@ export default function ShareActions({ text, svg, filename, link, primaryLabel =
       <div className={`mt-1 border-t border-border pt-2 ${canShare ? '' : 'lg:hidden'}`} hidden={compact || textHidden} data-share-text data-text={text}>
         <h2 className="text-step-1 font-bold">Texto da mensagem</h2>
         <p className="mt-1 text-step-2 wrap-anywhere" data-text-body>
-          {text}
+          <PlaceText text={text} />
         </p>
         <Button variant="outline" className={`${BTN_OUTLINE} mt-2 min-h-11 text-step-1`} {...show(mounted && !!navigator.clipboard)} onClick={onCopy} data-act="copy">
           Copiar texto

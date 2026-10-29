@@ -6,6 +6,7 @@
  * municipality map; the numbers are in the table below.
  */
 import UfMap from '@/components/UfMap.astro'
+import PlaceText from '@/components/PlaceText.astro'
 import { STEP_FGS, STEP_FILLS, type MapSpec } from '@/lib/nerds/mapa'
 import { nerdsPath } from '@/lib/nerds/paths'
 import { regionLabel } from '@/lib/brasil'
@@ -33,7 +34,7 @@ const label = spec.options.find((o) => o.id === spec.initial.measure)?.label ?? 
 {spec.level === 'estado' ? (
   <div class="nerds-slot" data-map-slot>
     <h3>Mapa dos municípios</h3>
-    <p>O mapa de cada município de {placeName} fica na página própria; aqui, os números de todos os municípios estão na tabela.</p>
+    <p>O mapa de cada município de <PlaceText text={placeName} /> fica na página própria; aqui, os números de todos os municípios estão na tabela.</p>
     <p class="nerds-slot__links">{muniMap && <a href={siteHref(muniMap)} data-muni-map>Abrir o mapa dos municípios ›</a>} <a href="#c2026-detalhe-t" data-to-table>Ver os municípios na tabela ›</a></p>
   </div>
 ) : (

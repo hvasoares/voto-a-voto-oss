@@ -9,6 +9,8 @@ import { candidateRow, turnoutBar } from '../../shared/components'
 import { html, type Raw } from '../../shared/html'
 import { noscriptText, questionText, yesNo, type Question } from '../../lib/question'
 import '../../lib/sentences/catalog-twin'
+import { messageHtml } from '../../lib/sentences/markup'
+import { placeLinkHtml } from '../../lib/place-link'
 
 /** The id of a panel's sentence block: the panel (the card's picture of bars and legend) is described by it. */
 export const headlineId = (view: string) => `headline-${view}`
@@ -46,7 +48,7 @@ export function viewQuestion(q: Question, place: Place): Raw {
   return html`<section class="city-q" data-question="${q.kind}" data-answer="${q.answer ? 'yes' : 'no'}" aria-labelledby="city-q"><h2 class="city-q__q" id="city-q">${questionText(q, place.cityName, voice)}</h2>${noscript}<div class="city-arc" data-arc="${q.kind}" hidden><p class="city-q__yn">${yesNo(q.answer, voice)}.</p><p class="city-arc__pill">${line.label}</p><p class="city-arc__note">${line.note}</p></div></section>`
 }
 
-/** The twin city (#31) as the card links it: its display name, the label of its state and the address of its card. */
+/** The twin city (#31) as the card links it: its display name, its state (the lower-case UF code) and the address of its card. */
 export interface Twin {
   name: string
   uf: string
@@ -54,13 +56,15 @@ export interface Twin {
 }
 
 /**
- * The twin line (#31): a link to the closest peer city of another state and, under it, the one-line reason, in plain language. Empty when the city has no twin (overseas posts, a state that holds every comparable city).
+ * The twin line (#31): the closest peer city of another state and, under it, the one-line reason, in plain language. The city is a link to its card and, separately, its
+ * state is a link to the state page (#184); the sentence is the catalog's, with the two links in its slots. Empty when the city has no twin (overseas posts, a state that holds every comparable city).
  */
 export function viewTwin(twin: Twin | undefined, place: Place): Raw {
   if (!twin) return html``
   const locale = place.locale ?? DEFAULT_LOCALE
   const voice = { locale, register: CARD_REGISTER }
-  return html`<a class="city-twin" href="${twin.href}" data-twin><span>${message(voice, 'twin.label', { name: twin.name, uf: twin.uf })}</span> ›<span class="city-twin__reason">${message(voice, 'twin.reason')}</span></a>`
+  const label = messageHtml(voice, 'twin.label', { name: html`<a class="city-twin__city" href="${twin.href}" data-twin-city>${twin.name}</a>`, uf: placeLinkHtml({ kind: 'uf', uf: twin.uf }, { text: `${twin.uf.toUpperCase()} ›` }) })
+  return html`<p class="city-twin" data-twin><span>${label}</span><span class="city-twin__reason">${message(voice, 'twin.reason')}</span></p>`
 }
 
 /**

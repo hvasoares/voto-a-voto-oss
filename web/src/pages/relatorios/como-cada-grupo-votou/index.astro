@@ -10,6 +10,7 @@ import { message, DEFAULT_VOICE } from '@/lib/sentences/catalog'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import FixtureBanner from '@/components/FixtureBanner.astro'
+import PlaceText from '@/components/PlaceText.astro'
 
 /*
  * Screen 12, "Como cada grupo votou" (ticket #15). Static, like /sobre-os-dados/: the whole report
@@ -107,7 +108,7 @@ const totalLine = `${fmt(report.totals.cities2026)} cidades do 2º turno de 2026
       <p class="mt-[5px]" data-component="total-line">{totalLine}</p>
       {outsideLines.length > 0 && (
         <ul class="mt-[5px] list-disc space-y-1 pl-5" data-component="outside-list">
-          {outsideLines.map((line) => <li>{line}</li>)}
+          {outsideLines.map((line) => <li><PlaceText text={line} /></li>)}
         </ul>
       )}
       <p class="mt-1" data-component="definition">Venceu quem teve mais votos que o outro candidato do 2º turno; empate é o mesmo número de votos. Os percentuais das barras são das cidades decididas (maior resto, décimo: somam exatamente 100%).</p>

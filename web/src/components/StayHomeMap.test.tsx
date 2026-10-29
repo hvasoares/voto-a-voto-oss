@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { noopAnalytics, setAnalytics, type Analytics } from '@/analytics'
 import StayHomeMap from './StayHomeMap'
 import { stayHomeModel } from '@/lib/stay-home-view'
+import { selectedState } from '@/test/selected-state'
 
 const rows = [
   { uf: 'rj', aptos: 1000, naoVotaram: 250, share: 25 },
@@ -37,7 +38,7 @@ describe('StayHomeMap', () => {
     setAnalytics({ pageView() {}, event: (n, p) => void events.push([n, p]) } satisfies Analytics)
     render(<StayHomeMap model={model} base="/s/" viewPaths={viewPaths} />, { container: host })
     expect(host.querySelector('[data-slot="state-map"]')!.getAttribute('data-ready')).toBe('yes')
-    expect(screen.getByText('RJ · selecionado')).toBeTruthy()
+    expect(selectedState('RJ')).toBeTruthy()
     expect(events).toEqual([['map_state_tap', { uf: 'rj' }]])
     host.remove()
   })
@@ -60,9 +61,9 @@ describe('StayHomeMap', () => {
 
   it('starts on the largest electorate and a tap selects another state, with map_state_tap', async () => {
     const { user } = setup()
-    expect(screen.getByText('SP · selecionado')).toBeTruthy()
+    expect(selectedState('SP')).toBeTruthy()
     await user.click(document.querySelector('a[data-uf="mg"]')!)
-    expect(screen.getByText('MG · selecionado')).toBeTruthy()
+    expect(selectedState('MG')).toBeTruthy()
     expect(screen.getByText('Eleitores aptos: 800 · não votaram: 240')).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Abrir estado' }).getAttribute('href')).toBe('/s/mg/')
     expect(events).toEqual([['map_state_tap', { uf: 'mg' }]])

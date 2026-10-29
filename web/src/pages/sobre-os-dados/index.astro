@@ -1,6 +1,7 @@
 ---
 import { CANDIDATES } from '@/shared/candidates'
 import Base from '@/layouts/Base.astro'
+import PlaceText from '@/components/PlaceText.astro'
 import { formatBytes, sourceRow } from '@/lib/about'
 import {
   BR_CITIES_2018_2022,
@@ -125,8 +126,8 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
         <h3 class={h3} id="limites">Limites</h3>
         <ul class="mt-[5px] list-disc space-y-1 pl-5">
           <li>Os percentuais de 2018 e 2022 usam como base os dois candidatos do 2º turno de cada ciclo.</li>
-          <li>{CITY_WITHOUT_DATA_BEFORE_2026} existe só em 2026 e não tem dados nos ciclos anteriores: {fmt(BR_CITIES_2018_2022)} de {fmt(BR_CITIES_2026)} municípios por ciclo. O site mostra "sem dados", não zero.</li>
-          <li>Salvador/BA, 1º turno de 2018, zona 18: o comparecimento inclui {fmt(SALVADOR_ANULADOS_APU_SEP)} votos que não são válidos, brancos nem nulos — o TSE os marca como anulados em apuração separada. Os arquivos deste projeto têm uma coluna só para esses votos, e a conta acima só fecha com ela.</li>
+          <li><PlaceText text={CITY_WITHOUT_DATA_BEFORE_2026} /> existe só em 2026 e não tem dados nos ciclos anteriores: {fmt(BR_CITIES_2018_2022)} de {fmt(BR_CITIES_2026)} municípios por ciclo. O site mostra "sem dados", não zero.</li>
+          <li><PlaceText text="Salvador/BA" />, 1º turno de 2018, zona 18: o comparecimento inclui {fmt(SALVADOR_ANULADOS_APU_SEP)} votos que não são válidos, brancos nem nulos — o TSE os marca como anulados em apuração separada. Os arquivos deste projeto têm uma coluna só para esses votos, e a conta acima só fecha com ela.</li>
           <li>Eleitorado apto nem sempre fecha com comparecimento + abstenção: em 2018 restam {TURNOUT_REMAINDER['2018']} eleitores e, em 2022, {TURNOUT_REMAINDER['2022']} — seções não instaladas, que o TSE informa; em 2026 restam {TURNOUT_REMAINDER['2026']}, sem campo correspondente nos arquivos. Como "Não votaram" parte do eleitorado apto, esse resto está contado ali.</li>
           <li>Postos do exterior em 2026: {OVERSEAS_NOT_INSTALLED_2026.posts} deles (de {OVERSEAS_POSTS_2026}) não estavam instalados — eleitorado declarado, comparecimento zero em {OVERSEAS_NOT_INSTALLED_2026.postRounds} postos-turno.</li>
           <li>Constantes nacionais de 2018 e 2022 do manifesto foram copiadas das páginas de resultados do TSE na coleta de {COLLECTION_DATE} e não puderam ser re-verificadas em outra fonte nesse dia (arquivos históricos do TSE fora do ar). Exceção: o eleitorado de 2022 ({fmt(ELECTORATE_2022_RECONFIRMED)}), re-verificado no arquivo de perfil de comparecimento do TSE.</li>

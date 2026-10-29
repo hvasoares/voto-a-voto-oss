@@ -28,6 +28,7 @@ import { CALLOUT_LEFT, CALLOUT_RIGHT, UF_SHAPES } from '@/lib/uf-polygons'
 import { hitStroke, hitUnits, labelUnits, MAP_PX } from '@/lib/map-hit'
 import { toPath } from '@/lib/map-path'
 import { keepVistaInUrl, useMapView } from './use-map-view'
+import PlaceLink from './PlaceLink'
 
 export type MapKind = 'margin' | 'swing'
 export type MapPresentation = 'mosaico' | 'mapa'
@@ -238,8 +239,7 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
       <div className="mt-2 border-t border-border pt-2" data-slot="mapa-selecionado">
         <div className="flex items-baseline justify-between gap-3">
           <p aria-live="polite" className="font-serif text-step-2 font-bold">
-            {selected.toUpperCase()} · selecionado
-            <span className="sr-only">{` · ${UF_NAMES[selected.toLowerCase()] ?? selected.toUpperCase()}`}</span>
+            <PlaceLink place={{ kind: 'uf', uf: selected }} /> · selecionado
           </p>
           <p className="font-serif text-step-4 font-bold" aria-hidden="true">
             {fmt((rowOf(rows, selected) && valueOf(rowOf(rows, selected)!, kind)) || 0)} pp

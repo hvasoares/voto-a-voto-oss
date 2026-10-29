@@ -54,10 +54,10 @@ test.describe('region page (fixture build)', () => {
 
   test('each region name on Brasil e regiões links to its page, and "Dados da região" still opens the nerds page', async ({ page }) => {
     await page.goto(`${base}brasil/`)
-    await expect(page.locator('[data-regiao="sudeste"] [data-link="regiao"]')).toHaveAttribute('href', `${base}brasil/sudeste/`)
-    await expect(page.locator('[data-regiao="centro-oeste"] [data-link="regiao"]')).toHaveAttribute('href', `${base}brasil/centro-oeste/`)
+    await expect(page.locator('[data-regiao="sudeste"] [data-place="regiao"]')).toHaveAttribute('href', `${base}brasil/sudeste/`)
+    await expect(page.locator('[data-regiao="centro-oeste"] [data-place="regiao"]')).toHaveAttribute('href', `${base}brasil/centro-oeste/`)
     await expect(page.locator('[data-regiao="sudeste"] [data-link="nerds-regiao"]')).toHaveAttribute('href', `${base}dados-para-nerds/regiao/sudeste/`)
-    await page.locator('[data-regiao="sudeste"] [data-link="regiao"]').click()
+    await page.locator('[data-regiao="sudeste"] [data-place="regiao"]').click()
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Região Sudeste')
   })
 

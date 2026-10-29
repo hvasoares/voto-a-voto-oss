@@ -6,6 +6,8 @@
  * script (hover and keyboard fill the panel) is the one of the other two fragments.
  */
 import UfMap from '@/components/UfMap.astro'
+import PlaceLink from '@/components/PlaceLink'
+import { placeLabelTemplate, retargetPlaceSource } from '@/lib/place-link'
 import { loadStayHome, stayHomePath } from '@/lib/stay-home-data'
 import { parseViewSlug } from '@/lib/stay-home-view'
 import type { MapCell } from '@/lib/state-map-panel'
@@ -47,7 +49,7 @@ const pathOf = (s: string) => stayHomePath(parseViewSlug(s)!, set.defaultView)
       {first && (
         <section class="mf__panel" data-slot="mapa-selecionado" aria-label="Estado selecionado">
           <div class="mf__head">
-            <p class="mf__name" aria-live="polite"><span data-sel-uf>{selected.toUpperCase()}</span> · selecionado<span class="sr" data-sel-name>{` · ${first.name}`}</span></p>
+            <p class="mf__name" aria-live="polite"><PlaceLink place={{ kind: 'uf', uf: selected }} extra={{ 'data-sel-uf': '', 'data-label-template': placeLabelTemplate('uf'), target: '_top' }} /> · selecionado</p>
             <p class="mf__big" aria-hidden="true" data-sel-big>{first.text}</p>
           </div>
           <p class="mf__line" data-sel-line1>{first.lines[0]}</p>
@@ -93,6 +95,7 @@ const pathOf = (s: string) => stayHomePath(parseViewSlug(s)!, set.defaultView)
     </table>
   </details>
 </div>
+<script is:inline set:html={retargetPlaceSource} />
 <script is:inline>
   (function () {
     var q = function (s) { return document.querySelector(s) }
@@ -102,8 +105,7 @@ const pathOf = (s: string) => stayHomePath(parseViewSlug(s)!, set.defaultView)
       if (!a || !open || a.getAttribute('data-selected') === 'true') return
       links.forEach(function (l) { l.removeAttribute('data-selected') })
       a.setAttribute('data-selected', 'true')
-      q('[data-sel-uf]').textContent = a.getAttribute('data-map-uf').toUpperCase()
-      q('[data-sel-name]').textContent = ' · ' + a.getAttribute('data-name')
+      retargetPlace(q('[data-sel-uf]'), a)
       q('[data-sel-big]').textContent = a.getAttribute('data-big')
       q('[data-sel-line1]').textContent = a.getAttribute('data-line1')
       q('[data-sel-line2]').textContent = a.getAttribute('data-line2')

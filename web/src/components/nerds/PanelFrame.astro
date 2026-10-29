@@ -4,6 +4,7 @@
  * "não mede") written from the panel RECORD, and the body is a slot. There is no interpretation field. Actions (Citar, CSV, Imagem) arrive in #79.
  */
 import { fonteText, titleText, type PanelRecord } from '@/lib/nerds/panels'
+import PlaceText from '@/components/PlaceText.astro'
 
 interface Props {
   record: PanelRecord
@@ -25,7 +26,7 @@ const f = record.footer
 ---
 <section class="nerds-panel" id={scope.startsWith('c') ? undefined : `painel-${record.id}`} data-panel={record.id} data-kind={record.kind} aria-labelledby={`${scope}-${record.id}-t`}>
   <header class="nerds-panel__head">
-    <h2 id={`${scope}-${record.id}-t`}>{titleText(record, vars)}{unchecked && <span class="nerds-unchecked" data-unchecked> não conferido</span>}</h2>
+    <h2 id={`${scope}-${record.id}-t`}><PlaceText text={titleText(record, vars)} />{unchecked && <span class="nerds-unchecked" data-unchecked> não conferido</span>}</h2>
     <div class="nerds-panel__actions" data-panel-actions></div>
   </header>
   <slot />

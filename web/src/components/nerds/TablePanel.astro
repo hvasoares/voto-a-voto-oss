@@ -6,6 +6,7 @@
  */
 import { SEM_SEGUNDO_TURNO, type TableSpec } from '@/lib/nerds/panels'
 import { siteHref } from '@/paths'
+import PlaceText from '@/components/PlaceText.astro'
 
 interface Props {
   spec: TableSpec
@@ -29,7 +30,9 @@ const link = (href: string) => siteHref(href.startsWith('dados-para-nerds') ? hr
         <tr data-row={r.id} data-total={r.total ? '' : undefined} data-open-level={r.open?.level} data-open-id={r.open?.id}>
           {r.cells.map((cell, i) => {
             const col = spec.columns[i]!
-            const content = cell ?? <span class="nerds-none">{SEM_SEGUNDO_TURNO}</span>
+            // A mention of a place in a cell is a link to its page (#184), except inside the row's own link: part of that link, never a second one.
+            const inRowLink = i === 0 && !!r.href
+            const content = cell === null || cell === undefined ? <span class="nerds-none">{SEM_SEGUNDO_TURNO}</span> : <PlaceText text={String(cell)} plain={inRowLink} />
             return i === 0 ? (
               <th scope="row" data-name={cell ?? ''}>{r.href ? <a href={link(r.href)}>{content}</a> : content}</th>
             ) : (

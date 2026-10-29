@@ -89,11 +89,15 @@ describe('question and answer of the city (#44)', () => {
 })
 
 describe('twin line', () => {
-  const twin = { name: 'Vila Modelo', uf: 'SP', href: '/sp/vila-modelo/' }
+  const twin = { name: 'Vila Modelo', uf: 'sp', href: '/sp/vila-modelo/' }
   const html = viewTwin(twin, place).toString()
-  it('links the twin card, with the name and the state, in plain language', () => {
-    expect(html).toContain('href="/sp/vila-modelo/"')
-    expect(html).toContain('Cidade parecida: Vila Modelo · SP')
+  it('links the twin city and, separately, its state, in plain language', () => {
+    expect(html).toContain('Cidade parecida: <a class="city-twin__city" href="/sp/vila-modelo/" data-twin-city>Vila Modelo</a> · ')
+    expect(html).toMatch(/<a [^>]*data-place="uf"[^>]*href="\/sp\/"[^>]*aria-label="Página do estado SP · São Paulo"[^>]*>SP ›<\/a>/)
+  })
+  it('never nests a link in a link: the twin line is a paragraph, not an anchor', () => {
+    expect(html.startsWith('<p class="city-twin" data-twin>')).toBe(true)
+    expect(html.match(/<a /g)).toHaveLength(2)
   })
   it('says what the match uses: size, turnout, margin and the history of the cycles', () => {
     expect(html).toContain('Tem número de eleitores, comparecimento e resultados parecidos nas três eleições.')

@@ -1,0 +1,17 @@
+---
+/**
+ * `PlaceText` for the pages (#184): the same component, with the build's exceptions added (`lib/place-except.ts`: a city whose name carries a state or a region, a party
+ * acronym that is also a UF code), so a sentence that names "Santa Cruz do Sul" never links "Sul". A page imports this one; an island imports `PlaceText.tsx`.
+ */
+import PlaceText from '@/components/PlaceText'
+import { placeExceptions } from '@/lib/place-except'
+
+interface Props {
+  text: string
+  except?: readonly string[]
+  plain?: boolean
+}
+const { text, except = [], plain = false } = Astro.props
+const exceptions = [...(await placeExceptions()), ...except]
+---
+<PlaceText text={text} except={exceptions} plain={plain} />

@@ -8,6 +8,7 @@
 import Base from '@/layouts/Base.astro'
 import '@/styles/fact.css'
 import Seal from '@/components/Seal.astro'
+import PlaceText from '@/components/PlaceText.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { siteHref } from '@/paths'
 import { loadFactPages, sealOf } from '@/lib/facts/pages'
@@ -43,25 +44,25 @@ const title = `${std('fact.title')} · ${fp.title} · Voto a Voto`
     <main class="page__main" id="main">
       <a class="back" href={href(fp.back.path)} data-back>{fp.back.label}</a>
       <h1 class="page__title">{std('fact.title')}</h1>
-      <p class="page__subtitle">{fp.subtitle}</p>
+      <p class="page__subtitle"><PlaceText text={fp.subtitle} /></p>
       <div class="facts">
         {facts.map((f) => (
           <section class="fact" id={f.anchor} data-fact={f.id}>
-            <h2 class="fact__title">{f.title}</h2>
-            {(['standard', 'plain'] as const).map((register) => <p class="fact__sentence" data-register={register}>{f.sentences[register]}</p>)}
+            <h2 class="fact__title"><PlaceText text={f.title} /></h2>
+            {(['standard', 'plain'] as const).map((register) => <p class="fact__sentence" data-register={register}><PlaceText text={f.sentences[register]} /></p>)}
             <h3 class="fact__label">{std('fact.inputs')}</h3>
             <dl class="fact__inputs">
               {f.inputs.map((i) => (
                 <div>
-                  <dt>{i.label}{i.field && <small>{i.field}</small>}</dt>
-                  <dd>{i.value}</dd>
+                  <dt><PlaceText text={i.label} />{i.field && <small>{i.field}</small>}</dt>
+                  <dd><PlaceText text={i.value} /></dd>
                 </div>
               ))}
             </dl>
             <h3 class="fact__label">{std('fact.formula')}</h3>
-            <p class="fact__formula">{f.calculation!.formula}</p>
-            <ol class="fact__worked">{f.calculation!.worked.map((w) => <li>{w}</li>)}</ol>
-            {f.shown && f.shown !== f.title && <p class="fact__shown">{std('fact.shown', { value: f.shown })}</p>}
+            <p class="fact__formula"><PlaceText text={f.calculation!.formula} /></p>
+            <ol class="fact__worked">{f.calculation!.worked.map((w) => <li><PlaceText text={w} /></li>)}</ol>
+            {f.shown && f.shown !== f.title && <p class="fact__shown"><PlaceText text={std('fact.shown', { value: f.shown })} /></p>}
             <p class="fact__id">{std('fact.id')}: <code>{f.id}</code></p>
           </section>
         ))}
@@ -69,7 +70,7 @@ const title = `${std('fact.title')} · ${fp.title} · Voto a Voto`
       <Seal lines={seal} />
       <p class="fact__rounding">{std('fact.rounding')}</p>
       <p class="fact__neutral">{std('fact.neutral')}</p>
-      {fp.note && <p class="fact__neutral" data-limits>{fp.note}</p>}
+      {fp.note && <p class="fact__neutral" data-limits><PlaceText text={fp.note} /></p>}
       <h2 class="fact__block">{std('fact.source')}</h2>
       <ul class="fact__links">
         {sources.map((s) => <li><a href={s.url}>{s.name} ›</a></li>)}

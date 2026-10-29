@@ -15,3 +15,6 @@ export const REGION_NOME: Record<RegionKey, string> = {
 }
 
 export const isRegionKey = (key: string): key is RegionKey => (REGION_ORDER as readonly string[]).includes(key)
+
+/** The name of a region key; any other key (the overseas posts) is returned as it is. */
+export const regionName = (key: string): string => (isRegionKey(key) ? REGION_NOME[key] : key)

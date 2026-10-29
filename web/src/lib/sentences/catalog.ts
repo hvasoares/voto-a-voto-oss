@@ -462,6 +462,8 @@ export const KEYS = [
   'region.more',
   'region.compare',
   'region.description',
+  'place.uf',
+  'place.region',
   /** Cidades fora da curva (#34): the sentences live in `catalog-outliers.ts`, loaded only by that report's own modules. */
   'outlier.screening',
   'outlier.legend',
