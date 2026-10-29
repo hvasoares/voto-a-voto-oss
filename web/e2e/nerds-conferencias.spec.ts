@@ -56,7 +56,9 @@ test.describe('a corrupted shard shows on the page', () => {
     const first = shard.municipios[0] as number[]
     first[at] = first[at]! + 7
     writeFileSync(file, JSON.stringify(shard))
-    out = resolve(tmp, 'dist')
+    // A distinct basename: the build stamp lands in .build-stamps/dist-corrupt.json instead of stomping
+    // the fixture build's dist.json (every other worker's E2E_PREBUILT check reads that one).
+    out = resolve(tmp, 'dist-corrupt')
     // Builds write public/data of this project: one at a time, however many workers (or repeats) run this file.
     const lock = resolve(tmpdir(), 'voto-nerds-corrupt-build.lock')
     const until = Date.now() + 200_000

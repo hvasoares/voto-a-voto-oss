@@ -2,6 +2,7 @@ import { defineConfig } from '@playwright/test'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { DESKTOP, PHONE } from './e2e/presets'
 import { readStamp, stampInputs } from './scripts/build-stamp'
 import { offsetFrom, portFor, resolvedPort, tcpTaken } from './scripts/e2e-port'
 import { loadSampleManifest, realDataSpecs, sampleTestMatch } from './scripts/sample-manifest'
@@ -49,13 +50,17 @@ const server = webServerDecision()
 
 export default defineConfig({
   testDir: 'e2e',
+  // Only Playwright specs: the e2e/*.test.ts files are vitest (they are in the vitest include list).
+  testMatch: '**/*.spec.ts',
+  globalSetup: './e2e/data-guard-setup.ts',
+  globalTeardown: './e2e/data-guard-teardown.ts',
   fullyParallel: true,
   reporter: [['list']],
   outputDir: 'test-results',
   use: {
     baseURL: `http://localhost:${PORT}`,
     // Phone viewport used by EVERY check and screenshot. Reference images are 390x844 at scale 1.
-    viewport: { width: 390, height: 844 },
+    viewport: PHONE,
     deviceScaleFactor: 1,
     isMobile: true,
     hasTouch: true,
@@ -74,7 +79,7 @@ export default defineConfig({
   projects: [
     { name: 'phone', testIgnore: /real-data|capture|cdn|desktop-/, use: { browserName: 'chromium' } },
     // The desktop suites (G10): a 1440x900 pointer-and-keyboard browser; each spec resizes for its own 390/768 checks.
-    { name: 'desktop', testMatch: /desktop-/, use: { browserName: 'chromium', viewport: { width: 1440, height: 900 }, isMobile: false, hasTouch: false } },
+    { name: 'desktop', testMatch: /desktop-/, use: { browserName: 'chromium', viewport: DESKTOP, isMobile: false, hasTouch: false } },
     { name: 'capture', testMatch: /capture/, use: { browserName: 'chromium' } },
     { name: 'real', testMatch: /real-data/, use: { browserName: 'chromium' } },
     // The real-data sample (#109): the real-data specs on disk minus sample.json's fullOnly, over the

@@ -8,7 +8,7 @@ export default defineConfig({
   resolve: { alias: { '@': src('./src') } },
   plugins: [shardsModule()],
   test: {
-    include: ['src/**/*.test.{ts,tsx}', 'integrations/**/*.test.ts', 'scripts/**/*.test.ts'],
+    include: ['src/**/*.test.{ts,tsx}', 'integrations/**/*.test.ts', 'scripts/**/*.test.ts', 'e2e/**/*.test.ts'],
     environment: 'node',
     setupFiles: ['./src/test/setup.ts'],
   },

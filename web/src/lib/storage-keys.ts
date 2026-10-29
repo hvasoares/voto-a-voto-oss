@@ -6,6 +6,9 @@
 export const PLACE_KEY = 'voto-a-voto:place'
 export const REGISTER_KEY = 'voto-a-voto:register'
 export const NOTICE_STORAGE_KEY = 'voto-a-voto:notice'
+// The value NOTICE_STORAGE_KEY holds once the visitor has seen the one-line data notice (#132: the e2e
+// acknowledgeNotice preset writes this exact pair).
+export const NOTICE_ACKNOWLEDGED_VALUE = 'acknowledged'
 
 export const GAME_KEY = 'voto-a-voto:game'
 
