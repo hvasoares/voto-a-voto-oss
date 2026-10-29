@@ -4,6 +4,10 @@ Brazilian election results, vote by vote: a TSE data pipeline and a static, veri
 
 Covers the 2018, 2022 and 2026 presidential elections at municipality level, with every number traceable to its source.
 
+## For agents and contributors
+
+Start with [`CLAUDE.md`](CLAUDE.md) (a pointer), then [`docs/agent-brief.md`](docs/agent-brief.md) (rules and the hand-back protocol) and [`docs/glossary.md`](docs/glossary.md) (terms, each linked to its source).
+
 ## Licence
 
 The code is released under the MIT licence (see `LICENSE`).
