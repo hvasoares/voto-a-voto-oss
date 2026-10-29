@@ -383,3 +383,39 @@ D-010 (ballot-number order) and D-011 (type scale) come from the code and its co
 - Supersedes: D-032
 - Tickets: private#106
 - Source: owner decision after the 1.13.0 review
+
+### D-039 Legislative data lives in its own folder, with its own manifest
+- Date: 2026-10-29
+- Status: active
+- Decision: Senador and Deputado Federal votes for 2018, 2022 and 2026 are extracted by `make data` into `data/legislative/`, per cargo and year, aggregated from TSE zones to municipalities, with their own `manifest.json` (hashes, row counts, and the etag, last-modified and sha256 of the source zips). The folder is git-ignored and rebuilt, not committed. The same cache, revalidation and fingerprint code as the president data is used, and an unchanged source parses nothing. Supplementary elections are excluded. Votes are kept as the TSE gives them (the 2018 Senate had two votes per voter), and the vote identity includes the sub judice annulled and the separate-count columns.
+- Reason: The existing data, the web shard fingerprints and the published editions stay untouched, and the legislative volume (about 160 MB) does not belong in the repository. Nothing was normalised, so no meaning is lost between cycles.
+- Supersedes: none
+- Tickets: none
+- Source: owner request of 2026-10-29 to put the legislative download in the same task with cache and fingerprinting
+
+### D-040 The v1.0.0 tag lives in two histories
+- Date: 2026-10-29
+- Status: active
+- Decision: The release-map check requires a row for `v1.0.0` but does not compare its commit, because the tag points at a different commit in the original history (the private backup) and in the rewritten one (the public repository). Every other tag is compared as before, and a pushed tag is still never moved.
+- Reason: Both commits are right in their own history; comparing them made the check fail on the backup for a reason that is not a defect.
+- Supersedes: none
+- Tickets: none
+- Source: the release-map check of `web/scripts/releases.ts`, owner decision of 2026-10-29
+
+### D-041 Legislative features: party-first, only the elected named, hydration for the budgets
+- Date: 2026-10-29
+- Status: active
+- Decision: The site brings the legislative data as seven features specified in `docs/specs/legislative/`: a hydrated delivery pattern, the elected and seats verified against the TSE allocation rules, a searchable party and federation page (a new route), a cargo switch on the city card, blank and null votes per cargo, the vote pullers (people elected because of a candidate, as a counterfactual) and the seat changes over the elections for the Senate and the Chamber. Views are party and federation level; only the elected people are named, never in an order that ranks by votes; everything on the elected is kept and checked against the TSE rules before a seat figure prints. Tight HTML and CSS budgets are met by hydration: the page prerenders an accessible table of the latest data and loads shards on interaction.
+- Reason: Party and federation level avoids listing thousands of candidates and ranking people, the elected are the one fact readers ask for, and hydration keeps the city card and the new routes inside their budgets.
+- Supersedes: none
+- Tickets: none
+- Source: SCAMPER pass on the legislative data with the dataviz checklist, owner amendments of 2026-10-29
+
+### D-042 Differences accepted in 1.13.2
+- Date: 2026-10-29
+- Status: active
+- Decision: The 1.13.2 release is accepted although its built output is not byte-identical to 1.13.1 in these ways: hashed asset names changed where shared scripts moved (footer and base-path helpers, the report layout); the class tokens of the page column and footer follow one canonical order on 32 pages; the two demo pages `/qr/` and `/compartilhar/` carry `noindex`; and the island scripts of the share pictures and the maps grew (about 250 to 510 B gzip per single-picture island, and about 410 to 460 B per map page) in exchange for one builder and shared map helpers.
+- Reason: Each is a consequence of removing a copy or fixing an omission the ticket stated, and none changes what a visitor sees; the growth was weighed against the maintenance gain and accepted.
+- Supersedes: none
+- Tickets: none
+- Source: the 1.13.2 tickets on the shared pieces, owner decisions of 2026-10-28 and 2026-10-29
