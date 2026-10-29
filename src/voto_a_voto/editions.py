@@ -6,15 +6,13 @@ collection date of the sources (``2026-10-27``; ``2026-10-27-2`` when a differen
 date). Nothing in an edition depends on the clock or on a later edition, so the same inputs give the same bytes and
 publishing a new edition never touches an older one.
 """
-import csv
 import hashlib
-import io
 import json
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
-from voto_a_voto import release
+from voto_a_voto import csvio, release
 from voto_a_voto.reconcile import Finding
 
 SCHEMA_VERSION = 1
@@ -63,7 +61,7 @@ def collection_date(manifest: dict) -> str:
 
 
 def rows_of(content: bytes) -> list[dict]:
-    return list(csv.DictReader(io.StringIO(content.decode("utf-8"), newline="")))
+    return csvio.read_rows(content)
 
 
 def counts_of(files: dict[str, bytes]) -> dict:

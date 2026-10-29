@@ -5,13 +5,13 @@ fields in column order and sort by key, so the same input always produces the sa
 """
 import csv
 import hashlib
-import io
 import json
 import os
 from collections.abc import Iterable, Mapping
 from dataclasses import astuple, dataclass, field, fields
 from pathlib import Path
 
+from voto_a_voto import csvio
 from voto_a_voto.cities import City, DuplicateSlugError, region_of, slugify
 from voto_a_voto.munzona import Candidate, CandidateConflictError, Turnout
 
@@ -174,11 +174,7 @@ def assemble(cycles: Iterable[CycleData], config_cities: Iterable[City]) -> Data
 
 def csv_bytes(rows: Iterable, columns: tuple[str, ...]) -> bytes:
     """UTF-8, LF, header first, one row per record in the order given."""
-    buffer = io.StringIO(newline="")
-    writer = csv.writer(buffer, lineterminator="\n")
-    writer.writerow(columns)
-    writer.writerows(astuple(row) for row in rows)
-    return buffer.getvalue().encode("utf-8")
+    return csvio.write_rows(columns, (astuple(row) for row in rows))
 
 
 def write_dataset(dataset: Dataset, out_dir) -> dict[str, dict]:

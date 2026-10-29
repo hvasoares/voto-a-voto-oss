@@ -1,13 +1,11 @@
 """The open dataset release of one edition (ticket #63): the normalized municipal results as CSV and NDJSON in a stable
 schema, with a data dictionary, a README, a citation file and a SHA-256 manifest. A pure function of the edition's frozen
 files, its id and its date: the same edition always gives the same bytes (``make data-check`` rebuilds and compares)."""
-import csv
 import hashlib
-import io
 import json
 from dataclasses import fields
 
-from voto_a_voto import dataset
+from voto_a_voto import csvio, dataset
 
 SITE = "https://voto-a-voto.com"
 LICENSE = "CC-BY-4.0"
@@ -73,7 +71,7 @@ def ndjson(table: str, content: bytes) -> bytes:
     """One JSON object per row, keys in column order. Integers are integers, an empty cell is null, ``ciclos`` is a list."""
     types = field_types(table)
     lines = []
-    for row in csv.DictReader(io.StringIO(content.decode("utf-8"), newline="")):
+    for row in csvio.read_rows(content):
         record = {}
         for name in columns_of(table):
             cell = row[name]
@@ -90,14 +88,12 @@ def ndjson(table: str, content: bytes) -> bytes:
 
 
 def dictionary() -> bytes:
-    out = io.StringIO(newline="")
-    writer = csv.writer(out, lineterminator="\n")
-    writer.writerow(["arquivo", "campo", "tipo", "significado", "fonte"])
-    for table in TABLES:
-        for name in columns_of(table):
-            kind, meaning, source = FIELDS[(table, name)]
-            writer.writerow([table, name, kind, meaning, source])
-    return out.getvalue().encode("utf-8")
+    rows = (
+        [table, name, *FIELDS[(table, name)]]
+        for table in TABLES
+        for name in columns_of(table)
+    )
+    return csvio.write_rows(["arquivo", "campo", "tipo", "significado", "fonte"], rows)
 
 
 def readme(edition: dict) -> bytes:
