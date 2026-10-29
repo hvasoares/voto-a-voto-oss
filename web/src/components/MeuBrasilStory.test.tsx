@@ -4,7 +4,7 @@
  * address without places IS the answer (yes, and the placeholder carries data-places="0"); a shard that
  * cannot be read is the failed of the island, with the short reason and the one console line.
  */
-import { cleanup, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { noopAnalytics, setAnalytics } from '@/analytics'
@@ -27,7 +27,6 @@ beforeEach(() => {
   vi.stubGlobal('fetch', vi.fn(async (url: string) => (String(url).includes('/city/rj/cidade-exemplo.json') ? new Response(JSON.stringify(shard)) : new Response('', { status: 404 }))))
 })
 afterEach(() => {
-  cleanup()
   vi.unstubAllGlobals()
   history.replaceState(null, '', '/meu-brasil/historia/')
 })

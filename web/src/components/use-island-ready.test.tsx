@@ -1,10 +1,8 @@
 // @vitest-environment jsdom
-import { cleanup, render, waitFor } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { act, useEffect, useRef } from 'react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { useIslandReady, type IslandReady } from './use-island-ready'
-
-afterEach(cleanup)
 
 /** A probe island: renders its gate value, exposes `markReady`/`markFailed`, records the replayed taps. */
 function Probe({

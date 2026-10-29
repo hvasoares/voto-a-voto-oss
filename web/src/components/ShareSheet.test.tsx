@@ -4,7 +4,7 @@
  * the guess question has been read — from then on the picture on screen is the final one. A query view can
  * still re-fetch the shard afterwards and falls back to the pre-rendered content; the gate has no part in it.
  */
-import { cleanup, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import ShareSheet from './ShareSheet'
@@ -28,7 +28,6 @@ const props = {
 }
 
 afterEach(() => {
-  cleanup()
   vi.unstubAllGlobals()
   history.replaceState(null, '', '/rj/cidade-exemplo/compartilhar/')
   localStorage.clear()

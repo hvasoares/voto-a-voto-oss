@@ -4,7 +4,7 @@
  * named, the picker is the answer. A city whose shard fails keeps its inline message (a new pick recovers)
  * instead of the terminal failed.
  */
-import { cleanup, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import CreatorGuide from './CreatorGuide'
@@ -14,7 +14,6 @@ globalThis.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} 
 Element.prototype.scrollIntoView = () => {}
 
 afterEach(() => {
-  cleanup()
   history.replaceState(null, '', '/fale-sem-errar/')
 })
 

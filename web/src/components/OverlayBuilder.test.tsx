@@ -4,7 +4,7 @@
  * the option taps the page script kept from before hydration replay on top of the address and only then
  * does the island report yes.
  */
-import { cleanup, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it } from 'vitest'
 import OverlayBuilder from './OverlayBuilder'
@@ -13,7 +13,6 @@ import OverlayBuilder from './OverlayBuilder'
 globalThis.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} } as unknown as typeof ResizeObserver
 
 afterEach(() => {
-  cleanup()
   history.replaceState(null, '', '/overlay/')
   document.querySelector('astro-island')?.remove()
 })

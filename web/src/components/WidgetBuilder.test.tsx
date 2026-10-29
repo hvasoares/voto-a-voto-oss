@@ -17,7 +17,6 @@ globalThis.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} 
 const shard = (await loadCityShard('rj', 'cidade-exemplo'))!
 
 afterEach(() => {
-  cleanup()
   vi.unstubAllGlobals()
   history.replaceState(null, '', '/widget/')
 })

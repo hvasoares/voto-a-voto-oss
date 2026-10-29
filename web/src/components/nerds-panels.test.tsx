@@ -3,7 +3,7 @@
  * data-ready of the nerds panels (#122): both are `client:panel` upgrades of server-drawn ficha/tabela —
  * no on the server, yes once the island has run (the spec is a prop, so the upgrade IS its data).
  */
-import { cleanup, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { BarSpec } from '@/lib/nerds/escada'
@@ -46,7 +46,6 @@ const DIST: DistribuicaoSpec = {
 }
 
 afterEach(() => {
-  cleanup()
   history.replaceState(null, '', '/nerds/')
 })
 

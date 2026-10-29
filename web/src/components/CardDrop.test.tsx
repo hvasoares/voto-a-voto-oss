@@ -3,13 +3,12 @@
  * data-ready of the card drop (#122): the island needs no data of its own — no on the server, yes as soon
  * as it runs. A file it cannot reopen is the dropper's outcome (data-outcome), never the island's failed.
  */
-import { cleanup, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import CardDrop from './CardDrop'
 
 afterEach(() => {
-  cleanup()
   vi.unstubAllGlobals()
   history.replaceState(null, '', '/abrir-cartao/')
 })

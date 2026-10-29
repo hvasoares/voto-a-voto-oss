@@ -4,7 +4,7 @@
  * it), yes once the daily city is on screen; the file that cannot be read is the failed of the island, with
  * the reason and the one console line.
  */
-import { cleanup, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { GameData } from '@/lib/game'
@@ -24,7 +24,6 @@ const DATA: GameData = {
 }
 
 afterEach(() => {
-  cleanup()
   vi.unstubAllGlobals()
   localStorage.clear()
   history.replaceState(null, '', '/adivinhe/')

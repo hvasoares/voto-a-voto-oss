@@ -4,7 +4,7 @@
  * already answered (the status says so) and reports yes; a shard that cannot be read is the failed of the
  * island, with the short reason and the one console line.
  */
-import { cleanup, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { loadCityShard } from '@/lib/shard-files'
@@ -13,7 +13,6 @@ import OverlayView from './OverlayView'
 const shard = (await loadCityShard('rj', 'cidade-exemplo'))!
 
 afterEach(() => {
-  cleanup()
   vi.unstubAllGlobals()
   history.replaceState(null, '', '/overlay/tela/')
 })

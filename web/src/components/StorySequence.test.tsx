@@ -3,7 +3,7 @@
  * data-ready of the story sequence (#122): no on the server and until the row's layout has settled on the
  * card the address names (never before the first commit of the row), then yes once.
  */
-import { cleanup, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import StorySequence, { type StoryCardView } from './StorySequence'
@@ -29,7 +29,6 @@ HTMLElement.prototype.scrollTo = () => {}
 Element.prototype.scrollIntoView = () => {}
 
 afterEach(() => {
-  cleanup()
   history.replaceState(null, '', '/historia/')
 })
 
