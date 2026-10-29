@@ -12,7 +12,7 @@ Each rule is one line: the rule, why, and the file that enforces it where one ex
 - Neutral wording: no sentence favours a candidate; all words come from the catalog. Enforced by: `web/src/lib/sentences/catalog.ts`
 - Ballot-number order: two candidates are listed lower number first, whoever leads. Enforced by: `web/src/shared/ballot-order.test.ts`
 - No invented entry points: a new route, entry point, framework or layout that the ticket does not name is a blocking question, not a decision. Enforced by: review of the diff.
-- Build once: every ticket names its shared piece; use it or build it, and do not copy it. Enforced by: `web/src/shared/own-copies.test.ts`, `web/scripts/shard-plumbing-guard.test.ts`
+- Build once: every ticket names its shared piece; use it or build it, and do not copy it. Enforced by: `web/src/shared/own-copies.test.ts`, `web/scripts/shard-plumbing-guard.test.ts`, `web/scripts/map-island-guard.test.ts`
 - Footers and links: pages render the shared footer and link with `siteHref`. Enforced by: `web/src/shared/footer.test.ts`, `web/src/paths.ts`
 - Page shells: a page draws its column with `PageMain`, its head through the layouts' `DocHead`, the fixture banner with `FixtureBanner`, the screen header with `AppHeader` and the seal with `Seal`; no page writes the 430 px column class itself. Enforced by: `web/src/shared/page-shell-guard.test.ts`
 - E2E specs use the presets and wait on ready attributes, never fixed sleeps. Enforced by: `web/e2e/presets.ts`, `web/scripts/e2e-waits.ts`
