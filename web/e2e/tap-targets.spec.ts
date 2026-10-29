@@ -3,6 +3,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { fileURLToPath } from 'node:url'
 import { activateSearch, base, waitReady } from './helpers'
 import { measureMap } from './map-touch'
+import { DESKTOP } from './presets'
 import { footerLinkPagesOnDisk } from './routes-inventory'
 
 /*
@@ -237,23 +238,22 @@ test.describe('tap targets: the footer link on every page (390x844)', () => {
   }
 })
 
-/* #154: the way home sits in the page header on the wordmark's line (390x844), a 44 px target, and the page keeps no row of its own for it. */
-const HEADER_PAGES = ['rj/', 'rj/cidade-exemplo/', 'rj/cidade-exemplo/tres-ciclos/', 'brasil/', 'gerador/', 'cara-a-cara/', 'meu-brasil/', 'widget/', 'imprensa/']
-test.describe('the "Início" link shares the line with "Voto a Voto" (390x844)', () => {
-  for (const path of HEADER_PAGES) {
-    test(`${path}: same line as the wordmark, 44 px high, to Home, no second link`, async ({ page }) => {
-      await page.goto(`${base}${path}`)
-      const back = page.locator('header [data-back-home]')
-      const mark = page.locator('header:not([data-component="top-bar"]) a', { hasText: 'Voto a Voto' })
-      await expect(back).toHaveText('‹ Início')
-      await expect(back).toHaveAttribute('href', base)
-      const [b, m] = [await back.boundingBox(), await mark.boundingBox()]
-      expect(b!.height).toBeGreaterThanOrEqual(MIN)
-      expect(b!.y + b!.height / 2).toBeGreaterThan(m!.y)
-      expect(b!.y + b!.height / 2).toBeLessThan(m!.y + m!.height)
-      expect(b!.x).toBeGreaterThan(m!.x + m!.width)
-      expect(b!.x + b!.width).toBeLessThanOrEqual(390)
-      await expect(page.getByRole('link', { name: '‹ Início' })).toHaveCount(1)
-    })
-  }
-})
+/* #154: the way home is the "Voto a Voto" wordmark, a 44 px target in the app header on a phone (390x844) and in the top bar at desktop width; no page draws an "Início" link. */
+const HEADER_PAGES = ['rj/', 'rj/cidade-exemplo/', 'rj/cidade-exemplo/tres-ciclos/', 'brasil/', 'gerador/', 'cara-a-cara/', 'meu-brasil/', 'widget/', 'imprensa/', 'relatorios/', 'sobre-os-dados/', 'mapa/']
+for (const [label, wordmark, viewport] of [
+  ['390x844', 'header[data-app-header] a:has-text("Voto a Voto")', undefined],
+  ['1440x900', '[data-component="top-bar"] [data-wordmark]', DESKTOP],
+] as const) {
+  test.describe(`the wordmark is the way home, a 44 px target (${label})`, () => {
+    if (viewport) test.use({ viewport })
+    for (const path of HEADER_PAGES) {
+      test(`${path}: the wordmark links Home, is 44 px high, and no "Início" link is drawn`, async ({ page }) => {
+        await page.goto(`${base}${path}`)
+        const mark = page.locator(wordmark).first()
+        await expect(mark).toHaveAttribute('href', base)
+        expect((await mark.boundingBox())!.height).toBeGreaterThanOrEqual(MIN)
+        await expect(page.getByRole('link', { name: /Início/ })).toHaveCount(0)
+      })
+    }
+  })
+}

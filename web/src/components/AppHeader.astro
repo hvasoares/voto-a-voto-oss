@@ -10,7 +10,6 @@
  *              (the city card, the state page, the three-cycles page, the fact record), which place it inside their own `.screen`.
  * `data-app-header` marks it for the route guard (`e2e/app-header.spec.ts`).
  */
-import HeaderBack from '@/components/HeaderBack.astro'
 import { siteHref } from '@/paths'
 import HeaderSearch from '@/components/HeaderSearch.astro'
 
@@ -25,7 +24,6 @@ const { variant = 'phone' } = Astro.props
       <a class="brand" href={siteHref('/')}>Voto a Voto</a>
       <span class="app-header__sep" aria-hidden="true"></span>
       <span class="app-header__context">Presidente 2026</span>
-      <HeaderBack />
     </header>
     <div class="px-5 pb-2 pt-2 lg:hidden"><HeaderSearch /></div>
   </>
@@ -36,7 +34,6 @@ const { variant = 'phone' } = Astro.props
       <a class="inline-flex min-h-11 items-center font-serif text-step-3 text-foreground" href={siteHref('/')}>Voto a Voto</a>
       <span class="mx-3 h-4 w-px bg-border" aria-hidden="true"></span>
       <span class="text-step-1 text-muted-foreground">Presidente 2026</span>
-      <HeaderBack />
     </div>
     <HeaderSearch />
   </header>

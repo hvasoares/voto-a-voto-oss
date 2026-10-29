@@ -21,7 +21,7 @@
   padding: var(--sp-4) var(--gutter) var(--sp-3);
   border-bottom: 1px solid var(--c-rule);
 }
-.brand { font: 400 var(--step-3) var(--font-serif); color: var(--c-ink); }
+.brand { display: inline-flex; align-items: center; min-height: var(--min-tap); font: 400 var(--step-3) var(--font-serif); color: var(--c-ink); }
 .app-header__sep { width: 1px; height: 18px; background: var(--c-rule); }
 .app-header__context { font-size: var(--step-1); color: var(--c-muted); }
 
