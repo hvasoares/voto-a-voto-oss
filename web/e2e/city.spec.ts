@@ -11,6 +11,8 @@ const city = `${base}rj/cidade-exemplo/`
 // The card is two columns from 1024 px (#52): the figures in [data-city-card], the sentence beside it in [data-city-words].
 const card = (page: Page) => page.locator('[data-city-card] [data-view]:not([hidden]), [data-city-words] [data-view]:not([hidden])')
 const figures = (page: Page) => page.locator('[data-city-card] [data-view]:not([hidden])')
+/** The answer of the question is hidden until a guess (#149): tap "Sim" to see it. */
+const answerQuestion = (page: Page) => page.getByRole('button', { name: 'Sim', exact: true }).click()
 const cardText = async (page: Page) => (await card(page).allInnerTexts()).join(' ').replace(/\s+/g, ' ')
 
 /** The arc of Cidade Exemplo in the fixture (round-2 winners of 2018, 2022 and 2026). */
@@ -65,6 +67,7 @@ test.describe('city card: fixture route is the frame', () => {
     await page.goto(`${city}?turno=1`)
     await waitReady(page)
     await page.waitForLoadState('networkidle')
+    await answerQuestion(page)
     await expect(page.locator('.city-arc__pill:visible')).toHaveText(ARC_LABEL)
     await page.getByRole('link', { name: '2018', exact: true }).click()
     await expect(page.locator('.city-arc__pill:visible')).toHaveText(ARC_LABEL)
@@ -131,6 +134,8 @@ test.describe('city card: fixture route is the frame', () => {
   })
   test('a city with no earlier cycle says which cycles are missing', async ({ page }) => {
     await page.goto(`${base}mt/boa-esperanca-do-norte/`)
+    await waitReady(page)
+    await answerQuestion(page)
     await expect(page.locator('.city-arc__pill:visible')).toHaveText('Sem dados do 2º turno de 2018 e 2022')
   })
   test('the fixture banner is shown for fixture data', async ({ page }) => {
@@ -259,7 +264,7 @@ test.describe('city card without JavaScript', () => {
     await expect(page.locator('[data-margin]:visible')).toHaveText('Faltaram 640 votos para virar: cabem 49 vezes nos 31.566 que não votaram.')
     // The arc label (#41) and its not-the-cause line are in the page too, readable without scripts.
     await expect(page.locator('.city-arc__pill:visible')).toHaveText(ARC_LABEL)
-    await expect(page.locator('.city-arc__note:visible')).toHaveText('Descreve a sequência, não a causa.')
+    await expect(page.locator('.city-arc .city-arc__note:visible')).toHaveText('Descreve a sequência, não a causa.')
     await expect(page.locator('[data-view][hidden]')).toHaveCount(15) // five other views, in each of the three columns
   })
 })

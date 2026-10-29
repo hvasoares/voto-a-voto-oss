@@ -5,7 +5,7 @@ import { PHONE, noJs } from './presets'
 /*
  * Question before the answer (#44, the Sketch frame "2b Pergunta antes da resposta"), 390x844, fixture Cidade Exemplo:
  * the arc of the fixture city is "mudou de lado em 2022", so the question asks about 2022 and the right guess is "Sim".
- * The answer is in the page text; the guess is optional, kept in this browser only and never sent anywhere.
+ * The answer stays out of the page (and the accessibility tree) until the visitor answers; the choice is kept per city in this browser only and never sent anywhere (#149).
  */
 const city = `${base}rj/cidade-exemplo/`
 const KEY = 'voto-a-voto:guess'
@@ -16,7 +16,7 @@ const ready = async (page: Page) => {
 }
 
 test.describe('city page: question before the answer', () => {
-  test('the question and its answer are in the first screen, with no guess and with no scripts', async ({ browser }) => {
+  test('with no scripts the answer is visible and the page says the question needs scripts', async ({ browser }) => {
     const context = await browser.newContext({ ...noJs(), viewport: PHONE, locale: 'pt-BR' })
     const page = await context.newPage()
     await page.goto(`${city}?turno=1`)
@@ -28,40 +28,43 @@ test.describe('city page: question before the answer', () => {
       const box = (await el.boundingBox())!
       expect(box.y + box.height).toBeLessThanOrEqual(844)
     }
+    await expect(page.getByText('A pergunta precisa de scripts para ser feita').first()).toBeVisible()
     // no guess buttons without scripts: the answer needs none
     await expect(page.locator('.city-q__btn')).toHaveCount(0)
     await context.close()
   })
 
-  test('with scripts the answer is where it was and the two buttons come before it', async ({ page }) => {
+  test('with scripts the two buttons come first and the answer is neither visible nor in the accessibility tree until one is tapped', async ({ page }) => {
     await page.goto(`${city}?turno=1`)
     await ready(page)
     await expect(page.locator('.city-q__btn')).toHaveText(['Sim', 'Não'])
-    await expect(page.locator('[data-question] > div:not(.city-arc) > .city-arc__note')).toHaveText('Palpite opcional · fica só no seu navegador')
-    const order = await page.evaluate(() => [...document.querySelectorAll('.city-q__q, .city-q__btn, .city-arc')].map((e) => e.getBoundingClientRect().top))
-    expect(order).toEqual([...order].sort((a, b) => a - b))
-    const answer = (await page.locator('.city-arc').boundingBox())!
-    expect(answer.y + answer.height).toBeLessThanOrEqual(844)
+    await expect(page.locator('.city-arc')).toBeHidden()
+    expect(await page.locator('[data-question]').ariaSnapshot()).not.toContain('Mudou de lado')
+    await expect(page.locator('[data-question] > div:not(.city-arc) > .city-arc__note')).toHaveText('Escolha para ver a resposta · fica só no seu navegador')
   })
 
-  test('a right guess and a wrong one say what they matched, with no praise and no shame; the guess stays in this browser', async ({ page }) => {
+  test('a wrong guess says what it matched, with no shame; the answer shows and the choice is kept per city', async ({ page }) => {
+    await page.goto(`${city}?turno=1`)
+    await ready(page)
+    await page.getByRole('button', { name: 'Não', exact: true }).click()
+    await expect(page.locator('[data-question] .city-margin')).toHaveText('Palpite: Não. Resposta: Sim. O palpite estava errado.')
+    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Mudou de lado em 2022')
+    expect(await page.locator('[data-question]').ariaSnapshot()).toContain('Mudou de lado')
+    expect(await page.evaluate((k) => localStorage.getItem(k), KEY)).toBe('{"rj/cidade-exemplo":"no"}')
+    // the choice is final: the buttons are off, and a reload shows the answered state
+    await expect(page.getByRole('button', { name: 'Sim', exact: true })).toBeDisabled()
+    await page.reload()
+    await ready(page)
+    await expect(page.getByRole('button', { name: 'Não', exact: true })).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Mudou de lado em 2022')
+    await expect(page.locator('[data-question] .city-margin')).toContainText('O palpite estava errado.')
+  })
+
+  test('a right guess says so', async ({ page }) => {
     await page.goto(`${city}?turno=1`)
     await ready(page)
     await page.getByRole('button', { name: 'Sim', exact: true }).click()
     await expect(page.locator('[data-question] .city-margin')).toHaveText('Palpite: Sim. Resposta: Sim. O palpite estava certo.')
-    expect(await page.evaluate((k) => localStorage.getItem(k), KEY)).toBe('{"rj/cidade-exemplo":"yes"}')
-    await page.getByRole('button', { name: 'Não', exact: true }).click()
-    await expect(page.locator('[data-question] .city-margin')).toHaveText('Palpite: Não. Resposta: Sim. O palpite estava errado.')
-    await expect(page.getByRole('button', { name: 'Não', exact: true })).toHaveAttribute('aria-pressed', 'true')
-    // the answer did not move or change
-    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Mudou de lado em 2022')
-    // a reload remembers it; tapping the same button again takes it back
-    await page.reload()
-    await ready(page)
-    await expect(page.getByRole('button', { name: 'Não', exact: true })).toHaveAttribute('aria-pressed', 'true')
-    await page.getByRole('button', { name: 'Não', exact: true }).click()
-    await expect(page.locator('[data-question] .city-margin')).toBeHidden()
-    expect(await page.evaluate((k) => localStorage.getItem(k), KEY)).toBe('{}')
   })
 
   test('guessing sends nothing: no request after the first tap, and every request is a GET of the site itself', async ({ page, baseURL }) => {
@@ -72,7 +75,6 @@ test.describe('city page: question before the answer', () => {
     const before = seen.length
     await page.getByRole('button', { name: 'Sim', exact: true }).click()
     await expect(page.locator('[data-question] .city-margin')).toBeVisible()
-    await page.getByRole('button', { name: 'Não', exact: true }).click()
     await page.waitForLoadState('networkidle')
     expect(seen.slice(before)).toEqual([])
     expect(violations(seen, [new URL(baseURL!).origin])).toEqual([])
