@@ -1,23 +1,17 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 import { base } from './helpers'
+import { A11Y_ROUTES as ROUTES } from './routes-inventory'
 
 /*
- * Screen-reader pass of ticket #19, automated: axe's free checks on the three audited routes plus
+ * Screen-reader pass of ticket #19, automated: axe's free checks on a sample of routes plus
  * the home. The static (pre-hydration) markup is what axe sees here — the islands render their
  * whole body server-side, so tabs, tiles, table and legend are all present without JavaScript.
  * "Don't chase zero-everything": only the violations the pages can actually fix are kept in scope
- * (the skip list below names each disabled rule and why).
+ * (the skip list below names each disabled rule and why). The sample lives in e2e/routes-inventory.ts
+ * (A11Y_ROUTES, #110): sampled on purpose, and a listed URL that no page answers is a stale entry
+ * the route-inventory guard fails on.
  */
-const ROUTES = [
-  { route: '/', name: 'home' },
-  { route: 'rj/cidade-exemplo/', name: 'city card' },
-  { route: 'mapa/', name: 'state tile map' },
-  { route: 'relatorios/cidades-que-viraram/', name: 'report' },
-  { route: 'mapa/ficaram-em-casa/', name: 'stay-home map' },
-  { route: 'tres-ciclos/rj/', name: 'state season (#42, #43)' },
-  { route: 'rj/cidade-exemplo/tres-ciclos/', name: 'city three cycles with the replay (#46)' },
-]
 
 test.describe('a11y: axe on the audited routes', () => {
   for (const { route, name } of ROUTES) {

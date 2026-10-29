@@ -1,7 +1,9 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page } from '@playwright/test'
+import { fileURLToPath } from 'node:url'
 import { activateSearch, base, waitReady } from './helpers'
 import { measureMap } from './map-touch'
+import { footerLinkPagesOnDisk } from './routes-inventory'
 
 /*
  * #88: nothing a fingertip has to hit is smaller than 44 CSS px, on the Home, in the metrics notice, in the footer lines and on
@@ -217,15 +219,12 @@ async function rowEdge(page: Page): Promise<[number, number]> {
   })
 }
 
-/* #87: the "Sobre os dados ›" link of EVERY page footer is a 44 px target (one shared rule in screens.css, not 30 edits). The pages whose
-   footer link is the keyboard-only `.source-footer__about` (City card, its three-cycle page, the fact pages) and the share sheets (the page behind
-   is inert) are not here: they carry no visible footer link. */
-const FOOTER_PAGES = [
-  'rj/', 'rj/resumo/', 'rj/historia/', 'mapa/', 'mapa/rj/', 'mapa/virada/', 'brasil/', 'relatorios/', 'relatorios/comparecimento/', 'relatorios/maiores-viradas/',
-  'relatorios/cidades-que-viraram/', 'relatorios/disputas-mais-apertadas/', 'relatorios/votos-ganhos-e-perdidos/', 'relatorios/como-cada-grupo-votou/',
-  'comparar/2022/', 'tres-ciclos/rj/', 'cara-a-cara/', 'meu-brasil/', 'meu-brasil/historia/', 'meu-brasil/adesivo/', 'widget/', 'gerador/', 'abrir-cartao/',
-  'compartilhar/', 'fale-sem-errar/', 'adivinhe/', 'overlay/', 'dados-para-nerds/',
-]
+/* #87: the "Sobre os dados ›" link of EVERY page footer is a 44 px target (one shared rule in screens.css, not 30 edits). The list is
+   derived (#110): every page template minus the reasoned FOOTER_EXCLUSIONS of e2e/routes-inventory.ts (the pages whose footer link is
+   the keyboard-only `.source-footer__about` — City card, its three-cycle page, the fact pages — the share sheets whose page behind is
+   inert, and the embeds/fragments/posters with no shared footer at all), each at its fixture URL. The route-inventory guard fails when
+   a page grows that no exclusion accounts for. */
+const FOOTER_PAGES = footerLinkPagesOnDisk(fileURLToPath(new URL('..', import.meta.url)))
 test.describe('tap targets: the footer link on every page (390x844)', () => {
   for (const path of FOOTER_PAGES) {
     test(`${path}: "Sobre os dados" in the footer is 44 px high`, async ({ page }) => {
