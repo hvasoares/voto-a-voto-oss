@@ -18,6 +18,8 @@ import { displayName } from '@/shared/city-search'
 import { CYCLES } from '@/shared/city-model'
 import { DEFAULT_TURNO, buildCycleBlock } from '@/slots/city-cycles/cycles-model'
 import { roundPanel } from '@/slots/city-cycles/cycles-view'
+import AppHeader from '@/components/AppHeader.astro'
+import FixtureBanner from '@/components/FixtureBanner.astro'
 
 export async function getStaticPaths() {
   return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug } }))
@@ -38,17 +40,12 @@ for (const turno of [1, 2] as const) {
   for (const ano of CYCLES) blocks.push(buildCycleBlock({ ano, turno, city, result: cityShardResult(shard, ano, turno) }))
   panels.push(roundPanel({ turno, subtitle: `Presidente 2018, 2022 e 2026 · ${name} (${turno}º turno)`, blocks, hidden: turno !== DEFAULT_TURNO }))
 }
-const banner = fixture ? 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS'.replace(' · ', '  ·  ') : undefined
 const other = DEFAULT_TURNO === 2 ? 1 : 2
 ---
 <Base title={`Três ciclos · ${name} · Voto a Voto`}>
   <div class="screen cycles-page">
-    <header class="app-header">
-      <a class="brand" href={href('/')}>Voto a Voto</a>
-      <span class="app-header__sep" aria-hidden="true"></span>
-      <span class="app-header__context">Presidente 2026</span>
-    </header>
-    {banner && <div class="banner" role="note">{banner}</div>}
+    <AppHeader />
+    <FixtureBanner show={fixture} class="banner" role="note" wideSeparator />
     <main class="page__main" id="main">
       <a class="back" href={href('/')}>‹ Início</a>
       <h1 class="page__title">Três ciclos</h1>

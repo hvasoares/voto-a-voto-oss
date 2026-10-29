@@ -9,6 +9,7 @@ import { colors } from '@/shared/tokens'
 import { message, DEFAULT_VOICE } from '@/lib/sentences/catalog'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import FixtureBanner from '@/components/FixtureBanner.astro'
 
 /*
  * Screen 12, "Como cada grupo votou" (ticket #15). Static, like /sobre-os-dados/: the whole report
@@ -20,7 +21,6 @@ const { report, labels } = await loadCohortData()
 // Fact records (#62): the counts are counts of CITIES; the page says so and what it does not say (fact.cohort.limits).
 const { calc, seal } = await reportFacts('relatorios/como-cada-grupo-votou', 'grupos')
 const manifest = JSON.parse(readFileSync(resolve(dataDir(), 'manifest.json'), 'utf8')) as { fixture?: boolean; note?: string }
-const banner = manifest.fixture ? 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS' : undefined
 
 const fmt = formatInt
 const pct = (x: number): string => `${String(Number(x.toFixed(1))).replace('.', ',')}%`
@@ -72,7 +72,7 @@ const totalLine = `${fmt(report.totals.cities2026)} cidades do 2º turno de 2026
 ---
 <ReportLayout title="Como cada grupo votou · Voto a Voto" heading="Como cada grupo votou" page="cohorts" seal={seal} bottomPad={false} aboutLabel="Sobre os dados">
     <Fragment slot="banner">
-      {banner && <p class="mt-2 border border-border bg-secondary px-3 py-2 text-step-2 font-bold" data-component="fixture-banner">{banner}</p>}
+      <FixtureBanner show={manifest.fixture} tag="p" class="mt-2 border border-border bg-secondary px-3 py-2 text-step-2 font-bold" data-component="fixture-banner" />
     </Fragment>
     <p class="mt-[5px]" data-component="lead">Presidente 2026: cidades agrupadas pelo vencedor do 2º turno em 2018 e 2022, e o resultado de 2026 em cada grupo.</p>
 

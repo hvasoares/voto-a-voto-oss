@@ -22,6 +22,7 @@ import { nerdsPath } from '@/lib/nerds/paths'
 import { placesWithShards } from '@/lib/nerds/shards'
 import { barText } from '@/lib/brasil-label'
 import { brasilBlanks, brasilLegend, brasilRegionShare, brasilShareLabel, brasilTurnout, brasilVotes } from '@/lib/sentences/brasil'
+import { fixtureBannerText } from '@/shared/fixture-banner'
 
 interface Props {
   /** Behind the share sheet: inert and aria-hidden, no landmark ids, nothing to read twice. */
@@ -60,13 +61,8 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
   aria-hidden={backdrop ? 'true' : undefined}
   inert={backdrop}
 >
-  {
-    fixture && (
-      <p role="note" class="-mx-5 -mt-16 mb-10 lg:-mt-8 lg:mb-6 bg-[var(--c-flag)] px-[var(--gutter)] py-2 text-center font-bold text-step-1 text-[var(--c-ink)]">
-        EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS
-      </p>
-    )
-  }
+  {/* The banner's words are the catalog's; the element stays here: this page's scoped-style marker (data-astro-cid) prints bare only on an element of its own template. */}
+  {fixture && <p role="note" class="-mx-5 -mt-16 mb-10 lg:-mt-8 lg:mb-6 bg-[var(--c-flag)] px-[var(--gutter)] py-2 text-center font-bold text-step-1 text-[var(--c-ink)]">{fixtureBannerText()}</p>}
   <p class="mb-3 print:hidden">
     <a class="-ml-2 inline-flex min-h-12 min-w-[116px] items-center rounded-[var(--radius)] border border-border bg-background px-4 text-step-2 text-[var(--c-ink)] lg:ml-0 lg:min-h-8 lg:min-w-0 lg:border-0 lg:px-0 lg:text-step-1 lg:text-primary" href={href('/')}>‹ Início</a>
   </p>

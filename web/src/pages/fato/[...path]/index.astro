@@ -15,6 +15,8 @@ import { currentEdition } from '@/lib/editions-load'
 import { editionLabel, editionPath, releasePath } from '@/lib/editions'
 import { registerBootScript } from '@/lib/sentences/register-store'
 import { message } from '@/lib/sentences/catalog'
+import AppHeader from '@/components/AppHeader.astro'
+import FixtureBanner from '@/components/FixtureBanner.astro'
 
 export async function getStaticPaths() {
   return (await loadFactPages()).map((p) => ({ params: { path: `${p.scope}/${p.page}` }, props: { fp: p } }))
@@ -27,7 +29,6 @@ const href = siteHref
 const std = (key: Parameters<typeof message>[1], params?: Record<string, string | number>) => message({ locale: 'pt-BR', register: 'standard' }, key, params)
 const edition = await currentEdition()
 const seal = await sealOf(fp)
-const banner = fp.fixture ? 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS'.replace(' · ', '  ·  ') : undefined
 const sources = [...new Map(facts.map((f) => [f.source!.url + f.source!.name, f.source!])).values()]
 const methods = [...new Map(facts.flatMap((f) => (f.method ? [[f.method.href, f.method] as const] : []))).values()]
 const title = `${std('fact.title')} · ${fp.title} · Voto a Voto`
@@ -35,12 +36,8 @@ const title = `${std('fact.title')} · ${fp.title} · Voto a Voto`
 <Base title={title}>
   <div class="screen fact-page">
     <script is:inline set:html={registerBootScript} />
-    <header class="app-header">
-      <a class="brand" href={href('/')}>Voto a Voto</a>
-      <span class="app-header__sep" aria-hidden="true"></span>
-      <span class="app-header__context">Presidente 2026</span>
-    </header>
-    {banner && <div class="banner" role="note">{banner}</div>}
+    <AppHeader />
+    <FixtureBanner show={fp.fixture} class="banner" role="note" wideSeparator />
     <main class="page__main" id="main">
       <a class="back" href={href(fp.back.path)}>{fp.back.label}</a>
       <h1 class="page__title">{std('fact.title')}</h1>

@@ -27,6 +27,8 @@ import { CURIOSITIES_PAGE, LATEST_CYCLE } from '@/lib/facts/model'
 import { OLDER_ANCHORS } from '@/lib/facts/other'
 import { getFactPage } from '@/lib/facts/pages'
 import { defaultView, viewHref, viewId, type View } from '@/slots/city/city-view'
+import AppHeader from '@/components/AppHeader.astro'
+import FixtureBanner from '@/components/FixtureBanner.astro'
 
 interface Props {
   uf: string
@@ -73,7 +75,6 @@ const linksOf = (page: string) => {
   return factLinks(cityFacts.pages.get(page) ?? [], `the city card /${uf}/${slug}/ (${page})`, base)
 }
 
-const banner = fixture ? 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS'.replace(' · ', '  ·  ') : undefined
 const title = `${name} · ${ufLabel(city.uf)}`
 const sub = overseas ? 'Voto no exterior' : `${fixture ? 'Município fictício' : 'Município'} · ${ufLabel(city.uf)}`
 const shareBase = href(`/${uf}/${slug}/compartilhar/`)
@@ -81,15 +82,11 @@ const footer = fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: T
 ---
 <div class="screen city-page">
   <script is:inline set:html={registerBootScript} />
-  <header class="app-header">
-    <a class="brand" href={href('/')}>Voto a Voto</a>
-    <span class="app-header__sep" aria-hidden="true"></span>
-    <span class="app-header__context">Presidente 2026</span>
-  </header>
+  <AppHeader />
   <main class="page__main" id={backdrop ? undefined : 'main'}>
     {/* One column on a phone; from 1024 px two (#52): the card on the left, the sentence, Compartilhar and the links on the right. */}
     <div class="city-body">
-      {banner && <div class="banner" role="note">{banner}</div>}
+      <FixtureBanner show={fixture} class="banner" role="note" wideSeparator />
       <div class="city-left">
         <a class="back" href={href('/')}>‹ Início</a>
         <h1 class="page__title">{name}</h1>
