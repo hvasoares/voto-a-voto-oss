@@ -21,6 +21,7 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { withBuildLock } from './build-lock'
 
 const here = dirname(fileURLToPath(import.meta.url))
 export const webRoot = resolve(here, '..')
@@ -34,11 +35,13 @@ export const DECOY_COLOUR = '123457'
 
 const build = (outDir: string): void => {
   rmSync(outDir, { recursive: true, force: true })
-  execFileSync(process.execPath, [astroBin, 'build'], {
-    cwd: webRoot,
-    env: { ...process.env, OUT_DIR: outDir },
-    stdio: ['ignore', 'pipe', 'pipe'],
-  })
+  withBuildLock(webRoot, () =>
+    execFileSync(process.execPath, [astroBin, 'build'], {
+      cwd: webRoot,
+      env: { ...process.env, OUT_DIR: outDir },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    }),
+  )
 }
 
 /** The bytes of the shared global stylesheet in a build, plus its sha256. */
