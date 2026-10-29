@@ -4,6 +4,10 @@ on:
   pull_request:
 
 jobs:
+  # pytest. Hermético num runner limpo: uv sync --frozen lê o uv.lock; os testes marcados
+  # network_cache pulam sem .cache/ (pyproject.toml) e o "-ra" imprime os pulados, então um
+  # mass-skip silencioso aparece no log. Versão do Python nomeada uma vez: vem do
+  # requires-python (>= 3.12) do pyproject.toml via `uv python install`. Local: `make pytest`.
   python:
     runs-on: ubuntu-latest
     steps:
@@ -11,9 +15,12 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
-      - run: uv run pytest
+      - run: uv python install
+      - run: uv sync --frozen
+      - run: uv run pytest -ra
 
-  web:
+  # typecheck + vitest (os testes unitários do web). Local: `make typecheck web-test`.
+  web-unit:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -29,7 +36,11 @@ jobs:
       - run: npm run typecheck
       - run: npm test
 
-  perf:
+  # e2e base "/" + check:perf. O webServer do Playwright constrói o site (OUT_DIR default dist) e o
+  # check:perf mede ESSE build — o build de FIXTURE (base "/", dados locais de web/fixtures/data, modo
+  # local). Builds de dados reais não passam pelo orçamento: são maiores e não são construídos no CI (#107).
+  # Local: `make browser e2e perf`.
+  e2e-root:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -42,33 +53,33 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
       - run: npm ci
-      # The budget script reads the built site out of dist/ and only passes on the base `/` build (#107).
-      - run: npm run build
-      - run: npm run check:perf
+      - run: npx playwright install --with-deps chromium
+      # Behaviour only: route smoke, scoped search, 390 px layout. Screenshot captures are per checkpoint and not run in CI.
+      - run: npm run test:e2e
+      # if: always(): roda mesmo com e2e vermelho. Lê o web/dist que o webServer construiu acima (o script
+      # lança "route not built" se dist ou uma rota faltar, então não passa no vácuo) e o output — medido /
+      # orçamento por métrica — vai para o resumo da run (a margem visível no verde). Local: `make perf`.
+      - name: check:perf on the fixture build (base /)
+        if: always()
+        run: npm run check:perf 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-results-root
+          path: web/test-results
 
-  e2e:
+  # e2e base "/voto-a-voto-oss/" — a segunda passada precisa do próprio build (SITE_BASE fixa os caminhos
+  # no bundle). Endereço de doação placeholder para exercitar o link; a base "/" roda sem ele.
+  # E2E_PORT_OFFSET=1 desloca a porta derivada como em `make e2e-pages` (#124). Local: `make e2e-pages`.
+  e2e-pages:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: web
-    strategy:
-      fail-fast: false
-      matrix:
-        # SITE_BASE is baked into the build, so each base pass needs its own build; the webServer in
-        # playwright.config.ts builds with this job's env. The pages leg sets a placeholder donation
-        # address so that pass exercises the link; the root leg has none.
-        include:
-          - label: root
-            site-base: /
-          - label: pages
-            site-base: /voto-a-voto-oss/
-            donation-url: https://doacao.example.test/apoie
-            # The second base pass shifts the derived e2e port (#124), like `make e2e-pages`.
-            e2e-port-offset: '1'
     env:
-      SITE_BASE: ${{ matrix.site-base }}
-      PUBLIC_DONATION_URL: ${{ matrix.donation-url }}
-      E2E_PORT_OFFSET: ${{ matrix.e2e-port-offset }}
+      SITE_BASE: /voto-a-voto-oss/
+      PUBLIC_DONATION_URL: https://doacao.example.test/apoie
+      E2E_PORT_OFFSET: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -83,5 +94,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: playwright-results-${{ matrix.label }}
+          name: playwright-results-pages
           path: web/test-results

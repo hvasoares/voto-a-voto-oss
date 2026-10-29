@@ -1,5 +1,5 @@
 .PHONY: test tse-scrape data data-outlines data-nerds data-2018 data-2022 data-2026 data-check publish-edition rollback-edition nonvoters deploy \
-        install typecheck web-test browser e2e e2e-port e2e-pages e2e-real build-deploy ci web-install
+        install typecheck web-test browser e2e e2e-port e2e-pages e2e-real build-deploy ci web-install pytest perf
 
 test:
 	uv run pytest
@@ -52,6 +52,20 @@ nonvoters:
 web-install install:
 	npm --prefix web ci
 
+# ci.yml (job python): uv python install + uv sync --frozen + uv run pytest -ra. A versão do Python é
+# nomeada uma vez: vem do requires-python do pyproject.toml; --frozen lê o uv.lock. O -ra imprime os
+# testes pulados (network_cache sem .cache/), então um mass-skip silencioso aparece no log.
+pytest:
+	uv python install
+	uv sync --frozen
+	uv run pytest -ra
+
+# ci.yml (job e2e-root): npm run check:perf. Mede o build de FIXTURE (base "/", dados de web/fixtures/data)
+# lendo web/dist — precisa que ele exista (o próprio Playwright o constrói na passada `e2e`, ou rode
+# `npm --prefix web run build` antes). Builds de dados reais não passam pelo orçamento.
+perf:
+	npm --prefix web run check:perf
+
 # ci.yml: npm run typecheck
 typecheck:
 	npm --prefix web run typecheck
@@ -89,8 +103,8 @@ e2e-real:
 build-deploy:
 	DATA_DIR=../data SITE_BASE=/ SITE_ORIGIN=https://voto-a-voto.com npm --prefix web run build
 
-# ci.yml inteiro, passo a passo, na mesma ordem.
-ci: typecheck web-test browser e2e e2e-pages
+# ci.yml inteiro, passo a passo, na mesma ordem (python → web-unit → e2e-root → e2e-pages).
+ci: pytest typecheck web-test browser e2e perf e2e-pages
 
 # Publica: empurra main para origin (voto-a-voto-oss); o GitHub Actions constrói e publica o site no Pages.
 deploy:
