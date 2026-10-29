@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, maybeThrottleCpu, violations } from './helpers'
 import { noJs } from './presets'
+import { shareMock } from './share-mock'
 
 /*
  * Meu Brasil (#27) at 390x844 over the fixture dataset: up to three places in the address, one card, reload reproduces it, the share
@@ -10,13 +11,7 @@ const route = (q = '') => `${base}meu-brasil/${q}`
 const THREE = '?mora=rj/cidade-exemplo&vota=sp/cidade-exemplo-paulista&nasceu=mt/boa-esperanca-do-norte'
 
 async function open(page: Page, q = '', share: 'files' | 'none' = 'none') {
-  await page.addInitScript((m) => {
-    const w = window as unknown as { __shares: unknown[] }
-    w.__shares = []
-    if (m === 'none') return void Object.defineProperty(navigator, 'share', { value: undefined, configurable: true })
-    Object.defineProperty(navigator, 'canShare', { configurable: true, value: () => true })
-    Object.defineProperty(navigator, 'share', { configurable: true, value: (d: ShareData) => (w.__shares.push({ files: (d.files ?? []).map((f) => f.name), text: d.text }), Promise.resolve()) })
-  }, share)
+  await shareMock(page).install(share === 'files' ? 'shares' : 'absent')
   await page.goto(route(q))
   await page.waitForFunction(() => document.querySelector('[data-meu-brasil]'))
 }
@@ -82,9 +77,8 @@ test.describe('Meu Brasil', () => {
     await open(page, THREE, 'files')
     await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
     await page.getByRole('button', { name: 'Compartilhar o cartão' }).click()
-    await expect.poll(() => page.evaluate(() => (window as unknown as { __shares: unknown[] }).__shares.length)).toBe(1)
-    const [s] = await page.evaluate(() => (window as unknown as { __shares: { files: string[]; text: string }[] }).__shares)
-    expect(s!.files).toEqual(['voto-a-voto-meu-brasil.png'])
+    const [s] = await shareMock(page).waitForCalls(1)
+    expect(s!.files.map((f) => f.name)).toEqual(['voto-a-voto-meu-brasil.png'])
     expect(s!.text).toContain(`https://votoavoto.exemplo.br${base}meu-brasil/${THREE}`)
     expect(s!.text).toContain('a parcela do eleitorado que não votou foi de')
   })

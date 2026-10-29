@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests } from './helpers'
 import { dailyIndex, type GameData } from '../src/lib/game'
 import { viewport } from './presets'
+import { shareMock } from './share-mock'
 
 /*
  * "Adivinhe a cidade" (#69) and its end (#70) over the fixture dataset (7 cities), at 390x844 and 1440x900, with the clock fixed so the daily city is known: the
@@ -20,15 +21,7 @@ async function secretOf(page: Page) {
 
 async function open(page: Page, opts: { share?: boolean } = {}) {
   await page.clock.install({ time: new Date(DAY) })
-  await page.addInitScript((share) => {
-    if (share === false) Object.defineProperty(navigator, 'share', { value: undefined, configurable: true })
-    if (share === true) {
-      const w = window as unknown as { __shares: string[] }
-      w.__shares = []
-      Object.defineProperty(navigator, 'canShare', { configurable: true, value: () => true })
-      Object.defineProperty(navigator, 'share', { configurable: true, value: (d: ShareData) => (w.__shares.push(d.text ?? ''), Promise.resolve()) })
-    }
-  }, opts.share)
+  if (opts.share !== undefined) await shareMock(page).install(opts.share ? 'shares' : 'absent')
   await page.goto(game)
   await expect(page.locator('[data-game]')).toBeVisible()
 }
@@ -110,8 +103,7 @@ test.describe('Adivinhe a cidade', () => {
     const { secret } = await secretOf(a)
     await guess(a, secret[2])
     await a.locator('[data-share]').click()
-    await expect.poll(() => a.evaluate(() => (window as unknown as { __shares: string[] }).__shares.length)).toBe(1)
-    const shared = await a.evaluate(() => (window as unknown as { __shares: string[] }).__shares[0]!)
+    const shared = (await shareMock(a).waitForCalls(1))[0]!.text!
     expect(shared).toContain(`https://votoavoto.exemplo.br${base}adivinhe/`)
     expect(shared).toContain('Adivinhe a cidade nº 300 · 1/6')
     expect(shared).not.toContain(secret[2])

@@ -2,6 +2,7 @@ import { test } from '@playwright/test'
 import { capture } from './capture'
 import { base } from './helpers'
 import { viewport, acknowledgeNotice } from './presets'
+import { shareMock } from './share-mock'
 
 /*
  * Gate 2 of the desktop tickets (G10): the fixture-state render of each screen at 1440x900 (and the phone-width and tablet
@@ -37,7 +38,7 @@ for (const [name, path] of Object.entries(SCREENS)) {
       await page.setViewportSize(viewport(width, width === 390 ? 844 : 900))
       // The frames are the first-visit-free state and a browser without the Web Share API ("3 Compartilhar (desktop)").
       await acknowledgeNotice(page)
-      if (name === 'compartilhar-sem-share') await page.addInitScript(() => Object.defineProperty(navigator, 'share', { value: undefined, configurable: true }))
+      if (name === 'compartilhar-sem-share') await shareMock(page).install('absent')
       await page.goto(base + path)
       await page.waitForTimeout(300)
       await capture(page, { dir: 'desktop', name: `${name}-${width}`, fullPage: process.env.FULL === '1', sidecar: false })

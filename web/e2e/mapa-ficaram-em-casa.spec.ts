@@ -6,6 +6,7 @@ import { diskSource } from '../src/data/node'
 import { formatShare, stayHomeRows } from '../src/lib/stay-home'
 import { base, collectRequests, violations } from './helpers'
 import { useNoJs } from './presets'
+import { shareMock, type ShareMode } from './share-mock'
 
 /*
  * #32 "Ficaram em casa" at 390x844, fixture dataset (states rj, sp, mt; an overseas post `zz` in the data). The expected percentages are
@@ -151,49 +152,28 @@ test.describe('Entry point', () => {
 })
 
 /** navigator.share is stubbed: a real system sheet cannot be driven here. */
-async function openShare(page: Page, mode: 'files' | 'none', route = PATH) {
-  await page.addInitScript((m) => {
-    const w = window as unknown as { __shares: unknown[] }
-    w.__shares = []
-    if (m === 'none') {
-      Object.defineProperty(navigator, 'share', { value: undefined, configurable: true })
-      Object.defineProperty(navigator, 'canShare', { value: undefined, configurable: true })
-      return
-    }
-    Object.defineProperty(navigator, 'canShare', { configurable: true, value: () => true })
-    Object.defineProperty(navigator, 'share', {
-      configurable: true,
-      value: (d: ShareData) => {
-        const rec: Record<string, unknown> = { files: (d.files ?? []).map((f) => ({ name: f.name, type: f.type })), text: d.text }
-        w.__shares.push(rec)
-        const f = d.files?.[0]
-        if (f) void f.arrayBuffer().then((b) => (rec.png = { w: new DataView(b).getUint32(16), signature: [...new Uint8Array(b, 0, 8)].join(',') }))
-        return Promise.resolve()
-      },
-    })
-  }, mode)
+async function openShare(page: Page, mode: ShareMode, route = PATH) {
+  await shareMock(page).install(mode)
   await page.goto(route)
   // the share island loads when it scrolls into view (client:visible), so the first load stays light
   await page.locator('[data-stayhome-share]').scrollIntoViewIfNeeded()
   await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
 }
-const shares = (page: Page) => page.evaluate(() => (window as unknown as { __shares: { files: { name: string; type: string }[]; text: string; png?: { w: number; signature: string } }[] }).__shares)
 
 test.describe('Ficaram em casa: the share of the view', () => {
   test('shares a PNG of the view and the link through the system sheet, inside the tap', async ({ page }) => {
-    await openShare(page, 'files', `${PATH}2022-2/`)
+    await openShare(page, 'shares', `${PATH}2022-2/`)
     await page.getByRole('button', { name: 'Compartilhar o mapa' }).click()
-    await expect.poll(async () => (await shares(page))[0]?.png).toBeTruthy()
-    const [s] = await shares(page)
+    const [s] = await shareMock(page).waitForCalls(1)
     expect(s!.files[0]).toMatchObject({ name: 'voto-a-voto-ficaram-em-casa-2022-2.png', type: 'image/png' })
-    expect(s!.png).toEqual({ w: 1080, signature: '137,80,78,71,13,10,26,10' })
+    expect(s!.png).toMatchObject({ width: 1080, signature: '137,80,78,71,13,10,26,10' })
     expect(s!.text).toContain('2º turno de 2022.')
     expect(s!.text).toContain(`https://votoavoto.exemplo.br${base}mapa/ficaram-em-casa/2022-2/`)
     expect(s!.text).not.toMatch(/cidades/)
   })
 
   test('without a system share sheet the image downloads', async ({ page }) => {
-    await openShare(page, 'none')
+    await openShare(page, 'absent')
     const dl = page.waitForEvent('download')
     await page.getByRole('button', { name: 'Baixar imagem' }).click()
     const d = await dl
@@ -203,7 +183,7 @@ test.describe('Ficaram em casa: the share of the view', () => {
 
   test('the phone has no horizontal scroll and no request leaves the site', async ({ page }) => {
     const seen = collectRequests(page)
-    await openShare(page, 'files')
+    await openShare(page, 'shares')
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
     expect(violations(seen, [new URL(page.url()).origin])).toEqual([])
   })

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
 import { PHONE, noJs } from './presets'
+import { shareMock, type ShareMode } from './share-mock'
 
 /*
  * The share of /brasil/ (#91) at 390x844 over the fixture dataset: the Compartilhar link opens the EXISTING share sheet (the City card's: a bottom sheet over the page,
@@ -12,39 +13,13 @@ const URL_TEXT = `https://votoavoto.exemplo.br${base}brasil/`
 const FILENAME = 'voto-a-voto-brasil-2026-turno-2.png'
 const SIG = '137,80,78,71,13,10,26,10'
 
-type Mode = 'files' | 'none' | 'abort'
-interface Recorded {
-  files: { name: string; type: string }[]
-  text?: string
-  png?: { width: number; height: number; signature: string }
-}
 
-async function open(page: Page, mode: Mode, route = sheet) {
-  await page.addInitScript((m) => {
-    const w = window as unknown as { __shares: unknown[] }
-    w.__shares = []
-    if (m === 'none') {
-      Object.defineProperty(navigator, 'share', { value: undefined, configurable: true })
-      Object.defineProperty(navigator, 'canShare', { value: undefined, configurable: true })
-      return
-    }
-    Object.defineProperty(navigator, 'canShare', { configurable: true, value: () => true })
-    Object.defineProperty(navigator, 'share', {
-      configurable: true,
-      value: (d: ShareData) => {
-        const rec: Record<string, unknown> = { files: (d.files ?? []).map((f) => ({ name: f.name, type: f.type })), text: d.text }
-        w.__shares.push(rec)
-        const f = d.files?.[0]
-        if (f) void f.arrayBuffer().then((b) => { const v = new DataView(b); rec.png = { width: v.getUint32(16), height: v.getUint32(20), signature: [...new Uint8Array(b, 0, 8)].join(',') } })
-        return m === 'abort' ? Promise.reject(new DOMException('cancelled', 'AbortError')) : Promise.resolve()
-      },
-    })
-  }, mode)
+async function open(page: Page, mode: ShareMode, route = sheet) {
+  await shareMock(page).install(mode)
   await page.goto(route)
   await page.waitForFunction(() => { const i = document.querySelector('astro-island'); return !!i && !i.hasAttribute('ssr') })
   await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
 }
-const shares = (page: Page) => page.evaluate(() => (window as unknown as { __shares: Recorded[] }).__shares)
 
 test.describe('/brasil/: the Compartilhar action', () => {
   test('the page has a Compartilhar link with a 44 px target that opens the share sheet', async ({ page }) => {
@@ -75,11 +50,10 @@ test.describe('/brasil/: the Compartilhar action', () => {
 
 test.describe('/brasil/compartilhar/: the sheet', () => {
   test('shares one PNG and the neutral sentence with the page address, inside the tap', async ({ page }) => {
-    await open(page, 'files')
+    await open(page, 'shares')
     await page.getByRole('button', { name: 'Compartilhar' }).click()
-    await expect.poll(async () => (await shares(page))[0]?.png).toBeTruthy()
-    const [s] = await shares(page)
-    expect(s!.files).toEqual([{ name: FILENAME, type: 'image/png' }])
+    const [s] = await shareMock(page).waitForCalls(1)
+    expect(s!.files).toEqual([expect.objectContaining({ name: FILENAME, type: 'image/png' })])
     expect(s!.png).toMatchObject({ width: 1080, signature: SIG })
     expect(s!.text).toMatch(/^No Brasil, no 2º turno de 2026, os votos válidos foram: Candidato A \d\d,\d\d% e Candidato B \d\d,\d\d%\. https:/)
     expect(s!.text).toContain(URL_TEXT)
@@ -91,7 +65,7 @@ test.describe('/brasil/compartilhar/: the sheet', () => {
     const onPage = await page.locator('[data-brasil-bar] span').allTextContents()
     const shares2 = onPage.map((t) => /(\d\d,\d\d)%/.exec(t)![1]!)
     const regions = await page.locator('[data-regiao]').evaluateAll((els) => els.map((e) => ({ name: e.querySelector('h3')!.textContent!, turnout: e.querySelector('[data-participacao]')!.textContent!.trim() })))
-    await open(page, 'files')
+    await open(page, 'shares')
     const alt = (await page.locator('[data-share-picture] svg title').textContent())!
     const text = (await page.locator('[data-text-body]').textContent())!
     for (const n of shares2) {
@@ -107,7 +81,7 @@ test.describe('/brasil/compartilhar/: the sheet', () => {
 
   test('without the system share: Copiar link, Baixar imagem and Mostrar QR are there, with 44 px targets', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
-    await open(page, 'none')
+    await open(page, 'absent')
     await expect(page.getByRole('button', { name: 'Compartilhar' })).toBeHidden()
     for (const sel of ['[data-act="copy-link"]', '[data-act="download"]', '[data-qr-link]', '[data-close]']) expect((await page.locator(sel).boundingBox())!.height, sel).toBeGreaterThanOrEqual(44)
     await page.getByRole('button', { name: 'Copiar link' }).click()
@@ -123,15 +97,15 @@ test.describe('/brasil/compartilhar/: the sheet', () => {
   })
 
   test('a cancelled share is silent', async ({ page }) => {
-    await open(page, 'abort')
+    await open(page, 'cancelled')
     await page.getByRole('button', { name: 'Compartilhar' }).click()
-    await expect.poll(async () => (await shares(page)).length).toBe(1)
+    await shareMock(page).waitForCalls(1)
     await expect(page.locator('[data-status]')).toHaveText('')
   })
 
   test('"Fechar" returns to /brasil/, which is the dimmed backdrop; no sideways scroll; nothing leaves the site', async ({ page, baseURL }) => {
     const seen = collectRequests(page)
-    await open(page, 'files')
+    await open(page, 'shares')
     await page.waitForLoadState('networkidle')
     await expect(page.getByRole('link', { name: 'Fechar' })).toHaveAttribute('href', `${base}brasil/`)
     await expect(page.locator('[data-share-backdrop] [data-brasil-national]')).toBeAttached()

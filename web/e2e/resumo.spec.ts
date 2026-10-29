@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
 import { noJs } from './presets'
+import { shareMock, type ShareMode } from './share-mock'
 
 /*
  * The state recap (#28) at 390x844 over the fixture dataset: the three cycles of a state, the base of the percentages, the
@@ -11,32 +12,12 @@ import { noJs } from './presets'
 const path = `${base}rj/resumo/`
 const SIG = '137,80,78,71,13,10,26,10'
 
-async function open(page: Page, mode: 'files' | 'none', route = path) {
-  await page.addInitScript((m) => {
-    const w = window as unknown as { __shares: unknown[]; __events: string[] }
-    w.__shares = []
-    if (m === 'none') {
-      Object.defineProperty(navigator, 'share', { value: undefined, configurable: true })
-      Object.defineProperty(navigator, 'canShare', { value: undefined, configurable: true })
-      return
-    }
-    Object.defineProperty(navigator, 'canShare', { configurable: true, value: () => true })
-    Object.defineProperty(navigator, 'share', {
-      configurable: true,
-      value: (d: ShareData) => {
-        const rec: Record<string, unknown> = { files: (d.files ?? []).map((f) => ({ name: f.name, type: f.type })), text: d.text }
-        w.__shares.push(rec)
-        const f = d.files?.[0]
-        if (f) void f.arrayBuffer().then((b) => (rec.png = { w: new DataView(b).getUint32(16), h: new DataView(b).getUint32(20), signature: [...new Uint8Array(b, 0, 8)].join(',') }))
-        return Promise.resolve()
-      },
-    })
-  }, mode)
+async function open(page: Page, mode: ShareMode, route = path) {
+  await shareMock(page).install(mode)
   await page.goto(route)
   await page.waitForFunction(() => { const i = document.querySelector('astro-island'); return !!i && !i.hasAttribute('ssr') })
   await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
 }
-const shares = (page: Page) => page.evaluate(() => (window as unknown as { __shares: { files: { name: string; type: string }[]; text: string; png?: { w: number; h: number; signature: string } }[] }).__shares)
 
 test.describe('state recap', () => {
   test('shows the three cycles of the state with the base of the percentages, in the words of the catalog', async ({ page }) => {
@@ -66,19 +47,18 @@ test.describe('state recap', () => {
   })
 
   test('shares the picture and the link through the system sheet, inside the tap', async ({ page }) => {
-    await open(page, 'files')
+    await open(page, 'shares')
     await page.getByRole('button', { name: 'Compartilhar o resumo' }).click()
-    await expect.poll(async () => (await shares(page))[0]?.png).toBeTruthy()
-    const [s] = await shares(page)
+    const [s] = await shareMock(page).waitForCalls(1)
     expect(s!.files[0]).toMatchObject({ name: 'voto-a-voto-rj-resumo-do-estado.png', type: 'image/png' })
     const height = Number(/viewBox="0 0 1080 (\d+)"/.exec((await page.locator('[data-recap-picture] svg').evaluate((e) => e.outerHTML)))![1])
-    expect(s!.png).toEqual({ w: 1080, h: height, signature: SIG })
+    expect(s!.png).toEqual({ width: 1080, height, signature: SIG })
     expect(s!.text).toContain('Em Rio de Janeiro, no 2º turno, os votos válidos foram:')
     expect(s!.text).toContain(`https://votoavoto.exemplo.br${base}rj/resumo/`)
   })
 
   test('without a system share sheet the image downloads (a PNG with the keys of the card)', async ({ page }) => {
-    await open(page, 'none')
+    await open(page, 'absent')
     await expect(page.getByRole('button', { name: 'Compartilhar o resumo' })).toBeHidden()
     const dl = page.waitForEvent('download')
     await page.getByRole('button', { name: 'Baixar imagem' }).click()
@@ -89,7 +69,7 @@ test.describe('state recap', () => {
 
   test('the phone has no horizontal scroll, 44 px targets, and no request leaves the site', async ({ page }) => {
     const seen = collectRequests(page)
-    await open(page, 'files')
+    await open(page, 'shares')
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
     for (const el of await page.locator('main > a, main button').all()) if (await el.isVisible()) expect((await el.boundingBox())!.height, await el.textContent() ?? '').toBeGreaterThanOrEqual(43)
     expect(violations(seen, [new URL(page.url()).origin])).toEqual([])

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, expectNoHorizontalScroll, resizeTo, WIDTHS } from './helpers'
 import { useNoJs } from './presets'
+import { shareMock, type ShareMode } from './share-mock'
 
 /* Ticket #52: the city card, the share dialog and Mostrar QR on desktop. Fixture dataset: Cidade Exemplo, RJ. */
 const city = `${base}rj/cidade-exemplo/`
@@ -90,24 +91,15 @@ test.describe('city card', () => {
   })
 })
 
-type Mode = 'share' | 'none'
-async function openShare(page: Page, mode: Mode) {
-  await page.addInitScript((m) => {
-    if (m === 'none') {
-      Object.defineProperty(navigator, 'share', { value: undefined, configurable: true })
-      Object.defineProperty(navigator, 'canShare', { value: undefined, configurable: true })
-    } else {
-      Object.defineProperty(navigator, 'canShare', { value: () => true, configurable: true })
-      Object.defineProperty(navigator, 'share', { value: () => Promise.resolve(), configurable: true })
-    }
-  }, mode)
+async function openShare(page: Page, mode: ShareMode) {
+  await shareMock(page).install(mode)
   await page.goto(`${city}compartilhar/`)
   await page.waitForFunction(() => document.querySelector('[data-share-actions]:not([hidden]) [data-act]:not([hidden])'))
 }
 
 test.describe('share dialog', () => {
   test('at 1440 it is a centered 480 px dialog over a dimmed page, with the card behind it', async ({ page }) => {
-    await openShare(page, 'none')
+    await openShare(page, 'absent')
     const box = await page.locator('[data-share-sheet]').boundingBox()
     expect(Math.round(box!.width)).toBe(480)
     expect(Math.round(box!.x * 2 + box!.width)).toBe(1440)
@@ -117,7 +109,7 @@ test.describe('share dialog', () => {
 
   test('without the Web Share API: Copiar link, Baixar imagem and Mostrar QR; no native share button', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
-    await openShare(page, 'none')
+    await openShare(page, 'absent')
     await expect(page.getByRole('button', { name: 'Compartilhar' })).toBeHidden()
     await expect(page.getByRole('button', { name: 'Copiar link' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Baixar imagem' })).toBeVisible()
@@ -129,7 +121,7 @@ test.describe('share dialog', () => {
   })
 
   test('without the Web Share API Baixar imagem downloads the PNG and Mostrar QR opens the QR page', async ({ page }) => {
-    await openShare(page, 'none')
+    await openShare(page, 'absent')
     await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
     const dl = page.waitForEvent('download')
     await page.getByRole('button', { name: 'Baixar imagem' }).click()
@@ -139,7 +131,7 @@ test.describe('share dialog', () => {
   })
 
   test('with the Web Share API the native button is offered and Copiar link is not', async ({ page }) => {
-    await openShare(page, 'share')
+    await openShare(page, 'shares')
     await expect(page.getByRole('button', { name: 'Compartilhar' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Copiar link' })).toHaveCount(0)
   })

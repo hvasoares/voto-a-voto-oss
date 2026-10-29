@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { test } from '@playwright/test'
 import { captureDir, waitFonts } from './capture'
 import { base, maybeThrottleCpu } from './helpers'
+import { shareMock } from './share-mock'
 
 // #123 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file.
 test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
@@ -10,7 +11,7 @@ test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
 /* Gate 2 of #38: the pictures themselves (the downloaded PNGs) in their fixture state. Output: web/.captures/cards/ (not committed). */
 test('capture cards / the downloaded pictures', async ({ page }) => {
   const dir = captureDir('cards')
-  await page.addInitScript(() => Object.defineProperty(navigator, 'share', { value: undefined, configurable: true }))
+  await shareMock(page).install('absent')
   await page.goto(`${base}rj/cidade-exemplo/compartilhar/?ciclo=2026&turno=1`)
   await page.waitForSelector('[data-share-actions][data-png="ready"]')
   let dl = page.waitForEvent('download')

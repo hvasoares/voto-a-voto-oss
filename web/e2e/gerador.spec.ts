@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { expect, test, type Page } from '@playwright/test'
 import { allowedOrigins, base, collectRequests, violations } from './helpers'
 import { noJs } from './presets'
+import { shareMock } from './share-mock'
 
 /*
  * The card generator (#25) at 390x844 over the fixture dataset: a city, one measure, a size; the PNG is made in the
@@ -22,7 +23,7 @@ test.describe('card generator', () => {
   test('a city from the address, the three sizes download as PNGs of their own size, with the generated line as the title', async ({ page }) => {
     const errors: string[] = []
     page.on('pageerror', (e) => errors.push(String(e)))
-    await page.addInitScript(() => Object.defineProperty(navigator, 'share', { value: undefined, configurable: true }))
+    await shareMock(page).install('absent')
     await open(page)
     await ready(page)
     for (const [size, label, button, w, h, file] of [
@@ -44,7 +45,7 @@ test.describe('card generator', () => {
   })
 
   test('works where file sharing is not supported: the share button downloads the image', async ({ page }) => {
-    await page.addInitScript(() => Object.defineProperty(navigator, 'share', { value: undefined, configurable: true }))
+    await shareMock(page).install('absent')
     await open(page)
     await ready(page)
     const dl = page.waitForEvent('download')

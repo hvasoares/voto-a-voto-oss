@@ -2,6 +2,7 @@ import { test } from '@playwright/test'
 import { capture } from './capture'
 import { base } from './helpers'
 import { PHONE, DESKTOP, DUEL, acknowledgeNotice } from './presets'
+import { shareMock } from './share-mock'
 
 /* Gate 2 of #30/#39: /cara-a-cara/ in its fixture states at 390x844 (phone), 1440x900 (desktop frames) and 1920x1080 (modo duelo). Output: web/.captures/cara-a-cara/ (not committed). */
 const CITIES = '?nivel=cidade&a=rj/cidade-exemplo&b=sp/cidade-exemplo-paulista'
@@ -24,9 +25,7 @@ for (const [name, q, size] of SHOTS)
   test(`capture cara-a-cara / ${name}`, async ({ page }) => {
     await page.setViewportSize(size)
     await acknowledgeNotice(page)
-    await page.addInitScript(() => {
-      Object.defineProperty(navigator, 'share', { value: () => Promise.resolve(), configurable: true })
-    })
+    await shareMock(page).install('shares')
     await page.goto(`${base}cara-a-cara/${q}`)
     await page.waitForSelector(name.endsWith('resposta') ? '[data-duel][data-places="1"]' : '[data-duel][data-ready="yes"]')
     await page.waitForTimeout(300)

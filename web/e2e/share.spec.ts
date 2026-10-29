@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
 import { useNoJs } from './presets'
+import { shareMock, type ShareMode } from './share-mock'
 
 /*
  * Share sheet (#7) at 390x844 over the fixture dataset. The demo route /compartilhar/ carries the sheet contract;
@@ -13,47 +14,18 @@ const URL_TEXT = `https://votoavoto.exemplo.br${base}`
 const FILENAME = 'voto-a-voto-rj-cidade-exemplo-2026-turno-1.png'
 const SIG = '137,80,78,71,13,10,26,10'
 
-type Mode = 'files' | 'text' | 'none' | 'abort' | 'fail'
-interface Recorded {
-  files: { name: string; type: string; size: number }[]
-  text?: string
-  active: boolean
-  png?: { width: number; height: number; signature: string }
-}
 
-async function openRaw(page: Page, mode: Mode, route = path) {
-  await page.addInitScript((m) => {
-    const w = window as unknown as { __shares: unknown[] }
-    w.__shares = []
-    if (m === 'none') {
-      Object.defineProperty(navigator, 'share', { value: undefined, configurable: true })
-      Object.defineProperty(navigator, 'canShare', { value: undefined, configurable: true })
-      return
-    }
-    Object.defineProperty(navigator, 'canShare', { configurable: true, value: (d: ShareData) => (d.files ? m !== 'text' : true) })
-    Object.defineProperty(navigator, 'share', {
-      configurable: true,
-      value: (d: ShareData) => {
-        const rec: Record<string, unknown> = { files: (d.files ?? []).map((f) => ({ name: f.name, type: f.type, size: f.size })), text: d.text, active: navigator.userActivation.isActive }
-        w.__shares.push(rec)
-        const f = d.files?.[0]
-        if (f) void f.arrayBuffer().then((b) => { const v = new DataView(b); rec.png = { width: v.getUint32(16), height: v.getUint32(20), signature: [...new Uint8Array(b, 0, 8)].join(',') } })
-        if (m === 'abort') return Promise.reject(new DOMException('cancelled', 'AbortError'))
-        if (m === 'fail') return Promise.reject(new DOMException('no', 'NotAllowedError'))
-        return Promise.resolve()
-      },
-    })
-  }, mode)
+async function openRaw(page: Page, mode: ShareMode, route = path) {
+  await shareMock(page).install(mode)
   await page.goto(route)
   await page.waitForFunction(() => { const i = document.querySelector('astro-island'); return !!i && !i.hasAttribute('ssr') })
 }
 
 /** openRaw plus the PNG-made signal; a view without data has no picture and never gets ready. */
-async function open(page: Page, mode: Mode, route = path) {
+async function open(page: Page, mode: ShareMode, route = path) {
   await openRaw(page, mode, route)
   await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
 }
-const shares = (page: Page) => page.evaluate(() => (window as unknown as { __shares: Recorded[] }).__shares)
 function watch(page: Page) {
   const errors: string[] = []
   page.on('pageerror', (e) => errors.push(String(e)))
@@ -65,10 +37,9 @@ const pngInfo = (buf: Buffer) => ({ signature: [...buf.subarray(0, 8)].join(',')
 test.describe('share: the system share sheet', () => {
   test('shares one PNG (1080x1070) and the text with the page address, inside the tap', async ({ page }) => {
     const errors = watch(page)
-    await open(page, 'files')
+    await open(page, 'shares')
     await page.getByRole('button', { name: 'Compartilhar' }).click()
-    await expect.poll(async () => (await shares(page))[0]?.png).toBeTruthy()
-    const [s] = await shares(page)
+    const [s] = await shareMock(page).waitForCalls(1)
     expect(s!.files).toHaveLength(1)
     expect(s!.files[0]).toMatchObject({ name: FILENAME, type: 'image/png' })
     expect(s!.files[0]!.size).toBeGreaterThan(5000)
@@ -80,7 +51,7 @@ test.describe('share: the system share sheet', () => {
   })
 
   test('the picture has no QR and no image element, only the short address', async ({ page }) => {
-    await open(page, 'files')
+    await open(page, 'shares')
     await expect(page.locator('[data-share-picture] svg image, [data-share-picture] svg foreignObject')).toHaveCount(0)
     const html = await page.locator('[data-share-picture] svg').innerHTML()
     // the address may wrap to two lines with a longer base path: compare all text runs joined
@@ -91,10 +62,9 @@ test.describe('share: the system share sheet', () => {
 
   test('shares only the text when files cannot be shared', async ({ page }) => {
     const errors = watch(page)
-    await open(page, 'text')
+    await open(page, 'shares-text')
     await page.getByRole('button', { name: 'Compartilhar' }).click()
-    await expect.poll(async () => (await shares(page)).length).toBe(1)
-    const [s] = await shares(page)
+    const [s] = await shareMock(page).waitForCalls(1)
     expect(s!.files).toEqual([])
     expect(s!.text).toContain(`${URL_TEXT}rj/cidade-exemplo/`)
     expect(errors).toEqual([])
@@ -104,9 +74,9 @@ test.describe('share: the system share sheet', () => {
     const errors = watch(page)
     let downloads = 0
     page.on('download', () => downloads++)
-    await open(page, 'abort')
+    await open(page, 'cancelled')
     await page.getByRole('button', { name: 'Compartilhar' }).click()
-    await expect.poll(async () => (await shares(page)).length).toBe(1)
+    await shareMock(page).waitForCalls(1)
     await page.waitForTimeout(300)
     await expect(page.locator('[data-status]')).toHaveText('')
     expect(downloads).toBe(0)
@@ -115,7 +85,7 @@ test.describe('share: the system share sheet', () => {
 
   test('a failed share falls back to the download and says so', async ({ page }) => {
     const errors = watch(page)
-    await open(page, 'fail')
+    await open(page, 'fails')
     const dl = page.waitForEvent('download')
     await page.getByRole('button', { name: 'Compartilhar' }).click()
     expect((await dl).suggestedFilename()).toBe(FILENAME)
@@ -127,7 +97,7 @@ test.describe('share: the system share sheet', () => {
 test.describe('share: download fallback', () => {
   test('without a share API the native button is hidden; "Baixar imagem" downloads the PNG and the message text stays on a narrow screen with a copy button', async ({ page }) => {
     const errors = watch(page)
-    await open(page, 'none')
+    await open(page, 'absent')
     await expect(page.getByRole('button', { name: 'Compartilhar' })).toBeHidden()
     await expect(page.locator('[data-no-share]')).toContainText('Este navegador não oferece o compartilhamento do sistema')
     const dl = page.waitForEvent('download')
@@ -145,23 +115,23 @@ test.describe('share: download fallback', () => {
 
   test('without a share API "Copiar link" copies the city address', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
-    await open(page, 'none')
+    await open(page, 'absent')
     await page.getByRole('button', { name: 'Copiar link' }).click()
     await expect(page.locator('[data-status]')).toHaveText('Link copiado.')
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(`${URL_TEXT}rj/cidade-exemplo/`)
   })
 
   test('"Baixar imagem" downloads the PNG even when sharing works', async ({ page }) => {
-    await open(page, 'files')
+    await open(page, 'shares')
     const dl = page.waitForEvent('download')
     await page.getByRole('button', { name: 'Baixar imagem' }).click()
     expect((await dl).suggestedFilename()).toBe(FILENAME)
-    expect(await shares(page)).toEqual([])
+    expect(await shareMock(page).calls()).toEqual([])
   })
 
   test('"Copiar texto" copies the message', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
-    await open(page, 'none')
+    await open(page, 'absent')
     await page.getByRole('button', { name: 'Copiar texto' }).click()
     await expect(page.locator('[data-status]')).toHaveText('Texto copiado.')
     expect(await page.evaluate(() => navigator.clipboard.readText())).toContain(`${URL_TEXT}rj/cidade-exemplo/`)
@@ -170,7 +140,7 @@ test.describe('share: download fallback', () => {
 
 test.describe('share: layout and requests', () => {
   test('the sheet states the view it draws and "Fechar" leaves the sheet', async ({ page }) => {
-    await open(page, 'files')
+    await open(page, 'shares')
     await expect(page.locator('[data-share-picture]')).toContainText('2026 · 1º turno · RJ')
     await expect(page.locator('[data-share-sheet]')).toHaveAttribute('data-view', '2026-1')
     await expect(page.getByRole('link', { name: 'Fechar' })).toHaveAttribute('href', base)
@@ -178,7 +148,7 @@ test.describe('share: layout and requests', () => {
 
   test('no sideways scroll, 44 px targets, no request leaves the site', async ({ page, baseURL }) => {
     const seen = collectRequests(page)
-    await open(page, 'files')
+    await open(page, 'shares')
     await page.waitForLoadState('networkidle')
     const { sw, iw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: window.innerWidth }))
     expect(sw).toBeLessThanOrEqual(iw)
@@ -196,7 +166,7 @@ test.describe('share: the real route (the city card as backdrop, #50)', () => {
   for (const [query, label, filename] of views) {
     test(`${query} makes the island re-derive the card view fetching ONLY the own city shard`, async ({ page }) => {
       const seen = collectRequests(page)
-      await open(page, 'files', real + query)
+      await open(page, 'shares', real + query)
       await page.waitForLoadState('networkidle')
       const t = await page.locator('[data-share-picture]').textContent()
       expect(t).toContain(label)
@@ -204,25 +174,25 @@ test.describe('share: the real route (the city card as backdrop, #50)', () => {
       const data = seen.map((r) => new URL(r.url).pathname).filter((p) => p.includes('/data/'))
       expect(data).toEqual([expect.stringMatching(/\/data\/v[0-9a-f]+\/city\/rj\/cidade-exemplo\.json$/)])
       await page.getByRole('button', { name: 'Compartilhar' }).click()
-      await expect.poll(async () => (await shares(page))[0]?.text).toContain(`${URL_TEXT}rj/cidade-exemplo/`)
+      expect((await shareMock(page).waitForCalls(1))[0]!.text).toContain(`${URL_TEXT}rj/cidade-exemplo/`)
     })
   }
 
   test('without a query the default view needs no /data/ request at all', async ({ page }) => {
     const seen = collectRequests(page)
-    await open(page, 'files', real)
+    await open(page, 'shares', real)
     await page.waitForLoadState('networkidle')
     expect(seen.map((r) => new URL(r.url).pathname).filter((p) => p.includes('/data/'))).toEqual([])
   })
 
   test('"Fechar" returns to the city card, which is the dimmed backdrop', async ({ page }) => {
-    await open(page, 'files', real)
+    await open(page, 'shares', real)
     await expect(page.getByRole('link', { name: 'Fechar' })).toHaveAttribute('href', `${base}rj/cidade-exemplo/`)
     await expect(page.locator('[data-share-backdrop] [data-city-card]')).toBeVisible()
   })
 
   test('an address of another card view without data (Boa Esperança do Norte) says so', async ({ page }) => {
-    await openRaw(page, 'none', `${base}mt/boa-esperanca-do-norte/compartilhar/?ciclo=2022&turno=1`)
+    await openRaw(page, 'absent', `${base}mt/boa-esperanca-do-norte/compartilhar/?ciclo=2022&turno=1`)
     await expect(page.locator('[data-share-sheet] [data-nodata]')).toHaveText('Sem dados nesse ciclo.')
   })
 })

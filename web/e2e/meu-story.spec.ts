@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
 import { PHONE, noJs } from './presets'
+import { shareMock } from './share-mock'
 
 /*
  * Meu Brasil as a story (#97, the Sketch frame "16b Meu Brasil em sequência"), 390x844, fixture places: Cidade Exemplo (RJ, changed side in 2022, has a twin and curiosities), Cidade Exemplo C (RJ, never
@@ -137,20 +138,14 @@ test.describe('Meu Brasil story', () => {
   })
 
   test('each card shares as its own picture through the existing share flow, with the link to its position and the places', async ({ page }) => {
-    await page.addInitScript(() => {
-      const w = window as unknown as { __shares: unknown[] }
-      w.__shares = []
-      Object.defineProperty(navigator, 'canShare', { configurable: true, value: () => true })
-      Object.defineProperty(navigator, 'share', { configurable: true, value: (d: ShareData) => (w.__shares.push({ files: (d.files ?? []).map((f) => f.name), text: d.text }), Promise.resolve()) })
-    })
+    await shareMock(page).install('shares')
     await page.goto(`${story(TWO)}#3`)
     await ready(page)
     await expect(page.locator('[data-share-actions][data-png="ready"]')).toHaveCount(1)
     await page.getByRole('button', { name: 'Compartilhar este cartão' }).click()
-    await expect.poll(() => page.evaluate(() => (window as unknown as { __shares: unknown[] }).__shares.length)).toBe(1)
-    const shared = (await page.evaluate(() => (window as unknown as { __shares: { files: string[]; text: string }[] }).__shares))[0]!
-    expect(shared.files).toEqual(['voto-a-voto-meu-brasil-historia-3.png'])
-    expect(shared.text).toContain('/meu-brasil/historia/?mora=rj/cidade-exemplo&vota=sp/cidade-exemplo-paulista#3')
+    const [shared] = await shareMock(page).waitForCalls(1)
+    expect(shared!.files.map((f) => f.name)).toEqual(['voto-a-voto-meu-brasil-historia-3.png'])
+    expect(shared!.text).toContain('/meu-brasil/historia/?mora=rj/cidade-exemplo&vota=sp/cidade-exemplo-paulista#3')
   })
 
   test('every number has its "De onde vem este número?", and the page it names exists and has that record', async ({ page, request }) => {

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import { base, collectRequests, violations } from './helpers'
 import { DUEL, noJs } from './presets'
+import { shareMock } from './share-mock'
 
 /*
  * Cara a cara (#30) over the fixture dataset at 390x844: the entry link of the city card, the address that reproduces the card at each level,
@@ -12,13 +13,7 @@ const STATES = '?nivel=estado&a=rj&b=sp'
 const REGIONS = '?nivel=regiao&a=sudeste&b=centro-oeste'
 
 async function open(page: Page, q = '', share: 'files' | 'none' = 'none') {
-  await page.addInitScript((m) => {
-    const w = window as unknown as { __shares: unknown[] }
-    w.__shares = []
-    if (m === 'none') return void Object.defineProperty(navigator, 'share', { value: undefined, configurable: true })
-    Object.defineProperty(navigator, 'canShare', { configurable: true, value: () => true })
-    Object.defineProperty(navigator, 'share', { configurable: true, value: (d: ShareData) => (w.__shares.push({ files: (d.files ?? []).map((f) => f.name), text: d.text }), Promise.resolve()) })
-  }, share)
+  await shareMock(page).install(share === 'files' ? 'shares' : 'absent')
   await page.goto(route(q))
   await page.waitForFunction(() => document.querySelector('[data-duel]'))
 }
@@ -134,9 +129,8 @@ test.describe('Cara a cara: sharing', () => {
     await open(page, REGIONS, 'files')
     await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
     await page.getByRole('button', { name: 'Compartilhar o cara a cara' }).click()
-    await expect.poll(() => page.evaluate(() => (window as unknown as { __shares: unknown[] }).__shares.length)).toBe(1)
-    const [s] = await page.evaluate(() => (window as unknown as { __shares: { files: string[]; text: string }[] }).__shares)
-    expect(s!.files).toEqual(['voto-a-voto-cara-a-cara-regiao.png'])
+    const [s] = await shareMock(page).waitForCalls(1)
+    expect(s!.files.map((f) => f.name)).toEqual(['voto-a-voto-cara-a-cara-regiao.png'])
     expect(s!.text).toContain(`https://votoavoto.exemplo.br${base}cara-a-cara/${REGIONS}`)
   })
 })
@@ -205,8 +199,7 @@ test.describe('E a sua cidade? (#39)', () => {
     expect(new URL(page.url()).search).toBe(CITIES)
     await expect(page.locator('[data-share-actions]')).toHaveAttribute('data-png', 'ready')
     await page.getByRole('button', { name: 'Compartilhar o cara a cara' }).click()
-    await expect.poll(() => page.evaluate(() => (window as unknown as { __shares: unknown[] }).__shares.length)).toBe(1)
-    const [s] = await page.evaluate(() => (window as unknown as { __shares: { text: string }[] }).__shares)
+    const [s] = await shareMock(page).waitForCalls(1)
     expect(s!.text).toContain(`${base}cara-a-cara/${CITIES}`)
   })
 

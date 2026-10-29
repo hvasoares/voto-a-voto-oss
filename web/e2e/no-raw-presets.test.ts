@@ -19,6 +19,7 @@ const SVS = 'page.setViewport' + 'Size'
 const SET_ITEM = 'localStorage.set' + 'Item'
 const SKIP = 'test.' + 'skip'
 const EXISTS = 'exists' + 'Sync'
+const DEFINE = 'Object.define' + 'Property'
 
 const cases: { name: string; source: string; rule: string }[] = [
   { name: 'setViewportSize with an object literal', source: `${SVS}({ width: 390, height: 844 })`, rule: 'viewport-size' },
@@ -30,7 +31,7 @@ const cases: { name: string; source: string; rule: string }[] = [
   { name: 'no-JavaScript through a variable', source: `test.use({ ${JS}: scriptsOff })`, rule: 'no-js' },
   { name: 'a data guard built by hand', source: `${SKIP}(!${EXISTS}(resolve('../data/cities.csv')), 'no data')`, rule: 'data-guard' },
   { name: 'the notice written in a bare init script', source: `await page.addInitScript(() => ${SET_ITEM}('${NOTICE}', 'acknowledged'))`, rule: 'notice-ack' },
-  { name: 'the notice written inside a larger init script', source: `await page.addInitScript(() => {\n  ${SET_ITEM}('${NOTICE}', 'acknowledged')\n  Object.defineProperty(navigator, 'share', { value: undefined })\n})`, rule: 'notice-ack' },
+  { name: 'the notice written inside a larger init script', source: `await page.addInitScript(() => {\n  ${SET_ITEM}('${NOTICE}', 'acknowledged')\n  ${DEFINE}(navigator, 'geolocation', { value: undefined })\n})`, rule: 'notice-ack' },
 ]
 
 const clean = [

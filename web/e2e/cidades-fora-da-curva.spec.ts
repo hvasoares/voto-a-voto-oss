@@ -8,6 +8,7 @@ import { formatInt as intPt } from '../src/lib/reports/format'
 import { displayName, ufLabel } from '../src/shared/city-search'
 import { base, collectRequests, maybeThrottleCpu, violations } from './helpers'
 import { PHONE, noJs } from './presets'
+import { shareMock } from './share-mock'
 
 /*
  * #34 "Cidades fora da curva" at 390x844, fixture dataset (rj, sp, mt). The expected list is computed here from the fixture's own CSVs with the pure
@@ -147,15 +148,10 @@ test.describe('Cidades fora da curva: the filters', () => {
 
 test.describe('Cidades fora da curva: share, phone, requests', () => {
   test('the share carries the screening text and the link, and no city', async ({ page }) => {
-    await page.addInitScript(() => {
-      const w = window as unknown as { __shared: ShareData[] }
-      w.__shared = []
-      Object.defineProperty(navigator, 'share', { configurable: true, value: (d: ShareData) => (w.__shared.push(d), Promise.resolve()) })
-    })
+    await shareMock(page).install('shares')
     await page.goto(PATH)
     await page.getByRole('button', { name: 'Compartilhar' }).click()
-    await expect.poll(() => page.evaluate(() => (window as unknown as { __shared: ShareData[] }).__shared.length)).toBe(1)
-    const [d] = await page.evaluate(() => (window as unknown as { __shared: ShareData[] }).__shared)
+    const [d] = await shareMock(page).waitForCalls(1)
     expect(d!.text).toBe(SCREENING)
     expect(d!.url).toContain(`${base}relatorios/cidades-fora-da-curva/`)
     expect(d!.text).not.toMatch(/Cidade Exemplo/)

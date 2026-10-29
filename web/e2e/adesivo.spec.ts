@@ -4,6 +4,7 @@ import { expect, test, type Page } from '@playwright/test'
 import sharp from 'sharp'
 import { base, maybeThrottleCpu } from './helpers'
 import { noJs } from './presets'
+import { shareMock } from './share-mock'
 
 /*
  * The Meu Brasil sticker (#37) at 390x844 over the fixture dataset: the PNG downloaded from the page is 1080x1920 with a transparent
@@ -13,15 +14,7 @@ const Q = '?mora=rj/cidade-exemplo&vota=sp/cidade-exemplo-paulista'
 const route = `${base}meu-brasil/adesivo/${Q}`
 
 async function open(page: Page, share = false) {
-  await page.addInitScript((s) => {
-    if (!s) Object.defineProperty(navigator, 'share', { value: undefined, configurable: true })
-    else {
-      const w = window as unknown as { __shares: unknown[] }
-      w.__shares = []
-      Object.defineProperty(navigator, 'canShare', { configurable: true, value: () => true })
-      Object.defineProperty(navigator, 'share', { configurable: true, value: (d: ShareData) => (w.__shares.push({ files: (d.files ?? []).map((f) => f.name), text: d.text }), Promise.resolve()) })
-    }
-  }, share)
+  await shareMock(page).install(share ? 'shares' : 'absent')
   await page.goto(route)
   // The places load one by one (a card with one place is drawn first): wait for the picture of BOTH, the condition the page itself ends on, before reading its PNG.
   await expect(page.locator('[data-sticker-page]')).toHaveAttribute('data-places', '2')
@@ -96,9 +89,8 @@ test.describe('Meu Brasil sticker', () => {
   test('shares the picture and the card link through the system sheet', async ({ page }) => {
     await open(page, true)
     await page.getByRole('button', { name: 'Compartilhar' }).click()
-    await expect.poll(() => page.evaluate(() => (window as unknown as { __shares: unknown[] }).__shares.length)).toBe(1)
-    const [s] = await page.evaluate(() => (window as unknown as { __shares: { files: string[]; text: string }[] }).__shares)
-    expect(s!.files).toEqual(['voto-a-voto-meu-brasil-adesivo.png'])
+    const [s] = await shareMock(page).waitForCalls(1)
+    expect(s!.files.map((f) => f.name)).toEqual(['voto-a-voto-meu-brasil-adesivo.png'])
     expect(s!.text).toContain(`https://votoavoto.exemplo.br${base}meu-brasil/${Q}`)
   })
 
