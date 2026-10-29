@@ -21,6 +21,9 @@ const PAGES = {
   Imprensa: `${base}imprensa/`,
 } as const
 
+/** The links of the bar on a page: the wordmark, the way home on every page but Home (#154), the three tasks. */
+const linksOn = (name: string): [string, string][] => [['Voto a Voto', base], ...(name === 'Home' ? [] : [['‹ Início', base] as [string, string]]), ...TASKS]
+
 const TASKS: [string, string][] = [
   ['Comparar', `${base}#comparar`],
   ['Conferir', `${base}sobre-os-dados/#confira-voce-mesmo`],
@@ -31,15 +34,14 @@ const bar = (page: Page) => page.locator('[data-component="top-bar"]')
 const barLinks = (page: Page) => bar(page).locator('a').evaluateAll((els) => els.map((e) => [e.textContent, e.getAttribute('href')]))
 
 test.describe('the task-named bar', () => {
-  test('is identical on every page type', async ({ page }) => {
+  test('is identical on every page type, with the way home on every page but Home', async ({ page }) => {
     const seen: Record<string, unknown> = {}
     for (const [name, url] of Object.entries(PAGES)) {
       await page.goto(url)
       await expect(bar(page)).toBeVisible()
       seen[name] = { links: await barLinks(page), placeholder: await bar(page).locator('input').getAttribute('placeholder'), label: await bar(page).locator('input').getAttribute('aria-label') }
     }
-    const expected = { links: [['Voto a Voto', base], ...TASKS], placeholder: 'Ver minha cidade', label: 'Ver minha cidade' }
-    for (const [name, got] of Object.entries(seen)) expect(got, name).toEqual(expected)
+    for (const [name, got] of Object.entries(seen)) expect(got, name).toEqual({ links: linksOn(name), placeholder: 'Ver minha cidade', label: 'Ver minha cidade' })
   })
 
   test('keyboard order is wordmark, search, then the three links, each with a visible focus ring', async ({ page }) => {
@@ -131,7 +133,7 @@ test.describe('the task-named bar', () => {
     useNoJs()
     test('the bar is readable and its links work', async ({ page }) => {
       await page.goto(`${base}brasil/`)
-      expect(await barLinks(page)).toEqual([['Voto a Voto', base], ...TASKS])
+      expect(await barLinks(page)).toEqual(linksOn('Brasil'))
       await bar(page).getByRole('link', { name: 'Comparar' }).click()
       await expect(page).toHaveURL(`${base}#comparar`)
       await expect(page.locator('#comparar')).toBeVisible()
