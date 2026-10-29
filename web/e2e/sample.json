@@ -1,0 +1,123 @@
+{
+  "measured": { "date": "2026-10-28", "pages": 15474, "buildSeconds": 111 },
+  "states": [
+    {
+      "uf": "ap",
+      "why": "ITAUBAL is named in reports-real-data.spec.ts (turnout extremes of the same report); 16 cities, nearly free"
+    },
+    {
+      "uf": "ba",
+      "why": "largest Lula total of 2026: the subset must keep Lula as the national 2nd-round leader — ladoA of every margin sentence is the national leader, and real-data-mapa-rj pins those sentences"
+    },
+    {
+      "uf": "ce",
+      "why": "with ba, tips the subset's national aggregate to Lula (needs +5.5M net without sp/rj/pr/go outweighing it); keeps the build under the 3-minute gate"
+    },
+    {
+      "uf": "df",
+      "why": "single-city state: the launch gate and real-data-preview visit /df/brasilia/"
+    },
+    {
+      "uf": "es",
+      "why": "Apiacá is the second row of the disputas test of reports-real-data.spec.ts (backtest case 4bd5da4)"
+    },
+    {
+      "uf": "go",
+      "why": "ANHANGÜERA, the one-vote race whose row id failed in 1.13.0 (backtest case 4bd5da4)"
+    },
+    {
+      "uf": "pr",
+      "why": "Marquinho, the tie that tops the disputas test of reports-real-data.spec.ts (backtest case 4bd5da4)"
+    },
+    {
+      "uf": "rj",
+      "why": "real-data-mapa-rj.spec.ts is green on the sample (92 municipalities, mesh join); the launch gate visits rj/rio-de-janeiro"
+    },
+    {
+      "uf": "sp",
+      "why": "the tres-ciclos backtest (9a2e801) needs the /tres-ciclos/sp/ page; the largest state keeps the build honest"
+    }
+  ],
+  "fullOnly": [
+    {
+      "spec": "cohorts-real-data.spec.ts",
+      "why": "national cohort counts over the whole country (2.755 / 2.391 / 368 / 54 of 5.571)"
+    },
+    {
+      "spec": "capture-cohorts-real-data.spec.ts",
+      "why": "screenshots of the national cohort pages"
+    },
+    {
+      "spec": "comparar-real-data.spec.ts",
+      "why": "the /comparar/ rows assert the six largest states of the country (sp mg rj ba pr rs)"
+    },
+    {
+      "spec": "real-data-brasil.spec.ts",
+      "why": "national totals of the whole country, checked against the manifest"
+    },
+    {
+      "spec": "real-data-cidades-fora-da-curva.spec.ts",
+      "why": "national outlier ranking ('25 de 3.588') and an mg route"
+    },
+    {
+      "spec": "real-data-estado.spec.ts",
+      "why": "visits sp AND an mg page; mg has 853 cities, over half the sample's whole budget"
+    },
+    {
+      "spec": "real-data-ficaram-em-casa.spec.ts",
+      "why": "27 state tiles and national stay-home percentages"
+    },
+    {
+      "spec": "real-data-launch-gate.spec.ts",
+      "why": "national figures, region shares, all 27 state tiles"
+    },
+    {
+      "spec": "real-data-map.spec.ts",
+      "why": "the 27 home-map links"
+    },
+    {
+      "spec": "real-data-mapa-desktop.spec.ts",
+      "why": "27 state shapes of the desktop map"
+    },
+    {
+      "spec": "real-data-mapa-toque.spec.ts",
+      "why": "27 touch shapes"
+    },
+    {
+      "spec": "real-data-mapa-uf.spec.ts",
+      "why": "exact municipality counts of rs, mg, mt, rr — states out of the sample"
+    },
+    {
+      "spec": "real-data-mapa.spec.ts",
+      "why": "27 state tiles and national margin figures"
+    },
+    {
+      "spec": "real-data-nerds.spec.ts",
+      "why": "33 level pages, national manifest totals, the 853-row mg state table"
+    },
+    {
+      "spec": "real-data-preview.spec.ts",
+      "why": "spot-checks city heads of states out of the sample (al, pa, pb, ce, zz)"
+    },
+    {
+      "spec": "real-data-smoke.spec.ts",
+      "why": "asserts the full build serves more than 23,000 routes"
+    },
+    {
+      "spec": "real-data-widget.spec.ts",
+      "why": "longest sentences over all 5,760 cities (pi, mg, pb, zz)"
+    },
+    {
+      "spec": "real-data.spec.ts",
+      "why": "national home search (Belém of three states, the 20-result cut, 27 tiles)"
+    },
+    {
+      "spec": "reports-real-data.spec.ts",
+      "why": "national counts and extremes over every state; the sample reaches its disputas test only through scripts/sample-backtest.sh"
+    },
+    {
+      "spec": "tres-ciclos-real-data.spec.ts",
+      "why": "asserts the national six-largest ordering (mg rj ba pr rs), which a subset inside the page bound cannot reproduce; backtested by scripts/sample-backtest.sh"
+    }
+  ]
+}
