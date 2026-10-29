@@ -32,12 +32,6 @@
 }
 
 .page__main { flex: 1; padding: var(--sp-4) var(--gutter) var(--sp-6); min-width: 0; }
-.back {
-  display: inline-flex; align-items: center; min-height: var(--min-tap); padding: 0 var(--sp-4);
-  border: 1px solid var(--c-rule); border-radius: var(--radius);
-  background: var(--c-paper); color: var(--c-ink); font-size: var(--step-2);
-  margin-bottom: var(--sp-4);
-}
 .page__title { font: 400 var(--step-4)/var(--lh-4) var(--font-serif); overflow-wrap: anywhere; }
 .page__subtitle { color: var(--c-muted); font-size: var(--step-2); margin-top: var(--sp-1); }
 .state-page .page__subtitle, .city-page .page__subtitle, .cycles-page .page__subtitle { font-size: var(--step-1); line-height: var(--lh-1); }
@@ -64,7 +58,6 @@ h2, .section-title { font: 400 var(--step-3) var(--font-serif); }
 .state-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 11px; }
 .state-page .banner { letter-spacing: 0; padding: 5px var(--gutter); }
 .state-page .page__main { padding: 8px var(--gutter) var(--sp-4); }
-.state-page .back { min-width: 84px; margin: 0 0 8px -8px; padding: 0 12px; }
 .state-page .page__title, .city-page .page__title, .cycles-page .page__title { font-size: var(--step-4); line-height: var(--lh-4); }
 .state-page .page__subtitle, .city-page .page__subtitle { margin-top: 0; }
 .state-map {
@@ -136,7 +129,6 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
 .cycles-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
 .cycles-page .banner { letter-spacing: 0; padding: 6px var(--gutter); }
 .cycles-page .page__main { padding: 4px var(--gutter) 0; }
-.cycles-page .back { min-width: 84px; margin: 0 0 8px -8px; padding: 0 12px; }
 .cycles-page .page__subtitle { margin-top: -4px; margin-bottom: 18px; }
 .cycles__round + .cycles__round { margin-top: 24px; }
 .cycle { box-sizing: border-box; height: 150px; margin: 0 0 0; padding: 9px 16px 0; border-top: 1px solid var(--c-rule); }
@@ -187,7 +179,6 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
 @media (min-width: 1024px) {
   .state-page .app-header, .cycles-page .app-header { display: none; }
   .state-page .banner, .cycles-page .banner { width: fit-content; max-width: none; height: auto; margin: 20px max(20px, calc(50% - 360px)) 0; padding: 3px 6px; border-radius: 3px; white-space: normal; align-self: flex-start; }
-  .state-page .back, .cycles-page .back { min-width: 0; min-height: 28px; margin: 16px 0 0; padding: 0; border: 0; background: none; font-size: var(--step-1); color: var(--c-accent); }
   .state-page .page__title, .city-page .page__title, .cycles-page .page__title { font-size: var(--step-4); line-height: var(--lh-4); margin-top: 4px; }
   .state-page .page__subtitle, .city-page .page__subtitle, .cycles-page .page__subtitle { font-size: var(--step-2); line-height: var(--lh-2); margin-top: 0; }
   .state-page .page__main { padding: 0 20px var(--sp-4); }

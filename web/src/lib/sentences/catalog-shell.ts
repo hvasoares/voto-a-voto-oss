@@ -5,14 +5,16 @@
  */
 import { registerSentences, type Key } from './catalog'
 
-export const SHELL_KEYS = ['shell.fixtureBanner'] as const satisfies readonly Key[]
+export const SHELL_KEYS = ['shell.fixtureBanner', 'shell.backHome'] as const satisfies readonly Key[]
 
 export const SHELL_STANDARD: Record<(typeof SHELL_KEYS)[number], string> = {
   'shell.fixtureBanner': 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS',
+  'shell.backHome': '‹ Início',
 }
 
 export const SHELL_PLAIN: Record<(typeof SHELL_KEYS)[number], string> = {
   'shell.fixtureBanner': 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS',
+  'shell.backHome': '‹ Início',
 }
 
 registerSentences('pt-BR', 'standard', SHELL_STANDARD)

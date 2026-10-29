@@ -9,6 +9,10 @@ import AppHeader from './AppHeader.astro'
 import DocHead from './DocHead.astro'
 import FixtureBanner from './FixtureBanner.astro'
 import PageMain from './PageMain.astro'
+import PhoneHeader from './PhoneHeader.astro'
+
+/** The "‹ Início" link right after the scope, still inside the header. */
+const BACK_HOME = /Presidente 2026<\/span>\s*<a [^>]*href="[^"]*"[^>]*data-back-home[^>]*>‹ Início<\/a>\s*<\/header>/
 
 let container: Awaited<ReturnType<typeof AstroContainer.create>>
 beforeAll(async () => {
@@ -22,6 +26,20 @@ describe('AppHeader', () => {
     expect(html).toMatch(/<a class="brand" href="[^"]*">Voto a Voto<\/a>/)
     expect(html).toContain('<span class="app-header__sep" aria-hidden="true"></span>')
     expect(html).toContain('<span class="app-header__context">Presidente 2026</span>')
+  })
+
+  it('carries the way home on the same line, after the scope (#154)', async () => {
+    const html = await container.renderToString(AppHeader)
+    expect(html).toMatch(BACK_HOME)
+    expect(html).toContain('min-h-11')
+  })
+})
+
+describe('PhoneHeader', () => {
+  it('carries the way home inside the header, a 44 px target after the scope (#154)', async () => {
+    const html = await container.renderToString(PhoneHeader)
+    expect(html).toMatch(BACK_HOME)
+    expect(html).toContain('min-h-11')
   })
 })
 

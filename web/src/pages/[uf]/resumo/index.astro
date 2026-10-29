@@ -22,7 +22,6 @@ import Seal from '@/components/Seal.astro'
 import { calcLink } from '@/lib/facts/link'
 import { factLinks } from '@/lib/facts/gate'
 import { getFactPage, sealOf } from '@/lib/facts/pages'
-import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import PageMain from '@/components/PageMain.astro'
 
 export async function getStaticPaths() {
@@ -48,7 +47,6 @@ const calcCycles = recap.rows.filter((r) => r.status === 'data').map((r) => ({ a
 <Base title={`${recapTitle()} · ${stateName} · Voto a Voto`} description={content.variants.standard.alt}>
   <PhoneHeader />
   <PageMain md="480" data-page="resumo" data-uf={uf}>
-    <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{recapTitle()}</h1>
     <p class="mt-1 text-step-1 text-muted-foreground" data-subtitle>{recapSubtitle(recap, { stateName })}</p>
     {hasData ? (
