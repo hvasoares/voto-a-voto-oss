@@ -1,6 +1,6 @@
 .PHONY: test tse-scrape data data-outlines data-nerds data-2018 data-2022 data-2026 data-check publish-edition rollback-edition nonvoters deploy \
         install typecheck web-test browser e2e e2e-port e2e-pages e2e-real build-deploy ci web-install pytest perf \
-        worktree-setup worktree-teardown
+        worktree-setup worktree-teardown releases releases-check decisions-check
 
 test:
 	uv run pytest
@@ -55,6 +55,20 @@ worktree-setup:
 # o setup não escreve nada fora da worktree (os browsers ficam no cache compartilhado por usuário).
 worktree-teardown:
 	@echo "git worktree remove <caminho>   # a partir do checkout principal; nada mais a limpar"
+
+# Mapa de versões (#129): escreve docs/releases.md a partir das tags git e de docs/releases-notes.json (idempotente: uma segunda
+# execução não muda nenhum byte). Último passo de uma release: depois de tagear, rode e commite o mapa.
+releases:
+	npm --prefix web run releases --silent
+
+# Confere que toda tag tem uma linha no mapa, no commit para o qual a tag aponta, e que nenhuma linha é de uma tag que não existe mais.
+# Sem tags no checkout (clone raso do CI) a checagem é pulada com uma mensagem. Também roda no `npm test`.
+releases-check:
+	npm --prefix web run releases:check --silent
+
+# Confere o registro de decisões docs/decisions.md (#129): ids únicos, data, status e motivo em toda entrada, referências que existem.
+decisions-check:
+	npm --prefix web run check:decisions --silent
 
 # ── Paridade CI/CD ──────────────────────────────────────────────────────────────────────────────
 # Cada passo dos workflows do GitHub Actions tem aqui o seu comando local equivalente.

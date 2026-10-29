@@ -1,0 +1,94 @@
+{
+  "v1.0.0": {
+    "milestone": "Walking skeleton (pre-numbering tag)",
+    "rollback": "n/a (first tag)",
+    "known_issues": "Pages was not yet published from this repository, so this commit was never deployed.",
+    "deploy_run": null
+  },
+  "1.1.0": {
+    "milestone": "G1 Words and measures",
+    "rollback": "Redeploy the commit of `v1.0.0`",
+    "known_issues": "Its own deploy run was cancelled by the next push; the run shown built the next commit.",
+    "deploy_run": 40561060963,
+    "deploy_sha": "2115c67"
+  },
+  "1.2.0": {
+    "milestone": "G7 You and your place",
+    "rollback": "Redeploy the commit of `1.1.0`",
+    "known_issues": "Renumbered on 2026-10-28; it was tag 1.7.0 (see D-007).",
+    "deploy_run": 40569247076
+  },
+  "1.3.0": {
+    "milestone": "G9 Editions and open data",
+    "rollback": "Redeploy the commit of `1.2.0`",
+    "known_issues": "Renumbered on 2026-10-28; it was tag 1.9.0 (see D-007).",
+    "deploy_run": 40570418568
+  },
+  "1.4.0": {
+    "milestone": "G10 Desktop",
+    "rollback": "Redeploy the commit of `1.3.0`",
+    "known_issues": "Renumbered on 2026-10-28; it was tag 1.10.0 (see D-007).",
+    "deploy_run": 40579355901
+  },
+  "1.5.0": {
+    "milestone": "G2 City card lines",
+    "rollback": "Redeploy the commit of `1.4.0`",
+    "known_issues": "Renumbered on 2026-10-28; it was tag 1.2.0 (see D-007). Carries the MIT licence file (D-004).",
+    "deploy_run": 40584054632
+  },
+  "1.6.0": {
+    "milestone": "G3 Cards and sharing",
+    "rollback": "Redeploy the commit of `1.5.0`",
+    "known_issues": "Renumbered on 2026-10-28; it was tag 1.3.0 (see D-007).",
+    "deploy_run": 40590435884
+  },
+  "1.7.0": {
+    "milestone": "G6 Fact records",
+    "rollback": "Redeploy the commit of `1.6.0`",
+    "known_issues": "Renumbered on 2026-10-28; it was tag 1.6.0 (see D-007). Figures of 2018 and 2022 open one general rules page (D-024).",
+    "deploy_run": 40608044043
+  },
+  "1.8.0": {
+    "milestone": "G4 Head-to-head",
+    "rollback": "Redeploy the commit of `1.7.0`",
+    "known_issues": "Renumbered on 2026-10-28; it was tag 1.4.0 (see D-007).",
+    "deploy_run": 40613716651
+  },
+  "1.9.0": {
+    "milestone": "G5 Maps and reports",
+    "rollback": "Redeploy the commit of `1.8.0`",
+    "known_issues": "Renumbered on 2026-10-28; it was tag 1.5.0 (see D-007).",
+    "deploy_run": 40623289516
+  },
+  "1.10.0": {
+    "milestone": "G11 Creators and press",
+    "rollback": "Redeploy the commit of `1.9.0`",
+    "known_issues": "Renumbered on 2026-10-28; it was tag 1.11.0 (see D-007). Its own deploy run was cancelled by the next push; the run shown built the next commit.",
+    "deploy_run": 40636263650,
+    "deploy_sha": "91df627"
+  },
+  "1.11.0": {
+    "milestone": "G8 Stories and replays",
+    "rollback": "Redeploy the commit of `1.10.0`",
+    "known_issues": "Renumbered on 2026-10-28; it was tag 1.8.0 (see D-007).",
+    "deploy_run": 40647805751
+  },
+  "1.12.0": {
+    "milestone": "G12 Dados para nerds",
+    "rollback": "Redeploy the commit of `1.11.0`",
+    "known_issues": "Annotated on 2026-10-28; the tag number is unchanged.",
+    "deploy_run": 40669183373
+  },
+  "1.13.0": {
+    "milestone": "UX review 2026-10-27 (milestone 13)",
+    "rollback": "Redeploy the commit of `1.12.0`",
+    "known_issues": "Two flaky specs were hardened in a spec-only push after the tag; the tag was not moved (D-027). Accepted limits: D-029.",
+    "deploy_run": 40763733237
+  },
+  "1.13.1": {
+    "milestone": "Follow-up to the 1.13.0 UX review",
+    "rollback": "Redeploy the commit of `1.13.0`",
+    "known_issues": "none known",
+    "deploy_run": 40780102061
+  }
+}

@@ -19,6 +19,9 @@ Each rule is one line: the rule, why, and the file that enforces it where one ex
 - Set a worktree up with `make worktree-setup` from inside it. Enforced by: `scripts/worktree-setup.sh`
 - Build experiments go to `dist` or a git-ignored folder, never to a tracked path. Enforced by: `.gitignore`
 - Before hand-back run, from `web/`: `npm run typecheck`, `npm test`, and `npm run check:perf` where the ticket touches pages; report any budget that is over. Enforced by: `.github/workflows/ci.yml`
+- Decisions are appended: a new product or process decision is a new entry at the end of `docs/decisions.md` (next id, status, reason), never an edit of an old one; a reversal sets the old entry to `superseded by D-nnn`. A commit that applies one ends with the trailer `Decision: D-nnn`. Enforced by: `web/scripts/decision-log.ts`
+- Tickets are written with their tracker, `private#N` or `oss#N`, never a bare number, in the decision log and the release map. Enforced by: `web/scripts/decision-log.ts`
+- The release map is generated: after the owner places a tag, `make releases` and a commit of `docs/releases.md` close the release; a pushed tag is never moved. Enforced by: `web/scripts/releases.ts`
 - This repo is public: write no local absolute path, secret or private tracker number in a committed file. Enforced by: `web/scripts/agent-brief-guard.test.ts`
 
 ## Liveness and escalation protocol
