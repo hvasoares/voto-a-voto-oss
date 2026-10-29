@@ -11,6 +11,8 @@ wheels/
 
 # Downloaded and generated data (rebuild with `make tse-scrape`)
 .cache/
+# Senador and Deputado Federal per municipality (~160 MB): rebuilt by `make data`, validated by `make data-check`; not part of the editions
+data/legislative/
 outbox/
 .DS_Store
 

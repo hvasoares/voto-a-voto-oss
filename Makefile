@@ -9,7 +9,8 @@ test:
 tse-scrape:
 	uv run tse-scrape $(if $(UFS),--ufs $(UFS)) $(if $(OUT),--out $(OUT)) $(EXTRA)
 
-# Baixa (só o que falta ou mudou), reconcilia e escreve data/ (CSVs + manifest.json). CYCLES=2018,2022 e EXTRA=--offline|--allow-partial.
+# Baixa (só o que falta ou mudou), reconcilia e escreve data/ (CSVs + manifest.json). CYCLES=2018,2022 e EXTRA=--offline|--allow-partial|--no-legislative.
+# Também baixa, extrai e confere Senador e Deputado Federal por município em data/legislative/ (mesmo cache, mesma revalidação; ver README).
 data:
 	uv run voto-data build $(if $(CYCLES),--cycles $(CYCLES)) $(EXTRA)
 	uv run voto-data outlines $(if $(findstring --offline,$(EXTRA)),--offline)

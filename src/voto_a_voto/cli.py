@@ -1,6 +1,6 @@
 """``voto-data``: download, cache, normalize and verify the TSE data behind the site (imperative shell).
 
-    voto-data build [--cycles 2018,2022,2026] [--offline] [--allow-partial]
+    voto-data build [--cycles 2018,2022,2026] [--offline] [--allow-partial] [--no-legislative]
     voto-data check [--editions-dir editions]
     voto-data publish-edition [--date YYYY-MM-DD]
     voto-data rollback-edition

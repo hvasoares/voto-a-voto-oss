@@ -99,6 +99,25 @@ Notes for consumers: `uf` is lowercase and overseas posts are `zz` (region `exte
 
 Output: a run summary per source (downloaded / not modified / from cache / adopted), then the row count of each table. The command exits non-zero, and writes nothing to `data/`, if a source fails, a 2026 city is missing or not final, or any reconciliation finding appears (city counts per round, `validos + brancos + nulos + anulados_apu_sep == comparecimento`, candidate votes == `validos`, national totals including overseas equal to the TSE's own).
 
+### Legislative data (Senador and Deputado Federal)
+
+`make data` (and `make data-2018|2022|2026`, `CYCLES=...`) also downloads, extracts and checks the legislative votes; `EXTRA=--no-legislative` skips them. The zips come through the same `OpenDataCache` as the president ones (`votacao_candidato_munzona_<year>.zip`, `detalhe_votacao_munzona_<year>.zip` and, only fingerprinted, `consulta_cand_<year>.zip`, for 2018, 2022 and 2026), so `--offline`, `--cycles`, resume, size/CRC checks and revalidation by etag/last-modified behave exactly the same, and a zip the TSE regenerated is downloaded again. The zips hold one CSV per UF plus `_BR` (president only) and `_BRASIL` (every UF concatenated: 4 GB in 2022); the extraction reads the 27 UF members, streamed one at a time, because together they are the complete, non-redundant partition.
+
+Output in `data/legislative/` (UTF-8, LF, sorted, no timestamps), per cargo (`senador`, `deputado-federal`) and year, summed over the zones of each municipality (first round only; the legislative cargos have no second round):
+
+| File | Grain | Columns |
+|---|---|---|
+| `<cargo>-<year>-votos.csv` | municipality x candidate | `uf, cd_municipio, candidato_numero, votos_nominais, votos_nominais_validos` |
+| `<cargo>-<year>-candidatos.csv` | UF x candidate | `uf, candidato_numero, sq_candidato, nome, nome_urna, partido, federacao, situacao` |
+| `<cargo>-<year>-totais.csv` | municipality | `uf, cd_municipio, aptos, comparecimento, abstencoes, votos, validos, nominais_validos, legenda_validos, brancos, nulos, anulados, anulados_subjud, anulados_apu_sep` |
+| `manifest.json` | per year | fingerprint, `status`, every source zip (url, sha256, etag, last_modified, retrieved_at, bytes, `used`), every output (rows, bytes, sha256), newest TSE totalization stamp |
+
+Votes are exactly as the TSE gives them, not normalised: in 2018 two senators per state were elected and each voter had two Senate votes (Senate `votos` is about twice `comparecimento`); in 2022 one per state. `cd_municipio` is the TSE code of `cities.csv` (join there for name, region and IBGE code; the IBGE code is empty for cities that exist only in 2018/2022). Legend votes exist only in `totais.csv`. `votos_nominais` is `QT_VOTOS_NOMINAIS`; `votos_nominais_validos` leaves out votes the TSE annulled. `situacao` is `DS_SIT_TOT_TURNO`. Overseas (`zz`) would be kept as in the president tables; the TSE has none for these cargos.
+
+Fingerprint: the manifest records, per year, a hash of the extraction code version and the sha256 of the two zips it reads. A second `make data` re-hashes the cached zips (as it always did), finds the same fingerprint and the files matching their recorded hashes, parses nothing and changes no byte; a new revision of a zip, a new `VERSION` in `legislative.py` or an edited output re-extracts that year only. `status` is `final` when every cargo has elected candidates in the file and `provisional` otherwise: the TSE zips carry no finality marker (the president 2026 uses the `and = f` of the results site), so the manifest also keeps the newest `DT_ULTIMA_TOTALIZACAO`, `last_modified` and `retrieved_at`.
+
+`make data-check` validates `data/legislative/` offline when its manifest exists: sha256/bytes/rows of every file, no negative count, every municipality in `cities.csv`, every voted candidate in the candidates file and, per municipality, candidates' valid nominal votes = detail `nominais_validos`, `nominais_validos + legenda_validos = validos` and `validos + brancos + nulos + anulados + anulados_subjud + anulados_apu_sep = votos` (`anulados_subjud` are annulled votes still sub judice; without them 2022 does not add up in 413 municipalities for Deputado Federal). A finding means the TSE data or the extraction is wrong: it is reported with numbers, never loosened. `data/legislative/` has its own manifest on purpose: `data/manifest.json` and the six files are the fingerprint of the published editions.
+
 ### First run and reusing a cache
 
 A cold cache downloads about 1 GB (plus 27 small IBGE files for the centroids, about 2 MB) (`votacao_candidato_munzona_2018.zip` 377 MB, `_2022.zip` 613 MB, two 4 MB `detalhe_votacao_munzona` zips, and about 11,500 small 2026 files; the 2026 step uses 8 workers). To avoid it, copy an existing cache with the same layout (on APFS `cp -c` clones without using disk):

@@ -195,7 +195,7 @@ def check_legislative(directory, known_cities: set[tuple[str, int]]) -> list[Fin
     Per file: it exists and matches the manifest (sha256, bytes, rows). Per year and cargo, on the files themselves:
     no negative count; every ``(uf, cd_municipio)`` is in ``cities.csv``; every voted candidate is in the candidates file;
     per municipality, the candidates' valid nominal votes equal the detail file's ``nominais_validos``, ``nominais_validos +
-    legenda_validos = validos``, and ``validos + brancos + nulos + anulados + anulados_apu_sep = votos``."""
+    legenda_validos = validos``, and ``validos + brancos + nulos + anulados + anulados_subjud + anulados_apu_sep = votos``."""
     directory = Path(directory)
     manifest_path = directory / "manifest.json"
     if not manifest_path.exists():
@@ -257,9 +257,9 @@ def _legislative_identities(directory: Path, year: int, cargo: str, known_cities
             flag("candidates_vs_nominais_validos", f"{where}: candidates {summed.get(key, 0)}, detail {values['nominais_validos']}")
         if values["nominais_validos"] + values["legenda_validos"] != values["validos"]:
             flag("nominais_plus_legenda", f"{where}: {values['nominais_validos']} + {values['legenda_validos']} != {values['validos']}")
-        accounted = values["validos"] + values["brancos"] + values["nulos"] + values["anulados"] + values["anulados_apu_sep"]
+        accounted = values["validos"] + values["brancos"] + values["nulos"] + values["anulados"] + values["anulados_subjud"] + values["anulados_apu_sep"]
         if accounted != values["votos"]:
-            flag("votos_accounted", f"{where}: validos+brancos+nulos+anulados+apu_sep {accounted}, votos {values['votos']}")
+            flag("votos_accounted", f"{where}: validos+brancos+nulos+anulados+subjud+apu_sep {accounted}, votos {values['votos']}")
     for key in sorted(set(summed) - seen):
         flag("votes_without_totals", f"{key[0]}/{key[1]}")
     return [

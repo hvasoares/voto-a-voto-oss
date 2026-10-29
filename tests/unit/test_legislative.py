@@ -75,12 +75,13 @@ def test_only_the_uf_members_are_read_not_the_president_member_nor_the_brasil_co
     assert read(out, "deputado-federal-2022-totais.csv")[0]["votos"] == "195"
 
 
-def test_other_cargos_and_other_rounds_are_ignored(tmp_path):
+def test_other_cargos_other_rounds_and_supplementary_elections_are_ignored(tmp_path):
     candidates, detail = uf_rows(2022)
     extra = [
         {"CD_CARGO": "1", "DS_CARGO": "Presidente", "NR_CANDIDATO": "13", "QT_VOTOS_NOMINAIS": 500, "QT_VOTOS_NOMINAIS_VALIDOS": 500},
         {"CD_CARGO": "7", "DS_CARGO": "Deputado Estadual", "NR_CANDIDATO": "11111", "QT_VOTOS_NOMINAIS": 500, "QT_VOTOS_NOMINAIS_VALIDOS": 500},
         {"CD_CARGO": "5", "NR_TURNO": "2", "NR_CANDIDATO": "111", "QT_VOTOS_NOMINAIS": 500, "QT_VOTOS_NOMINAIS_VALIDOS": 500},
+        {"CD_CARGO": "5", "CD_TIPO_ELEICAO": "1", "NR_CANDIDATO": "111", "SQ_CANDIDATO": "9", "DS_SIT_TOT_TURNO": "NÃO ELEITO", "QT_VOTOS_NOMINAIS": 500, "QT_VOTOS_NOMINAIS_VALIDOS": 500},  # supplementary
     ]
     candidate_zip, detail_zip = write_zips(tmp_path, 2022, candidates=[*candidates, *extra], detail=detail)
 

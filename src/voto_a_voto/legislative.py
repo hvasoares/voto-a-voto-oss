@@ -12,7 +12,8 @@ Output, per cargo and year, in ``data/legislative/`` (UTF-8, LF, rows sorted, no
 - ``<cargo>-<year>-candidatos.csv``: ``uf, candidato_numero, sq_candidato, nome, nome_urna, partido, federacao, situacao``;
 - ``<cargo>-<year>-totais.csv``: ``uf, cd_municipio`` and the TSE counts of the detail file summed over zones.
 
-Votes are exactly as the TSE gives them and are not normalised: in 2018 two senators per state were elected and every voter
+Supplementary elections are left out (the 2018 zip carries the 2020 Senate election of MT under the same ANO_ELEICAO; only the
+ordinary one, ``CD_TIPO_ELEICAO = 2``, is kept). Votes are exactly as the TSE gives them and are not normalised: in 2018 two senators per state were elected and every voter
 had two votes, so ``votos`` of a senator in 2018 is about twice ``comparecimento``; in 2022 one senator per state. Legend
 votes (``legenda_validos``) exist only in the totals, never per candidate. ``cd_municipio`` is the TSE code of
 ``cities.csv`` (the IBGE code is empty there for cities that exist only in 2018/2022). Overseas posts (``zz``) would be
@@ -34,19 +35,20 @@ __all__ = [
 ]
 
 # Bump when the extraction changes what it writes from the same source bytes: every year is then extracted again.
-VERSION = 1
+VERSION = 2
 CARGOS = {"5": "senador", "6": "deputado-federal"}
 UFS = tuple("AC AL AM AP BA CE DF ES GO MA MG MS MT PA PB PE PI PR RJ RN RO RR RS SC SE SP TO".split()) + ("ZZ",)
 FIRST_ROUND = "1"
+ORDINARY_ELECTION = "2"  # CD_TIPO_ELEICAO; the 2018 zip also holds the 2020 supplementary Senate election of MT (CD_ELEICAO 438), same ANO_ELEICAO
 
 VOTES_COLUMNS = (
-    "NR_TURNO", "SG_UF", "CD_MUNICIPIO", "CD_CARGO", "NR_CANDIDATO", "SQ_CANDIDATO", "NM_CANDIDATO", "NM_URNA_CANDIDATO",
+    "CD_TIPO_ELEICAO", "NR_TURNO", "SG_UF", "CD_MUNICIPIO", "CD_CARGO", "NR_CANDIDATO", "SQ_CANDIDATO", "NM_CANDIDATO", "NM_URNA_CANDIDATO",
     "SG_PARTIDO", "SG_FEDERACAO", "DS_SIT_TOT_TURNO", "QT_VOTOS_NOMINAIS", "QT_VOTOS_NOMINAIS_VALIDOS",
 )
 TOTALS_COLUMNS = (
-    "NR_TURNO", "SG_UF", "CD_MUNICIPIO", "CD_CARGO", "QT_APTOS", "QT_COMPARECIMENTO", "QT_ABSTENCOES", "QT_VOTOS",
+    "CD_TIPO_ELEICAO", "NR_TURNO", "SG_UF", "CD_MUNICIPIO", "CD_CARGO", "QT_APTOS", "QT_COMPARECIMENTO", "QT_ABSTENCOES", "QT_VOTOS",
     "QT_TOTAL_VOTOS_VALIDOS", "QT_VOTOS_NOMINAIS_VALIDOS", "QT_TOTAL_VOTOS_LEG_VALIDOS", "QT_VOTOS_BRANCOS",
-    "QT_TOTAL_VOTOS_NULOS", "QT_TOTAL_VOTOS_ANULADOS", "QT_VOTOS_ANULADOS_APU_SEP",
+    "QT_TOTAL_VOTOS_NULOS", "QT_TOTAL_VOTOS_ANULADOS", "QT_TOTAL_VOTOS_ANUL_SUBJUD", "QT_VOTOS_ANULADOS_APU_SEP",
 )
 
 
@@ -78,7 +80,7 @@ class CandidateRow:
 @dataclass(frozen=True)
 class Totals:
     """Counts of one cargo summed over the zones of a municipality. ``votos`` is every vote cast for the cargo (two per voter for
-    the 2018 Senate); ``validos = nominais_validos + legenda_validos``; ``votos = validos + brancos + nulos + anulados + anulados_apu_sep``."""
+    the 2018 Senate); ``validos = nominais_validos + legenda_validos``; ``votos = validos + brancos + nulos + anulados + anulados_subjud + anulados_apu_sep`` (``anulados_subjud``: votes annulled but still sub judice)."""
 
     aptos: int
     comparecimento: int
@@ -90,6 +92,7 @@ class Totals:
     brancos: int
     nulos: int
     anulados: int
+    anulados_subjud: int
     anulados_apu_sep: int
 
     def __add__(self, other: "Totals") -> "Totals":
@@ -120,7 +123,7 @@ def _clean(value: str) -> str:
 
 
 def _selected(rows: Iterable[Mapping[str, str]], required: tuple[str, ...]) -> Iterator[Mapping[str, str]]:
-    """First-round rows of the two legislative cargos; fails loudly when a column the extraction needs is gone."""
+    """First-round rows of the two legislative cargos in the ordinary general election; fails loudly when a column the extraction needs is gone."""
     checked = False
     for row in rows:
         if not checked:
@@ -128,7 +131,7 @@ def _selected(rows: Iterable[Mapping[str, str]], required: tuple[str, ...]) -> I
             if missing:
                 raise MissingColumnError(f"TSE file has no column(s) {', '.join(missing)}; found {', '.join(row)}")
             checked = True
-        if row["CD_CARGO"] in CARGOS and row["NR_TURNO"] == FIRST_ROUND:
+        if row["CD_CARGO"] in CARGOS and row["NR_TURNO"] == FIRST_ROUND and row["CD_TIPO_ELEICAO"] == ORDINARY_ELECTION:
             yield row
 
 
@@ -159,7 +162,7 @@ def parse_uf_totals(rows: Iterable[Mapping[str, str]]):
             int(row["QT_APTOS"]), int(row["QT_COMPARECIMENTO"]), int(row["QT_ABSTENCOES"]), int(row["QT_VOTOS"]),
             int(row["QT_TOTAL_VOTOS_VALIDOS"]), int(row["QT_VOTOS_NOMINAIS_VALIDOS"]), int(row["QT_TOTAL_VOTOS_LEG_VALIDOS"]),
             int(row["QT_VOTOS_BRANCOS"]), int(row["QT_TOTAL_VOTOS_NULOS"]), int(row["QT_TOTAL_VOTOS_ANULADOS"]),
-            int(row["QT_VOTOS_ANULADOS_APU_SEP"]),
+            int(row["QT_TOTAL_VOTOS_ANUL_SUBJUD"]), int(row["QT_VOTOS_ANULADOS_APU_SEP"]),
         )
         key = (row["SG_UF"].lower(), int(row["CD_MUNICIPIO"]))
         cargo = totals[CARGOS[row["CD_CARGO"]]]
