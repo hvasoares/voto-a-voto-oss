@@ -117,10 +117,8 @@ export function captureDir(dir: string, root = CAPTURES): string {
  * never be mistaken for a good one.
  */
 export async function waitFonts(page: Page, timeoutMs = 5000): Promise<boolean> {
-  return await Promise.race([
-    page.evaluate(() => document.fonts.ready.then(() => true)),
-    new Promise<boolean>((done) => setTimeout(() => done(false), timeoutMs)),
-  ])
+  const budget = new Promise<boolean>((done) => setTimeout(() => done(false), timeoutMs))
+  return await Promise.race([page.evaluate(() => document.fonts.ready.then(() => true)), budget])
 }
 
 /**

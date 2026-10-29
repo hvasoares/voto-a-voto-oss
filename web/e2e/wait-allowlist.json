@@ -6,6 +6,12 @@
     "reason": "A paused replay cancels its stepper, so when the code is right NOTHING observable happens after the picked cycle; the window exists so a stale step of the old schedule has its chance to wrongly override the pick. No attribute marks 'one step window passed'."
   },
   {
+    "file": "e2e/capture.ts",
+    "rule": "fixed-wait",
+    "match": "const budget = new Promise<boolean>((done) => setTimeout(() => done(false), timeoutMs))",
+    "reason": "The fonts-ready budget of the capture helper (#133): a timeout racing document.fonts.ready — the contract proceeds after 5 s no matter the page, a duration, so no attribute can be awaited."
+  },
+  {
     "file": "e2e/share.spec.ts",
     "rule": "fixed-wait",
     "match": "await page.waitForTimeout(300)",
