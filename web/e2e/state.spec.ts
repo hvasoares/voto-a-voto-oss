@@ -35,6 +35,20 @@ test.describe('state: one list, search first', () => {
     expect(await page.locator('a[href*="/rj/cidade-exemplo"]').count()).toBe(6)
   })
 
+  test('the colour legend comes above the list of municipalities, in the pre-rendered page and after hydration (#106)', async ({ page }) => {
+    const legend = page.locator('[data-map-area] [data-slot="mapa-escala"]')
+    const above = async () => {
+      const [l, firstRow] = await Promise.all([legend.boundingBox(), rows(page).first().boundingBox()])
+      expect(l!.y + l!.height).toBeLessThanOrEqual(firstRow!.y)
+    }
+    await page.goto(rj)
+    await waitReady(page)
+    await expect(legend).toHaveCount(1)
+    await above()
+    // the legend sits in the first screen next to the search, not after the rows
+    expect((await legend.boundingBox())!.y).toBeLessThan(844)
+  })
+
   test('the rows are the coloured rows: chip, name, margin in pp, valid votes, each a link to the City card', async ({ page }) => {
     await page.goto(rj)
     await waitReady(page)

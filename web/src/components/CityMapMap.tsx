@@ -235,13 +235,19 @@ export default function CityMapMap({ data, base, geoUrl, ufNome, semContorno }: 
         ))}
       </div>
 
-      {vista === 'lista' ? <Lista rows={rows} base={base} uf={uf} ladoANome={ladoANome} ladoBNome={ladoBNome} /> : null}
+      {/* The legend leads the long list (#106), so the colours are explained before the rows that use them and no scrolling past the list is needed; under the map it stays after it. */}
+      {vista === 'lista' ? (
+        <>
+          <Escala vista={vista} rows={rows} shapes={null} semContorno={semContorno} ladoANome={ladoANome} ladoBNome={ladoBNome} />
+          <Lista rows={rows} base={base} uf={uf} ladoANome={ladoANome} ladoBNome={ladoBNome} />
+        </>
+      ) : null}
 
       {vista === 'mapa' ? (
         <MapView mesh={mesh} meshError={meshError} byIbge={byIbge} tapCd={tapCd} cityHref={cityHref} selected={selected} ladoANome={ladoANome} ladoBNome={ladoBNome} ufNome={ufNome} />
       ) : null}
 
-      <Escala vista={vista} rows={rows} shapes={vista === 'mapa' && mesh ? meshShapes(mesh) : null} semContorno={semContorno} ladoANome={ladoANome} ladoBNome={ladoBNome} />
+      {vista === 'mapa' ? <Escala vista={vista} rows={rows} shapes={mesh ? meshShapes(mesh) : null} semContorno={semContorno} ladoANome={ladoANome} ladoBNome={ladoBNome} /> : null}
       {/* The panel belongs to the map: there a tap selects. In the list a tap opens the City card, so no selection to show. */}
       {vista === 'mapa' ? <Selecionado row={byCd.get(selected) ?? null} cityHref={cityHref} ladoANome={ladoANome} ladoBNome={ladoBNome} ladoACompleto={ladoANomeCompleto} ladoBCompleto={ladoBNomeCompleto} ano={ano} /> : null}
     </section>

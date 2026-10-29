@@ -95,6 +95,13 @@ afterEach(() => {
 })
 
 describe('CityMapMap island (lista)', () => {
+  it('the colour legend comes before the list of municipalities, so it is seen without scrolling past the list (#106)', () => {
+    const html = renderToStaticMarkup(<CityMapMap base="/s/" geoUrl="/s/geo/municipios-rj.json" ufNome="Rio de Janeiro" semContorno={0} data={DATA} />)
+    const legend = html.indexOf('data-slot="mapa-escala"')
+    expect(legend).toBeGreaterThan(-1)
+    expect(legend).toBeLessThan(html.indexOf('aria-label="Municípios"'))
+    expect(html.match(/data-slot="mapa-escala"/g)).toHaveLength(1)
+  })
   it('data-ready (#122): no on the server, yes once the island runs, and the pre-hydration taps are applied first', async () => {
     expect(renderToStaticMarkup(<CityMapMap base="/s/" geoUrl="/s/geo/municipios-rj.json" ufNome="Rio de Janeiro" semContorno={0} data={DATA} />)).toContain('data-ready="no"')
     // The page script kept a tap on the Mapa toggle and a tap on Carmo from before hydration.
