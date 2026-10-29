@@ -46,7 +46,7 @@ describe('the sticker island', () => {
     const root = open('?mora=rj/cidade-exemplo')
     expect(root.getAttribute('data-ready')).toBe('no')
     await vi.waitFor(() => expect(root.querySelector('[data-sticker-picture]')).not.toBeNull())
-    expect(root.getAttribute('data-ready')).toBe('yes')
+    await vi.waitFor(() => expect(root.getAttribute('data-ready')).toBe('yes'))
     expect(root.getAttribute('data-places')).toBe('1')
   })
 
