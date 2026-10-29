@@ -1,6 +1,15 @@
 import { matchPattern, paramNames, specificity } from '@/routes'
 
-/** Every route of the site (site/README.md "Routes"). Pages are ported to Astro one ticket at a time (#50). */
+/*
+ * Every route of the site, complete by construction (#110): one entry per page template of src/pages, plus
+ * the two declared-but-unported patterns of KNOWN_ROUTES_EXTRA (web/e2e/routes-inventory.ts, the single
+ * owner of the examples and exclusions). The guard (web/integrations/routes-inventory.test.ts) derives the
+ * templates from the page files and fails naming any template missing here or any entry with no page
+ * behind it. Static, because the 404 classifier ships to the browser and cannot walk the filesystem.
+ * `/comparar/:ciclo/` stands for the two ported cycles: both are pre-rendered, so the classifier only ever
+ * meets an unknown ciclo, which it keeps rejecting (#50: a param page is valid only when its page declares
+ * the values).
+ */
 export const KNOWN_ROUTES = [
   '/',
   '/:uf/',
@@ -8,19 +17,59 @@ export const KNOWN_ROUTES = [
   '/:uf/:slug/compartilhar/',
   '/:uf/:slug/qr/',
   '/:uf/:slug/tres-ciclos/',
+  '/:uf/historia/',
+  '/:uf/resumo/',
+  '/abrir-cartao/',
+  '/adivinhe/',
+  '/api/',
   '/brasil/',
   '/brasil/:regiao/',
+  '/brasil/compartilhar/',
+  '/brasil/qr/',
+  '/cara-a-cara/',
+  '/comparar/:ciclo/',
+  '/compartilhar/',
+  '/dados-para-nerds/',
+  '/dados-para-nerds/estado/:uf/',
+  '/dados-para-nerds/geometria/',
+  '/dados-para-nerds/regiao/:regiao/',
+  '/edicoes/',
+  '/edicoes/:id/',
+  '/embed/:uf/:slug/',
+  '/fale-sem-errar/',
+  '/fato/:path*/',
+  '/fragmentos/mapa-por-estado/ficaram-em-casa/:ciclo/',
+  '/fragmentos/mapa-por-estado/margem/',
+  '/fragmentos/mapa-por-estado/virada/',
+  '/fragmentos/mapa-uf/',
+  '/gerador/',
+  '/imprensa/',
+  '/imprensa/cartaz/:uf/',
+  '/imprensa/folha/',
   '/mapa/',
-  '/mapa/virada/',
   '/mapa/:uf/',
-  '/comparar/2022/',
-  '/comparar/2018/',
+  '/mapa/ficaram-em-casa/',
+  '/mapa/ficaram-em-casa/:ciclo/',
+  '/mapa/virada/',
+  '/meu-brasil/',
+  '/meu-brasil/adesivo/',
+  '/meu-brasil/historia/',
+  '/overlay/',
+  '/overlay/tela/',
+  '/qr/',
   '/relatorios/',
+  '/relatorios/:report/',
+  '/relatorios/cidades-fora-da-curva/',
+  '/relatorios/cidades-fora-da-curva/:uf/:min/',
   '/relatorios/cidades-que-viraram/',
   '/relatorios/como-cada-grupo-votou/',
-  '/relatorios/:report/',
-  '/tres-ciclos/:uf/',
+  '/relatorios/comparecimento/',
+  '/relatorios/disputas-mais-apertadas/',
+  '/relatorios/maiores-viradas/',
+  '/relatorios/votos-ganhos-e-perdidos/',
   '/sobre-os-dados/',
+  '/tres-ciclos/:uf/',
+  '/widget/',
 ] as const
 
 export interface FallbackData {

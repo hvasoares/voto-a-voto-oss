@@ -20,7 +20,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { gzipSync } from 'node:zlib'
 import { dirname, join, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const distDir = process.env.OUT_DIR ?? resolve(here, '..', 'dist')
@@ -116,24 +116,30 @@ export function measureDist(distRoot: string): Record<RouteId, Metric> {
   return out
 }
 
-const failures: string[] = []
-const runs = (m: number, b: number): string => `${kb(m)} / ${kb(b)} ${m <= b ? 'OK' : 'OVER'}`
-for (const [id, metric] of Object.entries(measureDist(distDir)) as [RouteId, Metric][]) {
-  const b = BUDGETS[id]
-  console.log(`\n${id} (${ROUTES[id]})`)
-  for (const part of metric.parts) console.log(`  ${part.kind.padEnd(8)} ${kb(part.gzip).padStart(6)}  ${part.path}`)
-  console.log(`  html     ${runs(metric.html, b.html * 1024)}`)
-  console.log(`  css      ${runs(metric.css, b.css * 1024)}`)
-  console.log(`  eagerJs  ${runs(metric.eagerJs, b.eagerJs * 1024)}`)
-  console.log(`  islandJs ${runs(metric.islandJs, b.islandJs * 1024)} (hydration JS; not loaded at parse for client:interaction islands)`)
-  console.log(`  total    ${kb(metric.total)} gzip`)
-  for (const [key, kind] of [['html', metric.html], ['css', metric.css], ['eagerJs', metric.eagerJs], ['islandJs', metric.islandJs]] as const) {
-    if (kind > b[key] * 1024) failures.push(`${id}.${key}: ${kb(kind)} > budget ${kb(b[key] * 1024)}`)
+function main(distRoot: string): void {
+  const failures: string[] = []
+  const runs = (m: number, b: number): string => `${kb(m)} / ${kb(b)} ${m <= b ? 'OK' : 'OVER'}`
+  for (const [id, metric] of Object.entries(measureDist(distRoot)) as [RouteId, Metric][]) {
+    const b = BUDGETS[id]
+    console.log(`\n${id} (${ROUTES[id]})`)
+    for (const part of metric.parts) console.log(`  ${part.kind.padEnd(8)} ${kb(part.gzip).padStart(6)}  ${part.path}`)
+    console.log(`  html     ${runs(metric.html, b.html * 1024)}`)
+    console.log(`  css      ${runs(metric.css, b.css * 1024)}`)
+    console.log(`  eagerJs  ${runs(metric.eagerJs, b.eagerJs * 1024)}`)
+    console.log(`  islandJs ${runs(metric.islandJs, b.islandJs * 1024)} (hydration JS; not loaded at parse for client:interaction islands)`)
+    console.log(`  total    ${kb(metric.total)} gzip`)
+    for (const [key, kind] of [['html', metric.html], ['css', metric.css], ['eagerJs', metric.eagerJs], ['islandJs', metric.islandJs]] as const) {
+      if (kind > b[key] * 1024) failures.push(`${id}.${key}: ${kb(kind)} > budget ${kb(b[key] * 1024)}`)
+    }
+  }
+  if (failures.length) {
+    console.error(`\nBUDGET EXCEEDED:\n${failures.join('\n')}`)
+    process.exit(1)
+  } else {
+    console.log('\nAll budgets met.')
   }
 }
-if (failures.length) {
-  console.error(`\nBUDGET EXCEEDED:\n${failures.join('\n')}`)
-  process.exit(1)
-} else {
-  console.log('\nAll budgets met.')
-}
+
+// CLI: `tsx scripts/perf-budgets.ts` (npm run check:perf). The route-inventory guard (#110) imports ROUTES
+// and BUDGETS in tests, so the run itself waits until the file is executed, like sample-manifest.ts.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main(distDir)
