@@ -50,7 +50,9 @@ A `Presidente | Senador | Deputado Federal` switch on the city card. `Presidente
 - **Scale.** Fixed 0 to 100% axis, same for every cargo and cycle, so bars compare across tabs; small shares stay small, with the number printed. A tick for the chosen threshold, labelled with its value.
 - **Legend copy.** Computed by the build and the island from `partyShares`, never typed: base ("% dos votos válidos para {cargo}"), threshold in words, the N folded in "Outros", and the two-vote note when the cycle has it.
 - **Annotations.** The threshold tick; the two-vote note; "limite escolhido por você" when changed. No other.
-- **Fallback.** No JavaScript: the link row to the accessible state table. Island failed: the panel says "Não deu para carregar os dados deste cargo. A tabela do estado está em [link]", sets `data-error`, and the card above is unaffected.
+- **Fallback.** No JavaScript: the link row to the accessible state table. Island failed: the panel says "Não deu para carregar os dados deste cargo." then "A tabela acima continua valendo." (with the link to the state table), sets `data-error`, and the card above is unaffected; no internal state word (`data-ready`, "estado falhou") reaches the text.
+- **Type scale.** Only the site's four sizes (13, 16, 20, 26 px; weights 400 and 700) from the type tokens; any other size fails the existing type-scale guard.
+- **Control hierarchy.** The cargo switch is the primary control (filled segmented control); the cycle selector is secondary (outlined selected state). The headline states its threshold ("N partidos passam de X% dos votos") because the count depends on the control.
 
 ## Testing Decisions
 
@@ -72,7 +74,7 @@ A `Presidente | Senador | Deputado Federal` switch on the city card. `Presidente
 ## Further Notes (decisions for the owner)
 
 1. Headline measure: count above threshold, effective number in "ver cálculo" only (recommended), or the effective number as headline.
-2. Default threshold 5% (recommended), with 1, 2, 10 offered.
+2. Default threshold 5% (recommended), with 1, 2, 10 offered. Evidence that would kill the choice: citizens reading the count as a fact of the city rather than a function of the threshold; test the question "do citizens read the count as a fact of the city?".
 3. Party legend votes: ship with nominal votes only and the label "votos nos candidatos" (recommended), or wait for `votacao_partido_munzona_<year>.zip`.
 4. 2026 Senate has two votes per voter (inferred from 54 seats; not verified in the data): confirm and add the field to the manifest.
 5. Raise the card's `islandJs` budget (recommended) versus a smaller island.

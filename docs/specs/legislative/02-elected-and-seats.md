@@ -10,7 +10,7 @@ Ticket: none. Depends on: [01](01-hydrated-delivery-pattern.md). Feeds 03, 06, 0
 
 ## Solution
 
-A per-state, per-year table prerendered by the pattern of 01: the elected (name, party or federation, ballot number, alphabetical order; never by votes), and the list table (list, valid votes, seats, votos por cadeira, with the state's quociente eleitoral printed as the reference). **No seat figure prints for a state-year until the build has verified it twice**: the count of the elected equals the seats of the state, and the TSE allocation rules, rerun on the votes, give exactly the elected set the TSE flagged. A state-year that fails prints only the TSE flag as the file has it, with the catalog line "conferência pendente", and the build fails unless the failure is listed in a committed, reasoned exceptions file.
+A per-state, per-year table prerendered by the pattern of 01: the elected (name, party or federation, ballot number, alphabetical order; never by votes), and the list table (list, valid votes, seats split into "pelo quociente" and "por sobra" plus the total, votos por cadeira, with the state's quociente eleitoral printed as the reference). The split makes the "Conferido" reconciliation visible: QP seats plus leftover seats equal the state's seats. **No seat figure prints for a state-year until the build has verified it twice**: the count of the elected equals the seats of the state, and the TSE allocation rules, rerun on the votes, give exactly the elected set the TSE flagged. A state-year that fails prints only the TSE flag as the file has it, with the catalog line "conferência pendente", and the build fails unless the failure is listed in a committed, reasoned exceptions file.
 
 ## User Stories
 
@@ -73,6 +73,7 @@ The 2018 inputs per list come from the candidate file's `SQ_COLIGACAO`, `NM_COLI
 - Annotations: the QE mark; lists with leftover seats are tagged "sobra" (text, not color).
 - Fallback: the prerendered table is the full content; failed island keeps it with the catalog line; `noscript` line.
 - Neutrality sweep: no "vencedor", no "desperdiçado", no "eficiente"; groups of lists count lists, not people; only the elected are named; the elected are listed alphabetically.
+- Seats table: columns "pelo quociente", "por sobra" and total; the numbers of mocks and of the build's golden fixtures are computed by the same allocation code (`seats.py`), never typed. Header spacing ("Votos" apart from "Cadeiras", "Votos/cadeira" on one line) is part of the visual check.
 - Every figure has a fact record (`web/docs/facts.md`): source files, the sum, the rule article, "ver cálculo".
 - Weight: absorption first, as the lens asks: the state page (`/<uf>/`) and the party page of 03 can carry it; a new route is justified only if neither does. Budget line: the "table-only" or "with island" line of 01. Measured baseline fixed by the ticket.
 - Granularity: state-year. No view implies a municipality-level election result (the election is state-wide; municipal votes appear only in the shard).
@@ -86,7 +87,7 @@ Visual testing rules (verbatim from `docs/checklists/dataviz-lens.md`):
 - e2e runs over the committed fixture dataset; suites are serialised (shared E2E port, never parallel agents).
 - Exit criteria include the screenshot-review protocol and a ux-review pass on the phone frame, not just green tests.
 
-Specific: `tests/unit` for `seats.py` with hand-built tiny states whose answer is computed by hand (one with a leftover round, one with a candidate under 10% of QE, one with no list reaching QE, one federation, one coalition, one tie); the real-data reproduction of every state-year of 2018, 2022 and 2026 as a build check (the oracle is the TSE flag); an e2e that every elected of the fixture appears once and the seat sum equals the table; a test that a state-year with a failed verification prints no seat figure.
+Specific: `tests/unit` for `seats.py` with hand-built tiny states whose answer is computed by hand (one with a leftover round, one with a candidate under 10% of QE, one with no list reaching QE, one federation, one coalition, one tie); the real-data reproduction of every state-year of 2018, 2022 and 2026 as a build check (the oracle is the TSE flag); an e2e that every elected of the fixture appears once and the seat sum equals the table; a test that a state-year with a failed verification prints no seat figure; a mock or golden whose "Conferido" claim does not reproduce under the declared rule variant fails.
 
 ## Out of Scope
 

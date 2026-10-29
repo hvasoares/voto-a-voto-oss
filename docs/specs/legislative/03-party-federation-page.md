@@ -42,6 +42,7 @@ A new route `/partidos/`: a search field (the city-search pattern) over parties 
 - **Second channel beyond hue.** Every band has a fill density pattern (none, dots, lines, cross-hatch, solid) and the share is printed on shapes large enough at the zoom, in the selected panel and in the aria-label of each shape; the state table gives counts in digits.
 - **Legend copy computed by the build.** Bands, denominators and the sentence "a conta é de cidades, não de pessoas" come from the catalog with the numbers filled by the build.
 - **Annotation plan.** Selected-city panel (name, share, votes, "Abrir cidade"); a note under the map counts cities outside the colouring (no candidate of the party, no mesh shape), as the state map does.
+- **Presence grid.** Every tile of the presence grid carries the city name; a grid of anonymous squares is not allowed. The no-JS equivalent is the linked list of cities with the band in words.
 - **Fallback content.** Prerendered state table and the elected list; failed island shows the island-failed line with the table untouched.
 - **Neutrality sweep.** Counts cities, never people; party order is alphabetical by abbreviation, never by votes or seats; no "mais forte", "domina", "vence", "reduto"; elected are listed alphabetically.
 

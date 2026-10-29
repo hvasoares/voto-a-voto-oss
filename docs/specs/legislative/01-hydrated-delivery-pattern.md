@@ -68,7 +68,8 @@ New routes become `RouteId` entries; the city card keeps its line, so its switch
 - Scale: shares on a linear scale from zero, the maximum stated in words in the legend ("a barra mais longa é X%"), computed by the build.
 - Legend copy: the folding line "Outros: N partidos, X%" computed from `agrupados`; labels from the sentence catalog (`web/src/lib/sentences/catalog.ts`), no typed sentences.
 - Annotations: none on bars; the total (valid votes) above the table.
-- Fallback: the table; failed-island line; `noscript` line.
+- Fallback: the table; failed-island line; `noscript` line. The failed-island text is "Não deu para carregar os dados deste cargo." then "A tabela acima continua valendo."; no internal state word (`data-ready`, "estado falhou") reaches user-facing text.
+- Type scale: legislative views use only the site's four sizes (13, 16, 20, 26 px; weights 400 and 700) from the type tokens; any other size fails the existing type-scale guard.
 
 ## Testing Decisions
 

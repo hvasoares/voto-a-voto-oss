@@ -40,9 +40,10 @@ Ticket: none yet. Depends on: [01 Hydrated delivery pattern](01-hydrated-deliver
 
 ### Visual decisions
 
-- **Chart family.** No chart: a table. Three numbers per cargo are exact comparisons and the finest grain is the municipality; bars would invite reading ratios as outcomes. The city panel is a three-column row (`ListRow`-like rows), the report a `ReportTable`.
+- **Chart family.** A table, plus the two-bar verdict of the city view (below). Three numbers per cargo are exact comparisons and the finest grain is the municipality; more bars would invite reading ratios as outcomes. The city panel is a three-column row (`ListRow`-like rows), the report a `ReportTable`.
 - **Palette.** Tokens from `shared/tokens.ts`, text-first; the relation word is the carrier, never hue (no red for "maior"). `abstencao` stays unused here.
-- **Scale rule.** No scale; counts with `number-format.ts`. If a share of cities is drawn as a bar, it is a plain 0 to 100% bar in one ink.
+- **City verdict.** The city view shows a visual verdict per cargo: two bars on the same scale (blank + null versus the gap between the first two), the numbers beside them and a printed word "maior" or "menor" (equal numbers print neither). The gap is labelled "Diferença entre os dois primeiros", never a bare "Diferença".
+- **Scale rule.** Apart from the verdict bars (one scale per cargo, from zero), no scale; counts with `number-format.ts`. If a share of cities is drawn as a bar, it is a plain 0 to 100% bar in one ink.
 - **Legend copy.** Computed by the build from the function and the catalog: which votes count as non-valid, what the gap is for each cargo, the two-vote note for 2018 and 2026 Senate, the base ("{n} cidades; {m} fora da base").
 - **Annotations.** Row note on Deputado ("a diferença entre duas listas não decide cadeiras"); Senate two-vote note. None else.
 - **Fallback.** No JavaScript: the report is complete; the city panel's replacement is the link row. Island failed: same text as 04, `data-error`.

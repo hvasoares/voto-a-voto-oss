@@ -45,6 +45,7 @@ One prerendered, table-only report per election year (2018, 2022, 2026; Chamber 
 - Palette: `web/src/shared/tokens.ts` neutral tokens only; no party hue; "com" is the filled token, "sem" the outlined token, so the pair survives color blindness (fill versus outline, not hue).
 - Scale: integer seats from zero, per row; the legend says "cada quadrado é uma cadeira".
 - Legend copy: computed by the build from the data ("2018: N candidatos têm ao menos um eleito a mais; M estados não puderam ser calculados"), catalog labels.
+- Result line: "N outras pessoas eleitas por causa desses votos" is bold body-ink text, not the link style; link color is reserved for navigation ("ver cálculo" stays the only link-styled text in the row).
 - Annotations: the assumption line above the table ("o cálculo tira os votos do candidato; não diz o que os eleitores fariam").
 - Fallback: the table is the report; no island exists to fail; no `noscript` needed beyond that.
 - Neutrality sweep: counterfactual labelled "calculado", never a fact; no "merece", "não merecia", "carona", "beneficiado"; the others are counted, not named (recommended, note 2); only the elected are named; rows alphabetical; groups count lists and seats, not voters; a screening frame line: "lista de cálculo, não uma conclusão".
