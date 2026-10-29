@@ -7,6 +7,7 @@ import { readFile, stat } from 'node:fs/promises'
 import { extname, join, normalize, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { normalizeBase } from '../src/paths'
+import { offsetFrom, portFor, tcpTaken } from './e2e-port'
 
 const TYPES: Record<string, string> = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -47,7 +48,10 @@ export function startServer(root = resolve(process.env.OUT_DIR ?? 'dist'), port 
 
 // Only when run as a script: scripts/measure.ts imports startServer and must not start a second server (or hang on it).
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const port = Number(process.env.PORT ?? 4173)
+  // Explicit wins: PORT (set by Playwright's webServer) or E2E_PORT; otherwise the port derives from the
+  // checkout (#124), the same number `npm run e2e:port` prints.
+  const env = { ...process.env, E2E_PORT: process.env.PORT ?? process.env.E2E_PORT }
+  const port = portFor(process.cwd(), env, tcpTaken, offsetFrom(process.env))
   const base = normalizeBase(process.env.SITE_BASE)
   await startServer(resolve(process.env.OUT_DIR ?? 'dist'), port, base)
   console.log(`serving dist on http://localhost:${port}${base}`)

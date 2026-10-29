@@ -70,18 +70,20 @@ store), `analytics`, `paths`, `routes`, `slots/home/uf-grid` + `search-ui`, `slo
 | `npm run build:production` | production build into `dist-production/` (CDN only if `cdn.config.json` lists libraries) |
 | `npm run test:e2e:production` | the phone suite against the production build (approved CDN origins allowed; none today) |
 | `npm run test:cdn` | CDN mechanism tests against a fake CDN (test double) and a production build that uses it |
-| `PORT=4175 npm run serve` | serve `dist/` like GitHub Pages (301 to trailing slash, 404.html for misses, honours SITE_BASE) |
+| `PORT=4175 npm run serve` | serve `dist/` like GitHub Pages (301 to trailing slash, 404.html for misses, honours SITE_BASE) on a port you pick; without `PORT` it derives the checkout's e2e port |
 | `npm test` | vitest: shards (builder + data check), pure logic, theme mapping, island behaviour in jsdom |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run check:shards` | shard data check + sizes (fixture dataset); `check:shards:real` for the real `../data` |
 | `npm run check:facts` | the fact-record gate (#61) over the dataset: every record has a source and a calculation, ids are unique; `check:facts:real` for `../data`. The built site is checked by `integrations/facts-gate.ts`; see `docs/facts.md` |
-| `npm run test:e2e` | builds, serves on E2E_PORT (default 4176) and runs Playwright: project `phone` (390x844) and project `desktop` (1440x900, each spec resizes for its 390/768 checks). With `E2E_SKIP_BUILD=1` the build step is skipped and the existing `dist/` (or `dist-production/` under `E2E_MODE=production`) is served as-is — re-running one spec after a build starts in seconds |
+| `npm run test:e2e` | builds, serves on the checkout's derived port (see `npm run e2e:port`) and runs Playwright: project `phone` (390x844) and project `desktop` (1440x900, each spec resizes for its 390/768 checks). With `E2E_SKIP_BUILD=1` the build step is skipped and the existing `dist/` (or `dist-production/` under `E2E_MODE=production`) is served as-is — re-running one spec after a build starts in seconds |
 | `npm run test:real` | same against the real dataset (`DATA_DIR=../data`); skipped when missing |
 | `npm run capture` | writes `.captures/home/default.png` (fixture state, 390x844) for the screenshot review |
 
 Environment: `SITE_BASE=/voto-a-voto/` for a project Pages site; `DATA_DIR` (relative to `web/`) picks the dataset:
 default `fixtures/data` (committed fixtures), real data `DATA_DIR=../data`. `OUT_DIR` changes the output directory.
-`E2E_PORT` picks the Playwright port (default 4176); `E2E_SKIP_BUILD=1` makes a spec run reuse the current build
+`E2E_PORT` pins the Playwright port explicitly; by default it derives from the checkout path (20000-29999,
+`npm run e2e:port` prints it, `E2E_PORT_OFFSET=1` shifts it for the second base pass), so two checkouts or
+worktrees run specs at the same time without colliding (#124). `E2E_SKIP_BUILD=1` makes a spec run reuse the current build
 instead of rebuilding (CI leaves it unset, so it always builds fresh).
 
 ## How things work (read before #49, #50 and new pages)
@@ -150,7 +152,7 @@ How it works (`integrations/cdn.ts`, config `cdn.config.json`):
 - If the CDN is unreachable or a hash does not match, the island's code does not load: the pre-rendered page stays (title, state grid, links, footer, the search box as HTML) and a note "A busca não está disponível agora. Escolha um estado abaixo." appears (`client:interaction` directive). Tested with the origin blocked and with a tampered file (`e2e/cdn.spec.ts`).
 - One copy of React: the import map plus tests: each CDN library fetched once, no ReactDOM in local files, exactly one script on the page contains ReactDOM (also asserted for the local build in `home.spec.ts`), and the island's hooks work (two Reacts throw "invalid hook call").
 - Network allow-list (`e2e/network.spec.ts`, helpers): `E2E_MODE=local` allows the site origin and analytics origins only; `E2E_MODE=production` also allows `approvedOrigins` of the config in use. Both fail on anything else (canary tests).
-- `scripts/fake-cdn.ts` is a test double (ES builds of React served on localhost:4179 with its own hashes). It is not a provider.
+- `scripts/fake-cdn.ts` is a test double (ES builds of React served on the checkout's derived port, offset 2 from the base e2e port, with its own hashes). It is not a provider.
 
 Candidates for the CDN: `react`, `react-dom`, `react-dom/client`, `react/jsx-runtime` (only together). Everything else stays bundled: shadcn components are copied code, Tailwind is CSS at build, `cmdk`, `radix-ui` and `lucide-react` are small, tree-shaken and tied to the components.
 

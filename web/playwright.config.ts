@@ -1,6 +1,9 @@
 import { defineConfig } from '@playwright/test'
+import { offsetFrom, portFor, tcpTaken } from './scripts/e2e-port'
 
-const PORT = Number(process.env.E2E_PORT ?? 4176)
+// One port per checkout (#124): two checkouts run specs at the same time without colliding on a fixed
+// port, and this config passes its result to the server below through webServer.env.PORT. Explicit wins.
+const PORT = portFor(process.cwd(), process.env, tcpTaken, offsetFrom(process.env))
 const base = process.env.SITE_BASE ?? '/'
 // local-bundle build (default) or production build: see README "CDN". Output directory differs so both can exist.
 const mode = process.env.E2E_MODE === 'production' ? 'production' : 'local'

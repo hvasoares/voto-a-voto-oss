@@ -1,5 +1,5 @@
 .PHONY: test tse-scrape data data-outlines data-nerds data-2018 data-2022 data-2026 data-check publish-edition rollback-edition nonvoters deploy \
-        install typecheck web-test browser e2e e2e-pages e2e-real build-deploy ci web-install
+        install typecheck web-test browser e2e e2e-port e2e-pages e2e-real build-deploy ci web-install
 
 test:
 	uv run pytest
@@ -64,15 +64,21 @@ web-test:
 browser:
 	npx --prefix web playwright install chromium
 
-# ci.yml: npm run test:e2e — phone e desktop, base "/" (fixture). Porta fixa 4176 por padrão; para rodar em
-# paralelo com outra sessão use `E2E_PORT=4177 make e2e`. Para re-rodar um spec sem rebuildar o site (usa o
-# dist/ já construído): `E2E_SKIP_BUILD=1 npm --prefix web run test:e2e -- <spec>`.
+# ci.yml: npm run test:e2e — phone e desktop, base "/" (fixture). A porta deriva do checkout (#124): dois
+# checkouts rodam em paralelo sem colidir; `make e2e-port` mostra qual é; `E2E_PORT=<porta> make e2e` força
+# outra. Para re-rodar um spec sem rebuildar o site (usa o dist/ já construído):
+# `E2E_SKIP_BUILD=1 npm --prefix web run test:e2e -- <spec>`.
 e2e:
 	npm --prefix web run test:e2e
 
-# ci.yml: npm run test:e2e com SITE_BASE=/voto-a-voto-oss/ — a segunda passada de base (rode depois de `make e2e`).
+# Porta e2e derivada deste checkout (ticket #124).
+e2e-port:
+	@npm --prefix web run e2e:port --silent
+
+# ci.yml: npm run test:e2e com SITE_BASE=/voto-a-voto-oss/ — a segunda passada de base; E2E_PORT_OFFSET=1 desloca
+# a porta derivada, então as duas passadas podem rodar lado a lado no mesmo checkout.
 e2e-pages:
-	SITE_BASE=/voto-a-voto-oss/ E2E_PORT=4177 PUBLIC_DONATION_URL=https://doacao.example.test/apoie npm --prefix web run test:e2e
+	SITE_BASE=/voto-a-voto-oss/ E2E_PORT_OFFSET=1 PUBLIC_DONATION_URL=https://doacao.example.test/apoie npm --prefix web run test:e2e
 
 # Não está no CI (caro): os 87 testes sobre o dataset REAL (≡ test:real). Rodar antes de qualquer deploy de dados.
 e2e-real:

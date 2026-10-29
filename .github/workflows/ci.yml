@@ -63,9 +63,12 @@ jobs:
           - label: pages
             site-base: /voto-a-voto-oss/
             donation-url: https://doacao.example.test/apoie
+            # The second base pass shifts the derived e2e port (#124), like `make e2e-pages`.
+            e2e-port-offset: '1'
     env:
       SITE_BASE: ${{ matrix.site-base }}
       PUBLIC_DONATION_URL: ${{ matrix.donation-url }}
+      E2E_PORT_OFFSET: ${{ matrix.e2e-port-offset }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
