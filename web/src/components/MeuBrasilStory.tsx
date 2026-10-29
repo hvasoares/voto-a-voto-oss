@@ -126,8 +126,9 @@ export default function MeuBrasilStory({ base, origin, fixture, words }: MeuBras
   useEffect(() => {
     if (!parsed) return
     if (failed) return island.markFailed('city shard')
-    if (!refs.length) island.markReady()
-  }, [parsed, failed, refs.length, island.markReady, island.markFailed])
+    // The drawn story (the sequence carries the visitor-facing gate) is the ready answer too.
+    if (!refs.length || cards.length) island.markReady()
+  }, [parsed, failed, refs.length, cards.length, island.markReady, island.markFailed])
 
   if (failed) return <p className="mt-4 text-step-1 text-muted-foreground" data-placeholder role="status" data-ready={island.dataReady} data-error={island.dataError}>{words.failed}</p>
   if (!refs.length && parsed) return <p className="mt-4 text-step-1 text-muted-foreground" data-placeholder role="status" data-ready={island.dataReady} data-places="0">{words.none}</p>

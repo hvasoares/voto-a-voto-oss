@@ -5,6 +5,7 @@
  * -13.6 to -6.2 (+7.4 swing), sp +12 -> -18 (-30), mg -4.9 -> +0.9 (+5.8).
  */
 import { cleanup, render, screen } from '@testing-library/react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { noopAnalytics, setAnalytics, type Analytics } from '@/analytics'
@@ -42,6 +43,23 @@ afterEach(() => {
 })
 
 describe('StateMapMap island (mosaico)', () => {
+  it('data-ready (#122): no on the server, yes once the island runs, and the pre-hydration tap is applied first', () => {
+    expect(renderToStaticMarkup(<StateMapMap kind="margin" data={DATA} base="/s/" />)).toContain('data-ready="no"')
+    const host = document.createElement('astro-island')
+    host.setAttribute('data-pending-uf', 'mg')
+    document.body.appendChild(host)
+    const analytics: Analytics = { pageView() {}, event: (n, p) => void events.push([n, p]) }
+    setAnalytics(analytics)
+    render(<StateMapMap kind="margin" data={DATA} base="/s/" />, { container: host })
+    const section = host.querySelector('[data-slot="state-map"]')!
+    expect(section.getAttribute('data-ready')).toBe('yes')
+    // The tap the page script kept arrived before the readiness did: mg is the selection the visitor tapped.
+    expect(screen.getAllByText(/MG · selecionado/)[0]).toBeTruthy()
+    expect(events).toEqual([['map_state_tap', { uf: 'mg' }]])
+    expect(host.getAttribute('data-pending-uf')).toBeNull()
+    host.remove()
+  })
+
   it('renders one tile link per row under the base, named from content (state name + value, not a bare code)', () => {
     setup('margin')
     // The accessible name is the content: visible bits plus the sr-only sentence (issue #19).

@@ -1,5 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { act } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { setAnalytics, noopAnalytics, type Analytics } from '@/analytics'
@@ -80,5 +82,28 @@ describe('CitySearch island', () => {
     await waitFor(() => expect(globalThis.fetch).toHaveBeenCalled())
     expect(screen.queryAllByRole('link')).toHaveLength(0)
     expect(screen.queryByText(/Nenhuma cidade/)).toBeNull()
+  })
+
+  it('data-ready (#122): no on the server and while the index is on the way, yes once it answered', async () => {
+    expect(renderToStaticMarkup(<CitySearch base="/" />)).toContain('data-ready="no"')
+    let answer!: (r: Response) => void
+    vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>((r) => (answer = r))))
+    render(<CitySearch base="/" />)
+    const root = () => document.querySelector('[data-city-search="main"]')!
+    expect(root().getAttribute('data-ready')).toBe('no')
+    await act(async () => answer(new Response(SEARCH)))
+    await waitFor(() => expect(root().getAttribute('data-ready')).toBe('yes'))
+    expect(root().getAttribute('data-error')).toBeNull()
+  })
+
+  it('search.json that cannot be read is the failed of the island: failed, the short reason, the one console line', async () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 500 })))
+    render(<CitySearch base="/" />)
+    await waitFor(() => expect(document.querySelector('[data-city-search]')!.getAttribute('data-ready')).toBe('failed'))
+    expect(document.querySelector('[data-city-search]')!.getAttribute('data-error')).toBe('search.json')
+    expect(spy).toHaveBeenCalledWith('city-search: search.json')
+    expect(spy).toHaveBeenCalledOnce()
+    spy.mockRestore()
   })
 })

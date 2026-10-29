@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 /** The island of "Ficaram em casa" (#32): numbers come from the model, a tap selects, the toggle keeps the address, no candidate anywhere. */
 import { cleanup, render, screen, within } from '@testing-library/react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it } from 'vitest'
 import { noopAnalytics, setAnalytics, type Analytics } from '@/analytics'
@@ -29,6 +30,19 @@ afterEach(() => {
 })
 
 describe('StayHomeMap', () => {
+  it('data-ready (#122): no on the server, yes once the island runs, and the pre-hydration tap selects first', () => {
+    expect(renderToStaticMarkup(<StayHomeMap model={model} base="/s/" viewPaths={viewPaths} />)).toContain('data-ready="no"')
+    const host = document.createElement('astro-island')
+    host.setAttribute('data-pending-uf', 'rj')
+    document.body.appendChild(host)
+    setAnalytics({ pageView() {}, event: (n, p) => void events.push([n, p]) } satisfies Analytics)
+    render(<StayHomeMap model={model} base="/s/" viewPaths={viewPaths} />, { container: host })
+    expect(host.querySelector('[data-slot="state-map"]')!.getAttribute('data-ready')).toBe('yes')
+    expect(screen.getByText('RJ · selecionado')).toBeTruthy()
+    expect(events).toEqual([['map_state_tap', { uf: 'rj' }]])
+    host.remove()
+  })
+
   it('prints the percentage on every tile and links each state under the base', () => {
     setup()
     for (const [uf, pct] of [['rj', '25,0%'], ['sp', '21,1%'], ['mg', '30,0%']] as const) {

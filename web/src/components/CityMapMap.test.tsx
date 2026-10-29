@@ -6,6 +6,7 @@
  * fetch of the mesh file, the notes and the analytics, never election numbers.
  */
 import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { noopAnalytics, setAnalytics, type Analytics } from '@/analytics'
@@ -95,6 +96,26 @@ afterEach(() => {
 })
 
 describe('CityMapMap island (lista)', () => {
+  it('data-ready (#122): no on the server, yes once the island runs, and the pre-hydration taps are applied first', async () => {
+    expect(renderToStaticMarkup(<CityMapMap base="/s/" geoUrl="/s/geo/municipios-rj.json" ufNome="Rio de Janeiro" semContorno={0} data={DATA} />)).toContain('data-ready="no"')
+    // The page script kept a tap on the Mapa toggle and a tap on Carmo from before hydration.
+    const host = document.createElement('astro-island')
+    host.setAttribute('data-pending-vista', 'mapa')
+    host.setAttribute('data-pending-cd', '02')
+    document.body.appendChild(host)
+    const analytics: Analytics = { pageView() {}, event: (n, p) => void events.push([n, p]) }
+    setAnalytics(analytics)
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, status: 200, json: () => Promise.resolve(MESH) }))
+    render(<CityMapMap base="/s/" geoUrl="/s/geo/municipios-rj.json" ufNome="Rio de Janeiro" semContorno={0} data={DATA} />, { container: host })
+    const section = host.querySelector('[data-slot="city-map"]')!
+    expect(section.getAttribute('data-ready')).toBe('yes')
+    expect(section.getAttribute('data-error')).toBeNull()
+    await vi.waitFor(() => expect(document.querySelector('[data-slot="mapa-selecionado"]')?.textContent).toContain('Carmo'))
+    expect(new URLSearchParams(location.search).get('vista')).toBe('mapa')
+    expect(host.getAttribute('data-pending-cd')).toBeNull()
+    expect(host.getAttribute('data-pending-vista')).toBeNull()
+  })
+
   it('renders one row per municipality under the base, ordered by round-2 valid votes', () => {
     setup()
     const rows = screen.getByRole('navigation', { name: 'Municípios' }).querySelectorAll('a[data-cd]')

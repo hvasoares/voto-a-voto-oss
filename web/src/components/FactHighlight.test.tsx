@@ -30,6 +30,24 @@ describe('the sentence highlight', () => {
     expect(container.innerHTML).toBe('')
   })
 
+  it('data-ready (#122): yes once the page of the calculation answered, failed with its reason and console line when it cannot be read', async () => {
+    render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" calcLabel="De onde vem este número?" />)
+    await screen.findAllByRole('button')
+    const done = document.querySelector('[data-fact-highlight]')!
+    expect(done.getAttribute('data-ready')).toBe('yes')
+    expect(done.getAttribute('data-error')).toBeNull()
+
+    cleanup()
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 404 })))
+    const { container } = render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" calcLabel="De onde vem este número?" />)
+    await new Promise((r) => setTimeout(r, 20))
+    // The failed island draws nothing (as before #122); the contract's trace is the console line and the gate.
+    expect(container.innerHTML).toBe('')
+    expect(spy).toHaveBeenCalledWith('fact-highlight: fact page')
+    spy.mockRestore()
+  })
+
   it('lists the sentence of each cycle (its change line) as a button and a table with the figures of the page', async () => {
     render(<FactHighlight href="/fato/estado/rj/tres-ciclos/" calcLabel="De onde vem este número?" />)
     expect(await screen.findAllByRole('button')).toHaveLength(1)

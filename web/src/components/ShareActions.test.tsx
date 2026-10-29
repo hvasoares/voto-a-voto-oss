@@ -45,6 +45,12 @@ describe('the ShareActions island (ticket #7)', () => {
     expect(html).toMatch(/data-text-body/)
   })
 
+  it('data-ready (#122): no in the pre-rendered HTML, yes as soon as the island runs (a tap never waits)', () => {
+    expect(renderToStaticMarkup(<ShareActions text={TEXT} svg={SVG} filename={FILENAME} link={LINK} />)).toContain('data-ready="no"')
+    setup()
+    expect(document.querySelector('[data-share-actions]')!.getAttribute('data-ready')).toBe('yes')
+  })
+
   it('shows the buttons after hydration, prepares the PNG and emits share_opened', async () => {
     const user = setup({ canShare: () => true, share: async () => {} })
     const share = screen.getByRole('button', { name: 'Compartilhar' })
