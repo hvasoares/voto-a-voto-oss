@@ -1,0 +1,75 @@
+---
+/**
+ * The shared footer component of ticket #113 (expand step; the markup lives in src/shared/footer.ts, this
+ * shell owns the page wiring: the base via siteHref — the one reader of import.meta.env.BASE_URL — the
+ * edition via lib/editions-load, the donation address via PUBLIC_DONATION_URL).
+ *
+ * Props (typed; every default reproduces markup that main already emits — the pilot's, unless said otherwise):
+ *  - `source`      the page's source line ("Fonte: TSE, dados finais", the fixture note…). Given → the PAGE
+ *                  footer (`<footer data-component="source-footer">`); absent → the GLOBAL lines (the
+ *                  Base.astro block: Edição, Privacidade, donation, finality chip, Relatórios/Mapa).
+ *  - `aboutLink`   draw "Sobre os dados ›" after the source note (default true, the pilot carries it).
+ *  - `aboutClass`  the about link's class (default 'source-footer__about', the card's keyboard-only link).
+ *  - `separator`   text between note and link (default '', the card variant; the standard pages pass ' · ').
+ *  - `class`       the <footer>/wrapper class (source footer default 'source-footer', the pilot's own).
+ *  - `chip`        the "Final, não ao vivo" chip leading the second global line (default true, Base).
+ *  - `donation`    the donation link, drawn when PUBLIC_DONATION_URL configures an address (default true).
+ *  - `links`       the second global line's links (default Relatórios + Mapa por estado, base-resolved here).
+ *  - `linkClass`   the first-line links' class (default the FOOTER_LINK token; '' omits it — the QuietDoc line).
+ *
+ * Static Astro HTML only — no island, no JS. A page needing a variant these props cannot reproduce does not
+ * tweak its output ad hoc: the variant lands in src/shared/footer.ts (with its exact-markup test) first,
+ * then the page migrates (#114/#115/#116).
+ */
+import { globalFooterLines, sourceFooter, type FooterLink } from '@/shared/footer'
+import { siteHref } from '@/paths'
+import { donationUrl } from '@/lib/donation'
+import { editionLabel, editionPath } from '@/lib/editions'
+import { currentEdition } from '@/lib/editions-load'
+
+interface Props {
+  source?: string
+  aboutLink?: boolean
+  aboutClass?: string
+  separator?: string
+  class?: string
+  chip?: boolean
+  donation?: boolean
+  links?: readonly FooterLink[]
+  linkClass?: string
+}
+
+const p = Astro.props
+let markup: string
+if (p.source !== undefined) {
+  markup = sourceFooter({
+    source: p.source,
+    aboutHref: siteHref('sobre-os-dados/'),
+    aboutLink: p.aboutLink,
+    aboutClass: p.aboutClass,
+    separator: p.separator,
+    class: p.class,
+  })
+} else {
+  // Ticket #59: every page names the edition of the data it shows and links to its immutable address.
+  const edition = await currentEdition()
+  markup = globalFooterLines({
+    editionHref: siteHref(editionPath(edition.id)),
+    editionLabel: editionLabel(edition),
+    // The "Privacidade" link opens the privacy section of /sobre-os-dados/, which discloses the metrics
+    // notice (the notice-only model of 2026-10-27) and the browser-level opt-out.
+    privacyHref: siteHref('sobre-os-dados/#privacidade'),
+    donationUrl: donationUrl(),
+    donation: p.donation,
+    chip: p.chip,
+    // #103: Relatórios and Mapa por estado left the top bar; this line keeps them one click away.
+    links: p.links ?? [
+      { href: siteHref('relatorios/'), label: 'Relatórios' },
+      { href: siteHref('mapa/'), label: 'Mapa por estado' },
+    ],
+    class: p.class,
+    linkClass: p.linkClass,
+  })
+}
+---
+<Fragment set:html={markup} />
