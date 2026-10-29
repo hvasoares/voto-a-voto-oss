@@ -3,6 +3,7 @@ import { getAnalytics } from '@/analytics'
 import PlacePicker, { type PickedPlace } from '@/components/PlacePicker'
 import { ARROWS, CLUE_IDS, MAX_GUESSES, brazilDate, clueText, countdown, dailyIndex, dayNumber, feedback, gridRow, msToNext, outcome, regionName, shareText, unlockedClues, type Compare, type Feedback, type GameCity, type GameData } from '@/lib/game'
 import { browserGameStorage, clearHistory, guessesOf, loadSave, withResult, writeSave, type GameSave } from '@/lib/game-store'
+import { formatInteger } from '@/lib/number-format'
 import { performShare, type ShareNavigator } from '@/lib/share-flow'
 import { DEFAULT_VOICE, message, type MessageKey } from '@/lib/sentences/catalog'
 import '@/lib/sentences/catalog-game'
@@ -170,7 +171,7 @@ export default function Game({ base, origin }: GameProps) {
               return (
                 <tr key={i} className="border-b border-border" data-row={i + 1} data-correct={f?.correct ? 'yes' : 'no'}>
                   <td className="py-2 pr-2 text-step-1">{g ? `${i + 1}  ${g[2]} · ${g[0].toUpperCase()}` : <span className="text-muted-foreground">{i + 1}</span>}</td>
-                  <td className="whitespace-nowrap py-2 pr-2 text-primary" data-distance>{f ? (f.correct ? '0 km' : `${new Intl.NumberFormat('pt-BR').format(f.km)} km ${ARROWS[f.dir]}`) : ''}</td>
+                  <td className="whitespace-nowrap py-2 pr-2 text-primary" data-distance>{f ? (f.correct ? '0 km' : `${formatInteger(f.km)} km ${ARROWS[f.dir]}`) : ''}</td>
                   <td className="whitespace-nowrap py-2 pr-2" data-turnout>{f ? `${MARK[f.turnout]} ${say(WORD[f.turnout])}` : ''}</td>
                   <td className="whitespace-nowrap py-2" data-size>{f ? `${MARK[f.size]} ${say(WORD[f.size])}` : ''}</td>
                 </tr>

@@ -12,7 +12,8 @@
  */
 import type { ArcCounts } from './arcs'
 import { citiesChanged } from './season'
-import { CATALOG, DEFAULT_LOCALE, DEFAULT_REGISTER, message, type Locale, type MessageKey, type Register } from './sentences/catalog'
+import { CATALOG, message, type MessageKey } from './sentences/catalog'
+import { voiceOf as voice, type VoiceInput } from './sentences/voice'
 import { STORY_PLAIN, STORY_STANDARD } from './sentences/catalog-story'
 
 Object.assign(CATALOG['pt-BR'].standard, STORY_STANDARD)
@@ -80,11 +81,7 @@ export function storyPlan(input: StoryInput): StoryStep[] {
 /** Whether the sequence has the six to eight cards a story needs. */
 export const storyFits = (plan: readonly StoryStep[]) => plan.length >= STORY_MIN && plan.length <= STORY_MAX
 
-interface Voice {
-  locale?: Locale
-  register?: Register
-}
-const voice = (v: Voice) => ({ locale: v.locale ?? DEFAULT_LOCALE, register: v.register ?? DEFAULT_REGISTER })
+interface Voice extends VoiceInput {}
 const say = (v: Voice, key: string, params: Record<string, string | number> = {}) => message(voice(v), key as MessageKey, params)
 const num = (n: number) => n.toLocaleString('pt-BR')
 

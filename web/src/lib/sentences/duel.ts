@@ -4,17 +4,15 @@
  * names a side. Importing this file loads the head-to-head's sentences (`catalog-duel.ts`).
  */
 import type { DuelData, DuelPlace, Level, Measure, MeasureKey } from '../duel-model'
-import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type Locale, type MessageKey, type Register } from './catalog'
+import { message as say, type MessageKey } from './catalog'
 import './catalog-duel'
+import { voiceOf, type VoiceInput } from './voice'
 
-export interface DuelVoice {
-  locale?: Locale
-  register?: Register
-}
+export interface DuelVoice extends VoiceInput {}
 type Params = Record<string, string | number>
 
 export function duelSay(voice: DuelVoice, key: MessageKey, params: Params = {}): string {
-  return say({ locale: voice.locale ?? DEFAULT_LOCALE, register: voice.register ?? DEFAULT_REGISTER }, key, params)
+  return say(voiceOf(voice), key, params)
 }
 
 /** "Comparecimento", "Virada desde 2022". */

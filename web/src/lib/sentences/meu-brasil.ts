@@ -6,13 +6,11 @@
  *   no cycle in common, or no place   `mb.noData` / `mb.none`
  */
 import { commonCycle, type PlaceCard } from '../meu-brasil'
-import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type Locale, type MessageKey, type Register } from './catalog'
+import { message as say, type MessageKey } from './catalog'
 import './catalog-meu-brasil'
+import { voiceOf, type VoiceInput } from './voice'
 
-export interface MeuBrasilVoice {
-  locale?: Locale
-  register?: Register
-}
+export interface MeuBrasilVoice extends VoiceInput {}
 
 const pctOf = (card: PlaceCard, ano: number): number | undefined => {
   const b = card.cycles.find((c) => c.ano === ano)
@@ -20,7 +18,7 @@ const pctOf = (card: PlaceCard, ano: number): number | undefined => {
 }
 
 export function meuBrasilHeadline(cards: readonly PlaceCard[], voice: MeuBrasilVoice = {}): string {
-  const v = { locale: voice.locale ?? DEFAULT_LOCALE, register: voice.register ?? DEFAULT_REGISTER }
+  const v = voiceOf(voice)
   const message = (key: MessageKey, params: Record<string, string | number> = {}) => say(v, key, params)
   const list = new Intl.ListFormat(v.locale, { style: 'long', type: 'conjunction' })
   if (cards.length === 0) return message('mb.none')

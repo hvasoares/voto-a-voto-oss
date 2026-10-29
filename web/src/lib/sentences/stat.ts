@@ -11,8 +11,10 @@
  * and carries no number: the picture is never drawn with a made-up zero.
  */
 import type { CityResult } from '@/shared/city-model'
-import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type MessageKey } from './catalog'
+import { message as say, type MessageKey } from './catalog'
 import './catalog-stat'
+import { formatInteger, formatShare } from '../number-format'
+import { voiceOf } from './voice'
 import type { Place } from './headline'
 import { marginVotes } from './margin'
 
@@ -32,8 +34,8 @@ export interface Stat {
 const round1 = (x: number) => Math.round(x * 10) / 10
 
 export function statCard(r: CityResult | undefined, measure: Measure, place: Place & { ano?: number; turno?: number }): Stat {
-  const locale = place.locale ?? DEFAULT_LOCALE
-  const voice = { locale, register: place.register ?? DEFAULT_REGISTER }
+  const voice = voiceOf(place)
+  const locale = voice.locale
   const message = (key: MessageKey, params?: Record<string, string | number>, count?: number) => say(voice, key, params, count)
   const where = { city: place.cityName, turno: r?.turno ?? place.turno ?? 2, ano: r?.ano ?? place.ano ?? 2026 }
   const none = (): Stat => {
@@ -44,16 +46,16 @@ export function statCard(r: CityResult | undefined, measure: Measure, place: Pla
 
   const pct = (x: number) => {
     const v = round1(x)
-    if (x > 0 && v === 0) return message('pct.lessThan', { pct: new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 1 }).format(0.001) })
-    if (x < 100 && v >= 100) return message('pct.moreThan', { pct: new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 1 }).format(0.999) })
-    return new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 1 }).format(v / 100)
+    if (x > 0 && v === 0) return message('pct.lessThan', { pct: formatShare(0.001, locale) })
+    if (x < 100 && v >= 100) return message('pct.moreThan', { pct: formatShare(0.999, locale) })
+    return formatShare(v / 100, locale)
   }
   let number: string
   let line: string
   if (measure === 'margin') {
     const margin = marginVotes(r)
     if (margin === undefined) return none()
-    number = new Intl.NumberFormat(locale).format(margin)
+    number = formatInteger(margin, locale)
     line = message('stat.margin', where, margin)
   } else if (measure === 'turnout') {
     number = pct((r.comparecimento / r.aptos) * 100)

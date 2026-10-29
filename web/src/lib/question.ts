@@ -12,7 +12,8 @@
 import { cityArc, type Arc, type ArcKind } from './arcs'
 import type { CityShard } from './city-shard'
 import { arcLabel } from './sentences/arc'
-import { CATALOG, DEFAULT_LOCALE, DEFAULT_REGISTER, message, type Locale, type MessageKey, type Register } from './sentences/catalog'
+import { CATALOG, message, type MessageKey } from './sentences/catalog'
+import { voiceOf as voice, type VoiceInput } from './sentences/voice'
 import { GUESS_STANDARD } from './sentences/catalog-guess'
 import { QUESTION_PLAIN, QUESTION_STANDARD } from './sentences/catalog-question'
 
@@ -39,11 +40,7 @@ export function pickQuestion(shard: CityShard): Question {
   return questionOf(cityArc(shard), shard.city.uf === 'zz')
 }
 
-interface Voice {
-  locale?: Locale
-  register?: Register
-}
-const voice = (v: Voice) => ({ locale: v.locale ?? DEFAULT_LOCALE, register: v.register ?? DEFAULT_REGISTER })
+interface Voice extends VoiceInput {}
 
 export function questionText(q: Question, cityName: string, v: Voice = {}): string {
   const years = new Intl.ListFormat(voice(v).locale, { style: 'long', type: 'conjunction' }).format((q.arc.years ?? []).map(String))

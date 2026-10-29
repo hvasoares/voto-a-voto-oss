@@ -10,8 +10,10 @@
  *   otherwise                                               -> gap + `margin.fits` (whole times: the margin fits N times)
  */
 import type { CityResult } from '@/shared/city-model'
-import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type MessageKey } from './catalog'
+import { message as say, type MessageKey } from './catalog'
 import './catalog-margin'
+import { formatInteger } from '../number-format'
+import { voiceOf } from './voice'
 import type { Place } from './headline'
 
 /** The votes between the first and the second most voted candidate of the round; undefined when there is no pair to compare. */
@@ -25,10 +27,10 @@ export function marginLine(r: CityResult | undefined, place: Place): string | un
   if (!r) return undefined
   const margin = marginVotes(r)
   if (margin === undefined) return undefined
-  const voice = { locale: place.locale ?? DEFAULT_LOCALE, register: place.register ?? DEFAULT_REGISTER }
+  const voice = voiceOf(place)
   const message = (key: MessageKey, params?: Record<string, string | number>, count?: number) => say(voice, key, params, count)
   if (margin === 0) return message('margin.tie')
-  const int = (n: number) => new Intl.NumberFormat(voice.locale).format(n)
+  const int = (n: number) => formatInteger(n, voice.locale)
   const gap = message('margin.gap', { n: int(margin) }, margin)
   if (r.naoVotaram <= 0) return gap + message('margin.end')
   const m = int(r.naoVotaram)

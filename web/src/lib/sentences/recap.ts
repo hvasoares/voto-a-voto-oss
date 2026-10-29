@@ -4,17 +4,14 @@
  * picture's text alternative and the share text (plus the link).
  */
 import { span, type Recap } from '../recap'
-import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type Locale, type MessageKey, type Register } from './catalog'
+import { message as say, type MessageKey } from './catalog'
 import './catalog-recap'
+import { voiceOf, type VoiceInput } from './voice'
 
-export interface RecapPlace {
+export interface RecapPlace extends VoiceInput {
   /** "São Paulo". */
   stateName: string
-  locale?: Locale
-  register?: Register
 }
-
-const voiceOf = (p: RecapPlace) => ({ locale: p.locale ?? DEFAULT_LOCALE, register: p.register ?? DEFAULT_REGISTER })
 
 export function recapHeadline(recap: Recap, place: RecapPlace): string {
   const message = (key: MessageKey, params: Record<string, string | number> = {}) => say(voiceOf(place), key, params)
@@ -33,10 +30,10 @@ export function recapSubtitle(recap: Recap, place: RecapPlace): string {
 
 /** The line under a row's year: where the series starts, or the change in points against the previous cycle. */
 export function recapChange(row: Recap['rows'][number], place: Pick<RecapPlace, 'locale' | 'register'> = {}): string {
-  const message = (key: MessageKey, params: Record<string, string | number> = {}) => say(voiceOf({ stateName: '', ...place }), key, params)
+  const message = (key: MessageKey, params: Record<string, string | number> = {}) => say(voiceOf(place), key, params)
   if (row.status !== 'data') return message('recap.rowNoData')
   return row.changePp === undefined ? message('recap.start') : message('recap.change', { pp: row.changePp, ano: row.changeVs! })
 }
 
-export const recapBase = (place: Pick<RecapPlace, 'locale' | 'register'> = {}) => say(voiceOf({ stateName: '', ...place }), 'recap.base')
-export const recapTitle = (place: Pick<RecapPlace, 'locale' | 'register'> = {}) => say(voiceOf({ stateName: '', ...place }), 'recap.title')
+export const recapBase = (place: Pick<RecapPlace, 'locale' | 'register'> = {}) => say(voiceOf(place), 'recap.base')
+export const recapTitle = (place: Pick<RecapPlace, 'locale' | 'register'> = {}) => say(voiceOf(place), 'recap.title')

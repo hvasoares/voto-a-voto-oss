@@ -4,17 +4,14 @@
  * numbers the page prints. Importing this file loads the sentences (`catalog-brasil.ts`).
  */
 import type { BrasilView } from '../brasil'
-import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type Locale, type MessageKey, type Register } from './catalog'
+import { message as say, type MessageKey } from './catalog'
 import './catalog-brasil'
+import { voiceOf, type VoiceInput } from './voice'
 
-export interface BrasilVoice {
-  locale?: Locale
-  register?: Register
-}
+export interface BrasilVoice extends VoiceInput {}
 type Params = Record<string, string | number>
 
-const brasilSay = (voice: BrasilVoice, key: string, params: Params = {}): string =>
-  say({ locale: voice.locale ?? DEFAULT_LOCALE, register: voice.register ?? DEFAULT_REGISTER }, key as MessageKey, params)
+const brasilSay = (voice: BrasilVoice, key: string, params: Params = {}): string => say(voiceOf(voice), key as MessageKey, params)
 
 /** "No Brasil, no 2º turno de 2026, os votos válidos foram: Lula 51,78% e Flávio Bolsonaro 48,22%." */
 export function brasilHeadline(view: BrasilView, voice: BrasilVoice = {}): string {

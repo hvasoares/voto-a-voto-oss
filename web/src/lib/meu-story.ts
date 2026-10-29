@@ -19,7 +19,8 @@ import type { Arc } from './arcs'
 import type { Fact } from './curiosities'
 import { curiosityLine } from '@/slots/city/curiosities'
 import type { CityResult } from '@/shared/city-model'
-import { CATALOG, DEFAULT_LOCALE, DEFAULT_REGISTER, message, type Locale, type MessageKey, type Register } from './sentences/catalog'
+import { CATALOG, message, type MessageKey } from './sentences/catalog'
+import { voiceOf as voice, type VoiceInput } from './sentences/voice'
 import { STORY_PLAIN, STORY_STANDARD } from './sentences/catalog-story'
 import { STORY_TEXT_MAX } from './story'
 
@@ -112,11 +113,7 @@ export function meuStoryPlan(input: MeuStoryInput): MeuStep[] {
 
 export const meuStoryFits = (plan: readonly MeuStep[]) => plan.length >= MEU_STORY_MIN && plan.length <= MEU_STORY_MAX
 
-interface Voice {
-  locale?: Locale
-  register?: Register
-}
-const voice = (v: Voice) => ({ locale: v.locale ?? DEFAULT_LOCALE, register: v.register ?? DEFAULT_REGISTER })
+type Voice = VoiceInput
 const say = (v: Voice, key: string, params: Record<string, string | number> = {}) => message(voice(v), key as MessageKey, params)
 const num = (n: number) => n.toLocaleString('pt-BR')
 const list = (v: Voice, items: string[]) => new Intl.ListFormat(voice(v).locale, { style: 'long', type: 'conjunction' }).format(items)

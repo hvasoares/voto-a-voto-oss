@@ -7,6 +7,7 @@ import type { CityResult } from '@/shared/city-model'
 import { marginVotes } from './sentences/margin'
 import { DEFAULT_VOICE, message as say, type MessageKey } from './sentences/catalog'
 import './sentences/catalog-overlay'
+import { formatInteger, formatPoints } from './number-format'
 
 export const MEASURES = ['nv', 'margem', 'comparecimento', 'resultado'] as const
 export type OverlayMeasure = (typeof MEASURES)[number]
@@ -68,13 +69,12 @@ export function overlayFigure(result: CityResult | undefined, c: Pick<OverlayCon
   const nodata = { big: '—', sentence: t('overlay.nodata', { city: cityName, turno: c.turno, ano: c.ano }) }
   if (!result || result.aptos <= 0) return nodata
   const slots = { city: cityName, turno: result.turno, ano: result.ano }
-  const int = new Intl.NumberFormat('pt-BR')
-  const pct = (x: number) => `${new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 }).format(Math.round(x * 10) / 10)}%`
+  const pct = (x: number) => formatPoints(Math.round(x * 10) / 10)
   if (c.measure === 'nv') return { big: pct(result.notVotedShare), sentence: t('overlay.s.nv', slots) }
   if (c.measure === 'comparecimento') return { big: pct((result.comparecimento / result.aptos) * 100), sentence: t('overlay.s.comparecimento', slots) }
   if (c.measure === 'margem') {
     const m = marginVotes(result)
-    return m === undefined ? nodata : { big: int.format(m), sentence: t('overlay.s.margem', slots) }
+    return m === undefined ? nodata : { big: formatInteger(m), sentence: t('overlay.s.margem', slots) }
   }
   const [first, second] = result.ranking
   if (!first || !second || result.validos <= 0) return nodata

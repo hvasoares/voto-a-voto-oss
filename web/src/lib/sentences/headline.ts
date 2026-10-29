@@ -16,8 +16,10 @@
  * Overseas posts use the `lead.overseas` start ("No exterior, em ...") and the same figures.
  */
 import type { CandidateTally, CityResult } from '@/shared/city-model'
-import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type Locale, type MessageKey, type Register, type Voice } from './catalog'
+import { message as say, type Locale, type MessageKey, type Register, type Voice } from './catalog'
 import './catalog-headline'
+import { formatInteger, formatShare } from '../number-format'
+import { voiceOf } from './voice'
 
 /** Below this many registered voters percentages are too coarse to read; the sentence uses counts. */
 export const TINY_ELECTORATE = 100
@@ -46,19 +48,18 @@ function band(n: number, x: number): Band {
 const round1 = (x: number) => Math.round(x * 10) / 10
 
 export function headline(r: CityResult | undefined, place: Place): string {
-  const locale = place.locale ?? DEFAULT_LOCALE
-  const voice: Voice = { locale, register: place.register ?? DEFAULT_REGISTER }
+  const voice: Voice = voiceOf(place)
+  const locale = voice.locale
   const message = (key: MessageKey, params?: Record<string, string | number>, count?: number) => say(voice, key, params, count)
   if (!r) return message('noData')
 
-  const int = (n: number) => new Intl.NumberFormat(locale).format(n)
-  const pctFormat = new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 1 })
+  const int = (n: number) => formatInteger(n, locale)
   /** 33.6 -> "33,6%"; a non-zero part never reads as 0% and a partial one never as 100%. */
   const pct = (x: number): string => {
     const v = round1(x)
-    if (x > 0 && v === 0) return message('pct.lessThan', { pct: pctFormat.format(0.001) })
-    if (x < 100 && v >= 100) return message('pct.moreThan', { pct: pctFormat.format(0.999) })
-    return pctFormat.format(v / 100)
+    if (x > 0 && v === 0) return message('pct.lessThan', { pct: formatShare(0.001, locale) })
+    if (x < 100 && v >= 100) return message('pct.moreThan', { pct: formatShare(0.999, locale) })
+    return formatShare(v / 100, locale)
   }
   const names = new Intl.ListFormat(locale, { style: 'long', type: 'conjunction' })
   const ref = (nome: string) => (/^Candidat[oa]\b/.test(nome) ? message('label.article', { name: nome }) : nome)

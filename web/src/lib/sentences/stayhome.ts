@@ -4,17 +4,15 @@
  */
 import { formatInt } from '@/shared/city-model'
 import { formatShare, type Claim, type StayHomeRow } from '../stay-home'
-import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type Locale, type MessageKey, type Register } from './catalog'
+import { message as say, type MessageKey } from './catalog'
 import './catalog-stayhome'
+import { voiceOf, type VoiceInput } from './voice'
 
-export interface StayHomeVoice {
-  locale?: Locale
-  register?: Register
-}
+export interface StayHomeVoice extends VoiceInput {}
 type Params = Record<string, string | number>
 
 export function stayhomeSay(voice: StayHomeVoice, key: string, params: Params = {}): string {
-  return say({ locale: voice.locale ?? DEFAULT_LOCALE, register: voice.register ?? DEFAULT_REGISTER }, key as MessageKey, params)
+  return say(voiceOf(voice), key as MessageKey, params)
 }
 
 export const turnoLabel = (voice: StayHomeVoice, turno: 1 | 2) => stayhomeSay(voice, `stayhome.turno.${turno}`)

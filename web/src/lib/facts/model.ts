@@ -15,6 +15,7 @@ import type { CheckKind } from './checks'
 import { headline } from '../sentences/headline'
 import { marginLine, marginVotes } from '../sentences/margin'
 import '../sentences/catalog-facts'
+import { formatDecimal } from '../number-format'
 import { DEFAULT_LOCALE, message as say, REGISTERS, type Locale, type MessageKey, type Register } from '../sentences/catalog'
 
 /** The page of the facts of the curiosities card: it is the city's, not a cycle's. */
@@ -205,7 +206,7 @@ export function viewFacts(r: CityResult | undefined, place: FactPlace): Fact[] {
   if (margin !== undefined && marginSentence('standard')) {
     const [a, b] = r.ranking as unknown as [{ votos: number }, { votos: number }]
     const fits = margin > 0 && r.naoVotaram > 0 && margin <= r.naoVotaram
-    const times = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(r.naoVotaram / (margin || 1))
+    const times = formatDecimal(r.naoVotaram / (margin || 1), locale)
     const worked =
       margin === 0
         ? [std('fact.w.tie', { a: int(a.votos), b: int(b.votos) })]

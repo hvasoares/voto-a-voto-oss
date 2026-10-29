@@ -8,7 +8,8 @@
  */
 import type { ArcCounts } from './arcs'
 import type { CycleBlock } from './compare'
-import { CATALOG, DEFAULT_LOCALE, DEFAULT_REGISTER, message, type Locale, type MessageKey, type Register } from './sentences/catalog'
+import { CATALOG, message, type MessageKey } from './sentences/catalog'
+import { voiceOf as voice, type VoiceInput } from './sentences/voice'
 import { SEASON_PLAIN, SEASON_STANDARD } from './sentences/catalog-season'
 
 Object.assign(CATALOG['pt-BR'].standard, SEASON_STANDARD)
@@ -43,11 +44,7 @@ export function seasonPivot(blocks: readonly CycleBlock[], arcs: ArcCounts | und
   return { kind: 'change', label: to.left!.label, pp, cities: counted && counted.total > 0 ? counted : undefined }
 }
 
-interface Voice {
-  locale?: Locale
-  register?: Register
-}
-const voice = (v: Voice) => ({ locale: v.locale ?? DEFAULT_LOCALE, register: v.register ?? DEFAULT_REGISTER })
+interface Voice extends VoiceInput {}
 const say = (v: Voice, key: string, params: Record<string, string | number> = {}) => message(voice(v), key as MessageKey, params)
 const list = (v: Voice, items: number[]) => new Intl.ListFormat(voice(v).locale, { style: 'long', type: 'conjunction' }).format(items.map(String))
 

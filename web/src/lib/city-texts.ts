@@ -5,11 +5,13 @@
  * `check:texts` script and the tests).
  */
 import type { CandidateTally, CityResult } from '@/shared/city-model'
-import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type Locale, type MessageKey, type Register } from './sentences/catalog'
+import { message as say, type Locale, type MessageKey, type Register } from './sentences/catalog'
 import './sentences/catalog-texts'
+import { voiceOf } from './sentences/voice'
 import { headline } from './sentences/headline'
 import { marginLine, marginVotes } from './sentences/margin'
 import { spell, spellPercent } from './number-words'
+import { formatInteger, formatPoints } from './number-format'
 
 /** The block must fit one WhatsApp message and a short chain of SMS; the build fails above this many characters. */
 export const WHATSAPP_LIMIT = 700
@@ -34,7 +36,7 @@ export interface CityTextsInput {
 }
 
 const sayer = (i: CityTextsInput) => {
-  const voice = { locale: i.locale ?? DEFAULT_LOCALE, register: i.register ?? DEFAULT_REGISTER }
+  const voice = voiceOf(i)
   return (key: string, params: Record<string, string | number> = {}, count?: number) => say(voice, key as MessageKey, params, count)
 }
 
@@ -50,8 +52,9 @@ export function whatsappText(i: CityTextsInput): string {
   const say = sayer(i)
   const place = { cityName: i.cityName, overseas: i.overseas, register: i.register, locale: i.locale }
   const r = i.result
-  const int = (n: number) => new Intl.NumberFormat(i.locale ?? DEFAULT_LOCALE).format(n)
-  const pct = (x: number) => `${new Intl.NumberFormat(i.locale ?? DEFAULT_LOCALE, { maximumFractionDigits: 1 }).format(round1(x))}%`
+  const locale = voiceOf(i).locale
+  const int = (n: number) => formatInteger(n, locale)
+  const pct = (x: number) => formatPoints(round1(x), locale)
   // "Votaram" and "não votaram" are the card's own split of the electorate: valid votes against everyone else (absences, blank and null votes).
   const turnout = r && r.aptos > 0 ? say('text.wa.turnout', { voted: int(r.validos), aptos: int(r.aptos), votedShare: pct(r.votedShare), not: int(r.naoVotaram), notShare: pct(r.notVotedShare) }) : ''
   const source = i.fixture ? say('text.wa.source.fixture') : say('text.wa.source', { date: dateWords(i.edition.date, say, false) })
