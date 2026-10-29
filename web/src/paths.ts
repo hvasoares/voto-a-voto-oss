@@ -12,23 +12,16 @@ export function normalizeBase(base: string | undefined): string {
   return b
 }
 
-/** `withBase('/', '/rj/')` -> '/rj/'; `withBase('/voto-a-voto/', '/rj/')` -> '/voto-a-voto/rj/' */
-export function withBase(base: string, path: string): string {
-  const p = path.startsWith('/') ? path.slice(1) : path
-  return normalizeBase(base) + p
-}
-
 /**
- * The base-path link helper of ticket #113 (pure; the base is injected). Everything `withBase` does for plain
- * paths, plus the link semantics a page needs:
+ * The base-path link helper of ticket #113 (pure; the base is injected). The link semantics a page needs:
  *  - hash-only hrefs ('#topo'), absolute URLs, protocol-relative ('//cdn/x') and scheme hrefs (mailto:, tel:)
  *    pass through untouched;
  *  - an href already carrying the base ('/voto-a-voto-oss/x' with base '/voto-a-voto-oss/') is returned as is
  *    (idempotent — never double-prefixed);
  *  - a leading slash is optional on input; a query/hash tail ('?x=1#y') stays attached after the prefix;
  *  - an empty string means the site root: it returns the normalized base.
- * `withBase(base, path)` above is the legacy argument order the pre-#113 pages call; #114/#115/#116 migrate
- * those callers here, then the contract step removes it.
+ * Pages call `siteHref`; islands that receive the base as a prop call `linkHref(href, base)` (the legacy
+ * `withBase(base, path)` was removed by the contract step, #117).
  */
 const ABSOLUTE_OR_SCHEME = /^([a-zA-Z][a-zA-Z0-9+.-]*:|\/\/)/
 
@@ -45,15 +38,20 @@ export function linkHref(href: string, base: string): string {
 }
 
 /**
- * `linkHref` with the site base injected: the ONLY reader of `import.meta.env.BASE_URL` going forward (#113).
- * New code links with `siteHref('relatorios/')`; the per-page `const base = normalizeBase(...)` closures are
- * the pre-#113 pattern the migrate tickets replace one page at a time.
+ * The site base ('/' or '/voto-a-voto-oss/'): the ONLY reader of `import.meta.env.BASE_URL` (#113, enforced by
+ * the guard of #117). A page that hands the base to an island or a `data-base` attribute reads it here:
+ * `const base = siteBase()`.
  */
-export function siteHref(href: string): string {
-  return linkHref(href, normalizeBase(import.meta.env.BASE_URL))
+export function siteBase(): string {
+  return normalizeBase(import.meta.env.BASE_URL)
 }
 
-/** Inverse of withBase for a location pathname. Always returns a path with a leading and trailing slash. */
+/** `linkHref` with the site base injected: pages link with `siteHref('relatorios/')`. */
+export function siteHref(href: string): string {
+  return linkHref(href, siteBase())
+}
+
+/** Inverse of linkHref for a location pathname. Always returns a path with a leading and trailing slash. */
 export function stripBase(base: string, pathname: string): string {
   const b = normalizeBase(base)
   let p = pathname

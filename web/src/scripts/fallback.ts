@@ -1,4 +1,4 @@
-import { normalizeBase, stripBase } from '@/paths'
+import { siteBase, stripBase } from '@/paths'
 import { classifyPath } from '@/lib/fallback'
 import { loadSearchCities } from '@/lib/search-data'
 
@@ -8,7 +8,7 @@ import { loadSearchCities } from '@/lib/search-data'
  * Pages are ported one by one (#50): until a page is ported it is not pre-rendered, so this is the message.
  * When a page is ported it adds its client renderer here, like the vanilla 404 did.
  */
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 const main = document.querySelector<HTMLElement>('[data-fallback]')!
 const path = stripBase(base, location.pathname)
 

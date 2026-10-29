@@ -6,7 +6,7 @@
  * without JavaScript; the search script reads those rows from the page and makes no request.
  */
 import { countLabel, stateRows } from '@/slots/state/state-list'
-import { normalizeBase, siteHref } from '@/paths'
+import { siteBase, siteHref } from '@/paths'
 import PageDataDownload from '@/components/PageDataDownload.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { cityDataPath, stateDataPath } from '@/lib/api'
@@ -31,7 +31,7 @@ export async function getStaticPaths() {
 }
 
 const { uf } = Astro.params
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 // The #113 base-path helper (`base` stays for the fact-links, story and island props that take the base argument).
 const href = siteHref
 const state = (await loadStateShard(uf!))!

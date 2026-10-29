@@ -6,11 +6,11 @@
 import Base from '@/layouts/Base.astro'
 import StateMapMap from '@/components/StateMapMap'
 import SiteFooter from '@/components/SiteFooter.astro'
-import { normalizeBase, siteHref } from '@/paths'
-import { FOOTER_LINK } from '@/shared/link-classes'
+import { siteBase, siteHref } from '@/paths'
+import { FOOTER_LINK, NAV_CHIP_QUIET } from '@/shared/link-classes'
 import { loadStateMapData } from '@/lib/state-map-data'
 
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 // The #113 base-path helper (`base` stays for the StateMapMap island, which takes the base argument).
 const href = siteHref
 const data = await loadStateMapData()
@@ -19,7 +19,7 @@ const data = await loadStateMapData()
 <Base title="Mapa por estado · Voto a Voto">
   <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16 md:max-w-[720px] lg:grid lg:max-w-[1240px] lg:pt-8" id="main" data-page="mapa">
     <div class="lg:relative lg:z-10 lg:col-start-1 lg:row-start-1 lg:w-[610px] lg:self-start">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('/')}>‹ Início</a>
+    <a class={NAV_CHIP_QUIET} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Mapa por estado</h1>
     <p class="mt-1 font-serif text-step-2 wrap-anywhere lg:text-muted-foreground">Margem de {data.ladoANome} sobre {data.ladoBNome} no 2º turno de {data.ano}, em pontos percentuais (pp), por estado.</p>
     </div>

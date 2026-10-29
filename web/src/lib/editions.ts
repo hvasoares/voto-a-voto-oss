@@ -40,7 +40,7 @@ export function editionLabel(edition: Pick<Edition, 'id' | 'date'>): string {
   return suffix ? `${formatUtc(edition.date)} (${suffix})` : formatUtc(edition.date)
 }
 
-/** Site-relative address of an edition (pass it through `withBase`). */
+/** Site-relative address of an edition (pass it through `siteHref`). */
 export const EDITIONS_PATH = 'edicoes/'
 export const editionPath = (id: string): string => `${EDITIONS_PATH}${id}/`
 /** Site-relative address of the open dataset release of an edition. */

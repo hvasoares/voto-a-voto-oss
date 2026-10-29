@@ -5,7 +5,7 @@
  * upgrades it in place from 1024 px, only when in view.
  */
 import { SEM_SEGUNDO_TURNO, type TableSpec } from '@/lib/nerds/panels'
-import { withBase } from '@/paths'
+import { siteHref } from '@/paths'
 
 interface Props {
   spec: TableSpec
@@ -16,7 +16,7 @@ interface Props {
   plain?: boolean
 }
 const { spec, base = '/', plain } = Astro.props
-const link = (href: string) => withBase(base, href.startsWith('dados-para-nerds') ? href : `/${href}`)
+const link = (href: string) => siteHref(href.startsWith('dados-para-nerds') ? href : `/${href}`)
 ---
 <div class="nerds-tablewrap" tabindex="0" role="region" aria-label={spec.caption}>
   <table class="nerds-table" data-table={plain ? undefined : ''} data-table-plain={plain ? '' : undefined} data-ano={spec.ano} data-unit={spec.unit}>

@@ -4,7 +4,7 @@ import { loadCohortData } from '@/lib/cohorts-load'
 import { dataDir } from '@/lib/data-dir'
 import { segmentColor, type CohortGroup } from '@/lib/cohorts'
 import { formatInt } from '@/shared/city-model'
-import { normalizeBase, siteHref } from '@/paths'
+import { siteBase, siteHref } from '@/paths'
 import { colors } from '@/shared/tokens'
 import Seal from '@/components/Seal.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
@@ -14,6 +14,7 @@ import { getFactPage, sealOf } from '@/lib/facts/pages'
 import { message, DEFAULT_VOICE } from '@/lib/sentences/catalog'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { NAV_CHIP_QUIET } from '@/shared/link-classes'
 
 /*
  * Screen 12, "Como cada grupo votou" (ticket #15). Static, like /sobre-os-dados/: the whole report
@@ -21,7 +22,7 @@ import { resolve } from 'node:path'
  * JavaScript of its own — the pure model in src/lib/cohorts.ts is the source of the numbers, pinned
  * to the reference cohort table by src/lib/cohorts.test.ts on the committed data/.
  */
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 // The #113 base-path helper (`base` stays for `factLinks`, which takes the base argument).
 const href = siteHref
 const { report, labels } = await loadCohortData()
@@ -82,7 +83,7 @@ const totalLine = `${fmt(report.totals.cities2026)} cidades do 2º turno de 2026
 ---
 <Base title="Como cada grupo votou · Voto a Voto">
   <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="cohorts">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('/relatorios/')}>‹ Relatórios</a>
+    <a class={NAV_CHIP_QUIET} href={href('/relatorios/')}>‹ Relatórios</a>
     {banner && <p class="mt-2 border border-border bg-secondary px-3 py-2 text-step-2 font-bold" data-component="fixture-banner">{banner}</p>}
     <h1 class="mt-2 font-serif text-step-4 font-normal">Como cada grupo votou</h1>
     <p class="mt-[5px]" data-component="lead">Presidente 2026: cidades agrupadas pelo vencedor do 2º turno em 2018 e 2022, e o resultado de 2026 em cada grupo.</p>

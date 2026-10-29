@@ -6,7 +6,7 @@ import { displayName } from '@/shared/city-search'
 import { BACKGROUNDS, DEFAULT_OVERLAY, MEASURES, OVERLAY_CYCLES, OVERLAY_SIZES, overlayQuery, overlaySize, parseOverlay, type OverlayConfig } from '@/lib/overlay'
 import { DEFAULT_VOICE, message, type MessageKey } from '@/lib/sentences/catalog'
 import '@/lib/sentences/catalog-overlay'
-import { withBase } from '@/paths'
+import { linkHref } from '@/paths'
 
 /**
  * The overlay builder (#68; the Sketch frame "C2 Overlay para live"): pick a place, a measure, a cycle, a size and a background, see the overlay on a checkerboard and
@@ -130,7 +130,7 @@ export default function OverlayBuilder({ base, origin }: OverlayBuilderProps) {
         <div ref={frame} className="mt-1 flex min-h-[200px] items-center justify-center overflow-hidden rounded-md border border-border bg-[length:40px_40px] bg-[linear-gradient(45deg,var(--c-paper-2)_25%,transparent_25%,transparent_75%,var(--c-paper-2)_75%),linear-gradient(45deg,var(--c-paper-2)_25%,#fff_25%,#fff_75%,var(--c-paper-2)_75%)] [background-position:0_0,20px_20px] py-4" data-checker>
           {config.city ? (
             <div style={{ width: size.width * previewScale, height: size.height * previewScale, maxWidth: '100%' }} data-preview-box>
-              <iframe title={say('overlay.title')} src={withBase(base, path)} width={size.width} height={size.height} style={{ border: 0, transform: `scale(${previewScale})`, transformOrigin: '0 0', background: 'transparent' }} data-preview />
+              <iframe title={say('overlay.title')} src={linkHref(path, base)} width={size.width} height={size.height} style={{ border: 0, transform: `scale(${previewScale})`, transformOrigin: '0 0', background: 'transparent' }} data-preview />
             </div>
           ) : (
             <p className="rounded bg-background px-3 py-2 text-step-1" data-placeholder>{say('overlay.preview.empty')}</p>

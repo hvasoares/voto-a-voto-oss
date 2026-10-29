@@ -90,7 +90,7 @@ export interface FactPlace {
 
 export const factPage = (ano: number, turno: number) => `${ano}-${turno}`
 export const factId = (scope: string, page: string, anchor: string) => `${scope}/${page}/${anchor}`
-/** Site-relative address of a fact's page (pass it through `withBase`); the fragment names the record. */
+/** Site-relative address of a fact's page (pass it through `siteHref`); the fragment names the record. */
 export const factPath = (scope: string, page: string) => `fato/${scope}/${page}/`
 export const factHref = (f: Pick<Fact, 'scope' | 'page' | 'anchor'>, base = '/') => `${base}${factPath(f.scope, f.page)}#${f.anchor}`
 

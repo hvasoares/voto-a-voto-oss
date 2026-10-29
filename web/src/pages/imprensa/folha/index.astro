@@ -5,7 +5,7 @@
  */
 import Base from '@/layouts/Base.astro'
 import PressSheet from '@/components/PressSheet'
-import { normalizeBase, siteHref } from '@/paths'
+import { siteBase, siteHref } from '@/paths'
 import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
 import '@/lib/sentences/catalog-press'
 import { datasetFixture } from '@/lib/shard-files'
@@ -13,7 +13,7 @@ import { siteOrigin } from '@/lib/share-url'
 import { currentEdition } from '@/lib/editions-load'
 import { loadCityRoutes } from '@/lib/city-routes'
 
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 // The #113 base-path helper (`base` stays for the PressSheet island, which takes the base argument).
 const href = siteHref
 const say = (key: string) => message(DEFAULT_VOICE, key as never)

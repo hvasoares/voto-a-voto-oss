@@ -2,23 +2,14 @@
 import { donationUrl } from '@/lib/donation'
 
 /**
- * "Apoie o projeto": the donation link of ticket #36. It opens the donation page in a new tab and is drawn only
- * when an address is configured (PUBLIC_DONATION_URL); with none, nothing is rendered. `variant="button"` is the
- * outlined 30 px button of the Sketch frame (its tap area is 44 px: a pseudo-element extends the hit area, the #19 rule) on the data page, the default is the quiet link of the footer line shown on every page.
+ * "Apoie o projeto": the outlined 30 px button of the donation page (ticket #36; its tap area is 44 px: a pseudo-element extends the
+ * hit area, the #19 rule) on the data page. It opens the donation page in a new tab and is drawn only when an address is configured
+ * (PUBLIC_DONATION_URL); with none, nothing is rendered. The quiet link of the footer line shown on every page is built by
+ * `donationLinkMarkup` (shared/footer.ts), the one copy of that markup.
  */
-interface Props {
-  variant?: 'link' | 'button'
-}
-const { variant = 'link' } = Astro.props
 const url = donationUrl()
 ---
-{url && variant === 'link' && (
-  <>
-    <span aria-hidden="true"> · </span>
-    <a class="inline-flex min-h-11 items-center" href={url} target="_blank" rel="noopener noreferrer" data-donation-link>Apoie o projeto ↗<span class="sr-only"> (abre em nova aba)</span></a>
-  </>
-)}
-{url && variant === 'button' && (
+{url && (
   <a class="relative mt-[7px] flex h-[30px] items-center justify-center rounded-lg border border-primary bg-background px-3 text-step-1 font-bold text-primary before:absolute before:inset-x-0 before:-inset-y-[8px] before:content-['']" href={url} target="_blank" rel="noopener noreferrer" data-donation-link>
     Apoie o projeto ↗&nbsp; (abre em nova aba)
   </a>

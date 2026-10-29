@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { SHARD_VERSION } from 'virtual:data-shards'
 import { Button } from '@/components/ui/button'
 import { useIslandReady } from '@/components/use-island-ready'
-import { withBase } from '@/paths'
+import { linkHref } from '@/paths'
 import { reopenFile, type Outcome, type ReopenContext } from '@/lib/card-reopen'
 import type { CityShard } from '@/lib/city-shard'
 
@@ -59,7 +59,7 @@ export default function CardDrop({ base, origin, fixture, edition }: CardDropPro
     base,
     fixture,
     loadShard: async (uf, slug) => {
-      const res = await fetch(withBase(base, `data/v${SHARD_VERSION}/city/${uf}/${slug}.json`))
+      const res = await fetch(linkHref(`data/v${SHARD_VERSION}/city/${uf}/${slug}.json`, base))
       return res.ok ? ((await res.json()) as CityShard) : undefined
     },
   }

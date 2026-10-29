@@ -2,6 +2,7 @@
  * What the page "Cidades fora da curva" (#34) prints, PURE: every sentence and number of one list (one state filter, one minimum) as strings, written from
  * the catalog. The page only lays them out. Rows keep the order they are given (furthest first); the rank is the position in the filtered list.
  */
+import { linkHref } from '@/paths'
 import { displayName, ufLabel } from '@/shared/city-search'
 import { outlierSay, type OutlierVoice } from '../sentences/outliers'
 import type { Register } from '../sentences/catalog'
@@ -57,8 +58,6 @@ export interface OutlierViewInput {
   register?: Register
 }
 
-const withBase = (base: string, path: string) => base.replace(/\/$/, '') + path
-
 export function outlierView({ filter, shown, compared, names, states, base, register }: OutlierViewInput): OutlierView {
   if (shown.length > OUTLIERS_SHOWN) throw new Error(`outlierView: at most ${OUTLIERS_SHOWN} rows are listed, got ${shown.length}`)
   const voice: OutlierVoice = { register }
@@ -70,7 +69,7 @@ export function outlierView({ filter, shown, compared, names, states, base, regi
   const rows = shown.map<OutlierViewRow>((r, i) => ({
     rank: i + 1,
     name: `${displayName(r.nome)}/${ufLabel(r.uf)}`,
-    href: withBase(base, `/${r.uf}/${r.slug}/`),
+    href: linkHref(`/${r.uf}/${r.slug}/`, base),
     anchor: `${r.uf}-${r.slug}`,
     turnoutLine: say('outlier.row.turnout', { pct: formatFixedPct(r.turnout), typical: formatFixedPct(r.typicalTurnout) }),
     swingLine: say('outlier.row.swing', { swing: swingText(r.swing), typical: swingText(r.typicalSwing) }),
@@ -81,7 +80,7 @@ export function outlierView({ filter, shown, compared, names, states, base, regi
     swing: formatSignedPp(r.swing),
     validos: formatInt(r.validos),
   }))
-  const option = (label: string, uf: string | undefined, min: number, current: boolean): FilterOption => ({ label, href: withBase(base, outlierPath(uf, min)), current })
+  const option = (label: string, uf: string | undefined, min: number, current: boolean): FilterOption => ({ label, href: linkHref(outlierPath(uf, min), base), current })
   return {
     screening: say('outlier.screening'),
     legend: say('outlier.legend'),

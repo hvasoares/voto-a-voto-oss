@@ -7,7 +7,7 @@ import { formatInteger } from '@/lib/number-format'
 import { performShare, type ShareNavigator } from '@/lib/share-flow'
 import { DEFAULT_VOICE, message, type MessageKey } from '@/lib/sentences/catalog'
 import '@/lib/sentences/catalog-game'
-import { withBase } from '@/paths'
+import { linkHref } from '@/paths'
 import { useIslandReady } from '@/components/use-island-ready'
 
 /**
@@ -43,7 +43,7 @@ export default function Game({ base, origin }: GameProps) {
     setDay(today)
     setSave(loadSave())
     setKept(browserGameStorage() !== undefined)
-    fetch(withBase(base, 'adivinhe/dados.json'))
+    fetch(linkHref('adivinhe/dados.json', base))
       .then((res) => (res.ok ? (res.json() as Promise<GameData>) : Promise.reject(new Error(`game data: HTTP ${res.status}`))))
       .then(setData)
       .catch(() => setFailed(true))

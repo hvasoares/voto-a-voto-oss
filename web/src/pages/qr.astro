@@ -13,14 +13,14 @@
  * qr-analytics script the template imports (screen shown, poster printed, #20).
  */
 import { displayName } from '@/shared/city-search'
-import { normalizeBase, siteHref } from '@/paths'
+import { siteBase, siteHref } from '@/paths'
 import { glyphSvg, qrGlyph } from '@/lib/qr-code'
 import { cityUrl, siteOrigin } from '@/lib/share-url'
 import { shortAddress } from '@/lib/share-text'
 import { datasetFixture, fixtureCityShards } from '@/lib/shard-files'
 import QrScreen from '@/components/QrScreen.astro'
 
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 // The #113 base-path helper (`base` stays for `cityUrl`, which takes the base argument).
 const href = siteHref
 

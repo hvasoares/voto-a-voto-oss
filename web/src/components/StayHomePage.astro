@@ -9,19 +9,20 @@ import Base from '@/layouts/Base.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
 import StayHomeMap from '@/components/StayHomeMap'
 import StayHomeShare from '@/components/StayHomeShare'
-import { normalizeBase, siteHref } from '@/paths'
+import { siteBase, siteHref } from '@/paths'
 import { loadStayHome, stayHomeFragmentPath, stayHomePath } from '@/lib/stay-home-data'
 import { parseViewSlug, viewSlug } from '@/lib/stay-home-view'
 import { stayhomeSay } from '@/lib/sentences/stayhome'
 import { stayHomeContent } from '@/lib/stay-home-content'
 import { datasetFixture } from '@/lib/shard-files'
 import { siteOrigin } from '@/lib/share-url'
+import { NAV_CHIP_QUIET } from '@/shared/link-classes'
 
 interface Props {
   slug: string
 }
 const { slug } = Astro.props
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 // The #113 base-path helper (`base` stays for `stayHomeContent` and the StayHomeMap island, which take the base argument).
 const href = siteHref
 const set = await loadStayHome()
@@ -35,7 +36,7 @@ const viewPaths = Object.fromEntries(set.views.map((v) => [viewSlug(v), stayHome
 <Base title="Ficaram em casa · Mapa por estado · Voto a Voto" description={model.alt}>
   <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16 md:max-w-[720px] lg:grid lg:max-w-[1240px] lg:pt-8" id="main" data-page="mapa-ficaram-em-casa" data-ano={view.ano} data-turno={view.turno}>
     <div class="lg:relative lg:z-10 lg:col-start-1 lg:row-start-1 lg:w-[610px] lg:self-start">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('/')}>‹ Início</a>
+    <a class={NAV_CHIP_QUIET} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{stayhomeSay({}, 'stayhome.title')}</h1>
     <p class="mt-1 font-serif text-step-2 wrap-anywhere lg:text-muted-foreground" data-subtitle>{model.subtitle}</p>
     </div>

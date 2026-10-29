@@ -70,6 +70,8 @@ export interface GlobalFooterProps {
   class?: string
   /** The class of every first-line link. Default FOOTER_LINK (the 44 px tap target, #19); '' omits the attribute. */
   linkClass?: string
+  /** The donation link's class. Default: `linkClass`. The QuietDoc line passes FOOTER_LINK with a class-less `linkClass`. */
+  donationClass?: string
 }
 
 /**
@@ -80,7 +82,7 @@ export interface GlobalFooterProps {
 export function globalFooterLines(props: GlobalFooterProps): string {
   const linkClass = props.linkClass ?? FOOTER_LINK
   const cls = linkClass ? html` class="${linkClass}"` : ''
-  const donation = (props.donation ?? true) && props.donationUrl ? donationLinkMarkup(props.donationUrl, linkClass) : ''
+  const donation = (props.donation ?? true) && props.donationUrl ? donationLinkMarkup(props.donationUrl, props.donationClass ?? linkClass) : ''
   const second = [
     props.chip ?? true ? CHIP : '',
     ...(props.links ?? []).map((l) => html`<a${cls} href="${l.href}">${l.label}</a>`),

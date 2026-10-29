@@ -4,12 +4,13 @@ import Base from '@/layouts/Base.astro'
 import { COMPARE_CYCLES, formatSignedInt, type CompareCycle } from '@/lib/compare'
 import { buildCompareRows, stateStats } from '@/lib/compare-data'
 import { formatInt } from '@/shared/city-model'
-import { normalizeBase, siteHref } from '@/paths'
+import { siteBase, siteHref } from '@/paths'
 import Seal from '@/components/Seal.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { calcLink } from '@/lib/facts/link'
 import { factLinks } from '@/lib/facts/gate'
 import { getFactPage, sealOf } from '@/lib/facts/pages'
+import { NAV_CHIP_QUIET } from '@/shared/link-classes'
 
 export async function getStaticPaths() {
   return COMPARE_CYCLES.map((ciclo) => ({ params: { ciclo: String(ciclo) } }))
@@ -23,7 +24,7 @@ const sidesOf = (row: (typeof rows)[number]) => [
   { side: row.rival, token: 'bolsonaro' },
 ] as const
 
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 // The #113 base-path helper (`base` stays for `factLinks`, which takes the base argument).
 const href = siteHref
 const rows = (await buildCompareRows(await stateStats(), ciclo)).slice(0, 6)
@@ -38,7 +39,7 @@ const intro = `Eleição presidencial 2026 (2º turno) comparada com a de ${cicl
 
 <Base title={`Comparar com ${ciclo} · Voto a Voto`}>
   <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page={`comparar-${ciclo}`}>
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('/')}>‹ Início</a>
+    <a class={NAV_CHIP_QUIET} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Comparar com {ciclo}</h1>
 
     <nav class="mt-1 grid grid-cols-2 rounded-md border border-border p-px lg:mt-5" aria-label="Ciclo de comparação" data-component="cycle-tabs">

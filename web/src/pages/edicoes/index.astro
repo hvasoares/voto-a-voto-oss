@@ -8,6 +8,7 @@ import { currentEdition, loadEditions } from '@/lib/editions-load'
 import { formatInt } from '@/shared/city-model'
 import { siteHref } from '@/paths'
 import SiteFooter from '@/components/SiteFooter.astro'
+import { NAV_CHIP_QUIET } from '@/shared/link-classes'
 
 // The #113 base-path helper; no local `base` remains (nothing here takes the base argument).
 const href = siteHref
@@ -17,7 +18,7 @@ const current = await currentEdition()
 
 <Base title="Edições dos dados · Voto a Voto">
   <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="edicoes">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('sobre-os-dados/#edicoes')}>‹ Sobre os dados</a>
+    <a class={NAV_CHIP_QUIET} href={href('sobre-os-dados/#edicoes')}>‹ Sobre os dados</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Edições dos dados</h1>
     <p class="mt-[5px]">Cada edição é uma cópia datada dos dados, em um endereço que nunca muda depois de publicado. Os números do site vêm da edição mais recente; as anteriores continuam acessíveis.</p>
     <ul class="mt-2 list-none p-0" data-component="edition-list">

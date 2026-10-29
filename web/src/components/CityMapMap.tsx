@@ -20,6 +20,7 @@
  * `map_municipio_tap {cd}` when a hydrated tap selects a municipality.
  */
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement } from 'react'
+import { linkHref } from '@/paths'
 import { formatInt } from '@/shared/city-model'
 import { displayName } from '@/shared/city-search'
 import { getAnalytics } from '@/analytics'
@@ -32,7 +33,7 @@ import { useIslandReady } from './use-island-ready'
 
 export interface CityMapProps {
   data: CityMapData
-  /** Site base as `withBase` wants it (page passes `normalizeBase(import.meta.env.BASE_URL)`). */
+  /** Site base, as the page reads it with `siteBase()`. */
   base: string
   /** URL of the committed mesh file of this state (public/geo/municipios-<uf>.json). */
   geoUrl: string
@@ -162,8 +163,7 @@ export default function CityMapMap({ data, base, geoUrl, ufNome, semContorno }: 
   const sectionRef = useRef<HTMLElement | null>(null)
   const island = useIslandReady('city-map', { host: sectionRef, storage: ['pendingCd', 'pendingVista'] })
 
-  const withBase_ = (path: string) => base.replace(/\/$/, '') + path
-  const cityHref = (slug: string) => withBase_(`/${uf}/${slug}/`)
+  const cityHref = (slug: string) => linkHref(`/${uf}/${slug}/`, base)
   const byCd = useMemo(() => new Map(rows.map((r) => [r.cdMunicipio, r])), [rows])
   const byIbge = useMemo(() => new Map(rows.map((r) => [r.cdIbge, r])), [rows])
 

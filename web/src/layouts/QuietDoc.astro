@@ -6,13 +6,12 @@
 import cdnImportMap from 'virtual:cdn-importmap'
 import 'virtual:theme.css'
 import '../styles/global.css'
-import { normalizeBase, withBase } from '@/paths'
+import { siteHref } from '@/paths'
 import type { PreviewHead } from '@/lib/link-preview'
 import { DESKTOP_SHELL_FILE } from '../../integrations/desktop-shell'
 import TopBar from '@/components/TopBar.astro'
-import DonationLink from '@/components/DonationLink.astro'
-import { editionLabel, editionPath } from '@/lib/editions'
-import { currentEdition } from '@/lib/editions-load'
+import SiteFooter from '@/components/SiteFooter.astro'
+import { FOOTER_LINK } from '@/shared/link-classes'
 
 interface Props {
   title: string
@@ -22,14 +21,8 @@ interface Props {
   preview?: PreviewHead
 }
 const { title, description, preview } = Astro.props
-const base = normalizeBase(import.meta.env.BASE_URL)
-// The footer's "Privacidade" link (and the in-banner detail link) open the privacy section of /sobre-os-dados/,
-// which discloses the metrics notice (the notice-only model of 2026-10-27) and the browser-level opt-out.
-const privacyHref = withBase(base, 'sobre-os-dados/#privacidade')
-// Ticket #59: every page names the edition of the data it shows and links to its immutable address.
-const edition = await currentEdition()
 // Dev serves the source module; a build serves the entry integrations/desktop-shell.ts emits under the site base.
-const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : withBase(base, DESKTOP_SHELL_FILE)
+const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : siteHref(DESKTOP_SHELL_FILE)
 ---
 <!doctype html>
 <html lang="pt-BR">
@@ -67,14 +60,8 @@ const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : withBase(b
     <div class="flex min-h-screen min-w-0 flex-col">
       <TopBar />
       <slot />
-      {/* NOT a <footer> element: every page carries its own (<footer data-component="source-footer">) and
-          the e2e specs resolve single-footer locators; this one line adds the edition link (#59), the privacy/consent link (#20) and, when a donation address is configured, the donation link (#36). */}
-      <div class="mx-auto w-full max-w-[430px] px-5 pb-6 pt-2 text-center text-step-1" data-component="consent-footer">
-        <a href={withBase(base, editionPath(edition.id))} data-edition-link>Edição {editionLabel(edition)}</a>
-        <span aria-hidden="true"> · </span>
-        <a href={privacyHref}>Privacidade</a>
-        <DonationLink />
-      </div>
+      {/* One line: edition #59, privacy #20, donation #36 — the shared footer component with its QuietDoc variant (no chip line, plain links). */}
+      <SiteFooter class="mx-auto w-full max-w-[430px] px-5 pb-6 pt-2 text-center text-step-1" linkClass="" donationClass={FOOTER_LINK} chip={false} links={[]} />
     </div>
     {/* Desktop shell (#51: the "/" shortcut and the top bar's search): a 1024 px viewport loads its module, a phone downloads nothing for it. */}
     <script is:inline define:vars={{ shell }}>

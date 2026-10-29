@@ -8,14 +8,15 @@ import Base from '@/layouts/Base.astro'
 import PhoneHeader from '@/components/PhoneHeader.astro'
 import MeuBrasil from '@/components/MeuBrasil'
 import SiteFooter from '@/components/SiteFooter.astro'
-import { normalizeBase, siteHref } from '@/paths'
+import { siteBase, siteHref } from '@/paths'
 import { datasetFixture } from '@/lib/shard-files'
 import { siteOrigin } from '@/lib/share-url'
 import { currentEdition } from '@/lib/editions-load'
 import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
+import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import '@/lib/sentences/catalog-meu-brasil'
 
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 // The #113 base-path helper (`base` stays for the MeuBrasil island, which takes the base argument).
 const href = siteHref
 const fixture = await datasetFixture()
@@ -24,7 +25,7 @@ const edition = await currentEdition()
 <Base title={`${message(DEFAULT_VOICE, 'mb.title')} · Voto a Voto`} description={message(DEFAULT_VOICE, 'mb.sub')}>
   <PhoneHeader />
   <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:max-w-[1240px] lg:pt-8" id="main" data-page="meu-brasil">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal lg:text-primary" href={href('/')}>‹ Início</a>
+    <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{message(DEFAULT_VOICE, 'mb.title')}</h1>
     <p class="mt-1 text-step-1 text-muted-foreground lg:text-step-2">{message(DEFAULT_VOICE, 'mb.sub')}</p>
     <MeuBrasil client:load base={base} origin={siteOrigin()} fixture={fixture} edition={edition.id} />

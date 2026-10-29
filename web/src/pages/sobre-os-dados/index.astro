@@ -28,6 +28,7 @@ import { currentEdition } from '@/lib/editions-load'
 import { siteOrigin } from '@/lib/share-url'
 import { siteHref } from '@/paths'
 import SiteFooter from '@/components/SiteFooter.astro'
+import { NAV_CHIP_QUIET } from '@/shared/link-classes'
 
 // Section and heading looks: type-scale tokens (#86); the unlayered h2 rule of screens.css needs the `!`.
 const sec = 'mt-2 border-t border-border pt-[7px]'
@@ -58,7 +59,7 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
 
 <Base title="Sobre os dados · Voto a Voto">
   <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="sobre-os-dados">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('/')}>‹ Início</a>
+    <a class={NAV_CHIP_QUIET} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Sobre os dados</h1>
 
     {/* The five task sections, in the order a visitor checks a number (#98). Their ids are public addresses: do not rename. */}
@@ -235,7 +236,7 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
     <section class="mt-2 border-t border-border pt-[7px] pb-2" aria-labelledby="apoio" data-component="support">
       <h2 class={h2} id="apoio">{donations ? 'Apoie o projeto' : 'Anúncios e apoio'}</h2>
       <p class="mt-[5px]" data-support-text>Doações e análise de uso são separadas. Não há anúncios em nenhuma página.</p>
-      <DonationLink variant="button" />
+      <DonationLink />
     </section>
   </main>
 

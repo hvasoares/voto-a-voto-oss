@@ -4,7 +4,7 @@ import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
 import { cityTexts } from '@/lib/city-texts-build'
 import { currentEdition } from '@/lib/editions-load'
 import { datasetFixture, loadCityShard, loadSearchShard } from '@/lib/shard-files'
-import { normalizeBase } from '@/paths'
+import { siteBase } from '@/paths'
 import { siteOrigin } from '@/lib/share-url'
 
 /**
@@ -19,7 +19,7 @@ export const GET: APIRoute = async ({ params }) => {
   const uf = params.uf!
   const edition = await currentEdition()
   const fixture = await datasetFixture()
-  const base = normalizeBase(import.meta.env.BASE_URL)
+  const base = siteBase()
   const say = (key: string) => message(DEFAULT_VOICE, key as never)
   const rows = ((await loadSearchShard()) ?? []).filter(([, , rowUf]) => rowUf === uf).sort((a, b) => a[1].localeCompare(b[1]))
   const parts: string[] = []

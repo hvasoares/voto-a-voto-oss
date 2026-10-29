@@ -23,6 +23,7 @@
  *  - `donation`    the donation link, drawn when PUBLIC_DONATION_URL configures an address (default true).
  *  - `links`       the second global line's links (default Relatórios + Mapa por estado, base-resolved here).
  *  - `linkClass`   the first-line links' class (default the FOOTER_LINK token; '' omits it — the QuietDoc line).
+ *  - `donationClass` the donation link's class (default `linkClass`; the QuietDoc line keeps FOOTER_LINK on it).
  *
  * Static Astro HTML only — no island, no JS. A page needing a variant these props cannot reproduce does not
  * tweak its output ad hoc: the variant lands in src/shared/footer.ts (with its exact-markup test) first,
@@ -48,6 +49,7 @@ interface Props {
   donation?: boolean
   links?: readonly FooterLink[]
   linkClass?: string
+  donationClass?: string
 }
 
 const p = Astro.props
@@ -84,6 +86,7 @@ if (p.source !== undefined) {
     ],
     class: p.class,
     linkClass: p.linkClass,
+    donationClass: p.donationClass,
   })
 }
 ---

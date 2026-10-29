@@ -4,7 +4,7 @@ import PlacePicker, { type PickedPlace } from '@/components/PlacePicker'
 import ShareActions from '@/components/ShareActions'
 import { useCityShards } from '@/components/use-city-shards'
 import { useIslandReady } from '@/components/use-island-ready'
-import { withBase } from '@/paths'
+import { linkHref } from '@/paths'
 import { duelContent } from '@/lib/duel-content'
 import {
   LEVELS,
@@ -269,7 +269,7 @@ export default function Duel({ base, origin, fixture, editionDate, data }: DuelP
     )
   }
   const sub = reply && pa ? say('duel.sub.reply', { place: pa.name }) : say(`duel.sub.${level}` as MessageKey, { ano: data.ano })
-  const replyHref = pa && level === 'cidade' ? `${withBase(base, '/cara-a-cara/')}${duelQuery({ level: 'cidade', a: pa.code, reply: true })}` : undefined
+  const replyHref = pa && level === 'cidade' ? `${linkHref('/cara-a-cara/', base)}${duelQuery({ level: 'cidade', a: pa.code, reply: true })}` : undefined
 
   return (
     <div data-duel data-level={level} data-ready={island.dataReady} data-error={island.dataError} data-places={[address.a, address.b].filter(Boolean).length}>

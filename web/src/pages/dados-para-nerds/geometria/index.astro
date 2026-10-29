@@ -9,9 +9,9 @@ import '../../../styles/uf-map.css'
 import RegionMap from '@/components/RegionMap.astro'
 import UfMap from '@/components/UfMap.astro'
 import { loadRegionMap } from '@/lib/region-map'
-import { normalizeBase } from '@/paths'
+import { siteBase } from '@/paths'
 
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 const map = loadRegionMap()
 ---
 <Base title="Geometria dos dados para nerds · Voto a Voto">

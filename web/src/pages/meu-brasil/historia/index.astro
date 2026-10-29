@@ -8,14 +8,15 @@ import Base from '@/layouts/Base.astro'
 import PhoneHeader from '@/components/PhoneHeader.astro'
 import MeuBrasilStory from '@/components/MeuBrasilStory'
 import SiteFooter from '@/components/SiteFooter.astro'
-import { normalizeBase, siteHref } from '@/paths'
+import { siteBase, siteHref } from '@/paths'
 import { datasetFixture } from '@/lib/shard-files'
 import { siteOrigin } from '@/lib/share-url'
 import { storySay } from '@/lib/story'
+import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import '@/lib/meu-story'
 import '@/styles/story.css'
 
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 // The #113 base-path helper (`base` stays for the MeuBrasilStory island, which takes the base argument).
 const href = siteHref
 const fixture = await datasetFixture()
@@ -34,7 +35,7 @@ const words = {
 <Base title={`${storySay('mbstory.title')} · Voto a Voto`} description={storySay('mbstory.none')}>
   <PhoneHeader />
   <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:pt-8" id="main" data-page="meu-brasil-historia">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal lg:text-primary" href={href('/meu-brasil/')} data-back-meu-brasil>{storySay('mbstory.back')}</a>
+    <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/meu-brasil/')} data-back-meu-brasil>{storySay('mbstory.back')}</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{storySay('mbstory.title')}</h1>
     <MeuBrasilStory client:load base={base} origin={siteOrigin()} fixture={fixture} words={words} />
     <noscript><p class="mt-2 text-step-1" data-nojs>{storySay('mbstory.nojs')}</p></noscript>

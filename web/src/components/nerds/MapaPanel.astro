@@ -11,7 +11,7 @@ import { nerdsPath } from '@/lib/nerds/paths'
 import { regionLabel } from '@/lib/brasil'
 import { UF_NOME } from '@/lib/uf-names'
 import MapaEnhancer from './MapaEnhancer'
-import { withBase } from '@/paths'
+import { siteHref } from '@/paths'
 
 interface Props {
   spec: MapSpec
@@ -34,13 +34,13 @@ const label = spec.options.find((o) => o.id === spec.initial.measure)?.label ?? 
   <div class="nerds-slot" data-map-slot>
     <h3>Mapa dos municípios</h3>
     <p>O mapa de cada município de {placeName} fica na página própria; aqui, os números de todos os municípios estão na tabela.</p>
-    <p class="nerds-slot__links">{muniMap && <a href={withBase(base, muniMap)} data-muni-map>Abrir o mapa dos municípios ›</a>} <a href="#c2026-detalhe-t" data-to-table>Ver os municípios na tabela ›</a></p>
+    <p class="nerds-slot__links">{muniMap && <a href={siteHref(muniMap)} data-muni-map>Abrir o mapa dos municípios ›</a>} <a href="#c2026-detalhe-t" data-to-table>Ver os municípios na tabela ›</a></p>
   </div>
 ) : (
   <div class="nerds-map" data-map data-map-level={spec.level}>
     <MapaEnhancer client:panel views={views} options={spec.options} cycles={spec.cycles} initial={spec.initial} names={names} />
     <p class="nerds-map__caption" data-map-caption>{label}, {spec.initial.turno}º turno de {spec.initial.ano}</p>
-    <UfMap available={linked} base={base} label={`Mapa do Brasil por estado: ${label}`} cells={cells} hrefFor={(uf) => withBase(base, nerdsPath({ level: 'estado', id: uf }))} />
+    <UfMap available={linked} base={base} label={`Mapa do Brasil por estado: ${label}`} cells={cells} hrefFor={(uf) => siteHref(nerdsPath({ level: 'estado', id: uf }))} />
     <ul class="nerds-legend5" data-legend aria-label="Faixas de cor">
       {(initial?.shading.legend ?? []).map((text, i) => (
         <li data-step={i}><span class="nerds-swatch" style={`background:${STEP_FILLS[i]}`} aria-hidden="true" /><span class="nerds-legend5__label">{text}</span></li>
@@ -49,7 +49,7 @@ const label = spec.options.find((o) => o.id === spec.initial.measure)?.label ?? 
     {spec.level === 'brasil' && initial?.chips && (
       <ul class="nerds-chips" data-chips aria-label="Regiões">
         {Object.entries(initial.chips).map(([regiao, c]) => (
-          <li data-chip={regiao}><a href={withBase(base, nerdsPath({ level: 'regiao', id: regiao }))} title={`Abrir os dados da região ${regionLabel(regiao)}`}>{regionLabel(regiao)} <span data-chip-value>{c.text}</span></a></li>
+          <li data-chip={regiao}><a href={siteHref(nerdsPath({ level: 'regiao', id: regiao }))} title={`Abrir os dados da região ${regionLabel(regiao)}`}>{regionLabel(regiao)} <span data-chip-value>{c.text}</span></a></li>
         ))}
       </ul>
     )}

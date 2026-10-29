@@ -5,13 +5,13 @@
  */
 import EmbedDoc from '@/layouts/EmbedDoc.astro'
 import OverlayView from '@/components/OverlayView'
-import { normalizeBase } from '@/paths'
+import { siteBase } from '@/paths'
 import { datasetFixture } from '@/lib/shard-files'
 import { siteOrigin } from '@/lib/share-url'
 import { currentEdition } from '@/lib/editions-load'
 import { editionLabel } from '@/lib/editions'
 
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 const fixture = await datasetFixture()
 const edition = await currentEdition()
 ---

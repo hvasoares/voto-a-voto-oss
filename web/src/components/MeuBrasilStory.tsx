@@ -14,7 +14,7 @@ import type { MeuStoryInput, StoryPlace, StoryTwin } from '@/lib/meu-story'
 import { twinOf, type PeersFile } from '@/lib/peers'
 import { storySay } from '@/lib/story'
 import { displayName, ufLabel } from '@/shared/city-search'
-import { withBase } from '@/paths'
+import { linkHref } from '@/paths'
 
 /**
  * Meu Brasil as a story (#97): the places come from the address (`?mora=…&vota=…&nasceu=…`) and the card on show from its fragment (`#3`), so reloading or forwarding the link reproduces the same card. Each
@@ -66,10 +66,10 @@ export default function MeuBrasilStory({ base, origin, fixture, words }: MeuBras
     void (async () => {
       const value: Extras = {}
       try {
-        const peers = await fetchJson<PeersFile>(withBase(base, `data/v${SHARD_VERSION}/peers.json`))
+        const peers = await fetchJson<PeersFile>(linkHref(`data/v${SHARD_VERSION}/peers.json`, base))
         const twinKey = twinOf(peers, first!.uf, first!.slug)
         if (twinKey) {
-          const sh = await fetchJson<CityShard>(withBase(base, `data/v${SHARD_VERSION}/city/${twinKey}.json`))
+          const sh = await fetchJson<CityShard>(linkHref(`data/v${SHARD_VERSION}/city/${twinKey}.json`, base))
           const result = cityShardResult(sh, 2026, 2)
           if (result && result.aptos > 0) value.twin = { name: displayName(sh.city.nome), ufLabel: ufLabel(sh.city.uf), key: twinKey, result }
         }
@@ -77,7 +77,7 @@ export default function MeuBrasilStory({ base, origin, fixture, words }: MeuBras
         // no twin card: the sequence is told without it
       }
       try {
-        const curio = await fetchJson<CuriositiesFile>(withBase(base, `data/v${SHARD_VERSION}/curiosities.json`))
+        const curio = await fetchJson<CuriositiesFile>(linkHref(`data/v${SHARD_VERSION}/curiosities.json`, base))
         value.curiosity = factsOf(curio, first!.uf, first!.slug)[0]
       } catch {
         // no curiosity card
@@ -101,14 +101,14 @@ export default function MeuBrasilStory({ base, origin, fixture, words }: MeuBras
       filename: c.filename,
       caption: c.caption,
       address: c.address,
-      calc: c.calc ? calcLink(`${withBase(base, `/${c.calc.path}`)}#${c.calc.anchor}`).toString() : undefined,
+      calc: c.calc ? calcLink(`${linkHref(`/${c.calc.path}`, base)}#${c.calc.anchor}`).toString() : undefined,
     }))
   }, [ready, places, extras, refs, origin, base, fixture])
 
   // The back link keeps the places.
   useEffect(() => {
     const a = document.querySelector<HTMLAnchorElement>('[data-back-meu-brasil]')
-    if (a && refs.length) a.href = `${withBase(base, '/meu-brasil/')}${placesQuery(refs)}`
+    if (a && refs.length) a.href = `${linkHref('/meu-brasil/', base)}${placesQuery(refs)}`
   }, [refs, base])
 
   const opened = useRef(false)
@@ -136,7 +136,7 @@ export default function MeuBrasilStory({ base, origin, fixture, words }: MeuBras
   return (
     <>
       <p className="mt-1 text-step-1 text-muted-foreground" data-subtitle>{storySay('mbstory.sub', {}, { n: cards.length })}</p>
-      <StorySequence cards={cards} words={wordsOf} onReached={(n) => getAnalytics().event('meu_story_card_reached', { position: n })} onShared={(n) => getAnalytics().event('meu_story_card_shared', { position: n })} onClose={() => location.assign(`${withBase(base, '/meu-brasil/')}${placesQuery(refs)}`)} />
+      <StorySequence cards={cards} words={wordsOf} onReached={(n) => getAnalytics().event('meu_story_card_reached', { position: n })} onShared={(n) => getAnalytics().event('meu_story_card_shared', { position: n })} onClose={() => location.assign(`${linkHref('/meu-brasil/', base)}${placesQuery(refs)}`)} />
     </>
   )
 }

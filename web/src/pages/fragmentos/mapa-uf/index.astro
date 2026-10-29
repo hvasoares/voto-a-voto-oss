@@ -5,10 +5,10 @@
  */
 import FragmentDoc from '@/layouts/FragmentDoc.astro'
 import UfMap from '@/components/UfMap.astro'
-import { normalizeBase } from '@/paths'
+import { siteBase } from '@/paths'
 import { loadStateCodes } from '@/lib/states'
 
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 const available = new Set(await loadStateCodes())
 ---
 <FragmentDoc title="Mapa do Brasil por estado">

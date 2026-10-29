@@ -9,6 +9,7 @@ import { loadCityRoutes } from '@/lib/city-routes'
 import { editionLabel, editionPath } from '@/lib/editions'
 import { currentEdition } from '@/lib/editions-load'
 import { siteHref } from '@/paths'
+import { NAV_CHIP_QUIET } from '@/shared/link-classes'
 
 // The #113 base-path helper.
 const href = siteHref
@@ -26,7 +27,7 @@ const rows: { name: string; path: string; what: string; fields: string }[] = [
 
 <Base title="API de dados abertos · Voto a Voto">
   <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="api">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('sobre-os-dados/')}>‹ Sobre os dados</a>
+    <a class={NAV_CHIP_QUIET} href={href('sobre-os-dados/')}>‹ Sobre os dados</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">API de dados abertos</h1>
     <p class="mt-[5px]">Os mesmos arquivos JSON que as páginas leem, abertos a qualquer site ou programa, sem servidor nosso e sem chave. Só leitura: GET.</p>
 

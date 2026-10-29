@@ -115,6 +115,12 @@ describe('the route inventory of the site (#110)', () => {
 })
 
 describe('guards of the guard (synthetic inputs, no disk)', () => {
+  it('a layout renders the chip through <SiteFooter /> unless it passes chip={false}', () => {
+    expect(layoutHasFinalityChip('<div><SiteFooter /></div>')).toBe(true)
+    expect(layoutHasFinalityChip('<SiteFooter class="x" linkClass="" chip={false} links={[]} />')).toBe(false)
+    expect(layoutHasFinalityChip('<div>no footer at all</div>')).toBe(false)
+  })
+
   const real = pagesFromFs(['index.astro', 'rj/index.astro', 'rj/[cidade]/index.astro', '404.astro', 'feed.atom.ts'])
 
   it('maps pages, endpoints and the fallback from file paths', () => {

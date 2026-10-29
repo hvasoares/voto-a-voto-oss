@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { getAnalytics } from '@/analytics'
-import { withBase } from '@/paths'
+import { linkHref } from '@/paths'
 import { createSearchController } from '@/slots/home/search-ui'
 import { Card } from '@/components/ui/card'
 import { Command, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
@@ -63,7 +63,7 @@ export default function CitySearch({ base, bar = false, initialText = '', autoFo
     return () => clearTimeout(t)
   }, [controller, text])
 
-  const href = (uf: string, slug: string) => withBase(base, cityTarget(uf, slug, destination))
+  const href = (uf: string, slug: string) => linkHref(cityTarget(uf, slug, destination), base)
 
   return (
     <div ref={root} className={bar ? 'relative' : 'relative mt-2'} data-city-search={bar ? 'bar' : 'main'} data-ready={island.dataReady} data-error={island.dataError} data-destination={destination}>

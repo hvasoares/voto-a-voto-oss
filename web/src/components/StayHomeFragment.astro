@@ -9,14 +9,14 @@ import UfMap from '@/components/UfMap.astro'
 import { loadStayHome, stayHomePath } from '@/lib/stay-home-data'
 import { parseViewSlug } from '@/lib/stay-home-view'
 import type { MapCell } from '@/lib/state-map-panel'
-import { normalizeBase, siteHref } from '@/paths'
+import { siteBase, siteHref } from '@/paths'
 
 interface Props {
   slug: string
 }
 const { slug } = Astro.props
 // The #113 base-path helper (`base` stays for the UfMap prop and the data-base attribute).
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 const set = await loadStayHome()
 const view = parseViewSlug(slug)!
 const model = set.model(view)

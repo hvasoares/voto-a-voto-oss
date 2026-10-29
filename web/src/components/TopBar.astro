@@ -10,18 +10,18 @@
  * before the first interaction, and a phone never downloads it at all. Hidden below 1024 px: a phone keeps each page's
  * own header, and the bar costs it a few hundred HTML bytes (no script of its own).
  */
-import { normalizeBase, withBase } from '@/paths'
+import { siteBase, siteHref } from '@/paths'
 
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 const links = [
-  { label: 'Comparar', to: '#comparar' },
+  { label: 'Comparar', to: '/#comparar' },
   { label: 'Conferir', to: 'sobre-os-dados/#confira-voce-mesmo' },
   { label: 'Usar os dados', to: 'sobre-os-dados/#usar-os-dados' },
-].map((l) => ({ ...l, href: withBase(base, l.to) }))
+].map((l) => ({ ...l, href: siteHref(l.to) }))
 ---
 <header class="hidden h-16 border-b border-border lg:block" data-component="top-bar">
   <div class="mx-auto flex h-full w-full max-w-[1240px] items-center px-5">
-    <a class="flex min-h-11 w-[280px] flex-none items-center rounded-sm font-serif text-step-4 text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" href={withBase(base, '/')} data-wordmark>Voto a Voto</a>
+    <a class="flex min-h-11 w-[280px] flex-none items-center rounded-sm font-serif text-step-4 text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" href={siteHref('/')} data-wordmark>Voto a Voto</a>
     <div class="relative w-[420px] flex-none">
       <div data-topbar-search data-base={base}>
         <div class="relative" data-city-search="bar">

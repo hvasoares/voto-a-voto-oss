@@ -9,7 +9,7 @@
 import { loadUfMap } from '@/lib/uf-map'
 import { UF_NOME, ufFullLabel } from '@/lib/uf-names'
 import type { MapCell } from '@/lib/state-map-panel'
-import { withBase } from '@/paths'
+import { siteHref } from '@/paths'
 
 interface Props {
   /** UFs that have a page (the dataset's states). */
@@ -58,7 +58,7 @@ const KEY = 15
     )
     return linked ? (
       <a
-        href={hrefFor ? hrefFor(s.uf) : withBase(base, `/${s.uf}/`)}
+        href={hrefFor ? hrefFor(s.uf) : siteHref(`/${s.uf}/`)}
         target={target}
         data-map-uf={s.uf}
         aria-label={cell?.label ?? ufFullLabel(s.uf)}

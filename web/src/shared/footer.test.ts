@@ -167,6 +167,23 @@ describe('globalFooterLines — the Base.astro block (the pilot page’s second 
     )
   })
 
+  it('the QuietDoc variant with a donation address: plain edition/privacy links, the donation link keeps the footer-link class (donationClass)', () => {
+    expect(
+      globalFooterLines({
+        ...EDITION,
+        privacyHref: PRIVACY,
+        chip: false,
+        links: [],
+        class: 'mx-auto w-full max-w-[430px] px-5 pb-6 pt-2 text-center text-step-1',
+        linkClass: '',
+        donationClass: FOOTER_LINK,
+        donationUrl: 'https://doacao.example.test/apoie',
+      }),
+    ).toBe(
+      '<div class="mx-auto w-full max-w-[430px] px-5 pb-6 pt-2 text-center text-step-1" data-component="consent-footer"><a href="/edicoes/2026-10-26/" data-edition-link>Edição 26/10/2026</a><span aria-hidden="true"> · </span><a href="/sobre-os-dados/#privacidade">Privacidade</a><span aria-hidden="true"> · </span><a class="inline-flex min-h-11 items-center" href="https://doacao.example.test/apoie" target="_blank" rel="noopener noreferrer" data-donation-link>Apoie o projeto ↗<span class="sr-only"> (abre em nova aba)</span></a></div>',
+    )
+  })
+
   it('the links list is a prop: a custom list replaces the default line after the chip', () => {
     const out = globalFooterLines({ ...EDITION, privacyHref: PRIVACY, links: [{ href: '/api/', label: 'API' }] })
     expect(out).toContain('</span><span aria-hidden="true"> · </span><a class="inline-flex min-h-11 items-center" href="/api/">API</a></div>')

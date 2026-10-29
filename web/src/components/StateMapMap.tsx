@@ -18,6 +18,7 @@ import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import { formatInt } from '@/shared/city-model'
 import { UF_TILES } from '@/slots/home/uf-grid'
 import { getAnalytics } from '@/analytics'
+import { linkHref } from '@/paths'
 import { formatSwing } from '@/lib/margins'
 import { panelLines } from '@/lib/state-map-panel'
 import { ufFullLabel, UF_NAMES } from '@/lib/uf-names'
@@ -33,7 +34,7 @@ export type MapPresentation = 'mosaico' | 'mapa'
 export interface StateMapProps {
   kind: MapKind
   data: StateMapData
-  /** Site base as `withBase` wants it (page passes `normalizeBase(import.meta.env.BASE_URL)`). */
+  /** Site base, as the page reads it with `siteBase()`. */
   base: string
 }
 
@@ -102,8 +103,8 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
   const sectionRef = useRef<HTMLElement | null>(null)
   const island = useIslandReady('state-map', { host: sectionRef, storage: ['pendingUf', 'pendingVista'] })
 
-  const withBase = (path: string) => base.replace(/\/$/, '') + path
-  const stateHref = (uf: string) => withBase(`/${uf}/`)
+  const hrefOf = (path: string) => linkHref(path, base)
+  const stateHref = (uf: string) => hrefOf(`/${uf}/`)
   const tapState = (uf: string) => {
     if (uf !== selected) setSelected(uf)
     analytics.event('map_state_tap', { uf })
@@ -148,7 +149,7 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
         <a
           aria-current={kind === 'margin' ? 'page' : undefined}
           className={'flex min-h-11 flex-1 items-center justify-center rounded-md text-step-1' + (kind === 'margin' ? ' bg-primary font-bold text-primary-foreground' : ' cursor-pointer text-muted-foreground')}
-          href={withBase('/mapa/')}
+          href={hrefOf('/mapa/')}
           onClick={() => {
             if (kind !== 'margin') analytics.event('map_view', { view: 'margin' })
           }}
@@ -158,14 +159,14 @@ export default function StateMapMap({ kind, data, base }: StateMapProps) {
         <a
           aria-current={kind === 'swing' ? 'page' : undefined}
           className={'flex min-h-11 flex-1 items-center justify-center rounded-md text-step-1' + (kind === 'swing' ? ' bg-primary font-bold text-primary-foreground' : ' cursor-pointer text-muted-foreground')}
-          href={withBase('/mapa/virada/')}
+          href={hrefOf('/mapa/virada/')}
           onClick={() => {
             if (kind !== 'swing') analytics.event('map_view', { view: 'swing' })
           }}
         >
           Virada (1º→2º)
         </a>
-        <a className="flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-md px-1 text-center text-step-1 text-muted-foreground" href={withBase('/mapa/ficaram-em-casa/')}>
+        <a className="flex min-h-11 flex-1 cursor-pointer items-center justify-center rounded-md px-1 text-center text-step-1 text-muted-foreground" href={hrefOf('/mapa/ficaram-em-casa/')}>
           Ficaram em casa
         </a>
       </nav>

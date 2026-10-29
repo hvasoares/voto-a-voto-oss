@@ -3,7 +3,7 @@ import { SHARD_VERSION } from 'virtual:data-shards'
 import { getAnalytics } from '@/analytics'
 import { Button } from '@/components/ui/button'
 import PlacePicker, { type PickedPlace } from '@/components/PlacePicker'
-import { withBase } from '@/paths'
+import { linkHref } from '@/paths'
 import type { CityShard } from '@/lib/city-shard'
 import { DEFAULT_LOCALE, message } from '@/lib/sentences/catalog'
 import { MEASURES, type Measure } from '@/lib/sentences/stat'
@@ -72,7 +72,7 @@ export default function CardGenerator({ base, origin, fixture, edition }: CardGe
     if (!cityKey) return setLoaded({ state: 'idle' })
     let live = true
     setLoaded({ state: 'loading' })
-    fetch(withBase(base, `data/v${SHARD_VERSION}/city/${cityKey}.json`))
+    fetch(linkHref(`data/v${SHARD_VERSION}/city/${cityKey}.json`, base))
       .then((res) => (res.ok ? (res.json() as Promise<CityShard>) : Promise.reject(new Error(`city shard: HTTP ${res.status}`))))
       .then((shard) => live && setLoaded({ state: 'ready', shard }))
       .catch(() => live && setLoaded({ state: 'failed' }))

@@ -3,7 +3,7 @@ import { SHARD_VERSION } from 'virtual:data-shards'
 import { Button } from '@/components/ui/button'
 import PlacePicker, { type PickedPlace } from '@/components/PlacePicker'
 import { useIslandReady } from '@/components/use-island-ready'
-import { withBase } from '@/paths'
+import { linkHref } from '@/paths'
 import type { CityShard } from '@/lib/city-shard'
 import { widgetSnippet, widgetUrl, WIDGET_HEIGHT } from '@/lib/widget'
 import { displayName } from '@/shared/city-search'
@@ -36,7 +36,7 @@ export default function WidgetBuilder({ base, origin }: WidgetBuilderProps) {
     setFailed(false)
     if (!city) return
     let live = true
-    fetch(withBase(base, `data/v${SHARD_VERSION}/city/${city.uf}/${city.slug}.json`))
+    fetch(linkHref(`data/v${SHARD_VERSION}/city/${city.uf}/${city.slug}.json`, base))
       .then((res) => (res.ok ? (res.json() as Promise<CityShard>) : Promise.reject(new Error(`city shard: HTTP ${res.status}`))))
       .then((shard) => live && setName(displayName(shard.city.nome)))
       .catch(() => live && setFailed(true))
@@ -52,7 +52,7 @@ export default function WidgetBuilder({ base, origin }: WidgetBuilderProps) {
   }
 
   const snippet = city && name ? widgetSnippet({ url: widgetUrl(origin, base, city.uf, city.slug), cityName: name }) : undefined
-  const src = city ? withBase(base, `embed/${city.uf}/${city.slug}/`) : undefined
+  const src = city ? linkHref(`embed/${city.uf}/${city.slug}/`, base) : undefined
 
   // data-ready (#122): no until the snippet is ready; a city whose shard fails keeps its inline message
   // (a new pick recovers) instead of the terminal failed.

@@ -11,7 +11,7 @@
  */
 import { displayName } from '@/shared/city-search'
 import { CYCLES } from '@/shared/city-model'
-import { normalizeBase, siteHref } from '@/paths'
+import { siteBase, siteHref } from '@/paths'
 import Base from '@/layouts/Base.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
 import ShareActions from '@/components/ShareActions'
@@ -22,7 +22,7 @@ import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
 import { siteOrigin } from '@/lib/share-url'
 import { currentEdition } from '@/lib/editions-load'
 
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 // The #113 base-path helper (`base` stays for `shareContent`, which takes the base argument).
 const href = siteHref
 

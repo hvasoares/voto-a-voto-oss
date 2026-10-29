@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { SHARD_VERSION } from 'virtual:data-shards'
-import { withBase } from '@/paths'
+import { linkHref } from '@/paths'
 import type { CityShard } from '@/lib/city-shard'
 
 export type ShardState = CityShard | 'loading' | 'failed'
@@ -17,7 +17,7 @@ export function useCityShards(base: string, codes: readonly string[]): Record<st
     for (const code of codes) {
       if (shards[code]) continue
       setShards((s) => ({ ...s, [code]: 'loading' }))
-      fetch(withBase(base, `data/v${SHARD_VERSION}/city/${code}.json`))
+      fetch(linkHref(`data/v${SHARD_VERSION}/city/${code}.json`, base))
         .then((res) => (res.ok ? (res.json() as Promise<CityShard>) : Promise.reject(new Error(`city shard: HTTP ${res.status}`))))
         .then((shard) => setShards((s) => ({ ...s, [code]: shard })))
         .catch(() => setShards((s) => ({ ...s, [code]: 'failed' })))

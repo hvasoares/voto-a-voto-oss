@@ -11,6 +11,7 @@ import { siteOrigin } from '@/lib/share-url'
 import { formatInt } from '@/shared/city-model'
 import { siteHref } from '@/paths'
 import SiteFooter from '@/components/SiteFooter.astro'
+import { NAV_CHIP_QUIET } from '@/shared/link-classes'
 
 export function getStaticPaths() {
   return loadEditions().map((edition) => ({ params: { id: edition.id }, props: { edition } }))
@@ -25,7 +26,7 @@ const counts = edition.counts
 
 <Base title={`Edição de ${editionLabel(edition)} · Voto a Voto`}>
   <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="edicao" data-edition={edition.id}>
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal" href={href('edicoes/')}>‹ Edições</a>
+    <a class={NAV_CHIP_QUIET} href={href('edicoes/')}>‹ Edições</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Edição de {editionLabel(edition)}</h1>
     <p class="mt-[5px]">Identificador <strong data-edition-id>{edition.id}</strong>. Esta edição não muda: os arquivos abaixo têm tamanho e SHA-256 registrados em <a href={href(editionPath(edition.id) + 'edition.json')}>edition.json</a>.{edition.id === current.id ? ' É a edição que as páginas do site mostram hoje.' : ' As páginas do site mostram hoje outra edição.'}</p>
 

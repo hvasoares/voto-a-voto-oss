@@ -11,7 +11,7 @@ import { DEFAULT_VOICE, message, type MessageKey } from '@/lib/sentences/catalog
 import { readRegister } from '@/lib/sentences/register-store'
 import { duelSay } from '@/lib/sentences/duel'
 import '@/lib/sentences/catalog-meu-brasil'
-import { withBase } from '@/paths'
+import { linkHref } from '@/paths'
 
 /**
  * Meu Brasil (#27): up to three places (where the visitor lives, votes and was born), picked with the same city field as the
@@ -139,19 +139,19 @@ export default function MeuBrasil({ base, origin, fixture, edition }: MeuBrasilP
       {content && (
         <div className="lg:mx-auto lg:max-w-[320px]">
           {/* #97: the one way into the story of these places (the places travel in the address; the story page loads only from here). */}
-          <a className="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-step-2 font-bold text-foreground" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={`${withBase(base, '/meu-brasil/historia/')}${placesQuery(cards.map((c) => c.ref))}`} data-story-link>Ver como história</a>
+          <a className="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-step-2 font-bold text-foreground" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={`${linkHref('/meu-brasil/historia/', base)}${placesQuery(cards.map((c) => c.ref))}`} data-story-link>Ver como história</a>
         </div>
       )}
       {content && (
         <div className="lg:mx-auto lg:max-w-[320px]">
           {/* The sticker of these places (#37): the same places travel in the address; offered only when at least one is drawn. */}
-          <a className="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-step-2 font-bold text-foreground" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={`${withBase(base, '/meu-brasil/adesivo/')}${placesQuery(cards.map((c) => c.ref))}`} data-sticker-link>Baixar adesivo</a>
+          <a className="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-step-2 font-bold text-foreground" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={`${linkHref('/meu-brasil/adesivo/', base)}${placesQuery(cards.map((c) => c.ref))}`} data-sticker-link>Baixar adesivo</a>
         </div>
       )}
       {content && (
         <div className="lg:mx-auto lg:max-w-[320px]">
           {/* #39: the reply. Opens the head-to-head with the first place as the sender's city and the search of the second in focus. */}
-          <a className="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-step-2 font-bold text-foreground" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={`${withBase(base, '/cara-a-cara/')}?nivel=cidade&a=${cards[0]!.ref.uf}/${cards[0]!.ref.slug}&resposta=1`} data-duel-reply>{duelSay({}, 'duel.reply')}</a>
+          <a className="mt-2 min-h-11 w-full rounded-md border border-border bg-background text-step-2 font-bold text-foreground" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} href={`${linkHref('/cara-a-cara/', base)}?nivel=cidade&a=${cards[0]!.ref.uf}/${cards[0]!.ref.slug}&resposta=1`} data-duel-reply>{duelSay({}, 'duel.reply')}</a>
         </div>
       )}
       <p className="mt-2 text-center text-step-1 text-muted-foreground" data-note>{say('mb.addressNote')}</p>

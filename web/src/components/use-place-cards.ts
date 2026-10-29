@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { SHARD_VERSION } from 'virtual:data-shards'
-import { withBase } from '@/paths'
+import { linkHref } from '@/paths'
 import type { CityShard } from '@/lib/city-shard'
 import { buildPlaceCard, parsePlaces, type PlaceCard, type PlaceRef } from '@/lib/meu-brasil'
 
@@ -28,7 +28,7 @@ export function usePlaceCards(base: string) {
       const k = keyOf(r)
       if (shards[k]) continue
       setShards((s) => ({ ...s, [k]: s[k] ?? ('loading' as const) }))
-      fetch(withBase(base, `data/v${SHARD_VERSION}/city/${k}.json`))
+      fetch(linkHref(`data/v${SHARD_VERSION}/city/${k}.json`, base))
         .then((res) => (res.ok ? (res.json() as Promise<CityShard>) : Promise.reject(new Error(`city shard: HTTP ${res.status}`))))
         .then((shard) => setShards((s) => ({ ...s, [k]: shard })))
         .catch(() => setShards((s) => ({ ...s, [k]: 'failed' })))

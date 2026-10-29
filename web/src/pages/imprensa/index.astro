@@ -15,6 +15,7 @@ import { currentEdition } from '@/lib/editions-load'
 import { editionLabel } from '@/lib/editions'
 import { loadCityRoutes } from '@/lib/city-routes'
 import { displayName } from '@/shared/city-search'
+import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 
 // The #113 base-path helper.
 const href = siteHref
@@ -28,7 +29,7 @@ const exampleHref = first ? href(`/imprensa/folha/${example}`) : undefined
 <Base title={`${say('press.title')} · Voto a Voto`} description={say('press.sub')}>
   <PhoneHeader />
   <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[880px] lg:pt-8" id="main" data-page="imprensa">
-    <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal lg:text-primary" href={href('/')}>‹ Início</a>
+    <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{say('press.title')}</h1>
     <p class="mt-1 text-step-2 text-muted-foreground">{say('press.sub')}</p>
 

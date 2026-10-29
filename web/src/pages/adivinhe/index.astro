@@ -7,12 +7,12 @@
 import Base from '@/layouts/Base.astro'
 import Game from '@/components/Game'
 import SiteFooter from '@/components/SiteFooter.astro'
-import { normalizeBase, siteHref } from '@/paths'
+import { siteBase, siteHref } from '@/paths'
 import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
 import '@/lib/sentences/catalog-game'
 import { siteOrigin } from '@/lib/share-url'
 
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 // The #113 base-path helper (`base` stays for the Game island, which takes the base argument).
 const href = siteHref
 const say = (key: string) => message(DEFAULT_VOICE, key as never)

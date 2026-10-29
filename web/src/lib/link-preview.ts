@@ -9,7 +9,7 @@
 import type { City } from '@/data'
 import { displayName, ufLabel } from '@/shared/city-search'
 import type { CityResult } from '@/shared/city-model'
-import { withBase } from '@/paths'
+import { linkHref } from '@/paths'
 import { cityUrl, siteOrigin } from './share-url'
 import { SHARE_CARD_SIZE } from './share-card'
 import { DEFAULT_VOICE, message } from './sentences/catalog'
@@ -37,7 +37,7 @@ export function previewPath(uf: string, slug: string): string {
 
 /** Absolute URL of the built preview file (og:image is fetched by the crawler, so it must not be a bare path). */
 export function previewUrl(origin: string, base: string, uf: string, slug: string): string {
-  return `${origin}${withBase(base, previewPath(uf, slug))}`
+  return `${origin}${linkHref(previewPath(uf, slug), base)}`
 }
 
 export interface PreviewAsset {

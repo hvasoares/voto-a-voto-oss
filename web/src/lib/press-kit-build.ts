@@ -7,12 +7,12 @@ import { recapContent } from './recap-content'
 import { datasetFixture } from './shard-files'
 import { siteOrigin } from './share-url'
 import { UF_NOME } from './uf-names'
-import { normalizeBase } from '@/paths'
+import { siteBase } from '@/paths'
 
 export const KIT_CHART_FILE = 'resumo-do-estado.svg'
 
 export async function stateKit(uf: string) {
-  const base = normalizeBase(import.meta.env.BASE_URL)
+  const base = siteBase()
   const edition = await currentEdition()
   const fixture = await datasetFixture()
   const recap = (await loadRecap(uf))!

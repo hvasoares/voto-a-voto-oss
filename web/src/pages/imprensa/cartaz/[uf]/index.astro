@@ -5,7 +5,7 @@
  */
 import Base from '@/layouts/Base.astro'
 import UfMap from '@/components/UfMap.astro'
-import { normalizeBase, siteHref } from '@/paths'
+import { siteBase, siteHref } from '@/paths'
 import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
 import '@/lib/sentences/catalog-press'
 import { recapUfs } from '@/lib/recap-data'
@@ -17,7 +17,7 @@ export async function getStaticPaths() {
   return (await recapUfs()).map((uf) => ({ params: { uf } }))
 }
 const { uf } = Astro.params
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 // The #113 base-path helper (`base` stays for the UfMap prop; the poster's source line stays a local <p>: it is
 // the print line of the A2 sheet, sized with the paper, not the page's source footer).
 const href = siteHref

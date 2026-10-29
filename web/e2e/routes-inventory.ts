@@ -339,9 +339,14 @@ export function checkPerfRoutes(pages: readonly PageFile[], distPaths: readonly 
   return checkSampledRoutes(pages, 'perf ROUTES (scripts/perf-budgets.ts)', distPaths.map((p) => p.replace(/(^|\/)index\.html$/, '$1')))
 }
 
-/** A layout renders the global footer line with the finality chip when its source carries the marker. */
+/**
+ * A layout renders the global footer line with the finality chip when it renders the shared footer component
+ * (#117: the chip's markup lives in shared/footer.ts) without turning the chip off (`chip={false}`, the QuietDoc
+ * line), or when its own source still carries the marker.
+ */
 export function layoutHasFinalityChip(layoutSource: string): boolean {
-  return layoutSource.includes('data-finality-chip')
+  const footer = /<SiteFooter\b[^>]*>/.exec(layoutSource)
+  return layoutSource.includes('data-finality-chip') || (footer !== null && !/\bchip=\{false\}/.test(footer[0]))
 }
 
 /** The layouts a source file imports: Base, QuietDoc, EmbedDoc, FragmentDoc (by file name). */

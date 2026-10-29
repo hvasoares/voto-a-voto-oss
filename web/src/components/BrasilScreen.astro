@@ -9,7 +9,7 @@
  */
 import { sideTone } from '@/shared/candidates'
 import { formatInt } from '@/shared/city-model'
-import { normalizeBase, siteHref } from '@/paths'
+import { siteBase, siteHref } from '@/paths'
 import { FOOTER_LINK } from '@/shared/link-classes'
 import { isFixtureDataset, loadBrasil } from '@/lib/brasil-load'
 import PageDataDownload from '@/components/PageDataDownload.astro'
@@ -29,7 +29,7 @@ interface Props {
 }
 const { backdrop = false } = Astro.props
 
-const base = normalizeBase(import.meta.env.BASE_URL)
+const base = siteBase()
 // The #113 base-path helper (`base` stays for the fact links, which take the base argument).
 const href = siteHref
 const view = await loadBrasil()

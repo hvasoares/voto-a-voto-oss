@@ -10,6 +10,7 @@
  */
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import { getAnalytics } from '@/analytics'
+import { linkHref } from '@/paths'
 import { UF_TILES } from '@/slots/home/uf-grid'
 import type { StayHomeModel } from '@/lib/stay-home-view'
 import { CALLOUT_LEFT, CALLOUT_RIGHT, UF_SHAPES } from '@/lib/uf-polygons'
@@ -18,7 +19,7 @@ import { useIslandReady } from './use-island-ready'
 
 export interface StayHomeMapProps {
   model: StayHomeModel
-  /** Site base as `withBase` wants it. */
+  /** Site base, as the page reads it with `siteBase()`. */
   base: string
   /** Base-relative page address of each view, by slug (`/mapa/ficaram-em-casa/2022-1/`). */
   viewPaths: Record<string, string>
@@ -45,8 +46,8 @@ export default function StayHomeMap({ model, base, viewPaths }: StayHomeMapProps
   const [selected, setSelected] = useState(model.defaultUf)
   const sectionRef = useRef<HTMLElement | null>(null)
   const island = useIslandReady('stayhome-map', { host: sectionRef, storage: ['pendingUf', 'pendingVista'] })
-  const withBase = (path: string) => base.replace(/\/$/, '') + path
-  const stateHref = (uf: string) => withBase(`/${uf}/`)
+  const hrefOf = (path: string) => linkHref(path, base)
+  const stateHref = (uf: string) => hrefOf(`/${uf}/`)
   const tapState = (uf: string) => {
     if (uf !== selected) setSelected(uf)
     analytics.event('map_state_tap', { uf })
@@ -82,7 +83,7 @@ export default function StayHomeMap({ model, base, viewPaths }: StayHomeMapProps
           { href: '/mapa/virada/', label: 'Virada', on: false },
           { href: '/mapa/ficaram-em-casa/', label: 'Ficaram em casa', on: true },
         ].map((t) => (
-          <a key={t.href} aria-current={t.on ? 'page' : undefined} className={'flex min-h-11 flex-1 items-center justify-center rounded-md px-1 text-center text-step-1' + (t.on ? TAB_ON : TAB_OFF)} href={withBase(t.href)}>
+          <a key={t.href} aria-current={t.on ? 'page' : undefined} className={'flex min-h-11 flex-1 items-center justify-center rounded-md px-1 text-center text-step-1' + (t.on ? TAB_ON : TAB_OFF)} href={hrefOf(t.href)}>
             {t.label}
           </a>
         ))}
@@ -90,7 +91,7 @@ export default function StayHomeMap({ model, base, viewPaths }: StayHomeMapProps
 
       <nav className="mt-2 grid grid-cols-6 gap-1 rounded-md bg-secondary p-1" aria-label={model.viewsLabel} data-slot="stayhome-views">
         {model.views.map((v) => (
-          <a key={v.slug} aria-current={v.current ? 'page' : undefined} className={'flex min-h-11 flex-col items-center justify-center rounded-md px-0 text-center text-step-1' + (v.current ? TAB_ON : TAB_OFF)} href={withBase(viewPaths[v.slug]!)}>
+          <a key={v.slug} aria-current={v.current ? 'page' : undefined} className={'flex min-h-11 flex-col items-center justify-center rounded-md px-0 text-center text-step-1' + (v.current ? TAB_ON : TAB_OFF)} href={hrefOf(viewPaths[v.slug]!)}>
             <span>{v.ano}</span>
             <span className="sr-only"> · </span>
             <span>{v.turno}</span>
