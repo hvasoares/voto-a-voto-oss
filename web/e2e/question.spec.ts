@@ -39,7 +39,7 @@ test.describe('city page: question before the answer', () => {
     await ready(page)
     await expect(page.locator('.city-q__btn')).toHaveText(['Sim', 'Não'])
     await expect(page.locator('.city-arc')).toBeHidden()
-    expect(await page.locator('[data-question]').ariaSnapshot()).not.toContain('Mudou de lado')
+    expect(await page.locator('[data-question]').ariaSnapshot()).not.toContain('o lado com mais votos no 2º turno mudou')
     await expect(page.locator('[data-question] > div:not(.city-arc) > .city-arc__note')).toHaveText('Escolha para ver a resposta · fica só no seu navegador')
   })
 
@@ -48,15 +48,15 @@ test.describe('city page: question before the answer', () => {
     await ready(page)
     await page.getByRole('button', { name: 'Não', exact: true }).click()
     await expect(page.locator('[data-question] .city-margin')).toHaveText('Palpite: Não. Resposta: Sim. O palpite estava errado.')
-    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Mudou de lado em 2022')
-    expect(await page.locator('[data-question]').ariaSnapshot()).toContain('Mudou de lado')
+    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Em 2022, o lado com mais votos no 2º turno mudou')
+    expect(await page.locator('[data-question]').ariaSnapshot()).toContain('o lado com mais votos no 2º turno mudou')
     expect(await page.evaluate((k) => localStorage.getItem(k), KEY)).toBe('{"rj/cidade-exemplo":"no"}')
     // the choice is final: the buttons are off, and a reload shows the answered state
     await expect(page.getByRole('button', { name: 'Sim', exact: true })).toBeDisabled()
     await page.reload()
     await ready(page)
     await expect(page.getByRole('button', { name: 'Não', exact: true })).toHaveAttribute('aria-pressed', 'true')
-    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Mudou de lado em 2022')
+    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Em 2022, o lado com mais votos no 2º turno mudou')
     await expect(page.locator('[data-question] .city-margin')).toContainText('O palpite estava errado.')
   })
 

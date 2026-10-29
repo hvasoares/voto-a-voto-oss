@@ -25,13 +25,16 @@ for (const [name, url] of Object.entries(SCREENS)) {
 }
 
 test.describe('city card: the lines of the V3 frame (#26, #41, #31, #33)', () => {
-  test('the right column reads headline, arc, margin line, twin, Compartilhar in that order, and the curiosities card sits under the figures', async ({ page }) => {
+  test('the right column reads headline, margin line, twin, Compartilhar in that order, the answer comes under the question in the left one, and the curiosities card sits under the figures', async ({ page }) => {
     await page.goto(city)
     await waitReady(page)
     await page.getByRole('button', { name: 'Sim', exact: true }).click() // the answer shows after a guess (#149)
     const y = async (selector: string) => (await page.locator(selector).first().boundingBox())!.y
-    const order = [await y('[data-headline]:visible'), await y('.city-arc__pill:visible'), await y('[data-margin]:visible'), await y('[data-twin]'), await y('[data-share]')]
+    const order = [await y('[data-headline]:visible'), await y('[data-margin]:visible'), await y('[data-twin]'), await y('[data-share]')]
     expect(order).toEqual([...order].sort((a, b) => a - b))
+    // the question and its answer share the left column with the card: the answer, once given, is under the buttons and above the figures (#149, #153)
+    const left = [await y('.city-q__q'), await y('.city-q__btn'), await y('.city-arc__pill:visible'), await y('[data-city-card]')]
+    expect(left).toEqual([...left].sort((a, b) => a - b))
     const card = (await page.locator('[data-city-card]').boundingBox())!
     const curio = (await page.locator('.city-curio').boundingBox())!
     expect(curio.y).toBeGreaterThan(card.y + card.height)
