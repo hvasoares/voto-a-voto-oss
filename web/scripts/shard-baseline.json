@@ -1,0 +1,144 @@
+{
+  "tree": {
+    "vf591db74932ecbdc/search.json": "8c032afb264bde5c9418b2697a65afb723319bc4307ca6ea1d14123d22fb4711",
+    "vf591db74932ecbdc/state/mt.json": "ff22edf1e4d70d55cde40e50b8f5010f0843e601f053ada3de27cbae16c916dd",
+    "vf591db74932ecbdc/state/rj.json": "70ef26e0682197466729d41217398b5c945f36869d80f474782f7366244751eb",
+    "vf591db74932ecbdc/state/sp.json": "af857843c53c785ebdd80dcd1399f168f5b70044246415269bd4d1a6632a41bf",
+    "vf591db74932ecbdc/city/mt/boa-esperanca-do-norte.json": "a6a8b8d94c3f2949347363d260f2c7c6c54b744fb62eaffda1ce023c1b9b7ca6",
+    "vf591db74932ecbdc/city/rj/cidade-exemplo.json": "41a67f63a9c42b6d29834bbf31a93dfcc8996246f1d97020bd0814faccf1e212",
+    "vf591db74932ecbdc/city/rj/cidade-exemplo-a.json": "c413773c94f741c650f8c95436d58b00b54678676104b52d9ca909beb28e6886",
+    "vf591db74932ecbdc/city/rj/cidade-exemplo-b.json": "2d4d56ac79e899139716e9fedfe9ae980e4b2ddf11b9d98e73b1e6fe1b5e5ae9",
+    "vf591db74932ecbdc/city/rj/cidade-exemplo-c.json": "b2502a6aefb2c2e59fa3f753dca6e4ea11d690bb7e23d193e691ada841773761",
+    "vf591db74932ecbdc/city/rj/cidade-exemplo-d.json": "9309c88864e8fdc71a933d783d9a1ae42ef5625f75f1cf86e588110b8fc654f6",
+    "vf591db74932ecbdc/city/rj/cidade-exemplo-e.json": "de25aa1b3bdc945d568d003ed593ee70a150ed44508e3c5a9ff7443bf369747e",
+    "vf591db74932ecbdc/city/sp/cidade-exemplo-paulista.json": "8ebacbe640ec935796bf8a2f3ea5de307dd2ec6b5112e9a5ef4ced6af1e67b9a",
+    "vf591db74932ecbdc/city/zz/exterior-exemplo.json": "bb58fcc9cee86f02a5f1a6ee3ad960510890d427440aeddc02b7a55317f1af8e",
+    "vf591db74932ecbdc/arcs.json": "0b0cad2e3fc159f0fdfd4a1d007ff585f3e98e559ca46c9e7f7c78b20c65e804",
+    "vf591db74932ecbdc/curiosities.json": "aff993d131930f54ffcd33c08709c7817dafd7bd958ece73356630ed199ec004",
+    "vf591db74932ecbdc/totals.json": "69276d61c9c3bae92a4cd919decc2a7656f71be31bdd1ff07ccd7c1b434d8b9f",
+    "vf591db74932ecbdc/peers.json": "3d13d17ef6bb96896826d82c1a08a44653aba445a7073b1662e78304aafdf838",
+    "vf591db74932ecbdc/centroids.json": "12bd0029bca40ec9525128c792eefbb75938f5bb158394ae6eaa810c1281fe00"
+  },
+  "checks": {
+    "shard-check/green": {
+      "exit": 0,
+      "message": "check:shards: the shards of <web>/fixtures/data cover the dataset exactly (18 files, fingerprint f591db74932ecbdc).",
+      "stdout": "0181a826cf66fdcd13d144a0a8849a681fd4f5bc3956e61ecdc882e6133c5ed3"
+    },
+    "shard-check/no-dir": {
+      "exit": 1,
+      "message": "Error: ENOENT: no such file or directory, open '<tmp>/no-dir/candidates.csv'",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "shard-check/no-file": {
+      "exit": 1,
+      "message": "Error: ENOENT: no such file or directory, open '<tmp>/no-file/centroids.csv'",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "shard-check/empty-shard-source": {
+      "exit": 1,
+      "message": "SchemaError: votes.csv: empty file",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "texts-check/green": {
+      "exit": 0,
+      "message": "check:texts: 9 cities of <web>/fixtures/data, both registers: longest WhatsApp block 472 characters, longest bulletin 215 words; every bulletin number is spelled.",
+      "stdout": "5873275ed0d86763d61e4e07cdec18330923ee802e0544591e979227f661491a"
+    },
+    "texts-check/no-dir": {
+      "exit": 1,
+      "message": "Error: ENOENT: no such file or directory, open '<tmp>/no-dir/candidates.csv'",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "texts-check/no-file": {
+      "exit": 1,
+      "message": "Error: ENOENT: no such file or directory, open '<tmp>/no-file/centroids.csv'",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "texts-check/empty-shard-source": {
+      "exit": 1,
+      "message": "SchemaError: votes.csv: empty file",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "facts-check/green": {
+      "exit": 0,
+      "message": "check:facts: 461 fact records on 57 pages for 9 cities of <web>/fixtures/data; every record has a source and a calculation, and no id repeats (2026-1 style ids).",
+      "stdout": "7c07ed2c2f19143a28fcefe985a919a581b8f3d173012be68c8d1d626e8c7e9b"
+    },
+    "facts-check/no-dir": {
+      "exit": 1,
+      "message": "Error: ENOENT: no such file or directory, open '<tmp>/no-dir/candidates.csv'",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "facts-check/no-file": {
+      "exit": 1,
+      "message": "Error: ENOENT: no such file or directory, open '<tmp>/no-file/centroids.csv'",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "facts-check/empty-shard-source": {
+      "exit": 1,
+      "message": "SchemaError: votes.csv: empty file",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "peers-check/green": {
+      "exit": 0,
+      "message": "peers.json over <web>/fixtures/data (fingerprint f591db74932ecbdc): 8 cities, k=5, raw 337 B (0.3 kB), gzip 180 B (0.2 kB)",
+      "stdout": "436b949df9a2892196a380209563c8e9d06bd4ad41fe37f670868c2540a247f5"
+    },
+    "peers-check/no-dir": {
+      "exit": 1,
+      "message": "Error: ENOENT: no such file or directory, open '<tmp>/no-dir/candidates.csv'",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "peers-check/no-file": {
+      "exit": 1,
+      "message": "Error: ENOENT: no such file or directory, open '<tmp>/no-file/centroids.csv'",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "peers-check/empty-shard-source": {
+      "exit": 1,
+      "message": "SchemaError: votes.csv: empty file",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "margin-check/green": {
+      "exit": 0,
+      "message": "",
+      "stdout": "d54f11cd10a15fdc86f9c54101263b5c9281e354cdcae2120b2318c11b9f0691"
+    },
+    "margin-check/no-dir": {
+      "exit": 1,
+      "message": "Error: ENOENT: no such file or directory, open '<tmp>/no-dir/candidates.csv'",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "margin-check/no-file": {
+      "exit": 1,
+      "message": "Error: ENOENT: no such file or directory, open '<tmp>/no-file/centroids.csv'",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "margin-check/empty-shard-source": {
+      "exit": 1,
+      "message": "SchemaError: votes.csv: empty file",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "curiosities-check/green": {
+      "exit": 0,
+      "message": "7 of 8 cities have a card (minimum group 2); facts per city: 1: 5, 2: 0, 3: 2",
+      "stdout": "ea973cb5d408cf817aca6fe6c559a6f560062e93c49c0674ca6fc63d1bae01b4"
+    },
+    "curiosities-check/no-dir": {
+      "exit": 1,
+      "message": "Error: ENOENT: no such file or directory, open '<tmp>/no-dir/candidates.csv'",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "curiosities-check/no-file": {
+      "exit": 1,
+      "message": "Error: ENOENT: no such file or directory, open '<tmp>/no-file/centroids.csv'",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "curiosities-check/empty-shard-source": {
+      "exit": 1,
+      "message": "SchemaError: votes.csv: empty file",
+      "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}
