@@ -199,6 +199,9 @@ export const FOOTER_EXCLUSIONS: Readonly<Record<string, string>> = {
   '/imprensa/': "the press landing carries no 'Sobre os dados' footer link",
   '/imprensa/cartaz/:uf/': "the press poster's source line is plain text sized for paper — no footer link",
   '/imprensa/folha/': "the A3 press sheet carries no 'Sobre os dados' footer link",
+  '/edicoes/': "its source footer carries only the source note; the page already links back (‹ Sobre os dados) from the top",
+  '/edicoes/:id/': "its source footer carries only the source note, like the editions index's",
+  '/api/': "its source footer carries only the source note; the page already links back (‹ Sobre os dados) from the top",
   '/dados-para-nerds/geometria/': "the geometry notes page carries no 'Sobre os dados' footer link",
 }
 
