@@ -1,42 +1,11 @@
 ---
 /**
- * Mostrar QR screen (ticket #9). DEMO SHELL on the placeholder route /qr/: it renders exactly what the city
- * route /:uf/:slug/qr/ renders (same QrScreen template), with the fixture city. #50's port landed the real
- * route (the markup moved to components/QrScreen.astro); the demo stays around to keep the shared screen
- * demoable without an address context.
- *
- * Data: build-time Node reading the shard of the fixture city (never the browser's CSV): the demo always draws
- * the fixture city, whichever DATA_DIR the build uses (a real-data build has no cidade-exemplo). The screen is
- * pre-rendered static markup — no island, no hydration: the QR is a deterministic glyph from
- * src/lib/qr-code.ts (build time), the poster is CSS (@media print / @page A4), printing comes from the
- * browser's own print command. The only scripts are the site-wide metrics boot (Base, #20) and the tiny
- * qr-analytics script the template imports (screen shown, poster printed, #20).
+ * Mostrar QR demo (ticket #9) on the placeholder route /qr/: the same QrScreen as the city and Brasil routes, scope `demo` (the fixture
+ * city, whichever DATA_DIR the build uses). It stays so the shared screen is demoable without an address context; noindex and linked
+ * from nowhere but the demo share sheet (#137).
  */
-import { displayName } from '@/shared/city-search'
-import { siteBase, siteHref } from '@/paths'
-import { glyphSvg, qrGlyph } from '@/lib/qr-code'
-import { cityUrl, siteOrigin } from '@/lib/share-url'
-import { shortAddress } from '@/lib/share-text'
-import { datasetFixture, fixtureCityShards } from '@/lib/shard-files'
 import QrScreen from '@/components/QrScreen.astro'
-
-const base = siteBase()
-// The #113 base-path helper (`base` stays for `cityUrl`, which takes the base argument).
-const href = siteHref
-
-const shard = (await fixtureCityShards()).find((s) => s.city.uf === 'rj' && s.city.slug === 'cidade-exemplo')!
-const city = shard.city
-const fixture = await datasetFixture({ DATA_DIR: undefined })
-const cityName = displayName(city.nome)
-const url = cityUrl(siteOrigin(), base, city.uf, city.slug)
-const address = shortAddress(url)
-// Quiet zone: the SVG draws 1 module of it and the card's padding (2.5 px units) completes it visually —
-// the frame's QR card has about 10 px of white before the modules (see the review notes in
-// docs/checkpoints/issue-09.md); scanning keeps the paper background as the rest of the quiet zone.
-const qr = glyphSvg(qrGlyph(url), { label: `QR de ${address}`, margin: 1, paper: '#ffffff' })
-// "‹ Fechar" of the demo has no city card to return to: the demo stays on the shell and points at home.
-const closeHref = href('/')
-// "Voltar" goes to the share sheet; the demo points at its own demo route (the real one is /:uf/:slug/compartilhar/).
-const backHref = href('/compartilhar/')
+import { qrScreenConfig } from '@/lib/screen-scopes'
+const config = await qrScreenConfig({ scope: 'demo' })
 ---
-<QrScreen cityName={cityName} url={url} qr={qr} fixture={fixture} closeHref={closeHref} backHref={backHref} />
+<QrScreen config={config} />

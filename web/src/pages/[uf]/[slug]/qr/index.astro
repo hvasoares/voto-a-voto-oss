@@ -1,19 +1,11 @@
 ---
 /**
- * Real Mostrar QR route (ticket #9; ported to the real city route by the parent glue, next to the shared
- * demo /qr/): pre-rendered static markup over components/QrScreen.astro — no island, no hydration. The QR is a
- * build-time glyph of this city's canonical link (src/lib/qr-code.ts), the poster is CSS (@media print /
- * @page A4). The only scripts are the site-wide metrics boot (Base, #20) and the tiny qr-analytics script
- * the template imports (qr_screen_shown / poster_printed, #20 — absorbed by the no-op build without an id).
+ * Real Mostrar QR route (ticket #9): the one QrScreen template (`components/QrScreen.astro`) with the city scope (#137); the QR is a
+ * build-time glyph of this city's canonical link.
  */
 import QrScreen from '@/components/QrScreen.astro'
+import { qrScreenConfig } from '@/lib/screen-scopes'
 import { loadCityRoutes } from '@/lib/city-routes'
-import { siteBase, siteHref } from '@/paths'
-import { displayName } from '@/shared/city-search'
-import { glyphSvg, qrGlyph } from '@/lib/qr-code'
-import { cityUrl, siteOrigin } from '@/lib/share-url'
-import { shortAddress } from '@/lib/share-text'
-import { datasetFixture } from '@/lib/shard-files'
 
 export async function getStaticPaths() {
   return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug }, props: { nome: city.nome } }))
@@ -21,15 +13,6 @@ export async function getStaticPaths() {
 
 const { uf, slug } = Astro.params
 const { nome } = Astro.props as { nome: string }
-const base = siteBase()
-// The #113 base-path helper (`base` stays for cityUrl's base argument).
-const href = siteHref
-const fixture = await datasetFixture()
-const cityName = displayName(nome!)
-const url = cityUrl(siteOrigin(), base, uf!, slug!)
-// Quiet zone: the SVG draws 1 module of it and the card's padding (2.5 px units) completes it visually —
-// the frame's QR card has about 10 px of white before the modules (see the review notes in
-// docs/checkpoints/issue-09.md); scanning keeps the paper background as the rest of the quiet zone.
-const qr = glyphSvg(qrGlyph(url), { label: `QR de ${shortAddress(url)}`, margin: 1, paper: '#ffffff' })
+const config = await qrScreenConfig({ scope: 'city', uf: uf!, slug: slug!, nome })
 ---
-<QrScreen cityName={cityName} url={url} qr={qr} fixture={fixture} closeHref={href(`/${uf}/${slug}/`)} backHref={href(`/${uf}/${slug}/compartilhar/`)} />
+<QrScreen config={config} />

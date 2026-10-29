@@ -1,7 +1,7 @@
 ---
 /**
- * The Mostrar QR screen + printable poster (ticket #9's markup moved here by the parent glue that ports the
- * real city route /:uf/:slug/qr/ next to the demo /qr/): a pure template over the props. The QR is a
+ * The Mostrar QR screen + printable poster, the one template of the three QR routes (demo /qr/, city /:uf/:slug/qr/, Brasil /brasil/qr/;
+ * #137): it draws the config it is handed (`lib/screen-scopes.ts` builds one per scope) and never looks at which scope it is. The QR is a
  * deterministic build-time glyph from src/lib/qr-code.ts (its SVG arrives built), the poster is CSS
  * (@media print / @page A4) and printing comes from the browser's own print command. The analytics events
  * (qr_screen_shown, poster_printed — ticket #20) are wired by the dedicated script src/scripts/qr-analytics.ts,
@@ -9,19 +9,16 @@
  */
 import Base from '@/layouts/Base.astro'
 import { shortAddress } from '@/lib/share-text'
+import type { QrScreenConfig } from '@/lib/screen-scopes'
 
 interface Props {
-  cityName: string
-  url: string
-  qr: string
-  fixture: boolean
-  closeHref: string
-  backHref: string
+  /** The screen's config for its scope (the demo, a city or Brasil): `qrScreenConfig(scope)` of `lib/screen-scopes.ts` builds everything that differs, as data. */
+  config: QrScreenConfig
 }
-const { cityName, url, qr, fixture, closeHref, backHref } = Astro.props
+const { cityName, url, qr, fixture, closeHref, backHref, noindex } = Astro.props.config
 const address = shortAddress(url)
 ---
-<Base title={`Mostrar QR · ${cityName}`}>
+<Base title={`Mostrar QR · ${cityName}`} noindex={noindex}>
   <main class="min-w-0 flex-1" id="main">
     <section data-qr-screen class="print:hidden" aria-label="Mostrar QR">
       {/* Header metrics match the frame exactly (brand band y14-29; divider a 1px rule at x132 spanning it). */}

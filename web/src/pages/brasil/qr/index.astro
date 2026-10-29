@@ -1,21 +1,9 @@
 ---
 /**
- * Mostrar QR of /brasil/ (#91): the same screen as the City card's (`components/QrScreen.astro`), for the address of Brasil e regiões. Pre-rendered static markup,
- * no island; the QR is the build-time glyph of the page's canonical link.
+ * Mostrar QR of /brasil/ (#91): the same screen as the City card's (`components/QrScreen.astro`), scope `brasil` (#137).
  */
 import QrScreen from '@/components/QrScreen.astro'
-import { siteBase, siteHref } from '@/paths'
-import { glyphSvg, qrGlyph } from '@/lib/qr-code'
-import { brasilUrl } from '@/lib/brasil-content'
-import { siteOrigin } from '@/lib/share-url'
-import { shortAddress } from '@/lib/share-text'
-import { datasetFixture } from '@/lib/shard-files'
-
-const base = siteBase()
-// The #113 base-path helper (`base` stays for brasilUrl's base argument).
-const href = siteHref
-const fixture = await datasetFixture()
-const url = brasilUrl(siteOrigin(), base)
-const qr = glyphSvg(qrGlyph(url), { label: `QR de ${shortAddress(url)}`, margin: 1, paper: '#ffffff' })
+import { qrScreenConfig } from '@/lib/screen-scopes'
+const config = await qrScreenConfig({ scope: 'brasil' })
 ---
-<QrScreen cityName="Brasil" url={url} qr={qr} fixture={fixture} closeHref={href('/brasil/')} backHref={href('/brasil/compartilhar/')} />
+<QrScreen config={config} />
