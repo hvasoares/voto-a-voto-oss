@@ -99,6 +99,15 @@ e2e-pages:
 e2e-real:
 	DATA_DIR=../data npm --prefix web run test:real
 
+# Amostra de dados reais (ticket #109): gera web/.sample-data (9 estados, a partir do ../data commitado), builda em
+# dist-sample (<3 min é o gate) e roda o projeto Playwright `sample` com E2E_PREBUILT=1. Passo pré-push; o run
+# completo continua `make e2e-real`. A documentação gerada é web/docs/real-data-sample.md.
+e2e-sample:
+	cd web && npx tsx scripts/sample-data.ts && \
+	  DATA_DIR=.sample-data EDITIONS_DIR=.sample-editions OUT_DIR=dist-sample npx astro build && \
+	  npx tsx scripts/sample-data.ts pages && \
+	  DATA_DIR=.sample-data EDITIONS_DIR=.sample-editions E2E_PREBUILT=1 OUT_DIR=dist-sample npx playwright test --project=sample
+
 # deploy.yml: o build de publicação — exatamente o `astro build` que roda no Actions com os envs de produção.
 build-deploy:
 	DATA_DIR=../data SITE_BASE=/ SITE_ORIGIN=https://voto-a-voto.com npm --prefix web run build

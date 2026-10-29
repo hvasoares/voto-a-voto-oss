@@ -77,6 +77,7 @@ store), `analytics`, `paths`, `routes`, `slots/home/uf-grid` + `search-ui`, `slo
 | `npm run check:facts` | the fact-record gate (#61) over the dataset: every record has a source and a calculation, ids are unique; `check:facts:real` for `../data`. The built site is checked by `integrations/facts-gate.ts`; see `docs/facts.md` |
 | `npm run test:e2e` | builds, serves on the checkout's derived port (see `npm run e2e:port`) and runs Playwright: project `phone` (390x844) and project `desktop` (1440x900, each spec resizes for its 390/768 checks). With `E2E_PREBUILT=1` the build step is skipped and the existing `dist/` (or `dist-production/` under `E2E_MODE=production`) is served as-is — re-running one spec after a build starts in seconds, provided the build still matches the tree (see below) |
 | `npm run test:real` | same against the real dataset (`DATA_DIR=../data`); skipped when missing |
+| `make e2e-sample` (repo root) | the real-data sample of ticket #109: a `.sample-data/` build (9 states, `OUT_DIR=dist-sample`) under 3 min plus the `sample` project — the pre-push step; the full run above stays the release gate. Covered/full-only specs: `docs/real-data-sample.md` |
 | `npm run capture` | writes `.captures/home/default.png` (fixture state, 390x844) for the screenshot review |
 
 Environment: `SITE_BASE=/voto-a-voto/` for a project Pages site; `DATA_DIR` (relative to `web/`) picks the dataset:
