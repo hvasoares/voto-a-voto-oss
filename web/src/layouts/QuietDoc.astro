@@ -6,8 +6,9 @@
 import cdnImportMap from 'virtual:cdn-importmap'
 import 'virtual:theme.css'
 import '../styles/global.css'
-import { siteHref } from '@/paths'
-import type { PreviewHead } from '@/lib/link-preview'
+import { siteBase, siteHref } from '@/paths'
+import { pagePreview, type PreviewHead } from '@/lib/link-preview'
+import { siteOrigin } from '@/lib/share-url'
 import { DESKTOP_SHELL_FILE } from '../../integrations/desktop-shell'
 import DocHead from '@/components/DocHead.astro'
 import TopBar from '@/components/TopBar.astro'
@@ -23,13 +24,15 @@ interface Props {
   preview?: PreviewHead
 }
 const { title, description, preview } = Astro.props
+// Every public page carries a link preview (#151): its own when the page gives one (the city card), else the generic one; a noindex page has none.
+const head = preview ?? pagePreview({ title, description, pathname: Astro.url.pathname, origin: siteOrigin(), base: siteBase() })
 // Dev serves the source module; a build serves the entry integrations/desktop-shell.ts emits under the site base.
 const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : siteHref(DESKTOP_SHELL_FILE)
 ---
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <DocHead title={title} description={description} preview={preview} importMap={cdnImportMap} />
+    <DocHead title={title} description={description} preview={head} importMap={cdnImportMap} />
   </head>
   <body>
     {/* Skip link (issue #19): keyboard/screen-reader users reach the content without the tabs/grid. */}

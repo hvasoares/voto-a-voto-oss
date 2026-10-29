@@ -36,6 +36,7 @@ const { title, description, preview, importMap, noindex = false, baseTarget } = 
   {description && <meta name="description" content={description} />}
   {preview && (
     <>
+      <meta property="og:type" content="website" />
       <meta property="og:title" content={preview.ogTitle} />
       <meta property="og:description" content={preview.description} />
       <meta property="og:url" content={preview.url} />

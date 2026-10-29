@@ -28,6 +28,7 @@ import {
   KNOWN_ROUTES_EXTRA,
   checkDiscovery,
   checkExclusions,
+  NO_PREVIEW_EXCLUSIONS,
   checkFinalityPages,
   checkFooterExclusions,
   checkKnownRoutes,
@@ -97,6 +98,10 @@ describe('the route inventory of the site (#110)', () => {
     const urls = new Set(Object.values(EXAMPLE_URLS))
     expect(list.every((u) => urls.has(u)), 'a derived footer page URL that no EXAMPLE_URLS entry provides').toBe(true)
     expect(new Set(list).size, 'FOOTER_PAGES duplicates a URL').toBe(list.length)
+  })
+
+  it('the pages without a link preview are named templates, each with a reason', () => {
+    expect(checkExclusions('NO_PREVIEW_EXCLUSIONS (e2e/routes-inventory.ts)', NO_PREVIEW_EXCLUSIONS, pageTemplates(pages))).toEqual([])
   })
 
   it('the a11y sample still opens real pages (sampled on purpose; only staleness fails)', () => {

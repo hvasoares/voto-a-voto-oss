@@ -2,8 +2,9 @@
 import cdnImportMap from 'virtual:cdn-importmap'
 import 'virtual:theme.css'
 import '../styles/global.css'
-import { siteHref } from '@/paths'
-import type { PreviewHead } from '@/lib/link-preview'
+import { siteBase, siteHref } from '@/paths'
+import { pagePreview, type PreviewHead } from '@/lib/link-preview'
+import { siteOrigin } from '@/lib/share-url'
 import ConsentBanner from '@/components/ConsentBanner.astro'
 import { DESKTOP_SHELL_FILE } from '../../integrations/desktop-shell'
 import DocHead from '@/components/DocHead.astro'
@@ -20,6 +21,8 @@ interface Props {
   noindex?: boolean
 }
 const { title, description, preview, noindex } = Astro.props
+// Every public page carries a link preview (#151): its own when the page gives one (the city card), else the generic one; a noindex page has none.
+const head = noindex ? undefined : (preview ?? pagePreview({ title, description, pathname: Astro.url.pathname, origin: siteOrigin(), base: siteBase() }))
 // The footer's "Privacidade" link (and the in-banner detail link) open the privacy section of /sobre-os-dados/,
 // which discloses the metrics notice (the notice-only model of 2026-10-27) and the browser-level opt-out.
 const privacyHref = siteHref('sobre-os-dados/#privacidade')
@@ -29,7 +32,7 @@ const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : siteHref(D
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <DocHead title={title} description={description} preview={preview} noindex={noindex} importMap={cdnImportMap} />
+    <DocHead title={title} description={description} preview={head} noindex={noindex} importMap={cdnImportMap} />
   </head>
   <body>
     {/* Skip link (issue #19): keyboard/screen-reader users reach the content without the tabs/grid. */}

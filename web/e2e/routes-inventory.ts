@@ -209,6 +209,21 @@ export const FOOTER_EXCLUSIONS: Readonly<Record<string, string>> = {
  * The sample of the a11y audit (e2e/a11y.spec.ts): axe is slow, so the audited routes are chosen by hand —
  * no completeness rule, only staleness (the guard fails when a listed route no longer exists).
  */
+/**
+ * Page templates that carry NO link preview, each with the reason (#151): every other template in EXAMPLE_URLS must carry the og/twitter tags
+ * (e2e/city-preview.spec.ts walks the list). A page kept out must be noindex, so the spec checks both halves.
+ */
+export const NO_PREVIEW_EXCLUSIONS: Readonly<Record<string, string>> = {
+  '/compartilhar/': 'the share-sheet demo (#137): noindex, linked from nowhere',
+  '/qr/': 'the QR demo (#137): noindex, linked from nowhere',
+  '/embed/:uf/:slug/': 'an EmbedDoc document: a part of other pages, not a page to be shared',
+  '/overlay/tela/': 'an EmbedDoc broadcast overlay: a part of other pages, not a page to be shared',
+  '/fragmentos/mapa-por-estado/ficaram-em-casa/:ciclo/': 'a FragmentDoc fragment: noindex, drawn inside a lazy iframe',
+  '/fragmentos/mapa-por-estado/margem/': 'a FragmentDoc fragment: noindex, drawn inside a lazy iframe',
+  '/fragmentos/mapa-por-estado/virada/': 'a FragmentDoc fragment: noindex, drawn inside a lazy iframe',
+  '/fragmentos/mapa-uf/': 'a FragmentDoc fragment: noindex, drawn inside a lazy iframe',
+}
+
 export const A11Y_ROUTES: readonly { route: string; name: string }[] = [
   { route: '/', name: 'home' },
   { route: 'rj/cidade-exemplo/', name: 'city card' },
