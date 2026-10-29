@@ -1,0 +1,13 @@
+---
+/**
+ * The header of the "screen" pages (the city card, the state page, the three-cycles page, the fact record): the wordmark, a hairline divider and the
+ * scope, styled by `.app-header` in `styles/screens.css`. The same markup stood in four pages (ticket #136). The phone header of the card pages
+ * that draw with Tailwind classes is `PhoneHeader.astro`; this one belongs to the pages that draw with the screen stylesheet.
+ */
+import { siteHref } from '@/paths'
+---
+<header class="app-header">
+  <a class="brand" href={siteHref('/')}>Voto a Voto</a>
+  <span class="app-header__sep" aria-hidden="true"></span>
+  <span class="app-header__context">Presidente 2026</span>
+</header>

@@ -1,0 +1,20 @@
+---
+/**
+ * The `<main>` of a page that draws in the 430 px phone column (ticket #136): the long class that about twenty-five pages wrote out by hand
+ * (`shared/page-shell.ts` builds it from named choices, tokens in one fixed order). The page keeps its own content, id and `data-*` markers.
+ *
+ *  - `top`          `header` (default, `pt-3`: a phone header sits above) or `bar` (`pt-16`: clears the fixed bar);
+ *  - `md` / `lg`    the widths the column grows to from 768 / 1024 px (named in `page-shell.ts`); absent: it stays as it is;
+ *  - `grid`         the two-column grid from 1024 px (the map pages); `padBottom` the `pb-2` under the content;
+ *  - `deskTop`      the `lg:pt-8` under the desktop bar (default true); `extra` the page's own marker classes, appended last.
+ * Every other attribute (`id` defaults to "main", `data-page`, `data-uf`, ...) goes to the element in the order given.
+ */
+import { mainClass, type MainShell } from '@/shared/page-shell'
+
+interface Props extends MainShell {
+  id?: string
+  [attr: string]: unknown
+}
+const { top, md, lg, grid, padBottom, deskTop, extra, id = 'main', ...attrs } = Astro.props
+---
+<main class={mainClass({ top, md, lg, grid, padBottom, deskTop, extra })} id={id} {...attrs}><slot /></main>

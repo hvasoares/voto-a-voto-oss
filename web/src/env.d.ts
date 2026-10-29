@@ -1,6 +1,11 @@
 /// <reference path="../.astro/types.d.ts" />
 /// <reference types="vite/client" />
 declare module 'virtual:theme.css'
+// A component test (`*.astro.test.ts`, #136) imports an .astro file and renders it through Astro's container.
+declare module '*.astro' {
+  const component: import('astro/runtime/server/index.js').AstroComponentFactory
+  export default component
+}
 declare module 'virtual:cdn-importmap' {
   /** JSON of the import map, or '' when nothing comes from a CDN. */
   const json: string

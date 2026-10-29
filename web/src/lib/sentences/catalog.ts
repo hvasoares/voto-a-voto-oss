@@ -467,6 +467,8 @@ export const KEYS = [
   'outlier.share',
   'outlier.share.text',
   'outlier.calc',
+  /** The page shell (#136): the fixture banner, said by `components/FixtureBanner.astro`; the sentence lives in `catalog-shell.ts`. */
+  'shell.fixtureBanner',
 ] as const
 
 export type Key = (typeof KEYS)[number]

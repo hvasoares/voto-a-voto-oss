@@ -1,0 +1,21 @@
+---
+/**
+ * The fixture banner (ticket #136): "EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS", drawn on a build of the fictitious dataset and nowhere else.
+ * The words are the catalog's (`shell.fixtureBanner`, via `shared/fixture-banner.ts`); a page brings only its own markup around them.
+ *
+ *  - `show`            the page's `fixture` flag: false draws nothing;
+ *  - `tag`             the element, `div` (default) or `p`;
+ *  - `wideSeparator`   two spaces around the dot (the screen pages' way);
+ * Every other attribute (`class`, `role`, `style`) goes to the element in the order given.
+ */
+import { fixtureBannerText } from '@/shared/fixture-banner'
+
+interface Props {
+  show: boolean
+  tag?: 'div' | 'p'
+  wideSeparator?: boolean
+  [attr: string]: unknown
+}
+const { show, tag: Tag = 'div', wideSeparator = false, ...attrs } = Astro.props
+---
+{show && <Tag {...attrs}>{fixtureBannerText(wideSeparator)}</Tag>}

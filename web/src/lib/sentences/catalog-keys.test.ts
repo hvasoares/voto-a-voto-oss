@@ -20,6 +20,7 @@ import { STAYHOME_KEYS } from './catalog-stayhome'
 import { OUTLIER_KEYS } from './catalog-outliers'
 import { BRASIL_KEYS } from './catalog-brasil'
 import { FACTS_KEYS } from './catalog-facts'
+import { SHELL_KEYS } from './catalog-shell'
 
 /** The modules that compose the catalog: the core and one per feature, in the order KEYS lists them. */
 const MODULES: readonly (readonly Key[])[] = [
@@ -38,6 +39,7 @@ const MODULES: readonly (readonly Key[])[] = [
   OUTLIER_KEYS,
   BRASIL_KEYS,
   FACTS_KEYS,
+  SHELL_KEYS,
 ]
 
 describe('the catalog partition', () => {

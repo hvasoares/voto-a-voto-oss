@@ -1,0 +1,57 @@
+---
+/**
+ * The `<head>` of every document the site builds (ticket #136): Base, QuietDoc, EmbedDoc and FragmentDoc all draw it, so the charset, the viewport,
+ * the robots and base tags, the title, the description and the link-preview tags are written once. A layout hands it what its document needs;
+ * the stylesheet imports stay in each layout (they decide which CSS a document links, which is the layout's job, not the head's).
+ *
+ *  - `title`        the document title;
+ *  - `description`  the meta description (absent on pages that describe themselves nowhere);
+ *  - `preview`      the page's link-preview contract (og/twitter tags), absent on pages that have none;
+ *  - `importMap`    the CDN import map script, when the build configures one (Base and QuietDoc, whose pages run scripts);
+ *  - `noindex`      `<meta name="robots" content="noindex">`: embeds and fragments are parts of other pages, not pages to be found;
+ *  - `baseTarget`   `<base target>`: where the document's links open (embed: a new tab, fragment: the parent window).
+ * The tags come out in this order: charset, viewport, robots, base, import map, title, description, preview.
+ */
+import cdnImportMap from 'virtual:cdn-importmap'
+import type { PreviewHead } from '@/lib/link-preview'
+
+interface Props {
+  title: string
+  description?: string
+  preview?: PreviewHead
+  importMap?: boolean
+  noindex?: boolean
+  baseTarget?: '_blank' | '_top'
+}
+const { title, description, preview, importMap = false, noindex = false, baseTarget } = Astro.props
+---
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  {noindex && <meta name="robots" content="noindex" />}
+  {baseTarget && <base target={baseTarget} />}
+  {importMap && cdnImportMap && <script type="importmap" is:inline set:html={cdnImportMap} />}
+  <title>{title}</title>
+  {description && <meta name="description" content={description} />}
+  {preview && (
+    <>
+      <meta property="og:title" content={preview.ogTitle} />
+      <meta property="og:description" content={preview.description} />
+      <meta property="og:url" content={preview.url} />
+      {preview.image && (
+        <>
+          <meta property="og:image" content={preview.image.url} />
+          <meta property="og:image:type" content={preview.image.type} />
+          <meta property="og:image:width" content={String(preview.image.width)} />
+          <meta property="og:image:height" content={String(preview.image.height)} />
+          <meta property="og:image:alt" content={preview.image.alt} />
+        </>
+      )}
+      <meta name="twitter:card" content={preview.image ? 'summary_large_image' : 'summary'} />
+      <meta name="twitter:title" content={preview.ogTitle} />
+      <meta name="twitter:description" content={preview.description} />
+      {preview.image && <meta name="twitter:image" content={preview.image.url} />}
+      {preview.image && <meta name="twitter:image:alt" content={preview.image.alt} />}
+    </>
+  )}
+</head>
