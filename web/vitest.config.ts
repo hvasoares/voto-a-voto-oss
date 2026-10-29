@@ -7,5 +7,9 @@ const src = (p: string) => fileURLToPath(new URL(p, import.meta.url))
 export default defineConfig({
   resolve: { alias: { '@': src('./src') } },
   plugins: [shardsModule()],
-  test: { include: ['src/**/*.test.{ts,tsx}', 'integrations/**/*.test.ts', 'scripts/**/*.test.ts'], environment: 'node' },
+  test: {
+    include: ['src/**/*.test.{ts,tsx}', 'integrations/**/*.test.ts', 'scripts/**/*.test.ts'],
+    environment: 'node',
+    setupFiles: ['./src/test/setup.ts'],
+  },
 })
