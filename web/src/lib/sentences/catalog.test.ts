@@ -15,6 +15,7 @@ import './catalog-recap'
 import './catalog-meu-brasil'
 import './catalog-preview'
 import './catalog-register'
+import './catalog-shell'
 import { headline } from './headline'
 
 const slots = (tpl: string) => [...tpl.matchAll(/\{(\w+)\}/g)].map((m) => m[1]!).sort()

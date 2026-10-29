@@ -14,6 +14,7 @@ Each rule is one line: the rule, why, and the file that enforces it where one ex
 - No invented entry points: a new route, entry point, framework or layout that the ticket does not name is a blocking question, not a decision. Enforced by: review of the diff.
 - Build once: every ticket names its shared piece; use it or build it, and do not copy it. Enforced by: `web/src/shared/own-copies.test.ts`, `web/scripts/shard-plumbing-guard.test.ts`
 - Footers and links: pages render the shared footer and link with `siteHref`. Enforced by: `web/src/shared/footer.test.ts`, `web/src/paths.ts`
+- Page shells: a page draws its column with `PageMain`, its head through the layouts' `DocHead`, the fixture banner with `FixtureBanner`, the screen header with `AppHeader` and the seal with `Seal`; no page writes the 430 px column class itself. Enforced by: `web/src/shared/page-shell-guard.test.ts`
 - E2E specs use the presets and wait on ready attributes, never fixed sleeps. Enforced by: `web/e2e/presets.ts`, `web/scripts/e2e-waits.ts`
 - Never kill a process by port: the port is yours, derived from the checkout, and `E2E_PORT` overrides it. Others' servers run on other ports. Enforced by: `web/scripts/e2e-port.ts`
 - Set a worktree up with `make worktree-setup` from inside it. Enforced by: `scripts/worktree-setup.sh`
