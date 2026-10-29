@@ -7,7 +7,9 @@ import { useIslandReady } from '@/components/use-island-ready'
  * this island turns the list into a row you swipe, with a progress indicator, the arrow keys, Home and End, and the share actions of the card on show (the existing share flow: the picture of
  * THAT card and the link to its position). The card on show is in the address (`#2`), so reloading or forwarding the link reproduces it. No autoplay; with reduced motion the move is instant.
  * Only the latest request wins: the card on show is derived from where the row rests (after the scroll settles) or from the last tap or key, never from an older one.
- * The sentences come in as props (the page writes them from the catalog), so the island carries none. `data-ready` and `data-current` are for the specs.
+ * The sentences come in as props (the page writes them from the catalog), so the island carries none. `data-ready`, `data-current`
+ * and `data-settled` (the card the settle pass last computed — a settle window is the row's own lock, never a number of
+ * milliseconds the specs would have to guess) are for the specs.
  */
 export interface StoryCardView {
   n: number
@@ -45,6 +47,8 @@ const fromHash = (max: number) => {
 export default function StorySequence({ cards, words, onOpened, onReached, onShared, onClose }: StorySequenceProps) {
   const [enhanced, setEnhanced] = useState(false)
   const [current, setCurrent] = useState(1)
+  /** The card the settle pass last computed (0 before the first one): the specs wait on it instead of guessing the lock's length. */
+  const [settled, setSettled] = useState(0)
   const island = useIslandReady('story-sequence')
   const track = useRef<HTMLOListElement>(null)
   const settle = useRef<number | undefined>(undefined)
@@ -122,6 +126,7 @@ export default function StorySequence({ cards, words, onOpened, onReached, onSha
       if (d < gap) ((gap = d), (best = i + 1))
     }
     setCurrent(best)
+    setSettled((p) => (p === best ? p : best))
   }
   const onScroll = () => {
     window.clearTimeout(settle.current)
@@ -138,7 +143,7 @@ export default function StorySequence({ cards, words, onOpened, onReached, onSha
 
   const shown = cards[current - 1]!
   return (
-    <section className="story" data-story data-enhanced={enhanced} data-ready={island.dataReady} data-current={current} data-count={last}>
+    <section className="story" data-story data-enhanced={enhanced} data-ready={island.dataReady} data-current={current} data-settled={settled || undefined} data-count={last}>
       <ol ref={track} className="story__track" tabIndex={enhanced ? 0 : undefined} role={enhanced ? 'region' : undefined} aria-roledescription={enhanced ? 'carousel' : undefined} aria-label={enhanced ? words.region : undefined} onScroll={onScroll} onKeyDown={onKeyDown}>
         {cards.map((c) => (
           <li key={c.n} id={String(c.n)} className="story__card" data-card={c.n} aria-current={enhanced ? c.n === current : undefined} aria-label={c.caption}>
