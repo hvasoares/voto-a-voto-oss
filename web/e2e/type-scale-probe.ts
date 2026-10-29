@@ -94,7 +94,8 @@ export async function settle(page: Page, extra?: string) {
   await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined, null, { timeout: 2500 }).catch(() => {})
   await page.waitForFunction(() => !document.querySelector('astro-island[ssr][client="load"]'), null, { timeout: 4000 }).catch(() => {})
   if (extra) await page.locator(extra).first().waitFor({ timeout: 4000 }).catch(() => {})
-  await page.waitForTimeout(150)
+  // the measured sizes are of the real faces: wait for the fonts' own state, never a number of milliseconds
+  await page.evaluate(() => document.fonts.ready)
 }
 
 /** Every readable text node: its rendered size and weight. */

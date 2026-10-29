@@ -1,7 +1,10 @@
 import { expect, test, type Page } from '@playwright/test'
-import { activateSearch, base, waitReady } from './helpers'
+import { activateSearch, base, maybeThrottleCpu, waitReady } from './helpers'
 import { segmentText } from '../src/shared/components'
 import { SCALE, SCREENS, WEIGHTS, probe, textStyles } from './type-scale-probe'
+
+// #123 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file.
+test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
 
 /*
  * #86/#87: a real type scale. Four sizes (13, 16, 20, 26 px; ratio about 1.25, floor 13) and two weights (400, 700) are tokens

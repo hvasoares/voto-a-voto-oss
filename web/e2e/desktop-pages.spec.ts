@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test'
-import { base, collectRequests, expectNoHorizontalScroll, resizeTo, WIDTHS } from './helpers'
+import { base, collectRequests, expectNoHorizontalScroll, maybeThrottleCpu, resizeTo, waitReady, WIDTHS } from './helpers'
+
+// #123 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file.
+test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
 
 /* Ticket #55: Estado, Três ciclos (cidade) and Três ciclos por estado on desktop. Fixture dataset (rj, sp, mt). */
 const SCREENS = {
@@ -65,8 +68,9 @@ test.describe('Estado: the municipality map slot', () => {
       await page.setViewportSize({ width, height: 600 })
       await page.goto(SCREENS.estado)
       await page.locator('[data-map-area]').scrollIntoViewIfNeeded()
+      // the page's own script ran and installed whatever would load the map module; anything it would fetch has landed
+      await waitReady(page)
       await page.waitForLoadState('networkidle')
-      await page.waitForTimeout(300)
       expect(seen.filter((r) => MAP_CODE.test(r.url))).toEqual([])
     })
   }

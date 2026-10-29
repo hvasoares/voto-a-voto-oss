@@ -1,5 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
-import { base, collectRequests, violations } from './helpers'
+import { base, collectRequests, maybeThrottleCpu, violations } from './helpers'
+
+// #123 flake-hunt repeats: E2E_CPU_RATE slows the CPU of every page in this file.
+test.beforeEach(async ({ page }) => maybeThrottleCpu(page))
 
 /*
  * State story (#47, the Sketch frame "13d Sequência de Stories do estado"), 390x844, fixture RJ (six cities with the three cycles: seven cards) and SP (one city).
@@ -120,7 +123,9 @@ test.describe('state story', () => {
     await page.evaluate(() => document.querySelector('.story__track')!.dispatchEvent(new Event('scroll')))
     await page.keyboard.press('ArrowRight')
     await on(page, 4)
-    await page.waitForTimeout(1300)
+    // the settle the stale scroll asked for runs its course (its window is the row's own lock, never a number of
+    // milliseconds): when it last computed a card, it computed the one the key asked for
+    await expect(page.locator('[data-story]')).toHaveAttribute('data-settled', '4')
     await on(page, 4)
     await expect.poll(() => centered(page)).toBe(4)
   })
