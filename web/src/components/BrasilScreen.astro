@@ -7,11 +7,11 @@
  * Result first, participation after (#91): each region draws ONE bar, its valid votes by candidate; who turned out and who did not are numbers in text.
  * Used as the page body of /brasil/ and, inert and aria-hidden (`backdrop`), behind the share sheet at /brasil/compartilhar/ (the City card's pattern).
  */
-import { sideTone } from '@/shared/candidates'
 import { formatInt } from '@/shared/city-model'
 import { siteBase, siteHref } from '@/paths'
 import { FOOTER_LINK } from '@/shared/link-classes'
 import { isFixtureDataset, loadBrasil } from '@/lib/brasil-load'
+import ResultBar from '@/components/ResultBar.astro'
 import PageDataDownload from '@/components/PageDataDownload.astro'
 import Seal from '@/components/Seal.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
@@ -20,7 +20,6 @@ import { factLinks } from '@/lib/facts/gate'
 import { getFactPage, sealOf } from '@/lib/facts/pages'
 import { nerdsPath } from '@/lib/nerds/paths'
 import { placesWithShards } from '@/lib/nerds/shards'
-import { barText } from '@/lib/brasil-label'
 import { brasilBlanks, brasilLegend, brasilRegionShare, brasilShareLabel, brasilTurnout, brasilVotes } from '@/lib/sentences/brasil'
 import { fixtureBannerText } from '@/shared/fixture-banner'
 import { mainClass } from '@/shared/page-shell'
@@ -42,17 +41,6 @@ const facts = await getFactPage('brasil', `${view.ano}-${view.turno}`)
 const links = factLinks(facts.facts, '/brasil/', base)
 const seal = await sealOf(facts)
 
-// Colours of the Sketch frame 8: the first candidate of a bar (lower ballot number) is the red one, the second the blue one. The colour is the candidate's own
-// (identity table, #84): the pair's red or blue; anyone else (a round 1 runner-up) is neutral. Bars carry the 2 px paper gap the frame shows between slices.
-// The text in a bar is 13 px bold (the type scale's step 1) and fitted to the segment (`barText`): nothing in a bar is smaller.
-const SEG = {
-  a: 'bg-[var(--c-lula)] text-[var(--c-accent-fg)]',
-  b: 'bg-[var(--c-bolsonaro)] text-[var(--c-accent-fg)]',
-  outros: 'bg-[var(--c-cand-outros)] text-[var(--c-ink)]',
-}
-const segOf = (cs: readonly { numero: number }[], i: number) => SEG[sideTone(view.ano, cs[i]!.numero, cs[1 - i]?.numero, i === 0 ? 'a' : 'b')]
-const segBase = 'flex min-w-0 items-center justify-center overflow-hidden whitespace-nowrap text-step-1 font-bold'
-const totalOf = (cs: readonly { pctScaled: number }[]) => cs.reduce((n, c) => n + c.pctScaled, 0) || 1
 const Wrapper = backdrop ? 'div' : 'main'
 const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
 ---
@@ -84,17 +72,14 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
 
   <section class="pt-6" aria-labelledby="brasil-votos-validos" data-brasil-national>
     <h2 id="brasil-votos-validos" class="brasil-h2">Brasil, votos válidos</h2>
-    <div class="mt-2 flex h-7 gap-[2px]" role="img" aria-label="Votos válidos no Brasil, por candidato" data-brasil-bar>
-      {view.nationalCandidates.map((c, i) => (
-        <span
-          class={`${segBase} ${segOf(view.nationalCandidates, i)}`}
-          style={`flex-grow:${c.pctScaled};flex-basis:0`}
-          title={`${c.labelFull}: ${formatInt(c.votos)} votos (${c.pctText}%)`}
-        >
-          {barText(c, (c.pctScaled / totalOf(view.nationalCandidates)) * 100)}
-        </span>
-      ))}
-    </div>
+    <ResultBar
+      class="mt-2"
+      candidates={view.nationalCandidates}
+      ano={view.ano}
+      label="Votos válidos no Brasil, por candidato"
+      titles={view.nationalCandidates.map((c) => `${c.labelFull}: ${formatInt(c.votos)} votos (${c.pctText}%)`)}
+      data-brasil-bar
+    />
     <p class="mt-2 text-step-1 text-[var(--c-ink)]" data-brasil-votos>
       {view.nationalCandidates.map((c, i) => (
         <>{i > 0 && ' · '}{brasilVotes(c.labelFull, formatInt(c.votos))}</>
@@ -109,20 +94,17 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
       {view.regions.map((r) => (
         <li class="pt-2" data-regiao={r.regiao}>
           <div class="flex items-baseline justify-between gap-2">
-            <h3 class="font-sans text-step-1 font-bold">{r.label}</h3>
+            <h3 class="font-sans text-step-1 font-bold"><a class="inline-flex min-h-11 items-center text-primary" data-link="regiao" href={href(`/brasil/${r.regiao}/`)}>{r.label} ›</a></h3>
             <p class="text-right text-step-1 text-[var(--c-ink)]">{brasilRegionShare(r)}</p>
           </div>
-          <div class="mt-1 flex h-7 gap-[2px]" role="img" aria-label={`${r.label}: votos válidos, por candidato`} data-regiao-bar>
-            {r.candidates.map((c, i) => (
-              <span
-                class={`${segBase} ${segOf(r.candidates, i)}`}
-                style={`flex-grow:${c.pctScaled};flex-basis:0`}
-                title={`${c.labelFull}: ${c.pctText}% dos votos válidos da região`}
-              >
-                {barText(c, (c.pctScaled / totalOf(r.candidates)) * 100)}
-              </span>
-            ))}
-          </div>
+          <ResultBar
+            class="mt-1"
+            candidates={r.candidates}
+            ano={view.ano}
+            label={`${r.label}: votos válidos, por candidato`}
+            titles={r.candidates.map((c) => `${c.labelFull}: ${c.pctText}% dos votos válidos da região`)}
+            data-regiao-bar
+          />
           <p class="mt-1 text-step-1 text-[var(--c-ink)]" data-participacao>{brasilTurnout(r)}</p>
           <p class="text-step-1 text-muted-foreground" data-brancos-nulos>{brasilBlanks(r)}</p>
           {nerds.regioes.includes(r.regiao) && <a class="inline-flex min-h-11 items-center text-step-1 font-bold text-primary" data-link="nerds-regiao" href={href(`/${nerdsPath({ level: 'regiao', id: r.regiao })}`)}>Dados da região ›</a>}

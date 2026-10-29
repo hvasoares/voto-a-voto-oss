@@ -177,21 +177,19 @@ describe('guards of the guard (synthetic inputs, no disk)', () => {
 
   it('the known routes: an entry with no page and no declaration fails, and a duplicated entry fails', () => {
     expect(checkKnownRoutes(real, ['/', '/rj/', '/rj/:cidade/', '/fantasma/'])).toEqual([
-      expect.stringContaining('/brasil/:regiao/ (web/e2e/routes-inventory.ts) is not in the list'),
       expect.stringContaining('/relatorios/:report/ (web/e2e/routes-inventory.ts) is not in the list'),
       expect.stringContaining('/fantasma/ matches no page and is not declared in KNOWN_ROUTES_EXTRA'),
     ])
     expect(checkKnownRoutes(real, ['/', '/rj/', '/rj/', '/rj/:cidade/'])).toEqual([
-      expect.stringContaining('/brasil/:regiao/ (web/e2e/routes-inventory.ts) is not in the list'),
       expect.stringContaining('/relatorios/:report/ (web/e2e/routes-inventory.ts) is not in the list'),
       'KNOWN_ROUTES (src/lib/fallback.ts): /rj/ is listed twice',
     ])
   })
 
   it('a declared KNOWN_ROUTES_EXTRA that grew a page is a stale exemption and fails', () => {
-    const tree = pagesFromFs(['index.astro', 'brasil/[regiao]/index.astro'])
-    const out = checkKnownRoutes(tree, ['/', '/brasil/:regiao/'])
-    expect(out.some((m) => m.includes('/brasil/:regiao/') && m.includes('stale'))).toBe(true)
+    const tree = pagesFromFs(['index.astro', 'relatorios/[report]/index.astro'])
+    const out = checkKnownRoutes(tree, ['/', '/relatorios/:report/'])
+    expect(out.some((m) => m.includes('/relatorios/:report/') && m.includes('stale'))).toBe(true)
   })
 
   it('a type-scale screen that starts covering an excluded template is a stale exemption and fails', () => {

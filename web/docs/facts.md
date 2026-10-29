@@ -58,6 +58,10 @@ and "No cartão: 70%". Not covered by a record: the arc label and the twin line 
 and hands `sealOf` to the pages. One route draws all of them: `src/pages/fato/[...path]/`. These pages link per figure group (a bar, a region, a state row, a cycle, a race), not per
 number: the record of every number of the group is on the page the link opens. The build gate covers them: a link to a record that does not exist, or a record without source, calculation, inputs or check, fails the build.
 
+## The region page (#183)
+
+`regionFacts` (`other.ts`) builds the page of one region (`/brasil/<regiao>/`, scope `regiao/<regiao>`, page `<ano>-<turno>`): the two candidates' shares of the region's valid votes (anchors are the ballot numbers, the same `candidateFact` the bars of Brasil e regiões use), the number of states (`estados`) and of municipalities (`municipios`) of the count line, and one record per state row (`estado-<uf>`: both sides' votes and the valid votes of the state, and the signed margin in points). Checked by `municipios`. The page's one calculation entry opens the first record.
+
 ## The "conferido" seal
 
 `src/lib/facts/checks.ts` runs the build's own checks, once per build, over the dataset (`checks-load.ts`): **national** (the site's national comparecimento and votos válidos of a cycle and round

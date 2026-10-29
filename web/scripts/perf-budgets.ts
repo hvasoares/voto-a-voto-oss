@@ -1,5 +1,5 @@
 /**
- * Weight budgets for the four audited routes (ticket #19). PURE + static: no browser, no server.
+ * Weight budgets for the five audited routes (ticket #19). PURE + static: no browser, no server.
  *
  * For each route the script reads the BUILT `index.html` out of the dist directory and sums,
  * gzipped, what the browser transfers:
@@ -28,14 +28,15 @@ const here = dirname(fileURLToPath(import.meta.url))
 const distDir = process.env.OUT_DIR ?? resolve(here, '..', 'dist')
 const recordFile = process.env.PERF_RECORD ?? resolve(here, '..', 'perf-record.json')
 
-export type RouteId = 'home' | 'city' | 'mapa' | 'report'
+export type RouteId = 'home' | 'city' | 'mapa' | 'report' | 'region'
 
-/** The four audited routes, as paths under the dist root. */
+/** The five audited routes, as paths under the dist root. */
 export const ROUTES: Record<RouteId, string> = {
   home: 'index.html',
   city: 'rj/cidade-exemplo/index.html',
   mapa: 'mapa/index.html',
   report: 'relatorios/cidades-que-viraram/index.html',
+  region: 'brasil/sudeste/index.html',
 }
 
 export interface Budget {
@@ -63,6 +64,8 @@ export const BUDGETS: Record<RouteId, Budget> = {
   city: { html: 6.4, css: 16, eagerJs: 3, islandJs: 3 },
   mapa: { html: 12, css: 16, eagerJs: 3, islandJs: 85 },
   report: { html: 12, css: 16, eagerJs: 3, islandJs: 3 },
+  // The region page (#183): the report shell (ReportLayout), no island, no script of its own; html 6 KB (measured 3.7 KB gzip on the fixtures; the real Nordeste has nine rows).
+  region: { html: 6, css: 16, eagerJs: 3, islandJs: 3 },
 }
 
 export interface Metric {

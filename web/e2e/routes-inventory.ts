@@ -101,6 +101,7 @@ export const EXAMPLE_URLS: Readonly<Record<string, string>> = {
   '/adivinhe/': 'adivinhe/',
   '/api/': 'api/',
   '/brasil/': 'brasil/',
+  '/brasil/:regiao/': 'brasil/sudeste/',
   '/brasil/compartilhar/': 'brasil/compartilhar/',
   '/brasil/qr/': 'brasil/qr/',
   '/cara-a-cara/': 'cara-a-cara/',
@@ -155,7 +156,6 @@ export const EXAMPLE_URLS: Readonly<Record<string, string>> = {
  * stale — the guard fails, naming it.
  */
 export const KNOWN_ROUTES_EXTRA: Readonly<Record<string, string>> = {
-  '/brasil/:regiao/': 'the region detail page has no file yet: declared so the 404 classifier can answer "valid" the day it is ported (fallback.spec.ts opens /brasil/norte/)',
   '/relatorios/:report/': 'declared param route with no page file: reports are concrete pages today; the classifier rejects unknown :report values until a page declares them',
 }
 
@@ -296,6 +296,7 @@ export const CALC_ENTRY_PAGES: Readonly<Record<string, string>> = {
   '/:uf/historia/': 'rj/historia/',
   '/:uf/resumo/': 'rj/resumo/',
   '/brasil/': 'brasil/',
+  '/brasil/:regiao/': 'brasil/sudeste/',
   '/comparar/:ciclo/': 'comparar/2022/',
   '/meu-brasil/historia/': 'meu-brasil/historia/?mora=rj/cidade-exemplo',
   '/relatorios/': 'relatorios/',

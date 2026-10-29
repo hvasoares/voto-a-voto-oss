@@ -1,6 +1,9 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { loadUfMap, type UfMap, type UfShape } from './uf-map'
+import { REGION_ORDER } from './regions'
+
+export { REGION_ORDER }
 
 /**
  * The static region map of the dashboard "Dados para nerds" (ticket #71). No second geometry exists: a region is its states' outlines from `data/geo/uf-outlines.json`
@@ -29,9 +32,6 @@ export interface RegionMap {
   /** The states' own shapes, for the drawing that draws both from the same outlines. */
   ufs: UfShape[]
 }
-
-/** Display order of the five regions (north to south, as the Brasil e regiões page lists them). */
-export const REGION_ORDER = ['norte', 'nordeste', 'centro-oeste', 'sudeste', 'sul'] as const
 
 export function groupRegions(map: UfMap, file: RegionFile): RegionMap {
   const byUf = new Map(map.shapes.map((s) => [s.uf, s]))

@@ -64,7 +64,7 @@ test.describe('/brasil/compartilhar/: the sheet', () => {
     await page.goto(`${base}brasil/`)
     const onPage = await page.locator('[data-brasil-bar] span').allTextContents()
     const shares2 = onPage.map((t) => /(\d\d,\d\d)%/.exec(t)![1]!)
-    const regions = await page.locator('[data-regiao]').evaluateAll((els) => els.map((e) => ({ name: e.querySelector('h3')!.textContent!, turnout: e.querySelector('[data-participacao]')!.textContent!.trim() })))
+    const regions = await page.locator('[data-regiao]').evaluateAll((els) => els.map((e) => ({ name: e.querySelector('h3')!.textContent!.replace(/ ›$/, ''), turnout: e.querySelector('[data-participacao]')!.textContent!.trim() })))
     await open(page, 'shares')
     const alt = (await page.locator('[data-share-picture] svg title').textContent())!
     const text = (await page.locator('[data-text-body]').textContent())!

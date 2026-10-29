@@ -4,10 +4,10 @@ import { base, expectHeaderWayHome } from './helpers'
 /* GitHub Pages: a path without a file gets 404.html; its script tells a valid route from a miss. */
 test.describe('404 fallback', () => {
   // Since #14 built /tres-ciclos/:uf/ every KNOWN_ROUTES example is pre-rendered in the fixture build; the
-  // classifier's "valid" bucket stays covered by the unit tests (src/lib/fallback.test.ts). The region detail
-  // page /:uf/:regiao/ does not exist yet (it is valid only when its page declares the values), so it falls
-  // through to the not-found screen:
-  test('a route pattern with no page of its own yet is "Página não encontrada"', async ({ page }) => {
+  // classifier's "valid" bucket stays covered by the unit tests (src/lib/fallback.test.ts). The region page
+  // /brasil/:regiao/ (#183) is built only for the regions the dataset has and is valid only when its page declares the
+  // value: the fixtures have no Norte, so /brasil/norte/ falls through to the not-found screen:
+  test('a region the dataset does not have is "Página não encontrada"', async ({ page }) => {
     const res = await page.goto(`${base}brasil/norte/`)
     expect(res!.status()).toBe(404)
     await expect(page.locator('[data-fallback="not-found"]')).toBeVisible()

@@ -417,6 +417,17 @@ export const KEYS = [
   'fact.count.outliers',
   'fact.out.where.all',
   'fact.out.where.uf',
+  'fact.in.states',
+  'fact.region.states',
+  'fact.region.cities',
+  'fact.region.row',
+  'fact.f.regionStates',
+  'fact.w.regionStates',
+  'fact.f.regionCities',
+  'fact.w.regionCities',
+  'fact.f.regionRow',
+  'fact.sub.regiao',
+  'fact.back.regiao',
   'fact.f.outlier',
   'fact.f.outCount',
   'fact.w.outTurnout',
@@ -438,6 +449,19 @@ export const KEYS = [
   'brasil.share.note',
   'brasil.base',
   'brasil.nojs',
+  /** The region page (#183): the sentences live in `catalog-region.ts`, loaded only by that page's own modules. */
+  'region.title',
+  'region.counts',
+  'region.states.one',
+  'region.states.other',
+  'region.cities.one',
+  'region.cities.other',
+  'region.list',
+  'region.row.ahead',
+  'region.nerds',
+  'region.more',
+  'region.compare',
+  'region.description',
   /** Cidades fora da curva (#34): the sentences live in `catalog-outliers.ts`, loaded only by that report's own modules. */
   'outlier.screening',
   'outlier.legend',
@@ -780,7 +804,7 @@ export function fill(tpl: string, params: Record<string, string | number>): stri
 }
 
 /** The keys that come as a `.one` / `.other` pair. */
-export type PluralKey = 'nobodyTurnedOut' | 'nonVoters.count' | 'votes.count' | 'margin.gap' | 'margin.fits' | 'stat.margin'
+export type PluralKey = 'region.states' | 'region.cities' | 'nobodyTurnedOut' | 'nonVoters.count' | 'votes.count' | 'margin.gap' | 'margin.fits' | 'stat.margin'
 
 /** Zero reads as "other" ("0 votos"), although CLDR files 0 under "one" for Portuguese. */
 export function pluralCategory(locale: Locale, count: number): 'one' | 'other' {

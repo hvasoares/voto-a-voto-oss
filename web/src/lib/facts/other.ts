@@ -5,6 +5,8 @@
  * seal needs (the checks and the rounds the numbers belong to).
  */
 import type { BrasilCandidate, BrasilView } from '../brasil'
+import type { RegionPage } from '../region-page'
+import '../sentences/catalog-region'
 import type { CompareRow, CycleBlock } from '../compare'
 import type { CityMargin, TurnoutExtreme, VoteDeltaRow, VoteGain } from '../reports/compute'
 import type { OutlierRow } from '../reports/outliers'
@@ -12,6 +14,7 @@ import { formatFixedPct, formatSignedInt, formatSignedPp } from '../reports/form
 import type { CohortReport } from '../cohorts'
 import type { ArcCounts } from '../arcs'
 import { citiesChanged } from '../season'
+import { formatSwing } from '../margins'
 import { formatInt, formatPct } from '@/shared/city-model'
 import '../sentences/catalog-facts'
 import { DEFAULT_LOCALE, message as say, REGISTERS, type MessageKey, type Register } from '../sentences/catalog'
@@ -64,18 +67,18 @@ const rec = (c: Ctx, anchor: string, title: string, shown: string, sentences: Re
   method,
 })
 
+/** The record of one candidate's share of the valid votes of a place (the national bar, a region's bar): the same sentence, inputs and calculation wherever the bar is drawn. */
+function candidateFact(c: Ctx, where: string, anchor: string, name: string | undefined, k: BrasilCandidate, validos: number, text: string, decimals = 1): Fact {
+  return rec(c, anchor, `${name ? `${name} · ` : ''}${k.labelFull}`, `${text}%`, both('fact.share', { where, label: k.labelFull, votos: int(k.votos), validos: int(validos), pct: decimals === 2 ? `${share(k.votos, validos).toFixed(2).replace('.', ',')}%` : formatPct(share(k.votos, validos)) }),
+    [{ label: std('fact.in.votos', { name: k.labelFull }), field: 'votes.csv · votos', value: int(k.votos) }, { label: std('fact.in.validos'), field: 'turnout.csv · validos', value: int(validos) }], std('fact.f.candidate'), [dividing(k.votos, validos, decimals)])
+}
+
 /** Brasil e regiões: the national bar, and per region its share of the country, its candidates' shares, its turnout and its blank and null shares. */
 export function brasilFacts(view: BrasilView, fixture: boolean): FactPage {
   const c: Ctx = { scope: 'brasil', page: `${view.ano}-${view.turno}`, fixture, checks: ['national', 'municipios'] }
   const where = (name?: string) => (name ? std('fact.where.regiao', { name, turno: view.turno, ano: view.ano }) : std('fact.where.brasil', { turno: view.turno, ano: view.ano }))
   const facts: Fact[] = []
-  const candidate = (anchor: string, name: string | undefined, k: BrasilCandidate, validos: number, text: string, decimals = 1) => {
-    const w = where(name)
-    facts.push(
-      rec(c, anchor, `${name ? `${name} · ` : ''}${k.labelFull}`, `${text}%`, both('fact.share', { where: w, label: k.labelFull, votos: int(k.votos), validos: int(validos), pct: decimals === 2 ? `${share(k.votos, validos).toFixed(2).replace('.', ',')}%` : formatPct(share(k.votos, validos)) }),
-        [{ label: std('fact.in.votos', { name: k.labelFull }), field: 'votes.csv · votos', value: int(k.votos) }, { label: std('fact.in.validos'), field: 'turnout.csv · validos', value: int(validos) }], std('fact.f.candidate'), [dividing(k.votos, validos, decimals)]),
-    )
-  }
+  const candidate = (anchor: string, name: string | undefined, k: BrasilCandidate, validos: number, text: string, decimals = 1) => facts.push(candidateFact(c, where(name), anchor, name, k, validos, text, decimals))
   for (const k of view.nationalCandidates) candidate(`pais-${k.numero}`, undefined, k, view.validos, k.pctText, 2)
   for (const r of view.regions) {
     const w = where(r.label)
@@ -95,6 +98,32 @@ export function brasilFacts(view: BrasilView, fixture: boolean): FactPage {
       )
   }
   return { scope: c.scope, page: c.page, title: 'Brasil e regiões', subtitle: std('fact.sub.brasil', { ano: view.ano }), back: { path: 'brasil/', label: std('fact.back.brasil') }, fixture, facts, rounds: [{ ano: view.ano, turno: view.turno }] }
+}
+
+/**
+ * A region page (#183, `/brasil/<regiao>/`): the two candidates' shares of the region's valid votes (the bar, the same records as the region's bar of Brasil e regiões),
+ * the number of states and of municipalities the dataset has in the region (the count line), and per state its margin and valid votes (the row).
+ */
+export function regionFacts(page: RegionPage, fixture: boolean): FactPage {
+  const c: Ctx = { scope: `regiao/${page.regiao}`, page: `${page.ano}-${page.turno}`, fixture, checks: ['municipios'] }
+  const { label, region } = page
+  const params = { name: label, turno: page.turno, ano: page.ano }
+  const facts: Fact[] = region.candidates.map((k) => candidateFact(c, std('fact.where.regiao', params), String(k.numero), undefined, k, region.validos, k.pctText))
+  const states = page.states.length
+  facts.push(
+    rec(c, 'estados', std('fact.in.states'), int(states), both('fact.region.states', { name: label, n: int(states) }), [{ label: std('fact.in.states'), field: 'cities.csv · uf', value: int(states) }], std('fact.f.regionStates'), [std('fact.w.regionStates', { n: int(states), name: label })]),
+    rec(c, 'municipios', std('fact.in.cities'), int(page.municipios), both('fact.region.cities', { name: label, n: int(page.municipios) }), [{ label: std('fact.in.cities'), field: 'cities.csv · cd_municipio', value: int(page.municipios) }], std('fact.f.regionCities'), [std('fact.w.regionCities', { n: int(page.municipios), name: label })]),
+  )
+  const [a, b] = [page.ladoA.nome, page.ladoB.nome]
+  for (const s of page.states) {
+    const pp = formatSwing(s.margin2)
+    facts.push(
+      rec(c, `estado-${s.uf}`, `${s.uf.toUpperCase()} · ${s.nome}`, `${pp} pp · ${int(s.validos2)}`, both('fact.region.row', { name: s.nome, turno: page.turno, ano: page.ano, a, va: int(s.votosA2), b, vb: int(s.votosB2), validos: int(s.validos2), pp }),
+        [{ label: std('fact.in.votos', { name: a }), field: 'votes.csv · votos', value: int(s.votosA2) }, { label: std('fact.in.votos', { name: b }), field: 'votes.csv · votos', value: int(s.votosB2) }, { label: std('fact.in.validos'), field: 'turnout.csv · validos', value: int(s.validos2) }],
+        std('fact.f.regionRow'), [std('fact.w.margin', { a: int(s.votosA2), b: int(s.votosB2), whole: int(s.validos2), pp })]),
+    )
+  }
+  return { scope: c.scope, page: c.page, title: std('region.title', { name: label }), subtitle: std('fact.sub.regiao', { name: label, ano: page.ano }), back: { path: `brasil/${page.regiao}/`, label: std('fact.back.regiao', { name: label }) }, fixture, facts, rounds: [{ ano: page.ano, turno: page.turno }] }
 }
 
 /** Comparar com 2022 / 2018: per state, per side, the votes of 2026 and of the compared cycle and the change between them. */
