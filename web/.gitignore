@@ -11,3 +11,6 @@ dist-production/
 dist-cdn-test/
 public/edicoes/
 .build-stamps/
+.sample-data/
+.sample-editions/
+.sample-backtest/
