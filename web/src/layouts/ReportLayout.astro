@@ -20,12 +20,13 @@
  *
  * The transformation of data to rows, notices and lead copy STAYS in each page (it is the report's own content).
  * A new report is: a folder `src/pages/relatorios/<slug>/index.astro` that loads `loadReports()` + `reportFacts()` and
- * hands this layout its copy and `ReportTable` its rows. The registers a new report still needs (the layout cannot
- * derive them -- they are the report's records and its listing):
- *  - `lib/facts/other.ts` + `lib/facts/pages.ts`: the report's fact records (the page, its anchors and its checks);
- *  - `lib/reports/hub.ts`: the hub row (title, headline) that links to it;
- *  - `lib/fallback.ts` and `e2e/routes-inventory.ts`: the route lists the build/e2e inventories keep.
- * The sitemap and the perf budget (`report` route class) are derived from the built routes and need no change.
+ * hands this layout its copy and `ReportTable` its rows. Proven on a scratch branch (an eighth report built from its
+ * data and copy). The registers it still needed, because they are the report's records and listings, not layout:
+ *  - `lib/facts/pages.ts` (`loadFactPages`): the report's fact records, one `swingFacts(...)` / `raceFacts(...)` style call
+ *    (a new SHAPE of record goes in `lib/facts/other.ts`); without it the build fails with "no fact page /fato/...";
+ *  - `e2e/routes-inventory.ts` (`KNOWN_ROUTES`, examples, type-scale screen): the route inventory test names the missing line;
+ *  - `lib/reports/hub.ts`: the hub row, only if the report is to be listed on /relatorios/ (an editorial choice).
+ * Nothing else: `lib/fallback.ts` already holds `/relatorios/:report/`, and the perf budget (`report` class) reads built routes.
  */
 import Base from '@/layouts/Base.astro'
 import ReportNotice from '@/components/ReportNotice.astro'
