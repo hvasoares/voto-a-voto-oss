@@ -13,6 +13,7 @@ import { datasetFixture } from '@/lib/shard-files'
 import { siteOrigin } from '@/lib/share-url'
 import { currentEdition } from '@/lib/editions-load'
 import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
+import PageMain from '@/components/PageMain.astro'
 
 const base = siteBase()
 // The #113 base-path helper (`base` stays for the CardDrop island, which takes the base argument).
@@ -22,7 +23,7 @@ const edition = await currentEdition()
 ---
 <Base title="Abrir um cartão · Voto a Voto" description="Solte o arquivo de um cartão do Voto a Voto para abrir a mesma vista, refeita com os dados do site.">
   <PhoneHeader />
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:pt-8" id="main" data-page="abrir-cartao">
+  <PageMain md="480" data-page="abrir-cartao">
     <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Abrir um cartão</h1>
     <p class="mt-1 text-step-1 text-muted-foreground">Solte o arquivo de um cartão. O site refaz a mesma vista com os próprios dados e confere se o arquivo bate.</p>
@@ -36,5 +37,5 @@ const edition = await currentEdition()
       aboutClass=""
       class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary"
     />
-  </main>
+  </PageMain>
 </Base>

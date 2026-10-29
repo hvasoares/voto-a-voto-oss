@@ -23,6 +23,7 @@ import { placesWithShards } from '@/lib/nerds/shards'
 import { barText } from '@/lib/brasil-label'
 import { brasilBlanks, brasilLegend, brasilRegionShare, brasilShareLabel, brasilTurnout, brasilVotes } from '@/lib/sentences/brasil'
 import { fixtureBannerText } from '@/shared/fixture-banner'
+import { mainClass } from '@/shared/page-shell'
 
 interface Props {
   /** Behind the share sheet: inert and aria-hidden, no landmark ids, nothing to read twice. */
@@ -57,7 +58,7 @@ const main = backdrop ? {} : { id: 'main', 'data-brasil-view': '' }
 ---
 <Wrapper
   {...main}
-  class="mx-auto w-full min-w-0 max-w-[430px] flex-1 px-5 pt-16 pb-2 md:max-w-[760px] lg:pt-8"
+  class={mainClass({ top: 'bar', md: '760', padBottom: true })}
   aria-hidden={backdrop ? 'true' : undefined}
   inert={backdrop}
 >

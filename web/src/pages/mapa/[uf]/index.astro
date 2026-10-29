@@ -17,6 +17,7 @@ import { loadStateUfs } from '@/lib/shard-files'
 import { UF_NOME } from '@/lib/uf-names'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
+import PageMain from '@/components/PageMain.astro'
 
 export async function getStaticPaths() {
   // The mesh file is the committed artifact of the data task; a state without one has no map page.
@@ -34,7 +35,7 @@ if (data.rows.length === 0) throw new Error(`${uf}: o dataset deste build nao te
 ---
 
 <Base title={`Mapa por município · ${ufNome} · Voto a Voto`}>
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-16" id="main" data-page="mapa-uf" data-uf={uf}>
+  <PageMain top="bar" deskTop={false} data-page="mapa-uf" data-uf={uf}>
     <a class={NAV_CHIP} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Mapa por município · {ufNome}</h1>
     <p class="mt-1 font-serif text-step-2 wrap-anywhere">Margem de {data.ladoANome} sobre {data.ladoBNome} no 2º turno de {data.ano}, em pontos percentuais (pp), {data.rows.length === 1 ? 'no 1 município' : `nos ${data.rows.length} municípios`} do estado.</p>
@@ -46,7 +47,7 @@ if (data.rows.length === 0) throw new Error(`${uf}: o dataset deste build nao te
       <p class="mt-1.5 text-step-1 text-muted-foreground">A vista de mapa precisa de JavaScript. A lista acima funciona sem.</p>
     </noscript>
     <p class="mt-1.5 text-step-1" data-island-failed hidden>O mapa por município não está disponível agora. A lista acima continua.</p>
-  </main>
+  </PageMain>
   {/* The #113 shared footer with this page's variant (#116): the IBGE credit, the " · " separator and the tap-target about link. */}
   <SiteFooter
     source="Fonte: TSE, dados finais · fronteiras: malhas do IBGE"

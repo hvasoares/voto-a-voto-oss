@@ -23,6 +23,7 @@ import { calcLink } from '@/lib/facts/link'
 import { factLinks } from '@/lib/facts/gate'
 import { getFactPage, sealOf } from '@/lib/facts/pages'
 import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
+import PageMain from '@/components/PageMain.astro'
 
 export async function getStaticPaths() {
   return (await recapUfs()).map((uf) => ({ params: { uf } }))
@@ -46,7 +47,7 @@ const calcCycles = recap.rows.filter((r) => r.status === 'data').map((r) => ({ a
 ---
 <Base title={`${recapTitle()} · ${stateName} · Voto a Voto`} description={content.variants.standard.alt}>
   <PhoneHeader />
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:pt-8" id="main" data-page="resumo" data-uf={uf}>
+  <PageMain md="480" data-page="resumo" data-uf={uf}>
     <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{recapTitle()}</h1>
     <p class="mt-1 text-step-1 text-muted-foreground" data-subtitle>{recapSubtitle(recap, { stateName })}</p>
@@ -73,5 +74,5 @@ const calcCycles = recap.rows.filter((r) => r.status === 'data').map((r) => ({ a
       aboutClass=""
       class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary"
     />
-  </main>
+  </PageMain>
 </Base>

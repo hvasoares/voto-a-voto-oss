@@ -12,6 +12,8 @@ import { formatInt } from '@/shared/city-model'
 import { siteHref } from '@/paths'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { NAV_CHIP_QUIET } from '@/shared/link-classes'
+import PageMain from '@/components/PageMain.astro'
+import { footerClass } from '@/shared/page-shell'
 
 export function getStaticPaths() {
   return loadEditions().map((edition) => ({ params: { id: edition.id }, props: { edition } }))
@@ -25,7 +27,7 @@ const counts = edition.counts
 ---
 
 <Base title={`Edição de ${editionLabel(edition)} · Voto a Voto`}>
-  <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="edicao" data-edition={edition.id}>
+  <PageMain top="bar" md="760" data-page="edicao" data-edition={edition.id}>
     <a class={NAV_CHIP_QUIET} href={href('edicoes/')}>‹ Edições</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Edição de {editionLabel(edition)}</h1>
     <p class="mt-[5px]">Identificador <strong data-edition-id>{edition.id}</strong>. Esta edição não muda: os arquivos abaixo têm tamanho e SHA-256 registrados em <a href={href(editionPath(edition.id) + 'edition.json')}>edition.json</a>.{edition.id === current.id ? ' É a edição que as páginas do site mostram hoje.' : ' As páginas do site mostram hoje outra edição.'}</p>
@@ -84,11 +86,11 @@ const counts = edition.counts
       </ul>
       <p class="mt-1 text-step-1 text-muted-foreground">Dados de {formatUtc(edition.date)}. Impressão digital dos dados: {edition.fingerprint}.</p>
     </section>
-  </main>
+  </PageMain>
   {/* The #113 shared footer with this page's variant (#115): the source note with no about link. */}
   <SiteFooter
     source="Fonte: TSE, dados finais"
     aboutLink={false}
-    class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary"
+    class={footerClass({ md: '760' })}
   />
 </Base>

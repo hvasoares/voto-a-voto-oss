@@ -29,6 +29,8 @@ import { siteOrigin } from '@/lib/share-url'
 import { siteHref } from '@/paths'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { NAV_CHIP_QUIET } from '@/shared/link-classes'
+import PageMain from '@/components/PageMain.astro'
+import { footerClass } from '@/shared/page-shell'
 
 // Section and heading looks: type-scale tokens (#86); the unlayered h2 rule of screens.css needs the `!`.
 const sec = 'mt-2 border-t border-border pt-[7px]'
@@ -58,7 +60,7 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
 ---
 
 <Base title="Sobre os dados · Voto a Voto">
-  <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page="sobre-os-dados">
+  <PageMain top="bar" md="760" data-page="sobre-os-dados">
     <a class={NAV_CHIP_QUIET} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Sobre os dados</h1>
 
@@ -238,12 +240,12 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
       <p class="mt-[5px]" data-support-text>Doações e análise de uso são separadas. Não há anúncios em nenhuma página.</p>
       <DonationLink />
     </section>
-  </main>
+  </PageMain>
 
   {/* The #113 shared footer with this page's variant (#116): the finality chip instead of the about link (this IS the about page). */}
   <SiteFooter
     source="Fonte: TSE, dados finais"
     finalChip
-    class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-2 pt-2 text-center text-step-1 text-primary"
+    class={footerClass({ md: '760', pad: 'compact' })}
   />
 </Base>

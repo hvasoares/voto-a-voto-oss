@@ -14,6 +14,7 @@ import { datasetFixture } from '@/lib/shard-files'
 import { siteOrigin } from '@/lib/share-url'
 import { currentEdition } from '@/lib/editions-load'
 import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
+import PageMain from '@/components/PageMain.astro'
 
 const base = siteBase()
 // The #113 base-path helper (`base` stays for the CardGenerator island, which takes the base argument).
@@ -23,7 +24,7 @@ const edition = await currentEdition()
 ---
 <Base title="Gerador de cartão · Voto a Voto" description="Escolha uma cidade e uma medida e baixe uma imagem pronta para postar, em três tamanhos.">
   <PhoneHeader />
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:pt-8" id="main" data-page="gerador">
+  <PageMain md="480" data-page="gerador">
     <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Gerador de cartão</h1>
     <p class="mt-1 text-step-1 text-muted-foreground">Escolha uma cidade e uma medida. A imagem sai pronta para postar.</p>
@@ -40,5 +41,5 @@ const edition = await currentEdition()
       aboutClass=""
       class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary"
     />
-  </main>
+  </PageMain>
 </Base>

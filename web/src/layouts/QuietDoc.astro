@@ -13,6 +13,7 @@ import DocHead from '@/components/DocHead.astro'
 import TopBar from '@/components/TopBar.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { FOOTER_LINK } from '@/shared/link-classes'
+import { QUIET_FOOTER_CLASS } from '@/shared/page-shell'
 
 interface Props {
   title: string
@@ -37,7 +38,7 @@ const shell = import.meta.env.DEV ? '/src/scripts/desktop-shell.ts' : siteHref(D
       <TopBar />
       <slot />
       {/* One line: edition #59, privacy #20, donation #36 — the shared footer component with its QuietDoc variant (no chip line, plain links). */}
-      <SiteFooter class="mx-auto w-full max-w-[430px] px-5 pb-6 pt-2 text-center text-step-1" linkClass="" donationClass={FOOTER_LINK} chip={false} links={[]} />
+      <SiteFooter class={QUIET_FOOTER_CLASS} linkClass="" donationClass={FOOTER_LINK} chip={false} links={[]} />
     </div>
     {/* Desktop shell (#51: the "/" shortcut and the top bar's search): a 1024 px viewport loads its module, a phone downloads nothing for it. */}
     <script is:inline define:vars={{ shell }}>

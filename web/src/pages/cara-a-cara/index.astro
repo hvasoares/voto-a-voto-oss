@@ -18,6 +18,7 @@ import { loadDuelData } from '@/lib/duel-data'
 import { duelSay } from '@/lib/sentences/duel'
 import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import '@/styles/duel.css'
+import PageMain from '@/components/PageMain.astro'
 
 const base = siteBase()
 // The #113 base-path helper (`base` stays for the Duel island, which takes the base argument).
@@ -28,7 +29,7 @@ const data = await loadDuelData()
 ---
 <Base title={`${duelSay({}, 'duel.title')} · Voto a Voto`} description={duelSay({}, 'duel.sub.cidade', { ano: data.ano })}>
   <PhoneHeader />
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:max-w-[1240px] lg:pt-8 duel-main" id="main" data-page="cara-a-cara">
+  <PageMain md="480" lg="1240" extra="duel-main" data-page="cara-a-cara">
     <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <Duel client:load base={base} origin={siteOrigin()} fixture={fixture} editionDate={editionLabel(edition)} data={data} />
     <noscript><p class="mt-2 text-step-1" data-nojs>O cara a cara monta o cartão no seu navegador e precisa de JavaScript.</p></noscript>
@@ -39,5 +40,5 @@ const data = await loadDuelData()
       aboutClass=""
       class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary"
     />
-  </main>
+  </PageMain>
 </Base>

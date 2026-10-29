@@ -15,6 +15,7 @@ import { currentEdition } from '@/lib/editions-load'
 import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
 import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import '@/lib/sentences/catalog-meu-brasil'
+import PageMain from '@/components/PageMain.astro'
 
 const base = siteBase()
 // The #113 base-path helper (`base` stays for the MeuBrasil island, which takes the base argument).
@@ -24,7 +25,7 @@ const edition = await currentEdition()
 ---
 <Base title={`${message(DEFAULT_VOICE, 'mb.title')} · Voto a Voto`} description={message(DEFAULT_VOICE, 'mb.sub')}>
   <PhoneHeader />
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:max-w-[1240px] lg:pt-8" id="main" data-page="meu-brasil">
+  <PageMain md="480" lg="1240" data-page="meu-brasil">
     <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{message(DEFAULT_VOICE, 'mb.title')}</h1>
     <p class="mt-1 text-step-1 text-muted-foreground lg:text-step-2">{message(DEFAULT_VOICE, 'mb.sub')}</p>
@@ -37,5 +38,5 @@ const edition = await currentEdition()
       aboutClass=""
       class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary"
     />
-  </main>
+  </PageMain>
 </Base>

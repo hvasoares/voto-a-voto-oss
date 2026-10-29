@@ -11,6 +11,8 @@ import { calcLink } from '@/lib/facts/link'
 import { factLinks } from '@/lib/facts/gate'
 import { getFactPage, sealOf } from '@/lib/facts/pages'
 import { NAV_CHIP_QUIET } from '@/shared/link-classes'
+import PageMain from '@/components/PageMain.astro'
+import { footerClass } from '@/shared/page-shell'
 
 export async function getStaticPaths() {
   return COMPARE_CYCLES.map((ciclo) => ({ params: { ciclo: String(ciclo) } }))
@@ -38,7 +40,7 @@ const intro = `Eleição presidencial 2026 (2º turno) comparada com a de ${cicl
 ---
 
 <Base title={`Comparar com ${ciclo} · Voto a Voto`}>
-  <main class="mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5 pt-16 lg:pt-8" id="main" data-page={`comparar-${ciclo}`}>
+  <PageMain top="bar" md="760" data-page={`comparar-${ciclo}`}>
     <a class={NAV_CHIP_QUIET} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Comparar com {ciclo}</h1>
 
@@ -86,12 +88,12 @@ const intro = `Eleição presidencial 2026 (2º turno) comparada com a de ${cicl
     </ul>
     </div>
     <Seal lines={seal} />
-  </main>
+  </PageMain>
   {/* The #113 shared footer with this page's variant (#115): the " · " separator and the plain about link. */}
   <SiteFooter
     source="Fonte: TSE, dados finais"
     separator=" · "
     aboutClass=""
-    class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary"
+    class={footerClass({ md: '760' })}
   />
 </Base>

@@ -78,3 +78,6 @@ export function footerClass({ md, lg, pad = 'normal', leftFromDesktop = false }:
     .filter(Boolean)
     .join(' ')
 }
+
+/** The footer line of QuietDoc: the global line on a page with no border above it, in the same phone column. */
+export const QUIET_FOOTER_CLASS = 'mx-auto w-full max-w-[430px] px-5 pb-6 pt-2 text-center text-step-1'

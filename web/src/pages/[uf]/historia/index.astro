@@ -19,6 +19,7 @@ import { factLinks } from '@/lib/facts/gate'
 import { getFactPage, sealOf } from '@/lib/facts/pages'
 import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import '@/styles/story.css'
+import PageMain from '@/components/PageMain.astro'
 
 export async function getStaticPaths() {
   const base = siteBase()
@@ -43,7 +44,7 @@ const words = { region: storySay('story.region', {}, { name: story.stateName }),
 ---
 <Base title={`${storySay('story.title', {}, { name: story.stateName })} · Voto a Voto`} description={story.cards[1]!.variants.standard.alt}>
   <PhoneHeader />
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:pt-8" id="main" data-page="historia" data-uf={uf}>
+  <PageMain md="480" data-page="historia" data-uf={uf}>
     <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{story.stateName}</h1>
     <p class="mt-1 text-step-1 text-muted-foreground" data-subtitle>{storySay('story.sub', {}, { n: cards.length })}</p>
@@ -57,5 +58,5 @@ const words = { region: storySay('story.region', {}, { name: story.stateName }),
       aboutClass=""
       class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary"
     />
-  </main>
+  </PageMain>
 </Base>

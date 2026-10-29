@@ -32,10 +32,12 @@ import Base from '@/layouts/Base.astro'
 import ReportNotice from '@/components/ReportNotice.astro'
 import ReportShare from '@/components/ReportShare.astro'
 import Seal from '@/components/Seal.astro'
+import PageMain from '@/components/PageMain.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { assertReportPage } from '@/lib/reports/layout'
 import { siteHref } from '@/paths'
 import { NAV_CHIP_QUIET } from '@/shared/link-classes'
+import { footerClass } from '@/shared/page-shell'
 
 interface Props {
   title: string
@@ -74,14 +76,10 @@ const {
   main = {},
 } = Astro.props
 assertReportPage({ title, heading, seal, report, notice })
-const column = wide ? 'mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] lg:max-w-[1200px] flex-1 px-5' : 'mx-auto min-w-0 w-full max-w-[430px] md:max-w-[760px] flex-1 px-5'
-const mainClass = `${column}${bottomPad ? ' pb-2' : ''} pt-16${wide ? ' lg:px-0' : ''} lg:pt-8`
-const footerClass = wide
-  ? 'mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] lg:max-w-[1200px] border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary lg:text-left'
-  : 'mx-auto mt-2 w-full max-w-[430px] md:max-w-[760px] border-t border-border px-5 pb-6 pt-2 text-center text-step-1 text-primary'
+const footerShell = footerClass(wide ? { md: '760', lg: '1200', leftFromDesktop: true } : { md: '760' })
 ---
 <Base title={title} description={description}>
-  <main class={mainClass} id="main" data-page={page} data-report={report} {...main}>
+  <PageMain top="bar" md="760" lg={wide ? '1200' : undefined} padBottom={bottomPad} extra={wide ? 'lg:px-0' : undefined} data-page={page} data-report={report} {...main}>
     <a class={NAV_CHIP_QUIET} href={siteHref(back.to)}>{back.label}</a>
     <slot name="banner" />
     <h1 class="mt-2 font-serif text-step-4 font-normal">{heading}</h1>
@@ -90,9 +88,9 @@ const footerClass = wide
     {notice && <ReportNotice text={notice} variant={noticeVariant} />}
     <slot name="after-notice" />
     {share && <ReportShare text={shareText} label={shareLabel} wide={wide} />}
-  </main>
+  </PageMain>
   {/* The #113 shared footer with the report variant (#115): the " · " separator and the plain about link. */}
-  <SiteFooter source="Fonte: TSE, dados finais" separator=" · " aboutClass="" aboutLabel={aboutLabel} class={footerClass} />
+  <SiteFooter source="Fonte: TSE, dados finais" separator=" · " aboutClass="" aboutLabel={aboutLabel} class={footerShell} />
   {share && (
     <script>
       import '@/scripts/report-analytics'

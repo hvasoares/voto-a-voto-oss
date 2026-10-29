@@ -13,6 +13,7 @@ import '@/lib/sentences/catalog-guide'
 import { siteOrigin } from '@/lib/share-url'
 import { currentEdition } from '@/lib/editions-load'
 import { editionLabel } from '@/lib/editions'
+import PageMain from '@/components/PageMain.astro'
 
 const base = siteBase()
 // The #113 base-path helper (`base` stays for the CreatorGuide island, which takes the base argument).
@@ -24,7 +25,7 @@ const never = [1, 2, 3, 4]
 const rules = [1, 2, 3, 4, 5, 6]
 ---
 <QuietDoc title={`${say('guide.title')} · Voto a Voto`} description={say('guide.sub')}>
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[720px] lg:pt-8" id="main" data-page="fale-sem-errar">
+  <PageMain md="720" data-page="fale-sem-errar">
     <a class="inline-flex min-h-11 items-center text-step-2 font-bold text-primary" href={href('/')}>‹ Início</a>
     <h1 class="mt-1 font-serif text-step-4 font-normal">{say('guide.title')}</h1>
     <p class="mt-1 text-step-2 text-muted-foreground">{say('guide.sub')}</p>
@@ -66,5 +67,5 @@ const rules = [1, 2, 3, 4, 5, 6]
       aboutClass=""
       class="mt-3 border-t border-border pt-2 text-center text-step-1 text-primary"
     />
-  </main>
+  </PageMain>
 </QuietDoc>

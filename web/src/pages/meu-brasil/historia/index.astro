@@ -15,6 +15,7 @@ import { storySay } from '@/lib/story'
 import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import '@/lib/meu-story'
 import '@/styles/story.css'
+import PageMain from '@/components/PageMain.astro'
 
 const base = siteBase()
 // The #113 base-path helper (`base` stays for the MeuBrasilStory island, which takes the base argument).
@@ -34,7 +35,7 @@ const words = {
 ---
 <Base title={`${storySay('mbstory.title')} · Voto a Voto`} description={storySay('mbstory.none')}>
   <PhoneHeader />
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[480px] lg:pt-8" id="main" data-page="meu-brasil-historia">
+  <PageMain md="480" data-page="meu-brasil-historia">
     <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/meu-brasil/')} data-back-meu-brasil>{storySay('mbstory.back')}</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{storySay('mbstory.title')}</h1>
     <MeuBrasilStory client:load base={base} origin={siteOrigin()} fixture={fixture} words={words} />
@@ -47,5 +48,5 @@ const words = {
       aboutClass=""
       class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary"
     />
-  </main>
+  </PageMain>
 </Base>

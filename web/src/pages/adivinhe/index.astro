@@ -11,6 +11,7 @@ import { siteBase, siteHref } from '@/paths'
 import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
 import '@/lib/sentences/catalog-game'
 import { siteOrigin } from '@/lib/share-url'
+import PageMain from '@/components/PageMain.astro'
 
 const base = siteBase()
 // The #113 base-path helper (`base` stays for the Game island, which takes the base argument).
@@ -18,7 +19,7 @@ const href = siteHref
 const say = (key: string) => message(DEFAULT_VOICE, key as never)
 ---
 <Base title={`${say('game.title')} · Voto a Voto`} description={say('game.rules')}>
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[720px] lg:max-w-[1200px] lg:pt-8" id="main" data-page="adivinhe">
+  <PageMain md="720" lg="1200" data-page="adivinhe">
     <a class="inline-flex min-h-11 items-center text-step-2 font-bold text-primary" href={href('/')}>‹ Início</a>
     <h1 class="mt-1 font-serif text-step-4 font-normal">{say('game.title')}</h1>
     <Game client:load base={base} origin={siteOrigin()} />
@@ -30,5 +31,5 @@ const say = (key: string) => message(DEFAULT_VOICE, key as never)
       aboutClass=""
       class="mt-4 border-t border-border pt-2 text-step-1 text-primary"
     />
-  </main>
+  </PageMain>
 </Base>

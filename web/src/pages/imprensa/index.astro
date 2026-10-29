@@ -16,6 +16,7 @@ import { editionLabel } from '@/lib/editions'
 import { loadCityRoutes } from '@/lib/city-routes'
 import { displayName } from '@/shared/city-search'
 import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
+import PageMain from '@/components/PageMain.astro'
 
 // The #113 base-path helper.
 const href = siteHref
@@ -28,7 +29,7 @@ const exampleHref = first ? href(`/imprensa/folha/${example}`) : undefined
 ---
 <Base title={`${say('press.title')} · Voto a Voto`} description={say('press.sub')}>
   <PhoneHeader />
-  <main class="mx-auto min-w-0 w-full max-w-[430px] flex-1 px-5 pt-3 md:max-w-[880px] lg:pt-8" id="main" data-page="imprensa">
+  <PageMain md="880" data-page="imprensa">
     <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{say('press.title')}</h1>
     <p class="mt-1 text-step-2 text-muted-foreground">{say('press.sub')}</p>
@@ -65,5 +66,5 @@ const exampleHref = first ? href(`/imprensa/folha/${example}`) : undefined
       <p class="mt-1 text-step-2">{say('press.sheet.note', { example: example })}</p>
       {exampleHref && first && <p class="mt-1"><a class="min-h-11 py-2 text-step-2 font-bold text-primary" href={exampleHref} data-sheet-example>{say('press.sheet.example', { name: displayName(first.nome) })}</a></p>}
     </section>
-  </main>
+  </PageMain>
 </Base>
