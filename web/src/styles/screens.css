@@ -1,6 +1,11 @@
-/* The screens of the ported slots (state #50, city card #50, three cycles #50), ported from site/src/shared/base.css
+/* The SHARED sheet of the screens (state #50, city card #50, three cycles #50), ported from site/src/shared/base.css
    so the markup contracts of the vanilla app (class names, e2e selectors, screenshots) carry over unchanged. The
-   tokens come from src/theme.ts via the --sketch-* variables; the aliases below keep the old site names verbatim. */
+   tokens come from src/theme.ts via the --sketch-* variables; the aliases below keep the old site names verbatim.
+   A screen group whose rules are big enough for Astro to LINK them (a sheet under 4 KB is inlined in the page, before the shared
+   link, and would lose the ties it used to win) lives in its own file, imported by the component that renders it (#119):
+   city.css today (src/styles/groups.ts says the rule, groups.test.ts keeps it). The state and three-cycles rules (2.7 and 3.4 KB)
+   stay here for that reason; so does everything two groups use (the page frame, the bars, the legend, the tabs, the footer, the
+   seal, ...), every selector list that names more than one group, and the curiosities card. */
 :root {
   --font-serif: var(--sketch-font-serif);
   --font-sans: var(--sketch-font-sans);
@@ -83,7 +88,7 @@ h2, .section-title { font: 400 var(--step-3) var(--font-serif); }
 .state-links a:first-child { flex: 0 0 160px; }
 .state-links a:last-child { flex: 0 0 150px; text-align: right; }
 
-/* ---- city card (#5 ported by #50): shared bars (.turnout, .bar, .legend) are owned by #5 and reused by the cycles and share views; `.city-*` and `.city-page` belong to the city slot ---- */
+/* ---- shared bars (#5 ported by #50): .turnout, .bar and .legend are owned by #5 and reused by the cycles and share views; `.city-*` and `.city-page` are in city.css ---- */
 .turnout__title { display: flow-root; font: var(--fw-bold) var(--step-1)/var(--lh-1) var(--font-sans); }
 .turnout__sep { margin: 0 3.5px; }
 .bar { display: flex; gap: 2px; height: 38px; margin-top: 9px; }
@@ -113,64 +118,15 @@ h2, .section-title { font: 400 var(--step-3) var(--font-serif); }
 .calc { color: var(--c-accent); font: var(--fw-bold) var(--step-1)/var(--lh-1) var(--font-sans); text-decoration: underline; }
 .legend__label .calc { order: 1; flex: 0 0 100%; padding-left: 22px; } /* the link has its own line under the label and the value (#89): the 24-character wording does not fit beside them */
 .turnout__title .calc { float: right; } /* the title holds its float (#89): a link that wraps below the words must not squeeze the bar beside it */
-.city-sentence + .calc, .city-margin ~ .calc { display: block; margin-top: 6px; }
 .curio__fact .calc { display: block; grid-column: 1 / -1; margin-top: 8px; }
-
-/* The card's base is the scale's small step (#86); only what is larger or bolder says so. */
-.city-page { font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); }
-.city-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
-.city-page .banner { letter-spacing: 0; padding: 6px var(--gutter); margin: 0 calc(-1 * var(--gutter)); }
-.city-page .page__main { padding: 0 var(--gutter) var(--sp-4); }
-.city-page .back { min-width: 84px; margin: 4px 0 8px -8px; padding: 0 12px; }
 .city-page .tabs, .tabs { display: flex; background: var(--c-paper-2); border-radius: var(--radius); padding: var(--sp-1); gap: var(--sp-1); }
-.city-page .tabs { margin-top: 14px; padding: 2px 4px; }
-.city-page .tabs + .tabs { margin-top: 6px; }
-.city-page .tabs__tab { min-height: 44px; }
 .tabs__tab {
   flex: 1; display: flex; align-items: center; justify-content: center; min-height: 40px;
   color: var(--c-muted); border-radius: var(--radius);
 }
 .tabs__tab[aria-current="true"] { background: var(--c-accent); color: var(--c-accent-fg); font-weight: 700; }
-.city-card { margin-top: 8px; padding: 0 16px; border-top: 1px solid var(--c-rule); }
-.city-card .city-figures > .turnout__title:first-child { margin-top: 15px; }
-.city-card .bar + .turnout__title { margin-top: 17px; }
-.city-card .legend { margin-top: 12px; }
-.city-card .legend__row { padding: 4px 0; }
-.city-page .city-headline { font: 400 var(--step-3)/var(--lh-3) var(--font-serif); margin: 26px 0 0; }
 /* The register (linguagem simples): both sentences are pre-rendered; the choice is an attribute of <html> (set by the card's inline script before paint). */
 html[data-register="plain"] [data-register="standard"], html:not([data-register="plain"]) [data-register="plain"] { display: none; }
-.city-page .register { display: flex; gap: 4px; margin: 18px 0 0; padding: 2px 4px; background: var(--c-paper-2); border-radius: var(--radius); }
-.city-page .register[hidden] { display: none; }
-.city-page .register__choice { flex: 1; min-height: 44px; padding: 0 8px; border: 0; border-radius: var(--radius); background: transparent; color: var(--c-muted); cursor: pointer; }
-.city-page .register__choice[aria-pressed="true"] { background: var(--c-accent); color: var(--c-accent-fg); font-weight: 700; }
-.city-page .register__choice:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 2px; }
-.city-page .register:not([hidden]) + .city-sentence .city-headline { margin-top: 14px; }
-.city-page .city-headline__note { color: var(--c-ink); margin: 6px 0 0; }
-.city-page .city-margin, .city-page .city-arc__pill, .city-page .city-twin { font-size: var(--step-2); line-height: var(--lh-2); }
-.city-page .city-margin { color: var(--c-ink); margin: 12px 0 0; }
-.city-page .city-arc { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--c-rule); border-radius: 10px; background: var(--c-paper-2); }
-.city-page .city-arc__pill { margin: 0; color: var(--c-ink); }
-.city-page .city-twin { display: block; margin-top: 12px; color: var(--c-accent); }
-.city-page .city-twin__reason { display: block; margin-top: 1px; color: var(--c-muted); }
-.city-page .city-arc__note { margin: 0; color: var(--c-muted); }
-.city-page .city-q__q { margin: 16px 0 0; font: 400 var(--step-3)/var(--lh-3) var(--font-serif); }
-.city-page .city-q__q::before, .city-page .city-q .city-arc::before { display: block; font: var(--fw-bold) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); }
-.city-page .city-q__q::before { content: "PERGUNTA"; }
-.city-page .city-q .city-arc::before { content: "RESPOSTA"; }
-.city-page .city-q__yn { float: left; margin: 0 .3em 0 0; font: 700 var(--step-2)/var(--lh-2) var(--font-sans); }
-.city-page .city-q__btn { min-width: 80px; min-height: 44px; margin: 6px 8px 0 0; border: 1px solid var(--c-accent); border-radius: var(--radius); background: none; color: var(--c-accent); font: 700 var(--step-2)/var(--lh-2) var(--font-sans); }
-.city-page .city-q__btn[aria-pressed="true"] { background: var(--c-accent); color: var(--c-accent-fg); }
-.city-nodata { margin: 24px 0; font-size: var(--step-2); color: var(--c-muted); }
-.city-share {
-  display: flex; align-items: center; justify-content: center; height: 48px; margin-top: 18px;
-  background: var(--c-accent); color: var(--c-accent-fg); border-radius: var(--radius); font-size: var(--step-2); padding-bottom: 1px;
-}
-.city-links__sub { display: none; }
-.city-links { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 7px; padding-top: 15px; border-top: 1px solid var(--c-rule); }
-/* Tap target >= the 44px minimum in every direction (#19): the links are centred cells of the grid. */
-.city-links a { display: flex; align-items: center; justify-content: center; min-height: var(--min-tap); text-align: center; font-weight: var(--fw-bold); color: var(--c-accent); }
-.city-page .page__main { padding-bottom: 0; }
-.city-page .source-footer { padding: 19px var(--gutter) 24px; color: var(--c-muted); }
 
 /* ---- three cycles of a city (#9, ported by #50): `.cycles-*` and `.cycle*` belong to the city-cycles slot; the bars reuse the shared .bar / .bar__seg ---- */
 .cycles-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
@@ -206,47 +162,15 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
 @layer base {
   @media (scripting: none) {
     .cycles__round[hidden] { display: block !important; }
-  }
+}
 }
 @media (scripting: none) {
   .cycles-switch { display: none !important; }
 }
 
-/* ---- desktop (G10, #52): the city card in two columns from 1024 px. The top bar (Base) replaces the page header; the card and
-   its tabs are the left column (640 px), the fixture badge, the sentence, Compartilhar and the links the right (480 px). ---- */
+/* ---- desktop (G10, #52): the calculation link sits beside the legend label from 1024 px (the two-column card is in city.css). ---- */
 @media (min-width: 1024px) {
-  .city-page .app-header { display: none; }
-  .city-page .page__main { width: 100%; max-width: 1240px; margin: 0 auto; padding: 24px 20px 0; flex: none; }
-  .city-body { display: grid; grid-template-columns: minmax(0, 640px) minmax(0, 480px); grid-template-rows: auto 1fr; column-gap: clamp(40px, 5.5vw, 80px); justify-content: center; align-items: start; }
-  .city-left { grid-column: 1; grid-row: 1 / 3; }
-  .city-right { grid-column: 2; grid-row: 2; }
-  .city-page .banner { grid-column: 2; grid-row: 1; justify-self: start; width: auto; height: auto; margin: 26px 0 0; padding: 3px 6px; border-radius: 3px; white-space: normal; }
-  .city-page .back { min-width: 0; margin: 0; min-height: 28px; padding: 0; border: 0; background: none; font-size: var(--step-1); color: var(--c-accent); }
-  .city-page .tabs { margin-top: 24px; }
-  .city-page .tabs + .tabs { margin-top: 10px; }
-  .city-card { margin-top: 20px; padding: 4px 24px 20px; border: 1px solid var(--c-rule); border-radius: 12px; }
-  .city-card .bar { height: 52px; }
-  .city-card .turnout__title { font-size: var(--step-2); line-height: var(--lh-2); }
-  .city-card .city-figures > .turnout__title:first-child { margin-top: 20px; }
-  .city-card .bar + .turnout__title { margin-top: 26px; }
-  .city-card .legend { margin-top: 20px; }
-  .city-card .legend__row { padding: 4px 0; }
-  .city-card .legend__label { display: block; flex: none; width: 228px; font-size: var(--step-2); }
   .legend__label .calc { display: inline; order: 0; margin-left: 10px; padding: 0; }
-  .city-page .city-words { margin-top: 12px; }
-  .city-page .city-headline { font-size: var(--step-4); line-height: var(--lh-4); margin: 0; }
-  .city-page .city-headline__note { margin-top: 10px; color: var(--c-muted); }
-  .city-page .register { margin: 0 0 14px; }
-  .city-page .register:not([hidden]) + .city-sentence .city-headline { margin-top: 0; }
-  .city-page .city-twin { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--c-rule); font-size: var(--step-3); line-height: var(--lh-3); }
-  .city-page .city-twin__reason { margin-top: 2px; font-size: var(--step-1); line-height: var(--lh-1); }
-  .city-page .city-margin { font-size: var(--step-2); line-height: var(--lh-2); margin-top: 18px; }
-  .city-share { height: 56px; margin-top: 36px; font-size: var(--step-3); }
-  .city-links { display: block; margin-top: 32px; padding-top: 0; border-top: 1px solid var(--c-rule); }
-  .city-links a { display: block; min-height: 76px; padding: 16px 0 0; text-align: left; font: 400 var(--step-3)/var(--lh-3) var(--font-sans); border-bottom: 1px solid var(--c-rule); }
-  .city-links__sub { display: block; margin-top: 2px; font-size: var(--step-1); line-height: var(--lh-1); color: var(--c-muted); }
-  .city-page .page-data { box-sizing: border-box; width: 100%; max-width: 1240px; margin: 8px auto 0; padding: 0 20px; }
-  .city-page .source-footer { width: 100%; max-width: 1200px; margin: 24px auto 0; padding: 24px 0; text-align: left; }
 }
 
 /* ---- desktop (G10, #55): Estado and the three-cycles pages are a centered column of about 720 px from 768 px, and drop the page header
@@ -294,7 +218,7 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
 }
 
 /* ---- curiosities (#33): a card on the city page. On a phone it is a block of the single column between the twin line and Compartilhar
-   (the flex order below); from 1024 px it sits under the figures of the city card. ---- */
+   (the flex order below); from 1024 px it sits under the figures of the city card (the placement `.city-curio` is in city.css). ---- */
 .screen .curio { display: flex; flex-direction: column; }
 .screen .curio__title { order: 0; margin: 0; font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); }
 .screen .curio__note { order: 1; margin: 16px 0 0; padding: 10px 12px; background: var(--c-paper-2); border: 1px solid var(--c-rule); border-radius: 8px; font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-ink); }
@@ -303,25 +227,6 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
 .screen .curio__rank { grid-row: 1; margin: 0; font: 400 var(--step-4)/var(--lh-4) var(--font-serif); color: var(--c-accent); }
 .screen .curio__what { grid-row: 1; grid-column: 2; margin: 0; font: 400 var(--step-2)/var(--lh-2) var(--font-serif); color: var(--c-ink); }
 .screen .curio__group { grid-column: 1 / -1; margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--c-rule); font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); }
-/* Phone: the two columns of the city page dissolve into one flex column, so the card (in the left column's markup, where the
-   desktop wants it) can sit after the twin line; the other blocks keep their DOM order and their margins. */
-@media (max-width: 1023.98px) {
-  .city-body { display: flex; flex-direction: column; }
-  .city-left, .city-right { display: contents; }
-  .city-page .back { align-self: flex-start; }
-  .screen .city-curio { order: 1; margin-top: 20px; }
-  .city-share, .city-links { order: 2; }
-}
-@media (min-width: 1024px) {
-  .screen .city-curio { display: block; margin-top: 20px; padding: 16px 20px 14px; border: 1px solid var(--c-rule); border-radius: 12px; }
-  .screen .city-curio .curio__title { font: 700 var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-ink); }
-  .screen .city-curio .curio__facts { order: 1; margin-top: 12px; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-  .screen .city-curio .curio__note { order: 2; margin: 12px 0 0; padding: 0; background: none; border: 0; color: var(--c-muted); }
-  .screen .city-curio .curio__fact { display: block; padding: 0; border: 0; }
-  .screen .city-curio .curio__rank { font-size: var(--step-4); line-height: var(--lh-4); }
-  .screen .city-curio .curio__what { font: var(--fw-regular) var(--step-1)/var(--lh-1) var(--font-sans); margin-top: 4px; }
-  .screen .city-curio .curio__group { margin-top: 8px; padding-top: 0; border: 0; }
-}
 
 /* The "conferido" seal (#62): a quiet block under the numbers, on the page of the calculation and on the pages it covers. */
 .seal { margin-top: 16px; padding: 12px 14px; border: 1px solid var(--c-accent); border-radius: 12px; background: var(--c-paper-2); }
