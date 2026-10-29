@@ -36,6 +36,18 @@ for (const [w, h] of [[390, 844], [1440, 900]] as const) {
       }
     })
 
+    test('the page footer holds its note and the 44 px "Sobre os dados" link in one line, not a line more (#106)', async ({ page }) => {
+      test.skip(w > 400, 'the phone footer height is a phone rule')
+      // Measured at 390 on the fixture build (page footer height, px): relatorios/ 48 before #87, 77 with it, 53 now; brasil/ 76 with it, 52 now;
+      // mapa/ 53 with it (Home and the maps had the 44 px link since #88), 45 now.
+      for (const route of ['relatorios/', 'brasil/', 'mapa/']) {
+        await page.goto(`${base}${route}`)
+        const footer = page.locator('footer[data-component="source-footer"]')
+        expect(await footer.evaluate((el) => el.getBoundingClientRect().height), route).toBeLessThanOrEqual(56)
+        expect((await footer.locator('a[href$="sobre-os-dados/"]').boundingBox())!.height, route).toBeGreaterThanOrEqual(44)
+      }
+    })
+
     test('the footer line keeps its 44 px links, fits the width and does not scroll sideways', async ({ page }) => {
       for (const [name, url] of PAGES) {
         await page.goto(url)

@@ -49,6 +49,10 @@
 
 /* The "Sobre os dados ›" link of every page footer is a 44 px target (#88 did Home and the maps; #87 does the other pages once, here). */
 footer a[href$="sobre-os-dados/"]:not(.source-footer__about) { display: inline-flex; align-items: center; min-height: var(--min-tap); }
+/* On the phone the 44 px target already carries the space under the note, so the footer that holds it drops its bottom padding (#106): the footer is as tall as before #87 and the target keeps its 44 px. */
+@media (max-width: 767px) {
+  footer:has(a[href$="sobre-os-dados/"]:not(.source-footer__about)) { padding-bottom: 0; }
+}
 .source-footer__about {
   position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
 }
