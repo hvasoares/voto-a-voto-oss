@@ -1,105 +1,15 @@
 ---
 /**
- * Share sheet, ticket #7. DEMO SHELL on a placeholder route: it draws the sheet with the fixture city and the round
- * of the Sketch frame "3 Folha de compartilhamento" so the sheet stays demoable without a shared address context.
- * Ticket #50 kept this route and wired the real `/:uf/:slug/compartilhar/` next to it (getStaticPaths over the
- * dataset, the ?ciclo/?turno view of the city card, the real city card as backdrop; components/ShareSheet owns
- * picture+text and fetches only the own city shard when a query view needs it).
- *
- * Data: build-time Node reading the dataset through the existing store (never the browser's CSV). The picture and the
- * text come pre-rendered; the island (client:idle) adds the Compartilhar / Baixar imagem / Copiar actions.
+ * Share sheet demo (ticket #7) on the placeholder route /compartilhar/: the one ShareScreen with the scope `demo` (the fixture city and the
+ * round of the Sketch frame "3 Folha de compartilhamento"), so the sheet stays demoable without a shared address context. The real routes
+ * are /:uf/:slug/compartilhar/ and /brasil/compartilhar/ (#50, #91); the demo is noindex and linked from nowhere (#137).
  */
-import { displayName } from '@/shared/city-search'
-import { CYCLES } from '@/shared/city-model'
-import { siteBase, siteHref } from '@/paths'
-import Base from '@/layouts/Base.astro'
-import SiteFooter from '@/components/SiteFooter.astro'
-import ShareActions from '@/components/ShareActions'
-import { datasetFixture, fixtureCityShards } from '@/lib/shard-files'
-import { cityShardResult } from '@/lib/city-shard'
-import { shareContent } from '@/lib/share-model'
-import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
-import { siteOrigin } from '@/lib/share-url'
-import { currentEdition } from '@/lib/editions-load'
-import FixtureBanner from '@/components/FixtureBanner.astro'
+import ShareScreen from '@/components/ShareScreen.astro'
+import ShareDemoBackdrop from '@/components/ShareDemoBackdrop.astro'
+import { shareScreenConfig } from '@/lib/screen-scopes'
 
-const base = siteBase()
-// The #113 base-path helper (`base` stays for `shareContent`, which takes the base argument).
-const href = siteHref
-
-// --- fixture state (the demo shell; the real route is /:uf/:slug/compartilhar/) -------------------------------------
-// The demo always draws the fixture city, whichever DATA_DIR the build uses (a real-data build has no
-// cidade-exemplo): the shards are rebuilt in memory from the committed fixture dataset, never the configured one.
-const shard = (await fixtureCityShards()).find((s) => s.city.uf === 'rj' && s.city.slug === 'cidade-exemplo')!
-const city = shard.city
-const view = { ano: 2026, turno: 1 as const } // the frame's round
-const result = cityShardResult(shard, view.ano, view.turno)
-const fixture = await datasetFixture({ DATA_DIR: undefined })
-const edition = (await currentEdition()).id
-const content = result ? shareContent(result, city, { origin: siteOrigin(), base, fixture, edition }) : undefined
-const cityName = displayName(city.nome)
-// "Fechar" of the demo has no city card to return to: the demo stays on the shell and points at home.
-const closeHref = href('/')
-const sub = city.uf === 'zz' ? 'Voto no exterior' : `${fixture ? 'Município fictício' : 'Município'} · rj`
-const NOTE = 'O link vai no texto da mensagem; a imagem leva só o endereço curto, sem QR.'
+const config = await shareScreenConfig({ scope: 'demo' })
 ---
-<Base title={`Compartilhar · ${cityName}`}>
-  <main class="min-w-0 flex-1">
-    <div data-share-backdrop aria-hidden="true" inert class="pointer-events-none select-none px-5 pt-4 opacity-35" data-ticket="50 to replace">
-      <p class="font-serif text-step-3 font-bold">Voto a Voto <span class="text-step-1 font-normal text-muted-foreground">Presidente {view.ano}</span></p>
-      <FixtureBanner show={fixture} tag="p" class="mt-2 py-1 text-center text-step-1 font-bold tracking-wide" style="background: var(--c-flag); color: var(--c-ink)" />
-      <p class="mt-3 text-step-1 text-muted-foreground">‹ Início</p>
-      <p class="mt-2 font-serif text-step-4">{cityName}</p>
-      <p class="mt-0.5 text-step-1 text-muted-foreground" data-subtitle>{sub} · UF</p>
-      <div class="mt-3 flex overflow-hidden rounded-md border border-border text-center text-step-2" data-cycles>
-        {CYCLES.map((c, i) => <span class:list={['min-h-11 flex-1 pt-3', i < 2 && 'border-r border-border']}>{c}</span>)}
-      </div>
-      <div class="mt-2 flex overflow-hidden rounded-md border border-border text-center text-step-2">
-        <span class="min-h-11 flex-1 bg-secondary pt-3 font-bold">1º turno</span>
-        <span class="min-h-11 flex-1 pt-3">2º turno</span>
-      </div>
-    </div>
-
-    <section
-      data-share-sheet
-      id="main"
-      data-uf={city.uf}
-      data-slug={city.slug}
-      data-view={`${view.ano}-${view.turno}`}
-      data-filename={content?.filename}
-      class="-mt-4 relative rounded-t-2xl border border-border bg-background px-5 pt-2 pb-6 shadow-[0_-4px_16px_rgba(28,27,24,0.25)] md:mx-auto md:mt-6 md:max-w-[480px] md:rounded-2xl md:px-7 md:pt-6"
-    >
-      <span class="mx-auto block h-1.5 w-16 rounded-full bg-muted md:hidden" aria-hidden="true"></span>
-      <div class="flex items-baseline justify-between">
-        <h1 class="font-serif text-step-4 font-normal">Compartilhar resultado</h1>
-        <a class="min-h-11 px-1 pt-1 text-step-2 font-bold" href={closeHref} data-close>Fechar</a>
-      </div>
-      {content ? (
-        <div class="mx-auto mt-2 flex-none md:max-w-[240px] [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" data-share-picture set:html={content.svg} />
-      ) : (
-        <p class="mt-4 text-step-2" data-nodata>{message(DEFAULT_VOICE, 'noData')}</p>
-      )}
-      {content && <p class="mt-3 text-step-1 text-muted-foreground" data-note>{NOTE}</p>}
-      {content && <noscript><p class="mt-1 text-step-1" data-nojs>Compartilhar e baixar a imagem precisam de JavaScript; o texto abaixo pode ser copiado e enviado com o endereço.</p></noscript>}
-      {content && <ShareActions client:idle text={content.text} svg={content.svg} filename={content.filename} link={content.url} />}
-      {/* The demo's Mostrar QR goes to the demo screen /qr/; the real route links its own /:uf/:slug/qr/. */}
-      {content && (
-        <a class="mt-2 flex min-h-11 w-full items-center justify-center rounded-md border border-border bg-background text-step-2 font-bold text-foreground" href={href('/qr/')} data-qr-link>
-          Mostrar QR
-        </a>
-      )}
-      {content && (
-        <a class="mt-1 flex min-h-11 w-full items-center justify-center text-step-2 font-bold text-primary" href={href('/gerador/?cidade=rj/cidade-exemplo')} data-generator-link>
-          Criar um cartão com uma medida ›
-        </a>
-      )}
-      {/* The #113 shared footer with this page's variant (#116): the " · " separator and the plain about link. */}
-      <SiteFooter
-        source={fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'}
-        separator=" · "
-        aboutClass=""
-        class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary"
-      />
-    </section>
-  </main>
-</Base>
+<ShareScreen config={config}>
+  <ShareDemoBackdrop slot="backdrop" />
+</ShareScreen>

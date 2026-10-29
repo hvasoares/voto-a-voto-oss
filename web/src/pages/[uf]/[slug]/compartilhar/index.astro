@@ -1,27 +1,14 @@
 ---
 /**
- * Real share route (the approved Sketch frame "3 Folha de compartilhamento", ticket #7's route wired by #50):
- * the sheet floats over the real city card as backdrop (aria-hidden and inert). Pre-rendered for the city card's
- * default view; when the address asks another card view (?ciclo/?turno), the ShareSheet island fetches ONLY this
- * city's own shard and re-derives the picture, the text and the file name (nothing else is ever fetched).
- * The demo shell is /compartilhar/ (ticket #7) and stays.
+ * Real share route (the approved Sketch frame "3 Folha de compartilhamento", ticket #7's route wired by #50): the one ShareScreen with the
+ * city scope (#137). The sheet floats over the real city card as backdrop (aria-hidden and inert). Pre-rendered for the city card's default
+ * view; when the address asks another card view (?ciclo/?turno), the ShareSheet island fetches ONLY this city's own shard and re-derives the
+ * picture, the text and the file name (nothing else is ever fetched). The demo is /compartilhar/.
  */
-import Base from '@/layouts/Base.astro'
+import ShareScreen from '@/components/ShareScreen.astro'
 import CityCard from '@/components/CityCard.astro'
-import ShareSheet from '@/components/ShareSheet'
-import SiteFooter from '@/components/SiteFooter.astro'
-import { siteBase, siteHref } from '@/paths'
+import { shareScreenConfig } from '@/lib/screen-scopes'
 import { loadCityRoutes } from '@/lib/city-routes'
-import { datasetFixture, loadCityShard } from '@/lib/shard-files'
-import { cityShardResult } from '@/lib/city-shard'
-import { displayName } from '@/shared/city-search'
-import { defaultView } from '@/slots/city/city-view'
-import { shareContent } from '@/lib/share-model'
-import { siteOrigin } from '@/lib/share-url'
-import { currentEdition } from '@/lib/editions-load'
-import CityTexts from '@/components/CityTexts.astro'
-import { cityTexts } from '@/lib/city-texts-build'
-import { pickQuestion } from '@/lib/question'
 
 export async function getStaticPaths() {
   return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug }, props: { nome: city.nome } }))
@@ -29,65 +16,9 @@ export async function getStaticPaths() {
 
 const { uf, slug } = Astro.params
 const { nome } = Astro.props as { nome: string }
-const base = siteBase()
-// The #113 base-path helper (`base` stays for the share-content and texts APIs that take the base argument).
-const href = siteHref
-const shard = (await loadCityShard(uf!, slug!))!
-const city = shard.city
-const name = displayName(nome)
-const fixture = await datasetFixture()
-const currentEd = await currentEdition()
-const edition = currentEd.id
-const texts = cityTexts(shard, { origin: siteOrigin(), base, fixture, editionDate: currentEd.date })
 
-// The view the page pre-prints is the card's default; ?ciclo/?turno is the ShareSheet island's business.
-const view = defaultView((ano, turno) => !!cityShardResult(shard, ano, turno))
-const result = cityShardResult(shard, view.ano, view.turno)
-const content = result ? shareContent(result, city, { origin: siteOrigin(), base, fixture, edition }) : null
-const closeHref = href(`/${uf}/${slug}/`)
+const config = await shareScreenConfig({ scope: 'city', uf: uf!, slug: slug!, nome })
 ---
-<Base title={`Compartilhar · ${name}`}>
-  <div>
-    {/* The sheet floats OVER the real city card: the card is the dimmed backdrop, the sheet is pinned to the
-      * bottom of the viewport and scrolls inside when the picture and the text do not fit (a bottom sheet). */}
-    <div data-share-backdrop aria-hidden="true" inert class="pointer-events-none select-none opacity-35">
-      <CityCard uf={uf!} slug={slug!} backdrop />
-    </div>
-
-    {/* From 768 px the sheet is a centered dialog over a dimmed page (from 1024 px the top bar stays above the dimming). */}
-    <div class="fixed inset-0 z-40 hidden bg-[rgba(28,27,24,0.45)] md:block lg:top-16" aria-hidden="true" data-share-dim></div>
-
-    <section
-      data-share-sheet
-      id="main"
-      data-uf={city.uf}
-      data-slug={city.slug}
-      data-view={`${view.ano}-${view.turno}`}
-      data-filename={content?.filename}
-      class="fixed inset-x-0 bottom-0 z-50 max-h-[100dvh] overflow-y-auto rounded-t-2xl border border-border bg-background px-5 pt-2 pb-6 shadow-[0_-4px_16px_rgba(28,27,24,0.25)] md:inset-x-auto md:bottom-auto md:left-1/2 md:top-[110px] md:max-h-[calc(100dvh-140px)] md:w-[480px] md:-translate-x-1/2 md:rounded-2xl md:px-7 md:pb-7 md:pt-6"
-    >
-    <span class="mx-auto block h-1.5 w-16 rounded-full bg-muted md:hidden" aria-hidden="true"></span>
-    <div class="flex items-baseline justify-between">
-      <h1 class="font-serif text-step-4 font-normal">Compartilhar resultado</h1>
-      <a class="min-h-11 px-1 pt-1 text-step-2 font-bold" href={closeHref} data-close>Fechar<span class="hidden md:inline" aria-hidden="true"> ×</span></a>
-    </div>
-    <ShareSheet client:load uf={city.uf} slug={city.slug} view={view} initial={content} origin={siteOrigin()} base={base} fixture={fixture} edition={edition} question={pickQuestion(shard)} cityName={city.nome} />
-    {/* Mostrar QR floats this city's canonical link scannably (route /:uf/:slug/qr/); it does not depend on
-      * the round, so it renders even when the view has no result. */}
-    <a class="mt-2 flex min-h-11 w-full items-center justify-center rounded-md border border-border bg-background text-step-2 font-bold text-foreground" href={href(`/${uf}/${slug}/qr/`)} data-qr-link>
-      Mostrar QR
-    </a>
-    <a class="mt-1 flex min-h-11 w-full items-center justify-center text-step-2 font-bold text-primary" href={href(`/gerador/?cidade=${uf}/${slug}`)} data-generator-link>
-      Criar um cartão com uma medida ›
-    </a>
-    <CityTexts texts={texts} stateHref={href(`/textos/${uf}.txt`)} />
-    {/* The #113 shared footer with this sheet's variant (#114): the about link carries no class. */}
-    <SiteFooter
-      source={fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'}
-      separator=" · "
-      aboutClass=""
-      class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary"
-    />
-    </section>
-  </div>
-</Base>
+<ShareScreen config={config}>
+  <CityCard slot="backdrop" uf={uf!} slug={slug!} backdrop />
+</ShareScreen>

@@ -1,0 +1,24 @@
+---
+/**
+ * The demo share sheet's stand-in for the city card behind it (ticket #7, the Sketch frame's top): a few lines of the card's words, drawn
+ * under the dimming. Only the demo route uses it; the city and Brasil routes pass their real screens. The data is the demo scope's
+ * (`demoSketch()` of `lib/screen-scopes.ts`).
+ */
+import FixtureBanner from '@/components/FixtureBanner.astro'
+import { CYCLES } from '@/shared/city-model'
+import { demoSketch } from '@/lib/screen-scopes'
+
+const { cityName, sub, ano, fixture } = await demoSketch()
+---
+<p class="font-serif text-step-3 font-bold">Voto a Voto <span class="text-step-1 font-normal text-muted-foreground">Presidente {ano}</span></p>
+<FixtureBanner show={fixture} tag="p" class="mt-2 py-1 text-center text-step-1 font-bold tracking-wide" style="background: var(--c-flag); color: var(--c-ink)" />
+<p class="mt-3 text-step-1 text-muted-foreground">‹ Início</p>
+<p class="mt-2 font-serif text-step-4">{cityName}</p>
+<p class="mt-0.5 text-step-1 text-muted-foreground" data-subtitle>{sub} · UF</p>
+<div class="mt-3 flex overflow-hidden rounded-md border border-border text-center text-step-2" data-cycles>
+  {CYCLES.map((c, i) => <span class:list={['min-h-11 flex-1 pt-3', i < 2 && 'border-r border-border']}>{c}</span>)}
+</div>
+<div class="mt-2 flex overflow-hidden rounded-md border border-border text-center text-step-2">
+  <span class="min-h-11 flex-1 bg-secondary pt-3 font-bold">1º turno</span>
+  <span class="min-h-11 flex-1 pt-3">2º turno</span>
+</div>

@@ -1,0 +1,23 @@
+---
+/**
+ * The share sheet, the one template of the three share routes (demo /compartilhar/, city /:uf/:slug/compartilhar/, Brasil
+ * /brasil/compartilhar/; ticket #137; the frame is the approved Sketch "3 Folha de compartilhamento" of #7/#50/#91): the document (`Base`,
+ * titled, described and noindex as the config says), the wrapper element, and `ShareSheetFrame`, which draws the sheet over its backdrop (the page's `backdrop` slot: its real screen, or the demo's stand-in).
+ *
+ * It draws the config it is handed (`lib/screen-scopes.ts` builds one per scope) and never looks at which scope it is: what differs is data.
+ * The wrapper is `main` where the sheet is the page (the demo) and a plain `div` where the sheet floats over a page that has its own landmark.
+ */
+import Base from '@/layouts/Base.astro'
+import ShareSheetFrame from '@/components/ShareSheetFrame.astro'
+import type { ShareScreenConfig } from '@/lib/screen-scopes'
+
+interface Props {
+  /** The sheet's config for its scope (the demo, a city or Brasil): `shareScreenConfig(scope)` of `lib/screen-scopes.ts` builds it. */
+  config: ShareScreenConfig
+}
+const { config } = Astro.props
+const { title, description, noindex, wrapper } = config
+---
+<Base title={title} description={description} noindex={noindex}>
+  {wrapper.tag === 'main' ? <main class={wrapper.class}><ShareSheetFrame config={config}><slot name="backdrop" slot="backdrop" /></ShareSheetFrame></main> : <div class={wrapper.class}><ShareSheetFrame config={config}><slot name="backdrop" slot="backdrop" /></ShareSheetFrame></div>}
+</Base>
