@@ -1,6 +1,10 @@
 /**
- * The message catalog: every sentence the city card, the share text and the picture's text alternative say lives HERE
- * as data (templates with `{name}` slots), reviewed like code. No CMS, no free text elsewhere.
+ * The message catalog: every sentence the city card, the share text and the picture's text alternative say lives in
+ * `catalog.ts` and the `catalog-<feature>.ts` files beside it, as data (templates with `{name}` slots), reviewed like
+ * code. No CMS, no free text elsewhere. This file is the core: the types (`Key`, `Voice`), `template/fill/message`,
+ * `CATALOG`, and the sentences two or more features share; a sentence ONE feature says lives in `catalog-<feature>.ts`
+ * (each of those declares its own keys and, on import, registers its sentences in `CATALOG` through
+ * `registerSentences`, which throws on a duplicate).
  *
  * - `KEYS` is the one list of catalog keys. A key ending in `.one`/`.other` is a plural pair, picked with the locale's
  *   `Intl.PluralRules`.
@@ -13,11 +17,10 @@
 import { DEFAULT_REGISTER, REGISTERS, type Register } from './register'
 
 export const KEYS = [
-  /** Shown instead of a sentence when the city has no data in the cycle. */
+  /** Shown instead of a sentence when the city has no data in the cycle, on the card and in the share and generator islands. */
   'noData',
-  /** The small line under the headline: where the sentence comes from. */
+  /** The headline of the city card and its share text (#23): the sentences live in `catalog-headline.ts`, loaded only by the headline's own modules. */
   'headline.note',
-  /** The start of every sentence: where and when. */
   'lead.city',
   'lead.overseas',
   'noElectorate',
@@ -25,7 +28,6 @@ export const KEYS = [
   'nobodyTurnedOut.other',
   'noValidVotes',
   'everyoneVoted',
-  /** The "who did not vote" clause, in shares of the electorate or (tiny electorates) in head counts. */
   'nonVoters.share',
   'nonVoters.count.one',
   'nonVoters.count.other',
@@ -44,7 +46,7 @@ export const KEYS = [
   'phrase.below',
   'runnerUp.tied',
   'runnerUp.role',
-  /** The margin line (#26): the votes that would have changed the result, and how many times that fits in the people who did not vote. Plain arithmetic, no intent. */
+  /** The margin line (#26): the sentences live in `catalog-margin.ts`, loaded only by `margin.ts` and who imports it. */
   'margin.tie',
   'margin.gap.one',
   'margin.gap.other',
@@ -52,7 +54,7 @@ export const KEYS = [
   'margin.fits.other',
   'margin.exceeds',
   'margin.end',
-  /** The arc label of a city (#41): who had the most votes in the 2nd round of 2018, 2022 and 2026, as a sequence. A closed list; the note says it is not a cause. */
+  /** The arc label of a city (#41): the sentences live in `catalog-arc.ts`, loaded only by `arc.ts` and who imports it. */
   'arc.same',
   'arc.switched2022',
   'arc.switched2026',
@@ -61,12 +63,14 @@ export const KEYS = [
   'arc.tie',
   'arc.missing',
   'arc.note',
-  /** The twin line (#31): the closest peer city of another state, and the one-line reason, which names the features the match really uses. */
+  /** The twin line (#31): the sentences live in `catalog-twin.ts`, loaded only by the city card's own slot. */
   'twin.label',
   'twin.reason',
-  /** The curiosities card (#33): a comparison with the cities of the same size band, never a finding. One key per kind of fact; the rank is printed apart. */
+  /** The curiosities card (#33): the key of each kind of fact. Both the city slot and the Meu Brasil story say them
+   * (through the same builder), so they live in the core — a feature file would ride into the story island's chunk. */
   'curio.title',
   'curio.note',
+  /** The rank of a city in a comparison ("3ª"), a word the curiosities card, the story and the fact records all print. */
   'curio.rank',
   'curio.td',
   'curio.tu',
@@ -76,26 +80,28 @@ export const KEYS = [
   'curio.bh',
   'curio.group',
   'curio.cycles.change',
-  /** The one-stat card (#25): the line printed under ONE number, per measure. The number is printed apart; the line never says why. */
+  /** The one-stat card (#25): the sentences live in `catalog-stat.ts`, loaded only by `stat.ts` and who imports it. */
   'stat.nonVoters',
   'stat.margin.one',
   'stat.margin.other',
   'stat.turnout',
   'stat.unavailable',
-  /** The state recap (#28): the three cycles of one state, the two runoff candidates' shares, the change in points. */
+  /** The state recap (#28): the sentences live in `catalog-recap.ts`, loaded only by the recap's own modules. */
   'recap.title',
   'recap.sub',
   'recap.lead',
   'recap.part',
   'recap.noData',
   'recap.base',
+  /** The start-of-series label, printed by the recap and by the three-cycles page. */
   'recap.start',
   'recap.change',
+  /** "sem dados" of a cycle's row, printed by the recap and the Meu Brasil card. */
   'recap.rowNoData',
   'recap.link',
   'recap.share',
   'recap.cycles',
-  /** Meu Brasil (#27) and its sticker (#37): up to three places across the three cycles, one headline. */
+  /** Meu Brasil (#27) and its sticker (#37): the sentences live in `catalog-meu-brasil.ts`, loaded only by Meu Brasil's own modules. */
   'mb.title',
   'mb.sub',
   'mb.none',
@@ -121,7 +127,7 @@ export const KEYS = [
   'mb.sticker.alt',
   'mb.sticker.altLabel',
   'mb.sticker.download',
-  /** The chrome of the pictures (#38): the words drawn around the numbers, so a card exists in each language. Same in both registers. */
+  /** The chrome of the pictures (#38): the words drawn around the numbers, so a card exists in each language. Same in both registers. Every card generator prints them. */
   'card.example',
   'card.president',
   'card.round',
@@ -134,13 +140,13 @@ export const KEYS = [
   'card.brand.fixture',
   /** The long description (`<desc>`) of a picture: what it is and where its numbers come from. */
   'card.desc',
-  /** Pipe-separated words for the counts 0 to 10; a larger count is written in digits. */
+  /** Pipe-separated words for the counts 0 to 10; a larger count is written in digits. The sentences live in `catalog-headline.ts` with the only feature that spells counts. */
   'numberWords',
-  /** Put before a label that already says "Candidato X" (fixture, unnamed candidates). */
+  /** Put before a label that already says "Candidato X" (fixture, unnamed candidates). Lives in `catalog-headline.ts` likewise. */
   'label.article',
   'pct.lessThan',
   'pct.moreThan',
-  /** The fact records (#61): the sentence of a published number, apart from the words of the card. */
+  /** The fact records (#61): the sentences live in `catalog-facts.ts`. */
   'fact.votaram',
   'fact.naoVotaram',
   'fact.candidate',
@@ -306,11 +312,11 @@ export const KEYS = [
   'seal.field.comparecimento',
   'seal.field.validos',
   'seal.note',
-  /** The register switch of the city card: its group label and the two choices. */
+  /** The register switch of the city card: the sentences live in `catalog-register.ts`, loaded only by the city card's own slot. */
   'register.label',
   'register.standard',
   'register.plain',
-  /** The meta description of a city page (what a link preview says): standard register only. */
+  /** The meta description of a city page (what a link preview says): the sentences live in `catalog-preview.ts`, loaded only by the link preview's own module. */
   'preview.fixture',
   'preview.intro',
   'preview.noResult',
@@ -469,55 +475,42 @@ export { DEFAULT_REGISTER, REGISTERS, type Register }
 
 /** Keys that read the same in both registers, so they have no plain version: the register switch's own labels and the page-head description for crawlers. */
 export const STANDARD_ONLY_KEYS = ['card.example', 'card.president', 'card.round', 'card.noElectorate', 'card.voted', 'card.notVoted', 'card.noValid', 'card.others', 'card.brand', 'card.brand.fixture', 'card.desc', 'register.label', 'register.standard', 'register.plain', 'fact.f.race', 'fact.sub.report', 'fact.back.report', 'fact.where.brasil', 'fact.where.regiao', 'fact.where.estado', 'fact.in.comparecimento', 'fact.in.regionValidos', 'fact.in.nationalValidos', 'fact.in.votosAt', 'fact.in.shareAt', 'fact.in.brancos', 'fact.in.nulos', 'fact.f.regionShare', 'fact.f.turnout', 'fact.f.partTurnout', 'fact.f.diffVotes', 'fact.f.changePp', 'fact.w.pp', 'fact.sub.brasil', 'fact.sub.compare', 'fact.sub.state', 'fact.back.brasil', 'fact.back.compare', 'fact.back.state', 'fact.method.cycles', 'seal.title', 'seal.national', 'seal.municipios', 'seal.field.aptos', 'seal.field.comparecimento', 'seal.field.validos', 'seal.note', 'fact.in.aptos', 'fact.in.validos', 'fact.in.naoVotaram', 'fact.in.votos', 'fact.in.first', 'fact.in.second', 'fact.in.part', 'fact.in.rank', 'fact.in.group', 'fact.in.cycles', 'fact.f.votaram', 'fact.f.naoVotaram', 'fact.f.candidate', 'fact.f.notVotedPart', 'fact.f.frase', 'fact.f.margin', 'fact.f.fits', 'fact.f.curio', 'fact.w.share', 'fact.w.none', 'fact.w.diff', 'fact.w.times', 'fact.w.tie', 'fact.w.curio', 'fact.title', 'fact.sub', 'fact.sub.curio', 'fact.back', 'fact.inputs', 'fact.formula', 'fact.shown', 'fact.rounding', 'fact.source', 'fact.source.tse', 'fact.source.fixture', 'fact.edition', 'fact.method', 'fact.method.margin', 'fact.method.curio', 'fact.method.peers', 'fact.others', 'fact.id', 'fact.link', 'fact.measure.frase', 'fact.measure.votaram', 'fact.measure.naoVotaram', 'fact.measure.margem', 'fact.neutral', 'fact.in.old', 'fact.w.old', 'fact.sub.old', 'fact.back.old', 'fact.measure.candidato', 'fact.measure.parte', 'fact.f.flip', 'fact.w.margin', 'fact.w.swing', 'fact.f.delta', 'fact.f.deltaTotal', 'fact.f.count', 'fact.w.count', 'fact.f.flips', 'fact.f.cohort', 'fact.w.cohort', 'fact.f.cohortTotal', 'fact.w.cohortTotal', 'fact.f.stateCount', 'fact.w.stateCount', 'fact.in.cities', 'fact.w.n', 'fact.w.sum', 'fact.in.minimum', 'fact.in.gained', 'fact.in.lost', 'fact.in.tied', 'fact.in.decided', 'fact.in.groupCities', 'fact.in.won', 'fact.in.tiesBefore', 'fact.in.noData', 'fact.in.grouped', 'fact.in.cities2026', 'fact.in.total', 'fact.sub.hub', 'fact.sub.municipios', 'fact.back.estado', 'fact.back.relatorios', 'preview.fixture', 'preview.intro', 'preview.noResult', 'preview.noElectorate', 'preview.noValidVotes', 'preview.default', 'preview.pair', 'fact.f.outlier', 'fact.f.outCount', 'fact.w.outTurnout', 'fact.w.outSwing', 'fact.in.peer', 'fact.in.peerValue', 'fact.in.peerNone', 'fact.method.outliers'] as const satisfies readonly Key[]
-type StandardOnly = (typeof STANDARD_ONLY_KEYS)[number]
+export type StandardOnly = (typeof STANDARD_ONLY_KEYS)[number]
 
-/** The fact and seal sentences live in `catalog-facts.ts` (only the build and the fact pages load them; the browser's share code does not carry them). */
-type FactKey = `fact.${string}` | `seal.${string}` | `duel.${string}` | `stayhome.${string}` | `outlier.${string}` | `brasil.${string}`
-const ptBR: Record<Exclude<Key, FactKey>, string> = {
+/** The core's own keys: what two or more features say (the shared chrome of the pictures, the shared short words), never a feature's sentences. Everything else lives in a `catalog-<feature>.ts` that declares its own keys; the partition test of `catalog-keys.test.ts` matches them against `KEYS`. */
+export const CORE_KEYS = [
+  'noData',
+  'curio.title',
+  'curio.note',
+  'curio.rank',
+  'curio.td',
+  'curio.tu',
+  'curio.ml',
+  'curio.mh',
+  'curio.bl',
+  'curio.bh',
+  'curio.group',
+  'curio.cycles.change',
+  'recap.start',
+  'recap.rowNoData',
+  'card.example',
+  'card.president',
+  'card.round',
+  'card.noElectorate',
+  'card.voted',
+  'card.notVoted',
+  'card.noValid',
+  'card.others',
+  'card.brand',
+  'card.brand.fixture',
+  'card.desc',
+  'pct.lessThan',
+  'pct.moreThan',
+] as const satisfies readonly Key[]
+export type CoreKey = (typeof CORE_KEYS)[number]
+
+const ptBR: Record<CoreKey, string> = {
   noData: 'Sem dados nesse ciclo.',
-  'headline.note': 'Frase gerada dos números · também o texto alternativo',
-  'lead.city': 'Em {city}, no {turno}º turno de {ano}, ',
-  'lead.overseas': 'No exterior, em {city}, no {turno}º turno de {ano}, ',
-  noElectorate: '{lead}não há eleitores aptos registrados.',
-  'nobodyTurnedOut.one': '{lead}o único eleitor apto não compareceu.',
-  'nobodyTurnedOut.other': '{lead}nenhum dos {aptos} eleitores aptos compareceu.',
-  noValidVotes: '{lead}nenhum candidato recebeu votos válidos: todos os votos foram em branco ou nulos.',
-  everyoneVoted: '{lead}todo o eleitorado votou em algum candidato.',
-  'nonVoters.share': '{share} do eleitorado não votou',
-  'nonVoters.count.one': '{n} dos {aptos} eleitores não votou',
-  'nonVoters.count.other': '{n} dos {aptos} eleitores não votaram',
-  'votes.count.one': '{n} voto',
-  'votes.count.other': '{n} votos',
-  'share.ofElectorate': '{share} do eleitorado',
-  'tie.two': '{lead}{a} e {b} empataram na frente, com {each} cada um; {nonVoters}.',
-  'tie.many': '{lead}{count} candidatos empataram na frente, com {each} cada um; {nonVoters}.',
-  single: '{lead}{nonVoters}; {name} recebeu todos os votos válidos ({value}).',
-  vsLeader: '{lead}{nonVoters}, {phrase} o mais votado, {name}, recebeu ({value}).',
-  vsRunnerUp: '{lead}{nonVoters}, {phrase} {who}{role} recebeu ({value}).',
-  'phrase.above': 'mais do que',
-  'phrase.slightly': 'um pouco mais do que',
-  'phrase.equal': 'tanto quanto',
-  'phrase.almost': 'quase tanto quanto',
-  'phrase.below': 'menos do que',
-  'runnerUp.tied': 'cada um dos {count} candidatos empatados em segundo lugar ({names})',
-  'runnerUp.role': ', o segundo mais votado,',
-  'margin.tie': 'Empate na frente: a diferença entre os mais votados é de 0 votos.',
-  'margin.gap.one': 'Faltou {n} voto para virar',
-  'margin.gap.other': 'Faltaram {n} votos para virar',
-  'margin.fits.one': ': cabe {times} vez nos {m} que não votaram.',
-  'margin.fits.other': ': cabem {times} vezes nos {m} que não votaram.',
-  'margin.exceeds': ': mais do que os {m} que não votaram.',
-  'margin.end': '.',
-  'arc.same': 'Mesmo lado nos três ciclos',
-  'arc.switched2022': 'Mudou de lado em 2022',
-  'arc.switched2026': 'Mudou de lado em 2026',
-  'arc.returned': 'Mudou de lado em 2022 e voltou em 2026',
-  'arc.switchedTwice': 'Mudou de lado em 2022 e de novo em 2026',
-  'arc.tie': 'Empate no 2º turno de {years}',
-  'arc.missing': 'Sem dados do 2º turno de {years}',
-  'arc.note': 'Descreve a sequência, não a causa.',
-  'twin.label': 'Cidade gêmea: {name} · {uf}',
-  'twin.reason': 'Perfil parecido de porte, participação, margem e histórico.',
   'curio.title': 'Curiosidades · comparada com cidades parecidas',
   'curio.note': 'É uma comparação com cidades do mesmo perfil, não um indício de irregularidade.',
   'curio.rank': '{n}ª',
@@ -529,48 +522,8 @@ const ptBR: Record<Exclude<Key, FactKey>, string> = {
   'curio.bh': 'maior parcela de votos brancos e nulos',
   'curio.group': 'Grupo: {n} cidades · {cycles}',
   'curio.cycles.change': '{from} → {to}',
-  'stat.nonVoters': 'do eleitorado de {city} não votou no {turno}º turno de {ano}.',
-  'stat.margin.one': 'voto separou os dois candidatos mais votados em {city}, no {turno}º turno de {ano}.',
-  'stat.margin.other': 'votos separaram os dois candidatos mais votados em {city}, no {turno}º turno de {ano}.',
-  'stat.turnout': 'do eleitorado de {city} compareceu no {turno}º turno de {ano}.',
-  'stat.unavailable': 'Esta medida não se aplica a {city} no {turno}º turno de {ano}.',
-  'recap.title': 'Resumo do estado',
-  'recap.sub': '{state} · Presidente, 2º turno, {years}',
-  'recap.lead': 'Em {state}, no 2º turno, os votos válidos foram: ',
-  'recap.part': '{ano}, {a} {pa}% e {b} {pb}%',
-  'recap.noData': 'Sem dados do 2º turno em {state}.',
-  'recap.base': 'Base: votos válidos do 2º turno, sem o exterior. Variações calculadas sem arredondar. Fonte: TSE.',
   'recap.start': 'Ponto de partida da série',
-  'recap.change': '{pp} pp vs {ano}',
   'recap.rowNoData': 'sem dados',
-  'recap.link': 'Resumo do estado',
-  'recap.share': 'Compartilhar o resumo',
-  'recap.cycles': '{first} a {last}',
-  'mb.title': 'Meu Brasil',
-  'mb.sub': 'Até três lugares: onde você mora, vota e nasceu.',
-  'mb.none': 'Escolha ao menos um lugar para ver o cartão.',
-  'mb.single': 'Em {place}, no 2º turno, a parcela do eleitorado que não votou foi de {parts}.',
-  'mb.multi': 'No 2º turno de {ano}, a parcela do eleitorado que não votou foi de {parts}.',
-  'mb.part.cycle': '{pct}% em {ano}',
-  'mb.part.place': '{pct}% em {place}',
-  'mb.noData': 'Os lugares escolhidos não têm dados do 2º turno de nenhum ciclo em comum.',
-  'mb.legend': 'Vermelho = candidato de menor número · azul = o outro (% dos votos válidos) · bege = % do eleitorado que não votou',
-  'mb.notVoted': 'não votou {pct}%',
-  'mb.votedLine': 'votaram · {sides}',
-  'mb.notVotedFull': 'não votou {pct}% do eleitorado',
-  'mb.role.mora': 'Onde mora',
-  'mb.role.vota': 'Onde vota',
-  'mb.role.nasceu': 'Onde nasceu',
-  'mb.share': 'Compartilhar o cartão',
-  'mb.addressNote': 'Os lugares ficam no endereço da página: recarregar ou enviar o link reproduz o mesmo cartão.',
-  'mb.tag': 'MEU BRASIL',
-  'mb.sticker.title': 'Adesivo Meu Brasil',
-  'mb.sticker.sub': 'Adesivo de chat com a frase do cartão e um QR para ele. PNG com fundo transparente.',
-  'mb.sticker.note': 'O QR leva ao cartão: o endereço dele tem os mesmos lugares.',
-  'mb.sticker.scan': 'Aponte a câmera para abrir o cartão.',
-  'mb.sticker.alt': 'Adesivo Meu Brasil: {headline} O QR leva ao cartão em {address}.',
-  'mb.sticker.altLabel': 'Texto alternativo gerado: “{alt}”',
-  'mb.sticker.download': 'Baixar adesivo (PNG)',
   'card.example': 'EXEMPLO',
   'card.president': 'Presidente {ano}',
   'card.round': '{ano} · {turno}º turno · {uf}',
@@ -582,71 +535,12 @@ const ptBR: Record<Exclude<Key, FactKey>, string> = {
   'card.brand': 'Voto a Voto · Fonte: TSE',
   'card.brand.fixture': 'Voto a Voto · Dados fictícios. Fonte real: TSE.',
   'card.desc': 'Imagem do Voto a Voto com números do TSE, edição {edition}. Endereço: {address}.',
-  numberWords: 'zero|um|dois|três|quatro|cinco|seis|sete|oito|nove|dez',
-  'label.article': 'o {name}',
   'pct.lessThan': 'menos de {pct}',
   'pct.moreThan': 'mais de {pct}',
-  'register.label': 'Estilo da frase',
-  'register.standard': 'Texto integral',
-  'register.plain': 'Linguagem simples',
-  'preview.fixture': 'Dados fictícios (EXEMPLO). ',
-  'preview.intro': 'Resultado de {place}',
-  'preview.noResult': '{note}{intro}: o arquivo do TSE não traz votação para os ciclos do site.',
-  'preview.noElectorate': '{note}{intro}, {ano}, {turno}º turno: sem eleitores aptos registrados.',
-  'preview.noValidVotes': '{note}{intro}, {ano}, {turno}º turno: nenhum voto válido; {notVoted}% do eleitorado não votou.',
-  'preview.default': '{note}{intro}, {ano}, {turno}º turno: votaram {voted}% do eleitorado e {leader} recebeu {pct}% dos votos válidos.',
-  'preview.pair': '{note}{intro}, {ano}, {turno}º turno: votaram {voted}% do eleitorado; dos votos válidos, {first} recebeu {firstPct}% e {second} {secondPct}%.',
 }
 
-/**
- * Linguagem simples: short sentences, one idea each, everyday words ("pessoas que podiam votar", not "eleitorado"),
- * the same figures and the same neutrality as the standard register. The slots are the same as the standard template's.
- */
-const ptBRPlain: Record<Exclude<Key, StandardOnly | FactKey>, string> = {
+const ptBRPlain: Record<Exclude<CoreKey, StandardOnly>, string> = {
   noData: 'Não temos dados dessa eleição para este lugar.',
-  'headline.note': 'Frase feita com os números desta página · também é a descrição do gráfico',
-  'lead.city': 'Em {city}, no {turno}º turno de {ano}, ',
-  'lead.overseas': 'No exterior, em {city}, no {turno}º turno de {ano}, ',
-  noElectorate: '{lead}não havia pessoas registradas para votar.',
-  'nobodyTurnedOut.one': '{lead}a única pessoa que podia votar não foi votar.',
-  'nobodyTurnedOut.other': '{lead}nenhuma das {aptos} pessoas que podiam votar foi votar.',
-  noValidVotes: '{lead}nenhum candidato recebeu votos. Todos os votos foram em branco ou anulados.',
-  everyoneVoted: '{lead}todas as pessoas votaram em algum candidato.',
-  'nonVoters.share': '{share} das pessoas que podiam votar não votaram',
-  'nonVoters.count.one': '{n} de {aptos} pessoas que podiam votar não votou',
-  'nonVoters.count.other': '{n} de {aptos} pessoas que podiam votar não votaram',
-  'votes.count.one': '{n} voto',
-  'votes.count.other': '{n} votos',
-  'share.ofElectorate': 'votos de {share} das pessoas que podiam votar',
-  'tie.two': '{lead}{a} e {b} ficaram empatados na frente. Cada um recebeu {each}. {nonVoters}.',
-  'tie.many': '{lead}{count} candidatos ficaram empatados na frente. Cada um recebeu {each}. {nonVoters}.',
-  single: '{lead}{nonVoters}. {name} recebeu todos os votos dados a candidatos: {value}.',
-  vsLeader: '{lead}{nonVoters}. {phrase} {name}, o mais votado, recebeu: {value}.',
-  vsRunnerUp: '{lead}{nonVoters}. {phrase} {who}{role} recebeu: {value}.',
-  'phrase.above': 'Isso é mais do que',
-  'phrase.slightly': 'Isso é um pouco mais do que',
-  'phrase.equal': 'Isso é igual ao que',
-  'phrase.almost': 'Isso é quase igual ao que',
-  'phrase.below': 'Isso é menos do que',
-  'runnerUp.tied': 'cada um dos {count} candidatos empatados em segundo lugar ({names})',
-  'runnerUp.role': ', o segundo mais votado,',
-  'margin.tie': 'Houve empate na frente. A diferença entre os mais votados é de 0 votos.',
-  'margin.gap.one': 'Faltou {n} voto para virar o resultado',
-  'margin.gap.other': 'Faltaram {n} votos para virar o resultado',
-  'margin.fits.one': '. Esse número cabe {times} vez nas {m} pessoas que não votaram.',
-  'margin.fits.other': '. Esse número cabe {times} vezes nas {m} pessoas que não votaram.',
-  'margin.exceeds': '. Esse número é maior do que as {m} pessoas que não votaram.',
-  'margin.end': '.',
-  'arc.same': 'Nos três ciclos, o mesmo lado teve mais votos no 2º turno',
-  'arc.switched2022': 'Em 2022, o lado com mais votos no 2º turno mudou',
-  'arc.switched2026': 'Em 2026, o lado com mais votos no 2º turno mudou',
-  'arc.returned': 'Em 2022 o lado com mais votos mudou, e em 2026 voltou a ser o de 2018',
-  'arc.switchedTwice': 'O lado com mais votos no 2º turno mudou em 2022 e mudou de novo em 2026',
-  'arc.tie': 'O 2º turno terminou empatado em {years}',
-  'arc.missing': 'Não temos o resultado do 2º turno de {years}',
-  'arc.note': 'Só conta a ordem dos fatos. Não diz o motivo.',
-  'twin.label': 'Cidade parecida: {name} · {uf}',
-  'twin.reason': 'Tem número de eleitores, comparecimento e resultados parecidos nas três eleições.',
   'curio.title': 'Curiosidades · comparada com cidades parecidas',
   'curio.note': 'Isto só compara a cidade com outras parecidas. Não mostra que algo deu errado.',
   'curio.rank': '{n}ª',
@@ -658,50 +552,8 @@ const ptBRPlain: Record<Exclude<Key, StandardOnly | FactKey>, string> = {
   'curio.bh': 'maior parte de votos em branco e nulos entre cidades do mesmo tamanho',
   'curio.group': 'Grupo: {n} cidades · {cycles}',
   'curio.cycles.change': '{from} → {to}',
-  'recap.title': 'Resumo do estado',
-  'recap.sub': '{state} · Presidente, 2º turno, {years}',
-  'recap.lead': 'Em {state}, no 2º turno, estes foram os votos dados a candidatos: ',
-  'recap.part': 'em {ano}, {a} teve {pa}% e {b} teve {pb}%',
-  'recap.noData': 'Não temos dados do 2º turno em {state}.',
-  'recap.base': 'Contamos só os votos dados a candidatos no 2º turno, sem os votos do exterior. As diferenças usam os números exatos, sem arredondar. Fonte: TSE.',
   'recap.start': 'Ponto de partida da série',
-  'recap.change': '{pp} pontos em relação a {ano}',
   'recap.rowNoData': 'sem dados',
-  'recap.link': 'Resumo do estado',
-  'recap.share': 'Compartilhar o resumo',
-  'recap.cycles': '{first} a {last}',
-  'mb.title': 'Meu Brasil',
-  'mb.sub': 'Até três lugares: onde você mora, vota e nasceu.',
-  'mb.none': 'Escolha ao menos um lugar para ver o cartão.',
-  'mb.single': 'Em {place}, no 2º turno, estas foram as pessoas que não votaram: {parts}.',
-  'mb.multi': 'No 2º turno de {ano}, estas foram as pessoas que não votaram: {parts}.',
-  'mb.part.cycle': '{pct}% em {ano}',
-  'mb.part.place': '{pct}% em {place}',
-  'mb.noData': 'Os lugares escolhidos não têm dados do 2º turno em uma mesma eleição.',
-  'mb.legend': 'Barra vermelha = candidato de menor número. Azul = o outro (% dos votos). Bege = % das pessoas que não votaram.',
-  'mb.notVoted': 'não votou {pct}%',
-  'mb.votedLine': 'votaram · {sides}',
-  'mb.notVotedFull': 'não votou {pct}% do eleitorado',
-  'mb.role.mora': 'Onde mora',
-  'mb.role.vota': 'Onde vota',
-  'mb.role.nasceu': 'Onde nasceu',
-  'mb.share': 'Compartilhar o cartão',
-  'mb.addressNote': 'Os lugares ficam no endereço da página: recarregar ou enviar o link reproduz o mesmo cartão.',
-  'mb.tag': 'MEU BRASIL',
-  'mb.sticker.title': 'Adesivo Meu Brasil',
-  'mb.sticker.sub': 'Adesivo de chat com a frase do cartão e um QR para ele. PNG com fundo transparente.',
-  'mb.sticker.note': 'O QR leva ao cartão: o endereço dele tem os mesmos lugares.',
-  'mb.sticker.scan': 'Aponte a câmera para abrir o cartão.',
-  'mb.sticker.alt': 'Adesivo Meu Brasil: {headline} O QR leva ao cartão em {address}.',
-  'mb.sticker.altLabel': 'Texto alternativo gerado: “{alt}”',
-  'mb.sticker.download': 'Baixar adesivo (PNG)',
-  'stat.nonVoters': 'das pessoas que podiam votar em {city} não votaram no {turno}º turno de {ano}.',
-  'stat.margin.one': 'voto de diferença entre os dois candidatos mais votados em {city}, no {turno}º turno de {ano}.',
-  'stat.margin.other': 'votos de diferença entre os dois candidatos mais votados em {city}, no {turno}º turno de {ano}.',
-  'stat.turnout': 'das pessoas que podiam votar em {city} foram votar no {turno}º turno de {ano}.',
-  'stat.unavailable': 'Não há esse número para {city} no {turno}º turno de {ano}.',
-  numberWords: 'zero|um|dois|três|quatro|cinco|seis|sete|oito|nove|dez',
-  'label.article': 'o {name}',
   'pct.lessThan': 'menos de {pct}',
   'pct.moreThan': 'mais de {pct}',
 }
@@ -720,9 +572,6 @@ const en: Partial<Record<Key, string>> = {
   'card.brand': 'Voto a Voto · Source: TSE',
   'card.brand.fixture': 'Voto a Voto · Fictitious data. Real source: TSE.',
   'card.desc': 'Voto a Voto picture with TSE numbers, edition {edition}. Address: {address}.',
-  'lead.city': 'In {city}, in round {turno} of {ano}, ',
-  'lead.overseas': 'Abroad, in {city}, in round {turno} of {ano}, ',
-  noElectorate: '{lead}there are no registered voters.',
 }
 
 const es: Partial<Record<Key, string>> = {
@@ -738,9 +587,6 @@ const es: Partial<Record<Key, string>> = {
   'card.brand': 'Voto a Voto · Fuente: TSE',
   'card.brand.fixture': 'Voto a Voto · Datos ficticios. Fuente real: TSE.',
   'card.desc': 'Imagen de Voto a Voto con números del TSE, edición {edition}. Dirección: {address}.',
-  'lead.city': 'En {city}, en la {turno}.ª vuelta de {ano}, ',
-  'lead.overseas': 'En el exterior, en {city}, en la {turno}.ª vuelta de {ano}, ',
-  noElectorate: '{lead}no hay electores registrados.',
 }
 
 type Messages = Partial<Record<Key, string>>
@@ -748,6 +594,16 @@ export const CATALOG: { [L in Locale]: { standard: Messages; plain: Messages } }
   'pt-BR': { standard: ptBR, plain: ptBRPlain },
   en: { standard: en, plain: {} },
   es: { standard: es, plain: {} },
+}
+
+/**
+ * Adds `messages` to `CATALOG[locale][register]`: how the `catalog-<feature>.ts` files register their sentences.
+ * A key that is already present throws, so a sentence moved to a feature file cannot leave a silent copy behind.
+ */
+export function registerSentences(locale: Locale, register: Register, messages: Record<string, string>): void {
+  const target = CATALOG[locale][register]
+  for (const key of Object.keys(messages)) if (Object.hasOwn(target, key)) throw new Error(`the catalog already has "${key}" (${locale}, ${register})`)
+  Object.assign(target, messages)
 }
 
 /** What a sentence is said in: a language and a register. */

@@ -7,6 +7,7 @@
  */
 import { commonCycle, type PlaceCard } from '../meu-brasil'
 import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type Locale, type MessageKey, type Register } from './catalog'
+import './catalog-meu-brasil'
 
 export interface MeuBrasilVoice {
   locale?: Locale

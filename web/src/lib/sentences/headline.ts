@@ -17,6 +17,7 @@
  */
 import type { CandidateTally, CityResult } from '@/shared/city-model'
 import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type Locale, type MessageKey, type Register, type Voice } from './catalog'
+import './catalog-headline'
 
 /** Below this many registered voters percentages are too coarse to read; the sentence uses counts. */
 export const TINY_ELECTORATE = 100

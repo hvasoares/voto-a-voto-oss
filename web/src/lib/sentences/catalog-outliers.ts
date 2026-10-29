@@ -6,9 +6,40 @@
  * wrong, it gives no cause, and it has no sentence that names a city (the share text carries no city at all). A city is "far from its peers" in two numbers
  * and nothing more.
  */
-import { CATALOG } from './catalog'
+import { registerSentences, type Key } from './catalog'
 
-export const OUTLIER_STANDARD: Record<string, string> = {
+export const OUTLIER_KEYS = [
+  'outlier.screening',
+  'outlier.legend',
+  'outlier.row.turnout',
+  'outlier.row.swing',
+  'outlier.row.validos',
+  'outlier.col.rank',
+  'outlier.col.city',
+  'outlier.col.turnout',
+  'outlier.col.typical',
+  'outlier.col.gap',
+  'outlier.col.swing',
+  'outlier.col.validos',
+  'outlier.filter.label',
+  'outlier.filter.uf',
+  'outlier.filter.ufAll',
+  'outlier.filter.min',
+  'outlier.min.k',
+  'outlier.min.one',
+  'outlier.count',
+  'outlier.where.all',
+  'outlier.where.uf',
+  'outlier.empty',
+  'outlier.note',
+  'outlier.sign',
+  'outlier.method',
+  'outlier.share',
+  'outlier.share.text',
+  'outlier.calc',
+] as const satisfies readonly Key[]
+
+export const OUTLIER_STANDARD: Record<(typeof OUTLIER_KEYS)[number], string> = {
   'outlier.screening': 'Lista de triagem, não uma conclusão: cidades mais distantes de cidades parecidas no comparecimento e na virada desde 2022.',
   'outlier.legend': 'Comparecimento da cidade → típico entre cidades parecidas',
   'outlier.row.turnout': '{pct} (típico {typical})',
@@ -39,7 +70,7 @@ export const OUTLIER_STANDARD: Record<string, string> = {
   'outlier.calc': 'De onde vem este número?',
 }
 
-export const OUTLIER_PLAIN: Record<string, string> = {
+export const OUTLIER_PLAIN: Record<(typeof OUTLIER_KEYS)[number], string> = {
   'outlier.screening': 'Esta é uma lista para triagem. Não é uma conclusão. Ela mostra as cidades mais distantes de cidades parecidas no comparecimento e na virada desde 2022.',
   'outlier.legend': 'Comparecimento da cidade → o comum entre cidades parecidas',
   'outlier.row.turnout': '{pct} (comum {typical})',
@@ -70,5 +101,5 @@ export const OUTLIER_PLAIN: Record<string, string> = {
   'outlier.calc': 'De onde vem este número?',
 }
 
-Object.assign(CATALOG['pt-BR'].standard, OUTLIER_STANDARD)
-Object.assign(CATALOG['pt-BR'].plain, OUTLIER_PLAIN)
+registerSentences('pt-BR', 'standard', OUTLIER_STANDARD)
+registerSentences('pt-BR', 'plain', OUTLIER_PLAIN)

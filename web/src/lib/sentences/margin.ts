@@ -11,6 +11,7 @@
  */
 import type { CityResult } from '@/shared/city-model'
 import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type MessageKey } from './catalog'
+import './catalog-margin'
 import type { Place } from './headline'
 
 /** The votes between the first and the second most voted candidate of the round; undefined when there is no pair to compare. */

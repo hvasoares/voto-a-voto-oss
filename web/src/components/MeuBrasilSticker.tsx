@@ -4,6 +4,7 @@ import { useIslandReady } from '@/components/use-island-ready'
 import { usePlaceCards } from '@/components/use-place-cards'
 import { DEFAULT_VOICE, message } from '@/lib/sentences/catalog'
 import { stickerContent } from '@/lib/sticker-content'
+import '@/lib/sentences/catalog-meu-brasil'
 
 /**
  * The Meu Brasil sticker (#37): from the places of the address, the one-line headline of the card and a QR code to the card, as a

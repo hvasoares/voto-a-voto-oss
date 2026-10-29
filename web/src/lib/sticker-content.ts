@@ -5,6 +5,7 @@
 import type { PlaceCard } from './meu-brasil'
 import { meuBrasilContent, type MeuBrasilContentOptions } from './meu-brasil-content'
 import { DEFAULT_LOCALE, message } from './sentences/catalog'
+import './sentences/catalog-meu-brasil'
 import { stickerSvg } from './sticker-card'
 
 export interface StickerContent {

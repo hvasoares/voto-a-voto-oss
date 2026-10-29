@@ -109,6 +109,13 @@ matches the stamp refuses to start and names the field — build again (`npm run
 - **Donation link (#36)**: `PUBLIC_DONATION_URL` (an https address, build time; the deploy reads the repository variable of the same name)
   draws "Apoie o projeto" in the footer line of every page and as a button in the data page's section; unset or not https, nothing is drawn
   and the build passes. `npm run test:e2e:donation` runs `e2e/donation.spec.ts` with a placeholder address. There is no ad network anywhere (`src/lib/donation.test.ts`).
+- **Sentences (the catalog, split by feature since #112)**: every sentence the site says is a template in the catalog, in both
+  registers. `src/lib/sentences/catalog.ts` keeps the core: the `KEYS` list, the registers, `template`/`message`, and the keys
+  that two or more features read. A feature's own sentences live in `src/lib/sentences/catalog-<feature>.ts`, which declares its
+  keys and registers them through `registerSentences` (a key already taken throws, so two features can never claim the same key).
+  **A new sentence goes in the catalog module of its feature; only a sentence two or more features read joins the core of
+  `catalog.ts`.** The partition is pinned by `catalog-keys.test.ts`; `outside-catalog.test.ts` keeps catalog-shaped data out of
+  the catalog modules.
 - **What stays on the visitor's device (#35)**: `src/lib/storage-keys.ts` lists every localStorage key the site writes; "esquecer meus dados" on Home clears
   them and the privacy text of the data page is drawn from the same list (`stored-items.ts`). A new key must be added there.
 - **Data (shards since #49)**: the build turns `DATA_DIR` into versioned JSON shards under `public/data/v<fingerprint>/`

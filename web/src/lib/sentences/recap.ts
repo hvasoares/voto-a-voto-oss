@@ -5,6 +5,7 @@
  */
 import { span, type Recap } from '../recap'
 import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type Locale, type MessageKey, type Register } from './catalog'
+import './catalog-recap'
 
 export interface RecapPlace {
   /** "São Paulo". */

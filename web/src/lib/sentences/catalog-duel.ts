@@ -6,9 +6,66 @@
  * Wording rule of this screen: numbers side by side, nothing else. The mark under a value means "higher number", never "better"; the
  * unsigned difference between the two candidates never names a side; no cause, no winner.
  */
-import { CATALOG } from './catalog'
+import { registerSentences, type Key } from './catalog'
 
-export const DUEL_STANDARD: Record<string, string> = {
+export const DUEL_KEYS = [
+  'duel.title',
+  'duel.sub.cidade',
+  'duel.sub.estado',
+  'duel.sub.regiao',
+  'duel.sub.reply',
+  'duel.level.label',
+  'duel.level.cidade',
+  'duel.level.estado',
+  'duel.level.regiao',
+  'duel.slot',
+  'duel.kind.cidade',
+  'duel.kind.estado',
+  'duel.kind.regiao',
+  'duel.placeholder.cidade',
+  'duel.placeholder.estado',
+  'duel.placeholder.regiao',
+  'duel.placeholder.reply',
+  'duel.m.comparecimento',
+  'duel.m.naoVotaram',
+  'duel.m.margem',
+  'duel.m.virada',
+  'duel.m.diferenca',
+  'duel.m.viradaTurnos',
+  'duel.m.naoCompareceram',
+  'duel.m.peso',
+  'duel.mark',
+  'duel.noValue',
+  'duel.share',
+  'duel.mode',
+  'duel.mode.exit',
+  'duel.mode.title',
+  'duel.note.cidade',
+  'duel.note.estado',
+  'duel.note.regiao',
+  'duel.note.virada',
+  'duel.mark.legend',
+  'duel.seal',
+  'duel.seal.fixture',
+  'duel.mode.note',
+  'duel.choose',
+  'duel.same',
+  'duel.noCycle',
+  'duel.noSwing',
+  'duel.overseas',
+  'duel.unknown',
+  'duel.reset',
+  'duel.failed',
+  'duel.alt',
+  'duel.alt.part',
+  'duel.alt.higher',
+  'duel.alt.noValue',
+  'duel.reply',
+  'duel.reply.note',
+  'duel.reply.done',
+] as const satisfies readonly Key[]
+
+export const DUEL_STANDARD: Record<(typeof DUEL_KEYS)[number], string> = {
   'duel.title': 'Cara a cara',
   'duel.sub.cidade': 'Duas cidades lado a lado, 2º turno de {ano}.',
   'duel.sub.estado': 'Dois estados lado a lado, 2º turno de {ano}.',
@@ -65,7 +122,7 @@ export const DUEL_STANDARD: Record<string, string> = {
   'duel.reply.done': 'Pronto: agora você pode compartilhar o cartão de volta.',
 }
 
-export const DUEL_PLAIN: Record<string, string> = {
+export const DUEL_PLAIN: Record<(typeof DUEL_KEYS)[number], string> = {
   'duel.title': 'Cara a cara',
   'duel.sub.cidade': 'Duas cidades lado a lado, 2º turno de {ano}.',
   'duel.sub.estado': 'Dois estados lado a lado, 2º turno de {ano}.',
@@ -122,5 +179,5 @@ export const DUEL_PLAIN: Record<string, string> = {
   'duel.reply.done': 'Pronto: agora você pode compartilhar o cartão de volta.',
 }
 
-Object.assign(CATALOG['pt-BR'].standard, DUEL_STANDARD)
-Object.assign(CATALOG['pt-BR'].plain, DUEL_PLAIN)
+registerSentences('pt-BR', 'standard', DUEL_STANDARD)
+registerSentences('pt-BR', 'plain', DUEL_PLAIN)

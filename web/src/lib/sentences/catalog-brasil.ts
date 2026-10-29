@@ -6,9 +6,24 @@
  * Wording rule of this screen: it says what the numbers are. The two candidates are named in ballot-number order with the same words, no winner, no ranking,
  * no cause. The picture's text alternative and the share text are the same sentences the page prints.
  */
-import { CATALOG } from './catalog'
+import { registerSentences, type Key } from './catalog'
 
-export const BRASIL_STANDARD: Record<string, string> = {
+export const BRASIL_KEYS = [
+  'brasil.headline',
+  'brasil.region',
+  'brasil.regions',
+  'brasil.regionShare',
+  'brasil.turnout',
+  'brasil.votes',
+  'brasil.legend',
+  'brasil.blanks',
+  'brasil.share',
+  'brasil.share.note',
+  'brasil.base',
+  'brasil.nojs',
+] as const satisfies readonly Key[]
+
+export const BRASIL_STANDARD: Record<(typeof BRASIL_KEYS)[number], string> = {
   'brasil.headline': 'No Brasil, no {turno}º turno de {ano}, os votos válidos foram: {a} {pa}% e {b} {pb}%.',
   'brasil.region': '{region}: {a} {pa}% e {b} {pb}% dos votos válidos; compareceram {c}% e não compareceram {n}% do eleitorado',
   'brasil.regions': 'Por região, sem o exterior: {parts}.',
@@ -23,7 +38,7 @@ export const BRASIL_STANDARD: Record<string, string> = {
   'brasil.nojs': 'Sem JavaScript não dá para compartilhar nem baixar a imagem. O texto da mensagem, abaixo, pode ser copiado.',
 }
 
-export const BRASIL_PLAIN: Record<string, string> = {
+export const BRASIL_PLAIN: Record<(typeof BRASIL_KEYS)[number], string> = {
   'brasil.headline': 'No Brasil, no {turno}º turno de {ano}, os votos válidos foram assim: {a} {pa}% e {b} {pb}%.',
   'brasil.region': '{region}: {a} {pa}% e {b} {pb}% dos votos válidos. Foram votar {c}% dos eleitores. Não foram {n}%',
   'brasil.regions': 'Por região, sem o exterior: {parts}.',
@@ -38,5 +53,5 @@ export const BRASIL_PLAIN: Record<string, string> = {
   'brasil.nojs': 'Para compartilhar ou baixar a imagem, é preciso JavaScript. O texto da mensagem, abaixo, pode ser copiado.',
 }
 
-Object.assign(CATALOG['pt-BR'].standard, BRASIL_STANDARD)
-Object.assign(CATALOG['pt-BR'].plain, BRASIL_PLAIN)
+registerSentences('pt-BR', 'standard', BRASIL_STANDARD)
+registerSentences('pt-BR', 'plain', BRASIL_PLAIN)

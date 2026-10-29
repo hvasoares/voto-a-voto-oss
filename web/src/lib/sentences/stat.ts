@@ -12,6 +12,7 @@
  */
 import type { CityResult } from '@/shared/city-model'
 import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type MessageKey } from './catalog'
+import './catalog-stat'
 import type { Place } from './headline'
 import { marginVotes } from './margin'
 

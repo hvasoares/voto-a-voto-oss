@@ -10,6 +10,7 @@ import { meuBrasilContent } from '@/lib/meu-brasil-content'
 import { DEFAULT_VOICE, message, type MessageKey } from '@/lib/sentences/catalog'
 import { readRegister } from '@/lib/sentences/register-store'
 import { duelSay } from '@/lib/sentences/duel'
+import '@/lib/sentences/catalog-meu-brasil'
 import { withBase } from '@/paths'
 
 /**

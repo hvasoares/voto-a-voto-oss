@@ -10,6 +10,7 @@ import type { PlaceCard } from './meu-brasil'
 import { esc, fit, rect, text, textWidth, wrap } from './share-card'
 import { DEFAULT_LOCALE, message, type Locale, type Register } from './sentences/catalog'
 import { meuBrasilHeadline } from './sentences/meu-brasil'
+import './sentences/catalog-meu-brasil'
 import type { MessageKey } from './sentences/catalog'
 
 export const MEU_BRASIL_CARD_WIDTH = 1080

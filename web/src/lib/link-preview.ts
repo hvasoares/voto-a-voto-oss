@@ -14,6 +14,7 @@ import { cityUrl, siteOrigin } from './share-url'
 import { SHARE_CARD_SIZE } from './share-card'
 import { DEFAULT_VOICE, message } from './sentences/catalog'
 import { headline } from './sentences/headline'
+import './sentences/catalog-preview'
 import { shareContent } from './share-model'
 
 /** Path segment (root-relative, base included by callers) of the generated preview rasters. */

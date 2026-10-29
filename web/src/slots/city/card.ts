@@ -8,6 +8,8 @@ import { candidateRow, turnoutBar } from '../../shared/components'
 import { html, type Raw } from '../../shared/html'
 import { calcLink } from '../../lib/facts/link'
 import { questionText, yesNo, type Question } from '../../lib/question'
+import '../../lib/sentences/catalog-twin'
+import '../../lib/sentences/catalog-register'
 
 /** The address of the fact that explains the figure at an anchor (`lib/facts/gate.ts` `factLinks`): it throws for a figure with no record, so the card cannot print a number without one. */
 export type FactLinks = (anchor: string) => string

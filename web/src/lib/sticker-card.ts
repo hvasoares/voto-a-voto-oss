@@ -8,6 +8,7 @@
 import { colors } from '@/shared/tokens'
 import { glyphPath, qrGlyph, QR_QUIET_ZONE } from './qr-code'
 import { esc, fit, rect, text, textWidth, wrap } from './share-card'
+import './sentences/catalog-meu-brasil'
 import { DEFAULT_LOCALE, message, type Locale, type MessageKey } from './sentences/catalog'
 
 export const STICKER_SIZE = { width: 1080, height: 1920 } as const

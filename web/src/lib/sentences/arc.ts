@@ -4,6 +4,7 @@
  */
 import type { Arc } from '../arcs'
 import { DEFAULT_LOCALE, DEFAULT_REGISTER, message as say, type Locale, type MessageKey, type Register } from './catalog'
+import './catalog-arc'
 
 export interface ArcPlace {
   locale?: Locale

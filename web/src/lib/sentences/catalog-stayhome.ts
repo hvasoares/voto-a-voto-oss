@@ -7,9 +7,45 @@
  * and round. No candidate, no cause, no effect. The only comparison with the margin is the one the measure note supports (docs/nonvoters-vs-margin.md):
  * per cycle and round, with that selection's own number, and with what it does not say.
  */
-import { CATALOG } from './catalog'
+import { registerSentences, type Key } from './catalog'
 
-export const STAYHOME_STANDARD: Record<string, string> = {
+export const STAYHOME_KEYS = [
+  'stayhome.title',
+  'stayhome.tab',
+  'stayhome.sub',
+  'stayhome.turno.1',
+  'stayhome.turno.2',
+  'stayhome.views.label',
+  'stayhome.view',
+  'stayhome.legend',
+  'stayhome.legend.scale',
+  'stayhome.legend.size',
+  'stayhome.legend.map',
+  'stayhome.selected',
+  'stayhome.selected.line1',
+  'stayhome.selected.line2',
+  'stayhome.open',
+  'stayhome.cell.label',
+  'stayhome.table',
+  'stayhome.table.uf',
+  'stayhome.table.aptos',
+  'stayhome.table.share',
+  'stayhome.claim',
+  'stayhome.claim.limits',
+  'stayhome.noData',
+  'stayhome.alt',
+  'stayhome.alt.part',
+  'stayhome.share',
+  'stayhome.share.text',
+  'stayhome.card.base',
+  'stayhome.card.legend',
+  'stayhome.failed',
+  'stayhome.nojs',
+] as const satisfies readonly Key[]
+
+// The string-index half keeps stayhome.test.ts's `STAYHOME_STANDARD[k]` lookup compiling; the first half keeps a missing key
+// of STAYHOME_KEYS a compile error here.
+export const STAYHOME_STANDARD: Record<(typeof STAYHOME_KEYS)[number], string> & Record<string, string> = {
   'stayhome.title': 'Ficaram em casa',
   'stayhome.tab': 'Ficaram em casa',
   'stayhome.sub': 'Quem não votou em ninguém (abstenção, brancos e nulos). {turno} de {ano}.',
@@ -43,7 +79,7 @@ export const STAYHOME_STANDARD: Record<string, string> = {
   'stayhome.nojs': 'A vista de mapa e o compartilhamento precisam de JavaScript. O mosaico acima funciona sem.',
 }
 
-export const STAYHOME_PLAIN: Record<string, string> = {
+export const STAYHOME_PLAIN: Record<(typeof STAYHOME_KEYS)[number], string> & Record<string, string> = {
   'stayhome.title': 'Ficaram em casa',
   'stayhome.tab': 'Ficaram em casa',
   'stayhome.sub': 'Quem não votou em ninguém: faltou, votou em branco ou anulou. {turno} de {ano}.',
@@ -77,5 +113,5 @@ export const STAYHOME_PLAIN: Record<string, string> = {
   'stayhome.nojs': 'A vista de mapa e o compartilhamento precisam de JavaScript. O mosaico acima funciona sem.',
 }
 
-Object.assign(CATALOG['pt-BR'].standard, STAYHOME_STANDARD)
-Object.assign(CATALOG['pt-BR'].plain, STAYHOME_PLAIN)
+registerSentences('pt-BR', 'standard', STAYHOME_STANDARD)
+registerSentences('pt-BR', 'plain', STAYHOME_PLAIN)
