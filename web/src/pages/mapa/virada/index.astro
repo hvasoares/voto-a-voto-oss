@@ -7,7 +7,7 @@ import Base from '@/layouts/Base.astro'
 import StateMapMap from '@/components/StateMapMap'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { siteBase, siteHref } from '@/paths'
-import { FOOTER_LINK, NAV_CHIP_QUIET } from '@/shared/link-classes'
+import { FOOTER_LINK } from '@/shared/link-classes'
 import { loadStateMapData } from '@/lib/state-map-data'
 import PageMain from '@/components/PageMain.astro'
 
@@ -20,7 +20,6 @@ const data = await loadStateMapData()
 <Base title="Mapa por estado: virada · Voto a Voto">
   <PageMain md="720" grid lg="1240" data-page="mapa-virada">
     <div class="lg:relative lg:z-10 lg:col-start-1 lg:row-start-1 lg:w-[610px] lg:self-start">
-    <a class={NAV_CHIP_QUIET} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Mapa por estado: virada</h1>
     <p class="mt-1 font-serif text-step-2 wrap-anywhere lg:text-muted-foreground">Variação da margem entre o 1º e o 2º turno de {data.ano}, em pontos percentuais (pp), por estado.</p>
     </div>

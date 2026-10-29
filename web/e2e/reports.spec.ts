@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { allowedOrigins, base, collectRequests, violations } from './helpers'
+import { allowedOrigins, base, collectRequests, expectHeaderWayHome, violations } from './helpers'
 import { noJs } from './presets'
 
 /*
@@ -44,9 +44,9 @@ test.describe('reports hub page', () => {
     ])
   })
 
-  test('backs to the home page and cites the source with the data page', async ({ page }) => {
+  test('has the header\'s way home and cites the source with the data page', async ({ page }) => {
     await page.goto(base + 'relatorios/')
-    await expect(page.locator('#main').getByRole('link', { name: '‹ Início' })).toHaveAttribute('href', base)
+    await expectHeaderWayHome(page)
     await expect(page.locator('footer[data-component="source-footer"]')).toHaveText('Fonte: TSE, dados finais · Sobre os dados ›')
     await expect(page.locator('footer[data-component="source-footer"]').getByRole('link', { name: 'Sobre os dados' })).toHaveAttribute('href', base + 'sobre-os-dados/')
   })

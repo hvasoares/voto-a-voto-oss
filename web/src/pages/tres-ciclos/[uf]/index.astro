@@ -12,7 +12,6 @@ import { factLinks } from '@/lib/facts/gate'
 import { getFactPage, sealOf } from '@/lib/facts/pages'
 import { loadArcsFile, loadStateShard } from '@/lib/shard-files'
 import { episodeLabel, pivotText, seasonPivot, seasonSay } from '@/lib/season'
-import { NAV_CHIP_QUIET_PRIMARY } from '@/shared/link-classes'
 import '@/styles/season.css'
 import PageMain from '@/components/PageMain.astro'
 import { footerClass } from '@/shared/page-shell'
@@ -57,7 +56,6 @@ const miniRows = (st: StateStats) => Array.from({ length: CYCLES.length }, (_, i
 
 <Base title={`Três ciclos por estado · ${uf.toUpperCase()} · Voto a Voto`}>
   <PageMain md="760" data-page="tres-ciclos-estado">
-    <a class={NAV_CHIP_QUIET_PRIMARY} href={href('/')}>‹ Início</a>
     <div class="mt-2 flex items-center justify-between gap-2">
       <h1 class="font-serif text-step-4 font-normal">Três ciclos por estado</h1>
       <Fragment set:html={calcLink(links(facts.facts[0]!.anchor))} />

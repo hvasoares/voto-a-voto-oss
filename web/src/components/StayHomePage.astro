@@ -16,7 +16,6 @@ import { stayhomeSay } from '@/lib/sentences/stayhome'
 import { stayHomeContent } from '@/lib/stay-home-content'
 import { datasetFixture } from '@/lib/shard-files'
 import { siteOrigin } from '@/lib/share-url'
-import { NAV_CHIP_QUIET } from '@/shared/link-classes'
 import PageMain from '@/components/PageMain.astro'
 
 interface Props {
@@ -37,7 +36,6 @@ const viewPaths = Object.fromEntries(set.views.map((v) => [viewSlug(v), stayHome
 <Base title="Ficaram em casa · Mapa por estado · Voto a Voto" description={model.alt}>
   <PageMain md="720" grid lg="1240" data-page="mapa-ficaram-em-casa" data-ano={view.ano} data-turno={view.turno}>
     <div class="lg:relative lg:z-10 lg:col-start-1 lg:row-start-1 lg:w-[610px] lg:self-start">
-    <a class={NAV_CHIP_QUIET} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{stayhomeSay({}, 'stayhome.title')}</h1>
     <p class="mt-1 font-serif text-step-2 wrap-anywhere lg:text-muted-foreground" data-subtitle>{model.subtitle}</p>
     </div>

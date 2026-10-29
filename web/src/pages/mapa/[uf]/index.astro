@@ -11,7 +11,7 @@ import Base from '@/layouts/Base.astro'
 import CityMapMap from '@/components/CityMapMap'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { siteBase, siteHref } from '@/paths'
-import { FOOTER_LINK, NAV_CHIP } from '@/shared/link-classes'
+import { FOOTER_LINK } from '@/shared/link-classes'
 import { loadCityMapData, semContornoOf } from '@/lib/city-map-data'
 import { loadStateUfs } from '@/lib/shard-files'
 import { UF_NOME } from '@/lib/uf-names'
@@ -36,7 +36,6 @@ if (data.rows.length === 0) throw new Error(`${uf}: o dataset deste build nao te
 
 <Base title={`Mapa por município · ${ufNome} · Voto a Voto`}>
   <PageMain deskTop={false} data-page="mapa-uf" data-uf={uf}>
-    <a class={NAV_CHIP} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Mapa por município · {ufNome}</h1>
     <p class="mt-1 font-serif text-step-2 wrap-anywhere">Margem de {data.ladoANome} sobre {data.ladoBNome} no 2º turno de {data.ano}, em pontos percentuais (pp), {data.rows.length === 1 ? 'no 1 município' : `nos ${data.rows.length} municípios`} do estado.</p>
     <nav class="mt-2 flex gap-3 text-step-2 font-bold" aria-label="Voltar ao mapa por estado">

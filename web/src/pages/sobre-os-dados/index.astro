@@ -28,7 +28,6 @@ import { currentEdition } from '@/lib/editions-load'
 import { siteOrigin } from '@/lib/share-url'
 import { siteHref } from '@/paths'
 import SiteFooter from '@/components/SiteFooter.astro'
-import { NAV_CHIP_QUIET } from '@/shared/link-classes'
 import PageMain from '@/components/PageMain.astro'
 import { footerClass } from '@/shared/page-shell'
 
@@ -61,7 +60,6 @@ const editionAddress = `${siteOrigin()}${href(editionPath(edition.id))}`
 
 <Base title="Sobre os dados · Voto a Voto">
   <PageMain md="760" data-page="sobre-os-dados">
-    <a class={NAV_CHIP_QUIET} href={href('/')}>‹ Início</a>
     <h1 class="mt-2 font-serif text-step-4 font-normal">Sobre os dados</h1>
 
     {/* The five task sections, in the order a visitor checks a number (#98). Their ids are public addresses: do not rename. */}

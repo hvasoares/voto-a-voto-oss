@@ -10,7 +10,6 @@ import SiteFooter from '@/components/SiteFooter.astro'
 import { calcLink } from '@/lib/facts/link'
 import { factLinks } from '@/lib/facts/gate'
 import { getFactPage, sealOf } from '@/lib/facts/pages'
-import { NAV_CHIP_QUIET } from '@/shared/link-classes'
 import PageMain from '@/components/PageMain.astro'
 import { footerClass } from '@/shared/page-shell'
 
@@ -41,7 +40,6 @@ const intro = `Eleição presidencial 2026 (2º turno) comparada com a de ${cicl
 
 <Base title={`Comparar com ${ciclo} · Voto a Voto`}>
   <PageMain md="760" data-page={`comparar-${ciclo}`}>
-    <a class={NAV_CHIP_QUIET} href={href('/')}>‹ Início</a>
     <div class="mt-2 flex items-center justify-between gap-2">
       <h1 class="font-serif text-step-4 font-normal">Comparar com {ciclo}</h1>
       <Fragment set:html={calcLink(links(facts.facts[0]!.anchor))} />

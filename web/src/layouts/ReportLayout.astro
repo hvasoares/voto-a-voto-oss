@@ -14,7 +14,7 @@
  *  - `page`              the `data-page` key (default "relatorios");
  *  - `notice`            the sentence of the notice box (absent → no notice); `noticeVariant` its alignment;
  *  - `share`             draw the share block (default false); `shareText` / `shareLabel` its words;
- *  - `back`              the back chip: `{ label, to }` (default "‹ Relatórios" to /relatorios/);
+ *  - `back`              the back chip: `{ label, to }` (default "‹ Relatórios" to /relatorios/; `null` for the hub itself, whose way home is the header's);
  *  - `wide`              the 1200 px desktop shell of the outlier list (default: the 760 px column);
  *  - `bottomPad`         the `pb-2` under the content (default true; the cohorts page has none);
  *  - `aboutLabel`        the footer's about-link words (default "Sobre os dados ›");
@@ -56,7 +56,7 @@ interface Props {
   share?: boolean
   shareText?: string
   shareLabel?: string
-  back?: { label: string; to: string }
+  back?: { label: string; to: string } | null
   wide?: boolean
   bottomPad?: boolean
   aboutLabel?: string
@@ -86,7 +86,7 @@ const footerShell = footerClass(wide ? { md: '760', lg: '1200', leftFromDesktop:
 ---
 <Base title={title} description={description}>
   <PageMain md="760" lg={wide ? '1200' : undefined} padBottom={bottomPad} extra={wide ? 'lg:px-0' : undefined} data-page={page} data-report={report} {...main}>
-    <a class={NAV_CHIP_QUIET} href={siteHref(back.to)}>{back.label}</a>
+    {back && <a class={NAV_CHIP_QUIET} href={siteHref(back.to)}>{back.label}</a>}
     <slot name="banner" />
     <div class="mt-2 flex items-center justify-between gap-2">
       <h1 class="font-serif text-step-4 font-normal">{heading}</h1>
