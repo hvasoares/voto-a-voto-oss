@@ -27,6 +27,8 @@ export const QUESTION_STANDARD: Record<string, string> = {
   'guess.card.answer': 'Resposta: {answer} · {label}',
   'guess.card.sub': '2º turno de 2018, 2022 e 2026 · {uf}',
   'guess.card.share': '{question} {result} {url}',
+  'guess.card.shareLabel': 'Compartilhar o palpite',
+  'guess.card.downloadLabel': 'Baixar o palpite',
 }
 
 export const QUESTION_PLAIN: Record<string, string> = {

@@ -6,7 +6,7 @@ import { readRegister } from '@/lib/sentences/register-store'
 import { browserStorage, readGuess, type Guess } from '@/lib/guess-store'
 import { guessContent } from '@/lib/guess-card'
 import type { Question } from '@/lib/question'
-import { DEFAULT_LOCALE, message, type Register } from '@/lib/sentences/catalog'
+import { DEFAULT_LOCALE, message, type MessageKey, type Register } from '@/lib/sentences/catalog'
 import { SHARD_VERSION } from 'virtual:data-shards'
 import { useIslandReady } from './use-island-ready'
 import ShareActions from './ShareActions'
@@ -90,23 +90,40 @@ export default function ShareSheet({ uf, slug, view, initial, origin, base, fixt
     sheet?.setAttribute('data-filename', shown?.filename ?? '')
   }, [viewId, shown?.filename])
 
+  const voice = { locale: DEFAULT_LOCALE, register }
+  /** One card of the sheet: its picture, the note and its own ShareActions (the shared island; nothing here is card-specific). */
+  const cardBlock = (card: ShareContent, kind: 'guess' | 'city' | 'pending') => (
+    <div key={kind === 'guess' ? 'guess' : 'city'} data-card-block={kind}>
+      <div
+        className="mx-auto mt-2 flex-none md:max-w-[240px] [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
+        data-share-picture
+        data-ready={island.dataReady}
+        data-card={kind}
+        dangerouslySetInnerHTML={{ __html: pictureSvg(card, register) }}
+      />
+      <p className="mt-3 text-step-1 text-muted-foreground" data-note>{NOTE}</p>
+      <ShareActions
+        text={card.variants[register].text}
+        svg={pictureSvg(card, register)}
+        filename={card.filename}
+        link={card.url}
+        {...(kind === 'guess' ? { primaryLabel: message(voice, 'guess.card.shareLabel' as MessageKey), downloadLabel: message(voice, 'guess.card.downloadLabel' as MessageKey) } : {})}
+      />
+    </div>
+  )
+
+  // Before the browser answers the picture is the city card as pre-rendered, marked `pending`. With a guess kept, the guess card comes first and the
+  // city card stays below it with its own actions: answering the palpite takes nothing away from the other card.
   return (
     <>
-      {shown ? (
-        <div
-          className="mx-auto mt-2 flex-none md:max-w-[240px] [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full"
-          data-share-picture
-          data-ready={island.dataReady}
-          data-card={guess === undefined ? 'pending' : guessCard ? 'guess' : 'city'}
-          dangerouslySetInnerHTML={{ __html: pictureSvg(shown, register) }}
-        />
-      ) : (
+      {guessCard && cardBlock(guessCard, 'guess')}
+      {content ? (
+        cardBlock(content, guess === undefined ? 'pending' : 'city')
+      ) : guessCard ? null : (
         <p className="mt-4 text-step-2" data-nodata data-ready={island.dataReady}>
-          {message({ locale: DEFAULT_LOCALE, register }, 'noData')}
+          {message(voice, 'noData')}
         </p>
       )}
-      {shown && <p className="mt-3 text-step-1 text-muted-foreground" data-note>{NOTE}</p>}
-      {shown && <ShareActions text={shown.variants[register].text} svg={pictureSvg(shown, register)} filename={shown.filename} link={shown.url} />}
     </>
   )
 }
