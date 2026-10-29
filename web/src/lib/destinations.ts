@@ -6,14 +6,15 @@
  *
  * ONE shape: `to` is an address template below the site root where `{c}` is the chosen city as `<uf>/<slug>`. A page of the city
  * is `{c}/compartilhar/`; a different route that takes the city as a parameter is `cara-a-cara/?nivel=cidade&a={c}`.
- * `goes` finishes the note under the search: "Ao escolher a cidade, você vai direto para <goes>."
+ * The words that finish the note under the search ("Ao escolher a cidade, você vai direto para <goes>.") live in `destination-notes.ts`,
+ * one per key here (#105: the Home script imports this file, so it carries only the addresses).
  */
 export const DESTINATION_PARAM = 'para'
 
 export const DESTINATIONS = {
-  compartilhar: { to: '{c}/compartilhar/', goes: 'Compartilhar' },
-  'tres-ciclos': { to: '{c}/tres-ciclos/', goes: 'os três ciclos da cidade' },
-  'cara-a-cara': { to: 'cara-a-cara/?nivel=cidade&a={c}', goes: 'o Cara a cara, com essa cidade' },
+  compartilhar: { to: '{c}/compartilhar/' },
+  'tres-ciclos': { to: '{c}/tres-ciclos/' },
+  'cara-a-cara': { to: 'cara-a-cara/?nivel=cidade&a={c}' },
 } as const
 export type Destination = keyof typeof DESTINATIONS
 
