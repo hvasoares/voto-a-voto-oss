@@ -8,7 +8,8 @@
 import Base from '@/layouts/Base.astro'
 import PhoneHeader from '@/components/PhoneHeader.astro'
 import Duel from '@/components/Duel'
-import { normalizeBase, withBase } from '@/paths'
+import SiteFooter from '@/components/SiteFooter.astro'
+import { normalizeBase, siteHref } from '@/paths'
 import { datasetFixture } from '@/lib/shard-files'
 import { siteOrigin } from '@/lib/share-url'
 import { currentEdition } from '@/lib/editions-load'
@@ -18,7 +19,8 @@ import { duelSay } from '@/lib/sentences/duel'
 import '@/styles/duel.css'
 
 const base = normalizeBase(import.meta.env.BASE_URL)
-const href = (path: string) => withBase(base, path)
+// The #113 base-path helper (`base` stays for the Duel island, which takes the base argument).
+const href = siteHref
 const fixture = await datasetFixture()
 const edition = await currentEdition()
 const data = await loadDuelData()
@@ -29,8 +31,12 @@ const data = await loadDuelData()
     <a class="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-step-2 font-bold lg:min-h-8 lg:border-0 lg:px-0 lg:text-step-1 lg:font-normal lg:text-primary" href={href('/')}>‹ Início</a>
     <Duel client:load base={base} origin={siteOrigin()} fixture={fixture} editionDate={editionLabel(edition)} data={data} />
     <noscript><p class="mt-2 text-step-1" data-nojs>O cara a cara monta o cartão no seu navegador e precisa de JavaScript.</p></noscript>
-    <footer class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary" data-component="source-footer">
-      {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'} · <a href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
-    </footer>
+    {/* The #113 shared footer with this page's variant (#116): the " · " separator and the plain about link. */}
+    <SiteFooter
+      source={fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'}
+      separator=" · "
+      aboutClass=""
+      class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary"
+    />
   </main>
 </Base>
