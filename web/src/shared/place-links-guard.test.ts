@@ -79,7 +79,7 @@ describe('every page of the fixture build (#184)', () => {
     expect(pages.length, 'the build produced pages').toBeGreaterThan(100)
     const problems = pages.flatMap((p) => placeMentions(readFileSync(p, 'utf8'), except).map((m) => `${relative(out, p).split(sep).join('/')}: "${m.name}" in "${m.context}"`))
     expect(problems.slice(0, 15).join('\n'), `${problems.length} mentions outside a link`).toBe('')
-  })
+  }, 120_000) // it reads every built page: over the 5 s default on the CI runner (the Pages build failed on it)
 
   it('links the state under the city name and drops the footer link to the state', () => {
     const html = readFileSync(join(out, 'rj', 'cidade-exemplo', 'index.html'), 'utf8')
