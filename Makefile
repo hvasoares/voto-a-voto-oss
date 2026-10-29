@@ -65,7 +65,8 @@ browser:
 	npx --prefix web playwright install chromium
 
 # ci.yml: npm run test:e2e — phone e desktop, base "/" (fixture). Porta fixa 4176 por padrão; para rodar em
-# paralelo com outra sessão use `E2E_PORT=4177 make e2e`.
+# paralelo com outra sessão use `E2E_PORT=4177 make e2e`. Para re-rodar um spec sem rebuildar o site (usa o
+# dist/ já construído): `E2E_SKIP_BUILD=1 npm --prefix web run test:e2e -- <spec>`.
 e2e:
 	npm --prefix web run test:e2e
 

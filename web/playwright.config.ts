@@ -5,6 +5,11 @@ const base = process.env.SITE_BASE ?? '/'
 // local-bundle build (default) or production build: see README "CDN". Output directory differs so both can exist.
 const mode = process.env.E2E_MODE === 'production' ? 'production' : 'local'
 const outDir = mode === 'production' ? 'dist-production' : 'dist'
+// E2E_SKIP_BUILD=1 serves the build already in the output directory instead of rebuilding: re-running one spec
+// after a build starts in seconds. Default (unset, CI) stays a fresh build; url, reuse and timeout are unchanged.
+const skipBuild = process.env.E2E_SKIP_BUILD === '1'
+const build = `OUT_DIR=${outDir} BUILD_TARGET=${mode} npx astro build`
+const serve = `OUT_DIR=${outDir} npx tsx scripts/serve.ts`
 
 export default defineConfig({
   testDir: 'e2e',
@@ -21,7 +26,7 @@ export default defineConfig({
     locale: 'pt-BR',
   },
   webServer: {
-    command: `OUT_DIR=${outDir} BUILD_TARGET=${mode} npx astro build && OUT_DIR=${outDir} npx tsx scripts/serve.ts`,
+    command: skipBuild ? serve : `${build} && ${serve}`,
     url: `http://localhost:${PORT}${base}`,
     reuseExistingServer: false,
     // The fixture build is ~0.5 s; the real-data build (5.760 cities × the card, three-cycle, share and, since G6, the fact
