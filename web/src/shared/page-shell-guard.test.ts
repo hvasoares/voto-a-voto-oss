@@ -21,7 +21,7 @@ import { join, relative, sep } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { walkFiles } from '../../scripts/walk'
 
-type Rule = 'column' | 'head' | 'banner' | 'app-header' | 'no-header' | 'search-field' | 'seal'
+type Rule = 'column' | 'head' | 'banner' | 'app-header' | 'no-header' | 'search-field' | 'seal' | 'home-link'
 
 const RULES: { rule: Rule; pattern: RegExp; use: string }[] = [
   { rule: 'column', pattern: /max-w-\[430px\]/, use: 'a page draws <PageMain> (components/PageMain.astro) and a page footer takes footerClass() — both built from shared/page-shell.ts' },
@@ -30,6 +30,7 @@ const RULES: { rule: Rule; pattern: RegExp; use: string }[] = [
   { rule: 'app-header', pattern: /<header[^>]*class="app-header"|\bapp-header__sep\b|<AppHeader\b|<header[^>]*data-component="phone-header"/, use: 'the layout draws the one <AppHeader> (components/AppHeader.astro) for the page: do not add a header to a page' },
   { rule: 'no-header', pattern: /header="none"/, use: 'every public page carries the app header (the layout draws it); a page opts out only where the guard names it' },
   { rule: 'search-field', pattern: /<[a-z]+\s[^>]*data-topbar-search/, use: 'the header search field is <HeaderSearch> (components/HeaderSearch.astro), drawn by the app header and the top bar' },
+  { rule: 'home-link', pattern: /‹\s*Início/, use: 'the way home is the wordmark of the app header (components/AppHeader.astro) on every page; no page draws an "Início" link of its own' },
   { rule: 'seal', pattern: /class="seal\b|\bseal__(?:title|lines|note)\b/, use: 'a page draws <Seal lines={...}> (components/Seal.astro)' },
 ]
 
@@ -61,6 +62,7 @@ const ALLOWED: Record<Rule, Record<string, string>> = {
   },
   'search-field': { 'components/HeaderSearch.astro': 'the one header search field' },
   seal: { 'components/Seal.astro': 'the one seal block' },
+  'home-link': { 'components/ShareDemoBackdrop.astro': 'an inert, aria-hidden picture of the card behind the share demo: text, not a link' },
 }
 
 /** The source with comments blanked (same length, newlines kept), so doc comments never classify. */
@@ -117,6 +119,7 @@ describe('no page keeps its own shell (#136), source layer', () => {
     ['a page with its own phone header markup', '<header class="flex h-11" data-component="phone-header">', 'app-header'],
     ['a page that opts out of the header', '<Base title="x" header="none">', 'no-header'],
     ['a page with its own search field', '<div data-topbar-search data-base="/"><input /></div>', 'search-field'],
+    ['a page with its own Início link', '<a href="/">‹ Início</a>', 'home-link'],
     ['a page with its own seal', '<aside class="seal" data-seal><h2 class="seal__title">x</h2></aside>', 'seal'],
   ])('flags %s', (_label, source, rule) => {
     expect(findShellCopies(source).map((c) => c.rule)).toContain(rule)
