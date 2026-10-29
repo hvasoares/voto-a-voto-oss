@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { DESKTOP, PHONE } from './e2e/presets'
 import { readStamp, stampInputs } from './scripts/build-stamp'
 import { offsetFrom, portFor, resolvedPort, tcpTaken } from './scripts/e2e-port'
-import { loadSampleManifest, realDataSpecs, sampleTestMatch } from './scripts/sample-manifest'
+import { loadSampleManifest, REAL_DATA_SPEC, realDataSpecs, sampleTestMatch } from './scripts/sample-manifest'
 import { ageText, webServerConfig, type WebServerDecision } from './scripts/web-server-config'
 
 // One port per checkout (#124): two checkouts run specs at the same time without colliding on a fixed
@@ -83,7 +83,8 @@ export default defineConfig({
     // Capture specs only: /capture/ alone would also load the #133 helper's vitest files (capture.test.ts,
     // no-raw-capture.test.ts), whose names carry the word.
     { name: 'capture', testMatch: /capture[^/]*\.spec\.ts$/, use: { browserName: 'chromium' } },
-    { name: 'real', testMatch: /real-data/, use: { browserName: 'chromium' } },
+    // Specs only: /real-data/ alone would also load the oracle and its vitest files (real-data-oracle.ts, real-data-guard.test.ts), whose names carry the word (#127).
+    { name: 'real', testMatch: REAL_DATA_SPEC, use: { browserName: 'chromium' } },
     // The real-data sample (#109): the real-data specs on disk minus sample.json's fullOnly, over the
     // .sample-data build. scripts/sample-manifest.test.ts guards the classification of every spec.
     { name: 'sample', testMatch: sampleTestMatch(loadSampleManifest(webRoot), realDataSpecs(webRoot)), use: { browserName: 'chromium' } },
