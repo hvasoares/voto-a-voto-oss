@@ -5,6 +5,7 @@
  * Until then the island is its pre-rendered HTML. If loading fails the page keeps its HTML and shows the `[data-island-failed]` note.
  * What was typed or tapped before hydration is left to the component (`data-pending*`, same as client:interaction).
  */
+import { markIslandFailed } from './island-failed.js'
 export default (load, _options, el) => {
   let started = false
   const events = ['focusin', 'pointerdown', 'touchstart', 'keydown']
@@ -19,13 +20,9 @@ export default (load, _options, el) => {
       await hydrate()
     } catch (error) {
       console.error('island failed to load', error)
-      el.dataset.failed = '1'
-      document.querySelector('[data-island-failed]')?.removeAttribute('hidden')
+      markIslandFailed(el)
     }
-    if (el.hasAttribute('ssr')) {
-      el.dataset.failed = '1'
-      document.querySelector('[data-island-failed]')?.removeAttribute('hidden')
-    }
+    if (el.hasAttribute('ssr')) markIslandFailed(el)
   }
   // Interaction is always honoured (a visitor on a wide screen can tap before the island is in view).
   for (const e of events) el.addEventListener(e, start, { once: true })

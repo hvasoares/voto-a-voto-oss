@@ -4,6 +4,7 @@
  *   - from 1024 px up it hydrates when its markup scrolls into view; resizing a window up to 1024 px arms it then.
  * Until then the island is its pre-rendered HTML (the table). If loading fails the page keeps its HTML and the island root gets `data-failed`.
  */
+import { markIslandFailed } from './island-failed.js'
 export default (load, _options, el) => {
   const media = matchMedia('(min-width: 1024px)')
   let started = false
@@ -18,7 +19,7 @@ export default (load, _options, el) => {
       await hydrate()
     } catch (error) {
       console.error('island failed to load', error)
-      el.dataset.failed = '1'
+      markIslandFailed(el, { reveal: false })
     }
   }
   function arm() {
