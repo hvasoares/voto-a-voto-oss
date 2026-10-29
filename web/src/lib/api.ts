@@ -11,12 +11,11 @@ export const API_PATH = 'api/'
 export const LATEST_PATH = 'api/latest.json'
 
 /** The endpoints of the shards of one dataset version, as site-relative templates. */
-export function shardEndpoints(version: string): Record<'search' | 'totals' | 'centroids' | 'state' | 'city', string> {
+export function shardEndpoints(version: string): Record<'search' | 'totals' | 'state' | 'city', string> {
   const root = `data/v${version}/`
   return {
     search: `${root}search.json`,
     totals: `${root}totals.json`,
-    centroids: `${root}centroids.json`,
     state: `${root}state/{uf}.json`,
     city: `${root}city/{uf}/{slug}.json`,
   }
