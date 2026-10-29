@@ -80,7 +80,9 @@ export default defineConfig({
     { name: 'phone', testIgnore: /real-data|capture|cdn|desktop-/, use: { browserName: 'chromium' } },
     // The desktop suites (G10): a 1440x900 pointer-and-keyboard browser; each spec resizes for its own 390/768 checks.
     { name: 'desktop', testMatch: /desktop-/, use: { browserName: 'chromium', viewport: DESKTOP, isMobile: false, hasTouch: false } },
-    { name: 'capture', testMatch: /capture/, use: { browserName: 'chromium' } },
+    // Capture specs only: /capture/ alone would also load the #133 helper's vitest files (capture.test.ts,
+    // no-raw-capture.test.ts), whose names carry the word.
+    { name: 'capture', testMatch: /capture[^/]*\.spec\.ts$/, use: { browserName: 'chromium' } },
     { name: 'real', testMatch: /real-data/, use: { browserName: 'chromium' } },
     // The real-data sample (#109): the real-data specs on disk minus sample.json's fullOnly, over the
     // .sample-data build. scripts/sample-manifest.test.ts guards the classification of every spec.

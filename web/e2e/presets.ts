@@ -162,9 +162,10 @@ const lineOf = (source: string, index: number): number => source.slice(0, index)
 
 /**
  * Balanced scanner: from an opening `(` at `open`, the call's full text through its closing `)` — strings,
- * template literals and comments opaque. undefined when unbalanced.
+ * template literals and comments opaque. undefined when unbalanced. Exported for capture.ts's own lint scan
+ * (#133).
  */
-function scanCall(source: string, open: number): string | undefined {
+export function scanCall(source: string, open: number): string | undefined {
   let depth = 0
   let quote: string | undefined
   for (let i = open; i < source.length; i++) {
