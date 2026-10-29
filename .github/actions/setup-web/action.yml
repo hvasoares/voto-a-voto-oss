@@ -1,0 +1,28 @@
+# Used by ci.yml (3 jobs) and deploy.yml (build). Rollback: `git revert` the commit that introduced this
+# action, push, then redeploy with `gh workflow run deploy.yml --ref main`.
+name: setup-web
+description: Node (setup-node, npm cache) plus `npm ci` in web/. Run actions/checkout first; a local action only exists after checkout.
+
+inputs:
+  node-version:
+    description: Node version. The one place the CI pin lives (keep in step with .nvmrc).
+    default: 22.23.4
+  cache:
+    description: Package manager cache for setup-node.
+    default: npm
+  cache-dependency-path:
+    description: Lockfile the cache key is derived from.
+    default: web/package-lock.json
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: ${{ inputs.cache }}
+        cache-dependency-path: ${{ inputs.cache-dependency-path }}
+    # Composite run steps do not inherit the workflow's defaults.run.working-directory.
+    - run: npm ci
+      shell: bash
+      working-directory: web
