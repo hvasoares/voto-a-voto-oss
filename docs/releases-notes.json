@@ -90,5 +90,11 @@
     "rollback": "Redeploy the commit of `1.13.0`",
     "known_issues": "none known",
     "deploy_run": 40780102061
+  },
+  "1.13.2": {
+    "milestone": "Easier changes (maintainability: shared pieces, guards, test and CI infrastructure)",
+    "rollback": "Redeploy the commit of `1.13.1`",
+    "known_issues": "Deploy run not yet recorded; the page footer, Estado legend and Brasil picture changed as recorded in D-038",
+    "deploy_run": null
   }
 }
