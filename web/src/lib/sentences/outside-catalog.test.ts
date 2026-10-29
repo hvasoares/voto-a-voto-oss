@@ -122,7 +122,6 @@ describe('sentences outside the catalog', () => {
   const ALLOWED_LITERALS: ReadonlyMap<string, string> = new Map([
     ['components/BrasilScreen.astro', "the bar chart's aria-label is accessibility text, not a card sentence"],
     ['components/CardGenerator.tsx', 'the download/share toast messages are generator island UI, not card sentences'],
-    ['components/CityCard.astro', 'the fixture banner and the card-links aria-label are page chrome'],
     ['components/MeuBrasil.tsx', 'the load-failure notice is island UI chrome'],
     ['components/MeuBrasilSticker.tsx', 'the load-failure notice is island UI chrome'],
     ['components/ShareSheet.tsx', 'the note on how sharing works is sheet UI chrome'],

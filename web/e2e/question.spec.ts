@@ -23,7 +23,7 @@ test.describe('city page: question before the answer', () => {
     const q = page.locator('.city-q__q')
     await expect(q).toHaveText('Cidade Exemplo mudou de lado em 2022?')
     await expect(page.locator('.city-q__yn')).toHaveText('Sim.')
-    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Mudou de lado em 2022')
+    await expect(page.locator('.city-arc__pill:visible')).toHaveText('Em 2022, o lado com mais votos no 2º turno mudou')
     for (const el of [q, page.locator('.city-arc__pill:visible')]) {
       const box = (await el.boundingBox())!
       expect(box.y + box.height).toBeLessThanOrEqual(844)

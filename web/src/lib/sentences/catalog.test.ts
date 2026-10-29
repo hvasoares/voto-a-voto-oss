@@ -14,7 +14,6 @@ import './catalog-stat'
 import './catalog-recap'
 import './catalog-meu-brasil'
 import './catalog-preview'
-import './catalog-register'
 import './catalog-shell'
 import './catalog-hint'
 import { headline } from './headline'
@@ -53,7 +52,7 @@ describe('fallback', () => {
   it('a missing plain version falls back to the locale standard, then to Portuguese', () => {
     expect(template(plain('en'), 'noData')).toBe('No data for this cycle.')
     expect(template(plain('en'), 'single')).toBe(CATALOG['pt-BR'].plain.single)
-    expect(template(plain('es'), 'register.plain')).toBe('Linguagem simples')
+    expect(template(plain('es'), 'single')).toBe(CATALOG['pt-BR'].plain.single)
   })
   it('a whole sentence in an unfinished locale reads in Portuguese where it must and never throws', () => {
     const r = sentenceInput({ aptos: 1000, votos: [500, 400], comparecimento: 900, nomes: ['C1', 'C2'] })

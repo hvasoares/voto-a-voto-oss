@@ -313,10 +313,6 @@ export const KEYS = [
   'seal.field.comparecimento',
   'seal.field.validos',
   'seal.note',
-  /** The register switch of the city card: the sentences live in `catalog-register.ts`, loaded only by the city card's own slot. */
-  'register.label',
-  'register.standard',
-  'register.plain',
   /** The meta description of a city page (what a link preview says): the sentences live in `catalog-preview.ts`, loaded only by the link preview's own module. */
   'preview.fixture',
   'preview.intro',
@@ -498,10 +494,6 @@ export const STANDARD_ONLY_KEYS = [
   'card.brand',
   'card.brand.fixture',
   'card.desc',
-  // The register switch names itself.
-  'register.label',
-  'register.standard',
-  'register.plain',
   // The fact records (#62, #63), the seal table and the link preview: tables, formulas and sources, one wording each.
   'fact.f.race',
   'fact.sub.report',

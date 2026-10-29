@@ -13,7 +13,6 @@ import { STAT_KEYS } from './catalog-stat'
 import { RECAP_KEYS } from './catalog-recap'
 import { MEUBRASIL_KEYS } from './catalog-meu-brasil'
 import { PREVIEW_KEYS } from './catalog-preview'
-import { REGISTER_KEYS } from './catalog-register'
 import { HEADLINE_KEYS } from './catalog-headline'
 import { DUEL_KEYS } from './catalog-duel'
 import { STAYHOME_KEYS } from './catalog-stayhome'
@@ -34,7 +33,6 @@ const MODULES: readonly (readonly Key[])[] = [
   RECAP_KEYS,
   MEUBRASIL_KEYS,
   PREVIEW_KEYS,
-  REGISTER_KEYS,
   DUEL_KEYS,
   STAYHOME_KEYS,
   OUTLIER_KEYS,

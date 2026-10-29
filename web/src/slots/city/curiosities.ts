@@ -1,4 +1,5 @@
-import { DEFAULT_LOCALE, REGISTERS, message, type Locale, type MessageKey, type Register } from '../../lib/sentences/catalog'
+import { DEFAULT_LOCALE, message, type Locale, type MessageKey, type Register } from '../../lib/sentences/catalog'
+import { CARD_REGISTER } from '../../lib/sentences/register'
 import type { Fact } from '../../lib/curiosities'
 import { html, type Raw } from '../../shared/html'
 
@@ -15,17 +16,17 @@ export function curiosityLine(f: Fact, register: Register, locale: Locale = DEFA
 }
 
 /**
- * The curiosities card of one city (#33), in both registers: the title, up to three facts (the rank, what it is the rank
+ * The curiosities card of one city (#33), in plain language: the title, up to three facts (the rank, what it is the rank
  * of, the group size and the cycles compared) and the line that says it is a comparison, not a finding. `id` keeps
  * the heading's a11y label unique on the page.
  */
 export function curiosityCard(facts: readonly Fact[], id: string, locale: Locale = DEFAULT_LOCALE): Raw {
   if (!facts.length) return html``
-  const voices = REGISTERS.map((register) => ({ locale, register }))
-  const text = (key: MessageKey, params?: Record<string, string | number>) => voices.map((v) => html`<span data-register="${v.register}">${message(v, key, params)}</span>`)
+  const voice = { locale, register: CARD_REGISTER }
+  const text = (key: MessageKey, params?: Record<string, string | number>) => message(voice, key, params)
   const items = facts.map(
     (f) =>
-      html`<li class="curio__fact"><p class="curio__rank">${message(voices[0]!, 'curio.rank', { n: f.rank })}</p><p class="curio__what">${voices.map((v) => html`<span data-register="${v.register}">${message(v, `curio.${f.code}`)}</span>`)}</p><p class="curio__group">${voices.map((v) => html`<span data-register="${v.register}">${message(v, 'curio.group', { n: f.n, cycles: cyclesText(f, v) })}</span>`)}</p></li>`,
+      html`<li class="curio__fact"><p class="curio__rank">${message(voice, 'curio.rank', { n: f.rank })}</p><p class="curio__what">${message(voice, `curio.${f.code}`)}</p><p class="curio__group">${message(voice, 'curio.group', { n: f.n, cycles: cyclesText(f, voice) })}</p></li>`,
   )
   return html`<section class="curio" aria-labelledby="curio-title-${id}"><h2 class="curio__title" id="curio-title-${id}">${text('curio.title')}</h2><ul class="curio__facts">${items}</ul><p class="curio__note">${text('curio.note')}</p></section>`
 }
