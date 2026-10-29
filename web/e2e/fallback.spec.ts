@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { base } from './helpers'
+import { base, expectHeaderWayHome } from './helpers'
 
 /* GitHub Pages: a path without a file gets 404.html; its script tells a valid route from a miss. */
 test.describe('404 fallback', () => {
@@ -36,7 +36,7 @@ test.describe('404 fallback', () => {
     await page.goto(`${base}xx/yy/`)
     await expect(page.locator('[data-fallback="not-found"]')).toBeVisible()
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Página não encontrada')
-    await expect(page.getByRole('link', { name: /Início/ })).toHaveAttribute('href', base)
+    await expectHeaderWayHome(page)
   })
 
   test('the home page itself is pre-rendered (no fallback)', async ({ page }) => {

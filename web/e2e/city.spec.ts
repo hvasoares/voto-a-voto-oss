@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { base, collectRequests, violations, waitReady } from './helpers'
+import { base, collectRequests, violations, waitReady, expectHeaderWayHome } from './helpers'
 import { PHONE, useNoJs } from './presets'
 
 /*
@@ -185,11 +185,11 @@ test.describe('city card: switching', () => {
 })
 
 test.describe('city card: pre-rendered, no data request (the #49 contract, kept)', () => {
-  test('carries the city in its HTML and offers Início, compare, cycles and the state', async ({ page }) => {
+  test('carries the city in its HTML and offers the way home, compare, cycles and the state', async ({ page }) => {
     const res = await page.goto(city)
     expect(res!.status()).toBe(200)
     await expect(page.locator('h1')).toHaveText('Cidade Exemplo')
-    await expect(page.getByRole('link', { name: '‹ Início' })).toHaveAttribute('href', base)
+    await expectHeaderWayHome(page)
     await expect(page.getByRole('link', { name: 'Comparar com 2022 e 2018 ›' })).toHaveAttribute('href', `${base}comparar/2022/`)
     await expect(page.getByRole('link', { name: 'Ver os três ciclos ›' })).toHaveAttribute('href', `${city}tres-ciclos/`)
     await expect(page.getByRole('link', { name: 'Ver o estado ›' })).toHaveAttribute('href', `${base}rj/`)

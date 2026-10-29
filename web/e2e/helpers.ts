@@ -101,8 +101,8 @@ export async function maybeThrottleCpu(page: Page): Promise<void> {
   await (await page.context().newCDPSession(page)).send('Emulation.setCPUThrottlingRate', { rate })
 }
 
-/** The way home of a phone page is the app header's wordmark (#153): it links Home, and the page body draws no "‹ Início" of its own (#154). */
+/** The way home of a phone page is the app header's wordmark (#153): it links Home, and the page draws no "Início" link at all (#154). */
 export async function expectHeaderWayHome(page: Page): Promise<void> {
   await expect(page.locator('header[data-app-header]').getByRole('link', { name: 'Voto a Voto' })).toHaveAttribute('href', base)
-  await expect(page.locator('#main').getByRole('link', { name: '‹ Início' })).toHaveCount(0)
+  await expect(page.getByRole('link', { name: /Início/ })).toHaveCount(0)
 }
