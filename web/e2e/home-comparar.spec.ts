@@ -29,7 +29,7 @@ const option = (page: Page, label: string) => chooser(page).getByRole('link', { 
 
 async function pick(page: Page) {
   const box = await activateSearch(page)
-  await expect(page.locator('[data-city-search="main"]')).toHaveAttribute('data-ready', 'search')
+  await expect(page.locator('[data-city-search="main"]')).toHaveAttribute('data-ready', 'yes')
   await box.fill('boa esperanca')
   const hit = page.locator('a[data-position]')
   await expect(hit).toHaveCount(1)
@@ -126,7 +126,7 @@ test.describe('options that need a city ask for it through the search', () => {
       await waitReady(page)
       await page.getByRole('combobox', { name: 'Busque sua cidade' }).pressSequentially('boa esperanca', { delay: 0 })
       release()
-      await expect(page.locator('[data-city-search="main"]')).toHaveAttribute('data-ready', 'search')
+      await expect(page.locator('[data-city-search="main"]')).toHaveAttribute('data-ready', 'yes')
       const hit = page.locator('a[data-position]')
       await expect(hit).toHaveCount(1)
       await expect(hit).toHaveAttribute('href', `${base}${target}`)

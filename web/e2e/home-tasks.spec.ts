@@ -21,7 +21,7 @@ async function ready(page: Page, path = base) {
 /** Types a city into the page's search, once the island has loaded its list. */
 async function pickBoaEsperanca(page: Page) {
   const box = await activateSearch(page)
-  await expect(page.locator('[data-city-search="main"]')).toHaveAttribute('data-ready', 'search')
+  await expect(page.locator('[data-city-search="main"]')).toHaveAttribute('data-ready', 'yes')
   await box.fill('boa esperanca')
   const hit = page.locator('a[data-position]')
   await expect(hit).toHaveCount(1)
@@ -174,7 +174,7 @@ test.describe('Compartilhar um resultado: the search takes a destination', () =>
     await page.getByRole('combobox', { name: 'Busque sua cidade' }).pressSequentially('boa esperanca', { delay: 0 })
     await expect(page.locator('astro-island[ssr]')).toHaveCount(1)
     release()
-    await expect(page.locator('[data-city-search="main"]')).toHaveAttribute('data-ready', 'search')
+    await expect(page.locator('[data-city-search="main"]')).toHaveAttribute('data-ready', 'yes')
     const hit = page.locator('a[data-position]')
     await expect(hit).toHaveCount(1)
     await expect(hit).toHaveAttribute('href', `${base}mt/boa-esperanca-do-norte/compartilhar/`)
@@ -185,7 +185,7 @@ test.describe('Compartilhar um resultado: the search takes a destination', () =>
   test('only the latest result is clickable: a quick second query replaces the first', async ({ page }) => {
     await page.goto(SHARE_ENTRY)
     const box = await activateSearch(page)
-    await expect(page.locator('[data-city-search="main"]')).toHaveAttribute('data-ready', 'search')
+    await expect(page.locator('[data-city-search="main"]')).toHaveAttribute('data-ready', 'yes')
     await box.fill('cidade')
     await box.fill('boa esperanca')
     await expect(page.locator('a[data-position]')).toHaveCount(1)

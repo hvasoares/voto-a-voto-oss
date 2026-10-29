@@ -7,7 +7,7 @@ import { base, collectRequests, violations } from './helpers'
  */
 const rj = `${base}rj/historia/`
 /** Ready = the island's own attribute (it has put the row at the card the address names). */
-const ready = (page: Page) => page.waitForSelector('[data-story][data-ready="true"]')
+const ready = (page: Page) => page.waitForSelector('[data-story][data-ready="yes"]')
 /** The text alternatives of the pictures (SVG `<title>`; `innerText` does not read them). */
 const titles = (page: Page) => page.locator('[data-card] svg title').evaluateAll((els) => els.map((e) => e.textContent ?? ''))
 const on = (page: Page, n: number) => expect(page.locator('[data-story]')).toHaveAttribute('data-current', String(n))

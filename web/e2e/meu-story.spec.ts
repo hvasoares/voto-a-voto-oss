@@ -10,7 +10,7 @@ const ONE = '?mora=rj/cidade-exemplo'
 const TWO = '?mora=rj/cidade-exemplo&vota=sp/cidade-exemplo-paulista'
 const THREE = '?mora=rj/cidade-exemplo&vota=sp/cidade-exemplo-paulista&nasceu=rj/cidade-exemplo-c'
 /** Ready = the sequence's own attribute (the places, the twin and the curiosity are in and the row is at the card the address names). */
-const ready = (page: Page) => page.waitForSelector('[data-story][data-ready="true"]')
+const ready = (page: Page) => page.waitForSelector('[data-story][data-ready="yes"]')
 const count = async (page: Page) => Number(await page.locator('[data-story]').getAttribute('data-count'))
 const on = (page: Page, n: number) => expect(page.locator('[data-story]')).toHaveAttribute('data-current', String(n))
 const titles = (page: Page) => page.locator('[data-card] svg title').evaluateAll((els) => els.map((e) => e.textContent ?? ''))
