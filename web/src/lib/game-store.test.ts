@@ -1,23 +1,16 @@
 import { describe, expect, it } from 'vitest'
+import { createMemoryStorage, createThrowingStorage } from '@/test/memory-storage'
 import { GAME_KEY, STORED_KEYS } from './storage-keys'
 import { STORED_ITEMS } from './stored-items'
-import { clearHistory, guessesOf, loadSave, parseSave, withResult, writeSave, type GameStorage } from './game-store'
+import { clearHistory, guessesOf, loadSave, parseSave, withResult, writeSave } from './game-store'
 
-const memory = (): GameStorage & { data: Map<string, string> } => {
-  const data = new Map<string, string>()
-  return { data, getItem: (k) => data.get(k) ?? null, setItem: (k, v) => void data.set(k, v), removeItem: (k) => void data.delete(k) }
-}
-const blocked: GameStorage = {
-  getItem: () => { throw new Error('SecurityError') },
-  setItem: () => { throw new Error('QuotaExceededError') },
-  removeItem: () => { throw new Error('SecurityError') },
-}
+const blocked = createThrowingStorage({ get: new Error('SecurityError'), set: new Error('QuotaExceededError'), remove: new Error('SecurityError') })
 
 describe('game store', () => {
   it('writes and reads the save under the one listed key', () => {
-    const s = memory()
+    const s = createMemoryStorage()
     expect(writeSave({ day: '2026-10-27', guesses: ['rj/cidade-exemplo'], history: [{ n: 46, score: 3 }] }, s)).toBe(true)
-    expect([...s.data.keys()]).toEqual([GAME_KEY])
+    expect(Array.from({ length: s.length }, (_, i) => s.key(i))).toEqual([GAME_KEY])
     expect(loadSave(s)).toEqual({ day: '2026-10-27', guesses: ['rj/cidade-exemplo'], history: [{ n: 46, score: 3 }] })
   })
   it('the key is listed on the data page (storage-keys and stored-items agree)', () => {
@@ -41,7 +34,7 @@ describe('game store', () => {
     expect(guessesOf(save, '2026-10-28')).toEqual([])
   })
   it('a finished game enters the history once and the history can be cleared', () => {
-    const s = memory()
+    const s = createMemoryStorage()
     const once = withResult({ day: 'd', guesses: [], history: [] }, { n: 47, score: 0 })
     expect(withResult(once, { n: 47, score: 3 }).history).toEqual([{ n: 47, score: 0 }])
     writeSave(once, s)

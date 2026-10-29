@@ -1,19 +1,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createNoticeStore, NOTICE_STORAGE_KEY, type StorageLike } from './consent'
+import { createMemoryStorage, createThrowingStorage } from '@/test/memory-storage'
+import { createNoticeStore, NOTICE_STORAGE_KEY } from './consent'
 
-function fakeStorage(): StorageLike & { clear(): void } {
-  const map = new Map<string, string>()
-  return {
-    getItem: (k) => map.get(k) ?? null,
-    setItem: (k, v) => void map.set(k, v),
-    removeItem: (k) => void map.delete(k),
-    clear: () => map.clear(),
-  }
-}
-
-let storage = fakeStorage()
+let storage = createMemoryStorage()
 afterEach(() => {
-  storage = fakeStorage()
+  storage = createMemoryStorage()
 })
 
 describe('notice store (the metrics banner acknowledgment)', () => {
@@ -54,17 +45,7 @@ describe('notice store (the metrics banner acknowledgment)', () => {
   })
 
   it('a storage that throws leaves the site working: state unknown, acknowledgment not remembered', () => {
-    const broken: StorageLike = {
-      getItem: () => {
-        throw new Error('private window')
-      },
-      setItem: () => {
-        throw new Error('private window')
-      },
-      removeItem: () => {
-        throw new Error('private window')
-      },
-    }
+    const broken = createThrowingStorage({ get: new Error('private window'), set: new Error('private window'), remove: new Error('private window') })
     const store = createNoticeStore({ storage: broken })
     expect(store.state()).toBe('unknown')
     expect(() => store.acknowledge()).not.toThrow()

@@ -1,34 +1,24 @@
 import { describe, expect, it } from 'vitest'
+import { createMemoryStorage, createThrowingStorage } from '@/test/memory-storage'
 import { readOrder, saveOrder, SEASON_DEFAULT_ORDER } from './season-order'
 import { SEASON_KEY } from './storage-keys'
 
-const memory = () => {
-  const m = new Map<string, string>()
-  return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v), m }
-}
-const blocked = {
-  getItem: () => {
-    throw new Error('blocked')
-  },
-  setItem: () => {
-    throw new Error('blocked')
-  },
-}
+const blocked = createThrowingStorage({ get: new Error('blocked'), set: new Error('blocked') })
 
 describe('season order store', () => {
   it('is the default until a visitor chooses', () => {
-    expect(readOrder(memory())).toBe(SEASON_DEFAULT_ORDER)
+    expect(readOrder(createMemoryStorage())).toBe(SEASON_DEFAULT_ORDER)
   })
   it('keeps the choice, and only the word', () => {
-    const s = memory()
+    const s = createMemoryStorage()
     expect(saveOrder('reverse', s)).toBe(true)
     expect(readOrder(s)).toBe('reverse')
-    expect(s.m.get(SEASON_KEY)).toBe('reverse')
+    expect(s.getItem(SEASON_KEY)).toBe('reverse')
     saveOrder('chronological', s)
     expect(readOrder(s)).toBe('chronological')
   })
   it.each(['', 'sideways', '{"a":1}'])('ignores a stored value that is %j', (raw) => {
-    const s = memory()
+    const s = createMemoryStorage()
     s.setItem(SEASON_KEY, raw)
     expect(readOrder(s)).toBe(SEASON_DEFAULT_ORDER)
   })

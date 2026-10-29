@@ -1,40 +1,21 @@
 import { describe, expect, it } from 'vitest'
+import { createMemoryStorage, createThrowingStorage } from '@/test/memory-storage'
 import { NOTICE_STORAGE_KEY } from './consent'
 import { GAME_KEY, GUESS_KEY, SEASON_KEY } from './storage-keys'
 import { forgetAll, placeHref, placeLabel, PLACE_KEY, readPlace, savePlace } from './place-store'
 import { STORED_ITEMS } from './stored-items'
 import { REGISTER_KEY } from './sentences/register-store'
 
-// A fake storage: the store only needs these four methods, and nothing here touches a browser.
-const memory = () => {
-  const m = new Map<string, string>()
-  return {
-    getItem: (k: string) => m.get(k) ?? null,
-    setItem: (k: string, v: string) => void m.set(k, v),
-    removeItem: (k: string) => void m.delete(k),
-    m,
-  }
-}
-const blocked = {
-  getItem: () => {
-    throw new Error('blocked')
-  },
-  setItem: () => {
-    throw new Error('blocked')
-  },
-  removeItem: () => {
-    throw new Error('blocked')
-  },
-}
+const blocked = createThrowingStorage({ get: new Error('blocked'), set: new Error('blocked'), remove: new Error('blocked') })
 const city = { kind: 'city', uf: 'rj', slug: 'cidade-exemplo', nome: 'Cidade Exemplo' } as const
 
 describe('place store', () => {
   it('has no place until one is picked', () => {
-    expect(readPlace(memory())).toBeUndefined()
+    expect(readPlace(createMemoryStorage())).toBeUndefined()
   })
 
   it('remembers a city and a state, the last pick replacing the earlier one', () => {
-    const s = memory()
+    const s = createMemoryStorage()
     savePlace(city, s)
     expect(readPlace(s)).toEqual(city)
     savePlace({ kind: 'state', uf: 'mt', nome: 'Mato Grosso' }, s)
@@ -42,9 +23,9 @@ describe('place store', () => {
   })
 
   it('keeps only the fields of a place, nothing else the caller passed along', () => {
-    const s = memory()
+    const s = createMemoryStorage()
     savePlace({ ...city, extra: 'x', lat: -22.9 } as never, s)
-    expect(JSON.parse(s.m.get(PLACE_KEY)!)).toEqual(city)
+    expect(JSON.parse(s.getItem(PLACE_KEY)!)).toEqual(city)
   })
 
   it.each([
@@ -56,7 +37,7 @@ describe('place store', () => {
     ['a city without a slug', '{"kind":"city","uf":"rj","nome":"X"}'],
     ['a slug with a path in it', '{"kind":"city","uf":"rj","slug":"../x","nome":"X"}'],
   ])('ignores a stored value that is %s', (_label, raw) => {
-    const s = memory()
+    const s = createMemoryStorage()
     s.setItem(PLACE_KEY, raw)
     expect(readPlace(s)).toBeUndefined()
   })
@@ -69,7 +50,7 @@ describe('place store', () => {
   })
 
   it('forgets everything the site stored, and only that', () => {
-    const s = memory()
+    const s = createMemoryStorage()
     savePlace(city, s)
     s.setItem(REGISTER_KEY, 'plain')
     s.setItem(NOTICE_STORAGE_KEY, 'acknowledged')
@@ -78,7 +59,7 @@ describe('place store', () => {
     s.setItem(SEASON_KEY, 'reverse')
     s.setItem('someone-else', 'kept')
     forgetAll(s)
-    expect([...s.m.keys()]).toEqual(['someone-else'])
+    expect(Array.from({ length: s.length }, (_, i) => s.key(i))).toEqual(['someone-else'])
     expect(readPlace(s)).toBeUndefined()
   })
 
