@@ -6,8 +6,9 @@
  * script shows one round and switches without a request.
  */
 import Base from '@/layouts/Base.astro'
-import { normalizeBase, withBase } from '@/paths'
+import { siteHref } from '@/paths'
 import PageDataDownload from '@/components/PageDataDownload.astro'
+import SiteFooter from '@/components/SiteFooter.astro'
 import { cityDataPath, stateDataPath } from '@/lib/api'
 import { SHARD_VERSION } from 'virtual:data-shards'
 import { loadCityRoutes } from '@/lib/city-routes'
@@ -23,8 +24,8 @@ export async function getStaticPaths() {
 }
 
 const { uf, slug } = Astro.params
-const base = normalizeBase(import.meta.env.BASE_URL)
-const href = (path: string) => withBase(base, path)
+// The #113 base-path helper (its closure form was the pre-#113 per-page pattern).
+const href = siteHref
 const here = href(`/${uf}/${slug}/tres-ciclos/`)
 const shard = (await loadCityShard(uf!, slug!))!
 const city = shard.city
@@ -59,9 +60,8 @@ const other = DEFAULT_TURNO === 2 ? 1 : 2
       <nav class="cycles-links" aria-label="Mais sobre a cidade"><a href={href(`/${uf}/${slug}/`)}>Cartão da cidade</a></nav>
     </main>
     <PageDataDownload href={href(cityDataPath(SHARD_VERSION, uf!, slug!))} filename={`${uf}-${slug}.json`} />
-    <footer class="source-footer" data-component="source-footer">
-      Fonte: TSE, dados finais<a class="source-footer__about" href={href('/sobre-os-dados/')}>Sobre os dados ›</a>
-    </footer>
+    {/* The #113 shared footer with the pilot's own (default) variant: the keyboard-only "Sobre os dados ›" link. */}
+    <SiteFooter source="Fonte: TSE, dados finais" />
   </div>
   <script>
     import '@/scripts/city-cycles'
