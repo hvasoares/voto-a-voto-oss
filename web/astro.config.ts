@@ -2,6 +2,7 @@ import react from '@astrojs/react'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'astro/config'
 import { fileURLToPath } from 'node:url'
+import { buildStamp } from './integrations/build-stamp'
 import { cdn } from './integrations/cdn'
 import { desktopShell } from './integrations/desktop-shell'
 import { dataset, shardsModule } from './integrations/dataset'
@@ -23,7 +24,7 @@ export default defineConfig({
   // /reference/experimental-flags/parallel-prerender/) — the 23k-page real-dataset build is
   // component-render bound (72%), and single-process rendering was 2m40s of it.
   experimental: { parallelPrerender: true },
-  integrations: [dataset(), previewImages(), interaction(), cdn(), react(), factsGate()],
+  integrations: [dataset(), buildStamp(), previewImages(), interaction(), cdn(), react(), factsGate()],
   vite: {
     plugins: [desktopShell(), shardsModule(), themePlugin(), tailwindcss()],
     resolve: {

@@ -1,5 +1,10 @@
 import { defineConfig } from '@playwright/test'
+import { existsSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { readStamp, stampInputs } from './scripts/build-stamp'
 import { offsetFrom, portFor, resolvedPort, tcpTaken } from './scripts/e2e-port'
+import { ageText, webServerConfig, type WebServerDecision } from './scripts/web-server-config'
 
 // One port per checkout (#124): two checkouts run specs at the same time without colliding on a fixed
 // port, and this config passes its result to the server below through webServer.env.PORT. Explicit wins.
@@ -9,11 +14,36 @@ const base = process.env.SITE_BASE ?? '/'
 // local-bundle build (default) or production build: see README "CDN". Output directory differs so both can exist.
 const mode = process.env.E2E_MODE === 'production' ? 'production' : 'local'
 const outDir = mode === 'production' ? 'dist-production' : 'dist'
-// E2E_SKIP_BUILD=1 serves the build already in the output directory instead of rebuilding: re-running one spec
-// after a build starts in seconds. Default (unset, CI) stays a fresh build; url, reuse and timeout are unchanged.
-const skipBuild = process.env.E2E_SKIP_BUILD === '1'
-const build = `OUT_DIR=${outDir} BUILD_TARGET=${mode} npx astro build`
-const serve = `OUT_DIR=${outDir} npx tsx scripts/serve.ts`
+const webRoot = fileURLToPath(new URL('.', import.meta.url))
+
+/**
+ * E2E_PREBUILT=1 (#108) serves the build already in the output directory instead of rebuilding: re-running one
+ * spec after a build starts in seconds. The existing build is only reused when its stamp
+ * (`.build-stamps/<outDir>.json`, written by every `astro build`) still matches the environment and the tree —
+ * any drift refuses to start and names the field. E2E_PREBUILT=force skips only the source-hash check.
+ * Unset (CI) stays a fresh build. The decision itself lives in scripts/web-server-config.ts (pure, unit-tested).
+ */
+function webServerDecision(): WebServerDecision {
+  const env = process.env
+  const prebuilt = env.E2E_PREBUILT
+  if (prebuilt === undefined || prebuilt === '') return webServerConfig(env, null, null)
+  const stamp = readStamp(webRoot, outDir)
+  const current = { ...stampInputs(env, webRoot, mode, outDir), outputExists: existsSync(resolve(webRoot, outDir)) }
+  const decision = webServerConfig(env, stamp, current)
+  if (decision.error) throw new Error(decision.error)
+  // Playwright re-evaluates this file in every worker: announce once per invocation, like the port above.
+  if (!env.E2E_PREBUILT_ANNOUNCED) {
+    env.E2E_PREBUILT_ANNOUNCED = '1'
+    if (prebuilt === 'force') console.log('E2E_PREBUILT=force: the source-hash check is skipped for this run')
+    const age = ageText(Date.now() - Date.parse(stamp!.builtAt))
+    console.log(
+      `reusing build ${outDir} built ${age} ago: base ${stamp!.base}, mode ${stamp!.mode}, data ${stamp!.dataDir}, donation ${stamp!.donation === 'unset' ? 'unset' : 'set'}`,
+    )
+  }
+  return decision
+}
+
+const server = webServerDecision()
 
 export default defineConfig({
   testDir: 'e2e',
@@ -30,12 +60,13 @@ export default defineConfig({
     locale: 'pt-BR',
   },
   webServer: {
-    command: skipBuild ? serve : `${build} && ${serve}`,
+    command: server.command,
     url: `http://localhost:${PORT}${base}`,
     reuseExistingServer: false,
-    // The fixture build is ~0.5 s; the real-data build (5.760 cities × the card, three-cycle, share and, since G6, the fact
-    // pages: 64.302 pages) takes ~5 min, so the boot budget has to cover its slowest variant.
-    timeout: 600_000,
+    // Fresh build: the fixture build is ~0.5 s; the real-data build (5.760 cities × the card, three-cycle, share
+    // and, since G6, the fact pages: 64.302 pages) takes ~5 min, so the budget covers its slowest variant.
+    // E2E_PREBUILT drops it to one minute (scripts/web-server-config.ts).
+    timeout: server.timeout,
     env: { PORT: String(PORT) },
   },
   projects: [

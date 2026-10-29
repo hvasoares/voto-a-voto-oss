@@ -66,8 +66,9 @@ browser:
 
 # ci.yml: npm run test:e2e — phone e desktop, base "/" (fixture). A porta deriva do checkout (#124): dois
 # checkouts rodam em paralelo sem colidir; `make e2e-port` mostra qual é; `E2E_PORT=<porta> make e2e` força
-# outra. Para re-rodar um spec sem rebuildar o site (usa o dist/ já construído):
-# `E2E_SKIP_BUILD=1 npm --prefix web run test:e2e -- <spec>`.
+# outra. Para re-rodar um spec sem rebuildar o site (usa o dist/ já construído, se o carimbo de
+# .build-stamps/ ainda bate com a árvore — senão a run se recusa e diz o campo):
+# `E2E_PREBUILT=1 npm --prefix web run test:e2e -- <spec>`.
 e2e:
 	npm --prefix web run test:e2e
 

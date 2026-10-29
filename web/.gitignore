@@ -9,3 +9,4 @@ public/preview/
 dist-production/
 dist-cdn-test/
 public/edicoes/
+.build-stamps/
