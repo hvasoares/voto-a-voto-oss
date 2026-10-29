@@ -51,7 +51,8 @@ export function webServerConfig(
   current: CurrentInputs | null,
 ): WebServerDecision {
   const mode = env.E2E_MODE === 'production' ? 'production' : 'local'
-  const outDir = mode === 'production' ? 'dist-production' : 'dist'
+  // OUT_DIR overrides (#109: the sample build is served from dist-sample); unset keeps the byte-locked default.
+  const outDir = env.OUT_DIR ?? (mode === 'production' ? 'dist-production' : 'dist')
   const refuse = (error: string): WebServerDecision => ({ command: serveCommand(outDir), timeout: PREBUILT_TIMEOUT, error })
 
   const prebuilt = env.E2E_PREBUILT

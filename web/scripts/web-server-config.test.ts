@@ -46,6 +46,18 @@ describe('webServerConfig without the switch (default, CI)', () => {
   it('an empty switch is the same as unset', () => {
     expect(webServerConfig({ E2E_PREBUILT: '' }, null, null).command).toContain('astro build')
   })
+
+  it('OUT_DIR picks the output directory (#109: the sample build lives in dist-sample) and its stamp', () => {
+    expect(webServerConfig({ OUT_DIR: 'dist-sample' }, null, null).command).toBe(
+      'OUT_DIR=dist-sample BUILD_TARGET=local npx astro build && OUT_DIR=dist-sample npx tsx scripts/serve.ts',
+    )
+    const sampleStamp = { ...stamp, outDir: 'dist-sample', dataDir: '/checkout/web/.sample-data' }
+    const sampleCurrent = { ...current, outDir: 'dist-sample', dataDir: '/checkout/web/.sample-data' }
+    expect(webServerConfig({ E2E_PREBUILT: '1', OUT_DIR: 'dist-sample' }, sampleStamp, sampleCurrent).command).toBe(
+      'OUT_DIR=dist-sample npx tsx scripts/serve.ts',
+    )
+    expect(webServerConfig({ E2E_PREBUILT: '1', OUT_DIR: 'dist-sample' }, stamp, sampleCurrent).error).toContain('data dir')
+  })
 })
 
 describe('webServerConfig with E2E_PREBUILT', () => {

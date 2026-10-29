@@ -4,6 +4,7 @@ import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { readStamp, stampInputs } from './scripts/build-stamp'
 import { offsetFrom, portFor, resolvedPort, tcpTaken } from './scripts/e2e-port'
+import { loadSampleManifest, realDataSpecs, sampleTestMatch } from './scripts/sample-manifest'
 import { ageText, webServerConfig, type WebServerDecision } from './scripts/web-server-config'
 
 // One port per checkout (#124): two checkouts run specs at the same time without colliding on a fixed
@@ -12,8 +13,9 @@ import { ageText, webServerConfig, type WebServerDecision } from './scripts/web-
 const PORT = resolvedPort('MAIN', () => portFor(process.cwd(), process.env, tcpTaken, offsetFrom(process.env)))
 const base = process.env.SITE_BASE ?? '/'
 // local-bundle build (default) or production build: see README "CDN". Output directory differs so both can exist.
+// OUT_DIR overrides it (#109: the sample build lives in dist-sample, alongside, never over dist).
 const mode = process.env.E2E_MODE === 'production' ? 'production' : 'local'
-const outDir = mode === 'production' ? 'dist-production' : 'dist'
+const outDir = process.env.OUT_DIR ?? (mode === 'production' ? 'dist-production' : 'dist')
 const webRoot = fileURLToPath(new URL('.', import.meta.url))
 
 /**
@@ -75,5 +77,8 @@ export default defineConfig({
     { name: 'desktop', testMatch: /desktop-/, use: { browserName: 'chromium', viewport: { width: 1440, height: 900 }, isMobile: false, hasTouch: false } },
     { name: 'capture', testMatch: /capture/, use: { browserName: 'chromium' } },
     { name: 'real', testMatch: /real-data/, use: { browserName: 'chromium' } },
+    // The real-data sample (#109): the real-data specs on disk minus sample.json's fullOnly, over the
+    // .sample-data build. scripts/sample-manifest.test.ts guards the classification of every spec.
+    { name: 'sample', testMatch: sampleTestMatch(loadSampleManifest(webRoot), realDataSpecs(webRoot)), use: { browserName: 'chromium' } },
   ],
 })
