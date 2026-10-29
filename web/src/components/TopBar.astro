@@ -12,6 +12,13 @@
  */
 import { siteHref } from '@/paths'
 import HeaderSearch from '@/components/HeaderSearch.astro'
+import HeaderBack from '@/components/HeaderBack.astro'
+
+interface Props {
+  /** The pages that are not Home carry the way home on the wordmark's line (#154); Home itself has none. */
+  back?: boolean
+}
+const { back = false } = Astro.props
 
 const links = [
   { label: 'Comparar', to: '/#comparar' },
@@ -21,7 +28,10 @@ const links = [
 ---
 <header class="hidden h-16 border-b border-border lg:block" data-component="top-bar">
   <div class="mx-auto flex h-full w-full max-w-[1240px] items-center px-5">
-    <a class="flex min-h-11 w-[280px] flex-none items-center rounded-sm font-serif text-step-4 text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" href={siteHref('/')} data-wordmark>Voto a Voto</a>
+    <div class="flex w-[280px] flex-none items-center">
+      <a class="flex min-h-11 items-center rounded-sm font-serif text-step-4 text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" href={siteHref('/')} data-wordmark>Voto a Voto</a>
+      {back && <HeaderBack />}
+    </div>
     <div class="w-[420px] flex-none"><HeaderSearch kbd /></div>
     <nav class="ml-auto flex items-center gap-1" aria-label="Principal">
       {links.map((l) => (

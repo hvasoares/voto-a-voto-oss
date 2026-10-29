@@ -1,8 +1,7 @@
 ---
 /**
- * The "‹ Início" link of a page header (ticket #154): it shares the line with the wordmark in `AppHeader.astro` (both variants), so
+ * The "‹ Início" link of a page header (ticket #154): it shares the line with the wordmark in `AppHeader.astro` (both variants, below 1024 px) and in `TopBar.astro` (from 1024 px), so
  * the page does not spend a row of its own on it. The words are the catalog's (`shell.backHome`); the 44 px target is `min-h-11`.
- * The header is hidden from 1024 px, where the top bar's wordmark is the way home.
  */
 import '@/lib/sentences/catalog-shell'
 import { message } from '@/lib/sentences/catalog'

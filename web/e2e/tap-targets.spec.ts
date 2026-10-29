@@ -243,8 +243,8 @@ test.describe('the "Início" link shares the line with "Voto a Voto" (390x844)',
   for (const path of HEADER_PAGES) {
     test(`${path}: same line as the wordmark, 44 px high, to Home, no second link`, async ({ page }) => {
       await page.goto(`${base}${path}`)
-      const back = page.locator('header [data-back-home]')
-      const mark = page.locator('header:not([data-component="top-bar"]) a', { hasText: 'Voto a Voto' })
+      const back = page.locator('header[data-app-header] [data-back-home]')
+      const mark = page.locator('header[data-app-header] a', { hasText: 'Voto a Voto' })
       await expect(back).toHaveText('‹ Início')
       await expect(back).toHaveAttribute('href', base)
       const [b, m] = [await back.boundingBox(), await mark.boundingBox()]
@@ -256,4 +256,28 @@ test.describe('the "Início" link shares the line with "Voto a Voto" (390x844)',
       await expect(page.getByRole('link', { name: '‹ Início' })).toHaveCount(1)
     })
   }
+})
+
+/* #154 at desktop width (1440x900): the app header is hidden, the top bar carries the same link on the wordmark's line. */
+test.describe('the "Início" link shares the line with "Voto a Voto" (1440x900)', () => {
+  test.use({ viewport: { width: 1440, height: 900 } })
+  for (const path of HEADER_PAGES) {
+    test(`${path}: same line as the top bar's wordmark, 44 px high, to Home, no second link`, async ({ page }) => {
+      await page.goto(`${base}${path}`)
+      const back = page.locator('[data-component="top-bar"] [data-back-home]')
+      const mark = page.locator('[data-component="top-bar"] [data-wordmark]')
+      await expect(back).toHaveText('‹ Início')
+      await expect(back).toHaveAttribute('href', base)
+      const [b, m] = [await back.boundingBox(), await mark.boundingBox()]
+      expect(b!.height).toBeGreaterThanOrEqual(MIN)
+      expect(b!.y + b!.height / 2).toBeGreaterThan(m!.y)
+      expect(b!.y + b!.height / 2).toBeLessThan(m!.y + m!.height)
+      expect(b!.x).toBeGreaterThan(m!.x + m!.width)
+      await expect(page.getByRole('link', { name: '‹ Início' })).toHaveCount(1)
+    })
+  }
+  test('Home has no such link', async ({ page }) => {
+    await page.goto(base)
+    await expect(page.locator('[data-back-home]')).toHaveCount(0)
+  })
 })
