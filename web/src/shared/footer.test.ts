@@ -111,6 +111,25 @@ describe('sourceFooter — the pilot page variants (the city card /rj/cidade-exe
       '<footer class="mx-5 mt-2 pb-6 pt-2 text-center text-step-1 md:mx-auto md:max-w-[720px] lg:text-left text-muted-foreground" data-component="source-footer" aria-hidden="true" data-astro-cid-tsexhqgk>Fonte: TSE, dados finais · <a class="inline-flex min-h-11 items-center" href="/sobre-os-dados/" data-astro-cid-tsexhqgk>Sobre os dados ›</a></footer>',
     )
   })
+
+  it('the /sobre-os-dados/ variant (#116): the finality chip instead of the about link', () => {
+    expect(
+      sourceFooter({
+        source: 'Fonte: TSE, dados finais',
+        aboutHref: '/sobre-os-dados/',
+        finalChip: true,
+        class: 'mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-2 pt-2 text-center text-step-1 text-primary',
+      }),
+    ).toBe(
+      '<footer class="mx-auto w-full max-w-[430px] md:max-w-[760px] mt-2 border-t border-border px-5 pb-2 pt-2 text-center text-step-1 text-primary" data-component="source-footer">Fonte: TSE, dados finais<span class="ml-2 inline-flex items-center whitespace-nowrap rounded-md border border-border bg-secondary px-2 font-bold text-foreground" data-component="final-chip">Final, não ao vivo</span></footer>',
+    )
+  })
+
+  it('finalChip replaces the about link however aboutLink is set', () => {
+    const out = sourceFooter({ source: 'Fonte: TSE, dados finais', aboutHref: '/sobre-os-dados/', finalChip: true, aboutLink: true })
+    expect(out).not.toContain('Sobre os dados ›')
+    expect(out).toContain('data-component="final-chip"')
+  })
 })
 
 describe('globalFooterLines — the Base.astro block (the pilot page’s second footer)', () => {

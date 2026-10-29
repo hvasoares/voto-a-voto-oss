@@ -17,6 +17,8 @@
  *  - `ariaHidden`  aria-hidden="true" on the <footer> (the inert backdrop copy behind a share sheet).
  *  - `scopeMarker` the host template's scoped-style marker ('data-astro-cid-…'), keeping the moved footer's
  *                  bytes identical when a scoped <style> would have stamped it (BrasilScreen).
+ *  - `finalChip`   the /sobre-os-dados/ variant: the "Final, não ao vivo" chip after the source note, instead
+ *                  of the about link (#116; it IS the about page).
  *  - `chip`        the "Final, não ao vivo" chip leading the second global line (default true, Base).
  *  - `donation`    the donation link, drawn when PUBLIC_DONATION_URL configures an address (default true).
  *  - `links`       the second global line's links (default Relatórios + Mapa por estado, base-resolved here).
@@ -41,6 +43,7 @@ interface Props {
   class?: string
   ariaHidden?: boolean
   scopeMarker?: string
+  finalChip?: boolean
   chip?: boolean
   donation?: boolean
   links?: readonly FooterLink[]
@@ -60,6 +63,7 @@ if (p.source !== undefined) {
     class: p.class,
     ariaHidden: p.ariaHidden,
     scopeMarker: p.scopeMarker,
+    finalChip: p.finalChip,
   })
 } else {
   // Ticket #59: every page names the edition of the data it shows and links to its immutable address.

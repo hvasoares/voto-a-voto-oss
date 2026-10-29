@@ -43,6 +43,9 @@ export const GLOBAL_FOOTER_CLASS = 'mx-auto w-full max-w-[430px] px-5 pb-3 text-
 const SEPARATOR = html`<span aria-hidden="true"> · </span>`
 const CHIP = html`<span class="${CHIP_CLASS}" data-finality-chip>Final, não ao vivo</span>`
 
+/** The finality chip of the /sobre-os-dados/ page footer (#116): a different dress than the global line's CHIP. */
+const SOURCE_FINAL_CHIP = html`<span class="ml-2 inline-flex items-center whitespace-nowrap rounded-md border border-border bg-secondary px-2 font-bold text-foreground" data-component="final-chip">Final, não ao vivo</span>`
+
 /** The donation link ("Apoie o projeto", #36) as DonationLink's link variant has always drawn it. */
 export function donationLinkMarkup(url: string, linkClass: string): string {
   const cls = linkClass ? html` class="${linkClass}"` : ''
@@ -119,6 +122,12 @@ export interface SourceFooterProps {
    * host file changes Astro's marker — the html-diff gate (#113) then catches the drift loudly, not silently.
    */
   scopeMarker?: string
+  /**
+   * The /sobre-os-dados/ variant (#116): the "Final, não ao vivo" chip right after the source note, INSTEAD of
+   * the about link (this page IS the about page — a "Sobre os dados ›" link from it would point at itself).
+   * When true the chip is drawn and no about link exists, whatever `aboutLink` says.
+   */
+  finalChip?: boolean
 }
 
 /**
@@ -128,8 +137,9 @@ export interface SourceFooterProps {
 export function sourceFooter(props: SourceFooterProps): string {
   const aboutClass = props.aboutClass ?? 'source-footer__about'
   const marker = props.scopeMarker ? raw(` ${props.scopeMarker}`) : ''
-  const about =
-    props.aboutLink ?? true
+  const about = props.finalChip
+    ? String(SOURCE_FINAL_CHIP)
+    : props.aboutLink ?? true
       ? html`${props.separator ?? ''}<a${aboutClass ? html` class="${aboutClass}"` : ''} href="${props.aboutHref}"${marker}>${props.aboutLabel ?? 'Sobre os dados ›'}</a>`
       : ''
   const aria = props.ariaHidden ? ' aria-hidden="true"' : ''
