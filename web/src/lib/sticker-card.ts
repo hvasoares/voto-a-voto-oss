@@ -7,7 +7,8 @@
  */
 import { colors } from '@/shared/tokens'
 import { glyphPath, qrGlyph, QR_QUIET_ZONE } from './qr-code'
-import { exampleTag, fit, headlineBlock, largestFit, pictureSvg, rect, text, textWidth } from './share-picture'
+import { exampleTag, fit, largestFit, pictureSvg, rect, text, textWidth } from './share-picture'
+import { headlineBlock } from './share-picture-flow'
 import './sentences/catalog-meu-brasil'
 import { DEFAULT_LOCALE, message, type Locale, type MessageKey } from './sentences/catalog'
 
@@ -40,7 +41,7 @@ export function stickerSvg(o: StickerOptions): string {
   const tag = say('mb.tag')
   const tagW = Math.ceil(textWidth(tag, 44, true)) + 60
   out.push(rect(LEFT, y, tagW, 84, colors.accent, ' rx="12"'), text(LEFT + tagW / 2, y + 57, 44, tag, { weight: 700, fill: colors['accent-fg'], anchor: 'middle' }))
-  if (o.fixture) out.push(exampleTag(LEFT + tagW + 24, y, say('card.example'), true))
+  if (o.fixture) out.push(exampleTag(LEFT + tagW + 24, y, say('card.example'), 84, 12, 57))
   y += 84 + 70
 
   y = headlineBlock(out, o.headline, y, { sizes: [56, 52, 48, 44, 40], lines: 7, left: LEFT, inner: INNER })

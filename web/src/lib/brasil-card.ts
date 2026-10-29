@@ -7,7 +7,8 @@
 import type { BrasilCandidate, BrasilView } from './brasil'
 import { sideTone } from '@/shared/candidates'
 import { colors } from '@/shared/tokens'
-import { candidateLabel, centredLabel, fit, fixtureBand, flowCard, footerBlock, headlineBlock, INNER, LEFT, mutedLines, rect, SEGMENT_FILL, text } from './share-picture'
+import { candidateLabel, centredLabel, fit, INNER, LEFT, rect, SEGMENT_FILL, text } from './share-picture'
+import { fixtureBand, flowCard, footerBlock, headlineBlock, mutedLines } from './share-picture-flow'
 import { DEFAULT_LOCALE, message, type Locale } from './sentences/catalog'
 import { brasilBase, brasilHeadline, brasilRegionShare, brasilTurnout } from './sentences/brasil'
 

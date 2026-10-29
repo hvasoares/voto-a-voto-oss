@@ -7,7 +7,8 @@
  */
 import { colors } from '@/shared/tokens'
 import type { PlaceCard } from './meu-brasil'
-import { fit, fixtureBand, flowCard, footerBlock, headlineBlock, INNER, LEFT, mutedLines, rect, SEGMENT_FILL, text } from './share-picture'
+import { fit, INNER, LEFT, rect, SEGMENT_FILL, text } from './share-picture'
+import { fixtureBand, flowCard, footerBlock, headlineBlock, mutedLines } from './share-picture-flow'
 import { DEFAULT_LOCALE, message, type Locale, type Register } from './sentences/catalog'
 import { meuBrasilHeadline } from './sentences/meu-brasil'
 import './sentences/catalog-meu-brasil'

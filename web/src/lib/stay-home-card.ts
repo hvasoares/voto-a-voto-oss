@@ -6,7 +6,8 @@
  */
 import { colors } from '@/shared/tokens'
 import { UF_TILES } from '@/slots/home/uf-grid'
-import { fit, fixtureBand, flowCard, footerBlock, INNER, LEFT, mutedLines, rect, text, wrap } from './share-picture'
+import { fit, INNER, LEFT, rect, text, wrap } from './share-picture'
+import { fixtureBand, flowCard, footerBlock, mutedLines } from './share-picture-flow'
 import { DEFAULT_LOCALE, message, type Locale, type Register } from './sentences/catalog'
 import { stayhomeSay, subtitle } from './sentences/stayhome'
 import { stayHomeHex } from './stay-home'

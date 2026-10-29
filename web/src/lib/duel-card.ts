@@ -6,7 +6,8 @@
  */
 import { colors } from '@/shared/tokens'
 import type { DuelPlace, Measure } from './duel-model'
-import { fit, fixtureBand, flowCard, footerBlock, INNER, LEFT, mutedLines, rect, text, textWidth } from './share-picture'
+import { fit, INNER, LEFT, rect, text, textWidth } from './share-picture'
+import { fixtureBand, flowCard, footerBlock, mutedLines } from './share-picture-flow'
 import { DEFAULT_LOCALE, type Locale, type Register } from './sentences/catalog'
 import { duelSay, measureLabel } from './sentences/duel'
 

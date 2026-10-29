@@ -8,7 +8,8 @@
  */
 import { colors } from '@/shared/tokens'
 import type { Recap } from './recap'
-import { candidateLabel, centredLabel, fit, fixtureBand, flowCard, footerBlock, headlineBlock, INNER, LEFT, mutedLines, rect, text } from './share-picture'
+import { candidateLabel, centredLabel, fit, INNER, LEFT, rect, text } from './share-picture'
+import { fixtureBand, flowCard, footerBlock, headlineBlock, mutedLines } from './share-picture-flow'
 import { DEFAULT_LOCALE, message, type Locale, type Register } from './sentences/catalog'
 import { recapBase, recapChange, recapHeadline } from './sentences/recap'
 
