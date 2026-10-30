@@ -4,7 +4,7 @@ import { PHONE, noJs } from './presets'
 
 /*
  * City replay (#46, the Sketch frame "9b Replay da cidade"), 390x844, fixture Cidade Exemplo (round 2, the default: A 47%/B 53% in 2018, 58/42 in 2022, 50/50 in 2026; round 1: 55/45, 49/51, 52/48).
- * The replay is drawn in the browser from the numbers the page's static blocks hold; those blocks are the static card.
+ * The replay is drawn in the browser from the numbers the page's blocks hold; those blocks are drawn from the city's shard by the stub's script (private#216).
  */
 const page9 = `${base}rj/cidade-exemplo/tres-ciclos/`
 /** Ready = the replay's own attribute; finished = its own state, never a timer. */
@@ -60,12 +60,12 @@ test.describe('city replay', () => {
     await expect(page.locator('.cycles__round:not([hidden]) .cycle')).toHaveCount(3)
   })
 
-  test('without scripts there is no replay and the static card is shown', async ({ browser }) => {
+  test('without scripts there is no replay: the stub says the page needs scripts (private#216)', async ({ browser }) => {
     const context = await browser.newContext({ ...noJs(), viewport: PHONE })
     const page = await context.newPage()
     await page.goto(page9)
     await expect(page.locator('.replay')).toHaveCount(0)
-    await expect(page.locator('.cycle')).toHaveCount(6)
+    await expect(page.locator('[data-stub-needs-scripts]')).toContainText('JavaScript')
     await context.close()
   })
 
@@ -91,14 +91,15 @@ test.describe('city replay', () => {
     await expect(page.locator('.replay__seg--a')).toHaveText('A 55%')
   })
 
-  test('draws everything from the page: no request, and nothing but the site\'s own files', async ({ page, baseURL }) => {
+  test('draws everything from the page: the one request is the city shard the page is drawn from, and nothing but the site\'s own files', async ({ page, baseURL }) => {
     const seen = collectRequests(page)
     await page.goto(page9)
     await ready(page)
     await state(page, 'done')
     await page.waitForLoadState('networkidle')
     expect(violations(seen, [new URL(baseURL!).origin])).toEqual([])
-    expect(seen.filter((r) => /\/data\//.test(r.url))).toEqual([])
+    // the replay itself asks for nothing; the page's one data request is the city's shard (private#216)
+    expect(seen.filter((r) => /\/data\//.test(r.url)).map((r) => new URL(r.url).pathname.replace(/^.*\/data\/v[0-9a-f]+\//, ''))).toEqual(['city/rj/cidade-exemplo.json'])
   })
 
   test('at 390 the replay is in the first screen and nothing scrolls sideways', async ({ page }) => {

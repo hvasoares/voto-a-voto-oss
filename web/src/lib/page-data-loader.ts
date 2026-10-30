@@ -12,6 +12,9 @@
 import { validatePageData } from '@/shared/page-data'
 import { markIslandFailed } from '../../integrations/island-failed.js'
 
+/** A file that is not a page-data file (the city's shard, which other pages already serve) is read by its own check: the data, or why it is refused. */
+export type SourceCheck<T> = (json: unknown) => { ok: true; data: T } | { ok: false; error: string }
+
 export interface PageDataLoad<T = unknown> {
   area: HTMLElement
   /** The URL of the data file. */
@@ -20,10 +23,14 @@ export interface PageDataLoad<T = unknown> {
   family: string
   path: string
   draw: (data: T, host: HTMLElement) => void
+  /** Reads a file that has no page-data envelope (private#216: the city shard); `family` and `path` are then not checked in the file. */
+  check?: SourceCheck<T>
   fetcher?: typeof fetch
 }
 
-export function loadPageData<T = unknown>({ area, url, family, path, draw, fetcher = fetch }: PageDataLoad<T>): Promise<void> {
+const asData = <T>(c: ReturnType<typeof validatePageData>): ReturnType<SourceCheck<T>> => (c.ok ? { ok: true, data: c.file.data as T } : c)
+
+export function loadPageData<T = unknown>({ area, url, family, path, draw, check: readFile, fetcher = fetch }: PageDataLoad<T>): Promise<void> {
   const line = area.querySelector<HTMLElement>('[data-stub-loading]') ?? area.appendChild(document.createElement('p'))
   let busy = false
   const fail = (reason: string) => {
@@ -49,12 +56,12 @@ export function loadPageData<T = unknown>({ area, url, family, path, draw, fetch
       if (!res?.ok) return fail(`http ${res?.status ?? 'none'}`)
       const json: unknown = await res.json().catch(() => undefined)
       if (json === undefined) return fail('bad json')
-      const check = validatePageData(json, { family, path })
+      const check = readFile ? readFile(json) : asData<T>(validatePageData(json, { family, path }))
       if (!check.ok) return fail(check.error)
       area.querySelector('[data-stub-content]')?.remove()
       const host = area.appendChild(document.createElement('div'))
       host.dataset.stubContent = ''
-      draw(check.file.data as T, host)
+      draw(check.data, host)
       line.textContent = area.dataset.arrived ?? ''
       area.dataset.ready = 'yes'
     } finally {

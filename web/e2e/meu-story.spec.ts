@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { base, collectRequests, violations } from './helpers'
+import { base, collectRequests, gotoFact, violations } from './helpers'
 import { PHONE, noJs } from './presets'
 import { shareMock } from './share-mock'
 
@@ -148,16 +148,17 @@ test.describe('Meu Brasil story', () => {
     expect(shared!.text).toContain('/meu-brasil/historia/?mora=rj/cidade-exemplo&vota=sp/cidade-exemplo-paulista#3')
   })
 
-  test('the story has the one "De onde vem este número?", and the page it names exists and has that record', async ({ page, request }) => {
+  test('the story has the one "De onde vem este número?", and the page it names exists and has that record', async ({ page }) => {
     await page.goto(story(ONE))
     await ready(page)
     await expect(page.locator('.story__card a.calc')).toHaveCount(0)
     const links = await page.locator('a.calc').evaluateAll((els) => els.map((e) => e.getAttribute('href')!))
     expect(links).toHaveLength(1)
     const [path, id] = links[0]!.split('#')
-    const res = await request.get(path!)
-    expect(res.status(), links[0]).toBe(200)
-    expect(await res.text(), links[0]).toContain(`id="${id}"`)
+    // the calculation page is a stub (private#214): its records are drawn from the data file once it arrives
+    const res = await gotoFact(page, path!)
+    expect(res!.status(), links[0]).toBe(200)
+    await expect(page.locator(`[id="${id}"]`), links[0]).toHaveCount(1)
   })
 
   test('the picture of a card says one idea about places and nothing about the visitor, a winner or a why', async ({ page }) => {

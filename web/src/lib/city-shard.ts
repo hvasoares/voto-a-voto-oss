@@ -69,3 +69,16 @@ export function cityShardResult(shard: CityShard, ano: number, turno: Turno): Ci
   }))
   return buildCityResult({ turnout, votes, candidates })
 }
+
+/**
+ * The check of a city shard read in the browser (private#216: the three-cycles page draws from the shard the city card already links, no file of its own):
+ * the file must be the shard of the city the page is for, and carry the blocks `cityShardResult` reads. A file for another city, or one cut short, is refused.
+ */
+export function checkCityShard(json: unknown, path: string): { ok: true; data: CityShard } | { ok: false; error: string } {
+  const shard = json as Partial<CityShard> | null
+  if (shard === null || typeof shard !== 'object' || Array.isArray(shard)) return { ok: false, error: 'not an object' }
+  const { city, cycles, candidates } = shard
+  if (!city || typeof city !== 'object' || !cycles || typeof cycles !== 'object' || !candidates || typeof candidates !== 'object') return { ok: false, error: 'missing city, cycles or candidates' }
+  if (`${city.uf}/${city.slug}` !== path) return { ok: false, error: `wrong address ${city.uf}/${city.slug}` }
+  return { ok: true, data: shard as CityShard }
+}

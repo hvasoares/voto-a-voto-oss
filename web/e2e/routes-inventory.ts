@@ -253,6 +253,7 @@ export const NO_PREVIEW_EXCLUSIONS: Readonly<Record<string, string>> = {
   '/qr/': 'the QR demo (#137): noindex, linked from nowhere',
   '/:uf/:slug/qr/': 'a stub plus a data file (private#208): noindex by the owner ruling D-043, a part of the city\'s pages, not a page to be found',
   '/:uf/:slug/compartilhar/': 'a stub plus a data file (private#210): noindex by the owner ruling D-043, a part of the city\'s pages, not a page to be found',
+  '/:uf/:slug/tres-ciclos/': 'a stub that reads the city shard (private#216): noindex by the owner ruling D-043, a part of the city\'s pages, not a page to be found',
   '/fato/:path*/': 'a stub plus a data file (private#214): noindex by the owner ruling D-043, the numbers behind a figure, not a page to be found',
   '/embed/:uf/:slug/': 'an EmbedDoc document: a part of other pages, not a page to be shared',
   '/overlay/tela/': 'an EmbedDoc broadcast overlay: a part of other pages, not a page to be shared',

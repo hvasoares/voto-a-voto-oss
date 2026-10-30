@@ -58,7 +58,7 @@ h2, .section-title { font: 400 var(--step-3) var(--font-serif); }
 .state-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 11px; }
 .state-page .banner { letter-spacing: 0; padding: 5px var(--gutter); }
 .state-page .page__main { padding: 8px var(--gutter) var(--sp-4); }
-.state-page .page__title, .city-page .page__title, .cycles-page .page__title { font-size: var(--step-4); line-height: var(--lh-4); }
+.state-page .page__title, .city-page .page__title { font-size: var(--step-4); line-height: var(--lh-4); }
 .state-page .page__subtitle, .city-page .page__subtitle { margin-top: 0; }
 .state-map {
   display: flex; align-items: center; justify-content: center; height: 220px; margin-top: 4px;
@@ -124,9 +124,7 @@ h2, .section-title { font: 400 var(--step-3) var(--font-serif); }
 html[data-register="plain"] [data-register="standard"], html:not([data-register="plain"]) [data-register="plain"] { display: none; }
 
 /* ---- three cycles of a city (#9, ported by #50): `.cycles-*` and `.cycle*` belong to the city-cycles slot; the bars reuse the shared .bar / .bar__seg ---- */
-.cycles-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
 .cycles-page .banner { letter-spacing: 0; padding: 6px var(--gutter); }
-.cycles-page .page__main { padding: 4px var(--gutter) 0; }
 .cycles-page .page__subtitle { margin-top: -4px; margin-bottom: 18px; }
 .cycles__round + .cycles__round { margin-top: 24px; }
 .cycle { box-sizing: border-box; height: 150px; margin: 0 0 0; padding: 9px 16px 0; border-top: 1px solid var(--c-rule); }
@@ -144,33 +142,17 @@ html[data-register="plain"] [data-register="standard"], html:not([data-register=
   display: flex; align-items: center; justify-content: center; min-height: 44px; margin-top: 19px; border: 1px solid var(--c-rule);
   border-radius: var(--radius); background: var(--c-paper-2); font: 400 var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-ink);
 }
-.cycles-links { margin-top: 12px; text-align: center; }
-.cycles-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; font: 700 var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-accent); }
 .cycles-page .source-footer { padding: 19px var(--gutter) 24px; color: var(--c-muted); font-size: var(--step-1); line-height: var(--lh-1); }
-/* Without JavaScript both rounds are shown stacked and the (useless) switch link is hidden. */
-/* Without JavaScript both rounds are shown stacked and the (useless) switch link is hidden.
- * The [hidden] override needs !important (Tailwind's preflight sets it) and must sit in @layer base
- * as well: for !important declarations the layer order reverses, so unlayered would LOSE to the
- * preflight's layered rule. The switch link needs no layer: its !important beats the normal
- * unlayered .cycles-switch rule above. */
-@layer base {
-  @media (scripting: none) {
-    .cycles__round[hidden] { display: block !important; }
-}
-}
-@media (scripting: none) {
-  .cycles-switch { display: none !important; }
-}
 
 /* ---- desktop (G10, #55): Estado and the three-cycles pages are a centered column of about 720 px from 768 px, and drop the page header
    (the top bar replaces it) from 1024 px. The banner of fictitious data becomes a small notice in the column. ---- */
 @media (min-width: 768px) {
-  .state-page .page__main, .cycles-page .page__main { box-sizing: border-box; width: 100%; max-width: 760px; margin: 0 auto; }
+  .state-page .page__main { box-sizing: border-box; width: 100%; max-width: 760px; margin: 0 auto; }
   .state-page .banner, .cycles-page .banner { box-sizing: border-box; width: 100%; max-width: 760px; margin: 0 auto; }
   .state-page .source-footer, .cycles-page .source-footer { box-sizing: border-box; width: 100%; max-width: 760px; margin: 0 auto; }
 }
 @media (min-width: 1024px) {
-  .state-page .app-header, .cycles-page .app-header { display: none; }
+  .state-page .app-header { display: none; }
   .state-page .banner, .cycles-page .banner { width: fit-content; max-width: none; height: auto; margin: 20px max(20px, calc(50% - 360px)) 0; padding: 3px 6px; border-radius: 3px; white-space: normal; align-self: flex-start; }
   .state-page .page__title, .city-page .page__title, .cycles-page .page__title { font-size: var(--step-4); line-height: var(--lh-4); margin-top: 4px; }
   .state-page .page__subtitle, .city-page .page__subtitle, .cycles-page .page__subtitle { font-size: var(--step-2); line-height: var(--lh-2); margin-top: 0; }

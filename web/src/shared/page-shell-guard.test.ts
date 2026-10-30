@@ -52,7 +52,6 @@ const ALLOWED: Record<Rule, Record<string, string>> = {
     'layouts/QuietDoc.astro': 'the quiet layout draws it above the page',
     'components/CityCard.astro': 'the city card draws the screen variant inside its `.screen` (the stylesheet scopes it there)',
     'pages/[uf]/index.astro': 'the state page draws the screen variant inside its `.screen`',
-    'pages/[uf]/[slug]/tres-ciclos/index.astro': 'the three-cycles page draws the screen variant inside its `.screen`',
   },
   'no-header': {
     'pages/index.astro': 'Home: its own city search stands where the header search would (a second search field would stack on the first)',

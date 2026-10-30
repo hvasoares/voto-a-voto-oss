@@ -55,7 +55,7 @@ const NO_FOOTER: Record<string, string> = {
   'overlay/tela/': 'the stream overlay is a transparent full-screen document',
 }
 /** The families that are a stub plus a data file (the lighter-site milestone): the document carries no `<footer>` element until the script draws the screen (the QR's source line is part of its poster, the share sheet's is drawn with the sheet). Each family ticket adds its name. */
-const STUB_FAMILIES: readonly PageFamily[] = ['qr', 'compartilhar', 'fato']
+const STUB_FAMILIES: readonly PageFamily[] = ['qr', 'compartilhar', 'fato', 'tres-ciclos']
 
 /** The source with comments blanked (same length, newlines kept), so doc comments never classify. */
 const stripComments = (src: string): string =>

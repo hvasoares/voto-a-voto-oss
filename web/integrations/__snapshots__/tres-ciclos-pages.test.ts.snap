@@ -1,0 +1,117 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`the shard fields the three-cycles page reads (golden, fixture) > pins the city, the turnout and vote blocks of every cycle and round, and the names of the candidates 1`] = `
+{
+  "candidates": {
+    "2018": {
+      "1": [
+        "91",
+        "92",
+      ],
+      "2": [
+        "91",
+        "92",
+      ],
+    },
+    "2022": {
+      "1": [
+        "91",
+        "92",
+      ],
+      "2": [
+        "91",
+        "92",
+      ],
+    },
+    "2026": {
+      "1": [
+        "91",
+        "92",
+      ],
+      "2": [
+        "91",
+        "92",
+      ],
+    },
+  },
+  "city": {
+    "cdMunicipio": "99001",
+    "ciclos": [
+      2018,
+      2022,
+      2026,
+    ],
+    "nome": "Cidade Exemplo",
+    "slug": "cidade-exemplo",
+    "uf": "rj",
+  },
+  "cycles": {
+    "2018": {
+      "1": [
+        "abstencoes",
+        "anuladosApuSep",
+        "aptos",
+        "brancos",
+        "comparecimento",
+        "nulos",
+        "validos",
+        "votes",
+      ],
+      "2": [
+        "abstencoes",
+        "anuladosApuSep",
+        "aptos",
+        "brancos",
+        "comparecimento",
+        "nulos",
+        "validos",
+        "votes",
+      ],
+    },
+    "2022": {
+      "1": [
+        "abstencoes",
+        "anuladosApuSep",
+        "aptos",
+        "brancos",
+        "comparecimento",
+        "nulos",
+        "validos",
+        "votes",
+      ],
+      "2": [
+        "abstencoes",
+        "anuladosApuSep",
+        "aptos",
+        "brancos",
+        "comparecimento",
+        "nulos",
+        "validos",
+        "votes",
+      ],
+    },
+    "2026": {
+      "1": [
+        "abstencoes",
+        "anuladosApuSep",
+        "aptos",
+        "brancos",
+        "comparecimento",
+        "nulos",
+        "validos",
+        "votes",
+      ],
+      "2": [
+        "abstencoes",
+        "anuladosApuSep",
+        "aptos",
+        "brancos",
+        "comparecimento",
+        "nulos",
+        "validos",
+        "votes",
+      ],
+    },
+  },
+}
+`;

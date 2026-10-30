@@ -1,65 +1,48 @@
 ---
 /**
- * Three cycles of a city (the approved Sketch frame "9 Três ciclos (cidade)", ported from
- * site/src/slots/city-cycles/slot.ts by #50). Pre-rendered with BOTH rounds of all three cycles in the HTML —
- * nothing depends on scripts; without JavaScript they show stacked and the switch link is hidden. The
- * script shows one round and switches without a request.
+ * Three cycles of a city (the approved Sketch frame "9 Três ciclos (cidade)", ported from site/src/slots/city-cycles/slot.ts by #50), a STUB since private#216 (the
+ * `tres-ciclos` family of the lighter-site milestone), the pattern of the QR page (private#208) and the calculation page (private#214):
+ *   1. the page is `PageStub` (noindex, the stub's link back to the city card); its address, title, the fixture banner and the desktop download link are as before;
+ *   2. it writes NO data file: the numbers of both rounds of the three cycles are in the city's shard (`city/<uf>/<slug>.json`, linked by the city card), which
+ *      `scripts/city-cycles.ts` reads through the one loader;
+ *   3. `lib/cycles-page-draw.ts` draws the panels with `buildCycleBlock` and `roundPanel`, the pure pair the build used, and `lib/cycles-mount.ts` switches the rounds;
+ *   4. `data-page-path` on the `<main>` is the city's address in the shard.
+ * A visitor without scripts reads the stub's sentence and has the link back to the city card (the stacked no-script page is gone, by the owner's decision, D-043).
  */
-import Base from '@/layouts/Base.astro'
-import { siteHref } from '@/paths'
-import PageDataDownload from '@/components/PageDataDownload.astro'
-import SiteFooter from '@/components/SiteFooter.astro'
-import { cityDataPath, stateDataPath } from '@/lib/api'
-import { SHARD_VERSION } from 'virtual:data-shards'
-import { loadCityRoutes } from '@/lib/city-routes'
-import { datasetFixture, loadCityShard } from '@/lib/shard-files'
-import { cityShardResult } from '@/lib/city-shard'
-import { displayName } from '@/shared/city-search'
-import { CYCLES } from '@/shared/city-model'
-import { DEFAULT_TURNO, buildCycleBlock } from '@/slots/city-cycles/cycles-model'
-import { roundPanel } from '@/slots/city-cycles/cycles-view'
-import AppHeader from '@/components/AppHeader.astro'
+import PageStub from '@/components/PageStub.astro'
 import FixtureBanner from '@/components/FixtureBanner.astro'
+import PageDataDownload from '@/components/PageDataDownload.astro'
+import { siteHref } from '@/paths'
+import { cityDataPath } from '@/lib/api'
+import { SHARD_VERSION } from 'virtual:data-shards'
+import '@/lib/sentences/catalog-shell'
+import { message } from '@/lib/sentences/catalog'
+import { loadCityRoutes } from '@/lib/city-routes'
+import { datasetFixture } from '@/lib/shard-files'
+import { displayName } from '@/shared/city-search'
 
 export async function getStaticPaths() {
-  return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug } }))
+  return (await loadCityRoutes()).map((city) => ({ params: { uf: city.uf, slug: city.slug }, props: { nome: city.nome } }))
 }
 
 const { uf, slug } = Astro.params
-// The #113 base-path helper (its closure form was the pre-#113 per-page pattern).
-const href = siteHref
-const here = href(`/${uf}/${slug}/tres-ciclos/`)
-const shard = (await loadCityShard(uf!, slug!))!
-const city = shard.city
-const name = displayName(city.nome)
+const { nome } = Astro.props
+const voice = { locale: 'pt-BR', register: 'standard' } as const
 const fixture = await datasetFixture()
-
-const panels = []
-for (const turno of [1, 2] as const) {
-  const blocks = []
-  for (const ano of CYCLES) blocks.push(buildCycleBlock({ ano, turno, city, result: cityShardResult(shard, ano, turno) }))
-  panels.push(roundPanel({ turno, subtitle: `Presidente 2018, 2022 e 2026 · ${name} (${turno}º turno)`, blocks, hidden: turno !== DEFAULT_TURNO }))
-}
-const other = DEFAULT_TURNO === 2 ? 1 : 2
 ---
-<Base title={`Três ciclos · ${name} · Voto a Voto`} header="screen">
-  <div class="screen cycles-page">
-    <AppHeader variant="screen" />
-    <FixtureBanner show={fixture} class="banner" role="note" wideSeparator />
-    <main class="page__main" id="main">
-      <h1 class="page__title">Três ciclos</h1>
-      <div class="cycles" data-cycles data-turno={DEFAULT_TURNO} data-path={here} data-uf={city.uf} data-slug={city.slug} data-name={name}>
-        {panels.map((p) => <Fragment set:html={p} />)}
-      </div>
-      <p class="cycles__legend">O candidato de menor número na urna fica à esquerda, em vermelho; o outro, em azul, em todos os ciclos.</p>
-      <a class="cycles-switch" href={`${here}?turno=${other}`} data-switch data-base={here} data-turno={other}>Ver o {other}º turno ›</a>
-      <nav class="cycles-links" aria-label="Mais sobre a cidade"><a href={href(`/${uf}/${slug}/`)}>Cartão da cidade</a></nav>
-    </main>
-    <PageDataDownload href={href(cityDataPath(SHARD_VERSION, uf!, slug!))} filename={`${uf}-${slug}.json`} />
-    {/* The #113 shared footer with the pilot's own (default) variant: the keyboard-only "Sobre os dados ›" link. */}
-    <SiteFooter source="Fonte: TSE, dados finais" />
-  </div>
-  <script>
-    import '@/scripts/city-cycles'
-  </script>
-</Base>
+<PageStub title={['Três ciclos', displayName(nome), 'Voto a Voto'].join(' · ')}
+  what={message(voice, 'stub.what.cycles')}
+  path={`${uf}/${slug}/tres-ciclos/`}
+  backHref={`/${uf}/${slug}/`}
+  backLabel="Cartão da cidade"
+  md="720"
+  extra="cycles-page"
+  data-page="tres-ciclos"
+  data-page-path={`${uf}/${slug}`}>
+  <FixtureBanner show={fixture} class="banner" role="note" wideSeparator />
+  {/* The desktop link to the shard the page is drawn from (#64): an address, not data; the draw moves it above the page footer, where it always stood. */}
+  <PageDataDownload href={siteHref(cityDataPath(SHARD_VERSION, uf!, slug!))} filename={`${uf}-${slug}.json`} />
+</PageStub>
+<script>
+  import '@/scripts/city-cycles'
+</script>

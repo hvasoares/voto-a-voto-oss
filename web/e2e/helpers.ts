@@ -68,7 +68,15 @@ export async function gotoFact(page: Page, url: string) {
   return response
 }
 
- export async function activateSearch(page: Page) {
+ /** Opens a city's three-cycles page (private#216, a stub) and waits for its panels to be drawn and the switching wired. Returns the response. */
+export async function gotoCycles(page: Page, url: string) {
+  const response = await page.goto(url)
+  await waitStubReady(page)
+  await waitReady(page)
+  return response
+}
+
+export async function activateSearch(page: Page) {
   // The page's own search (the desktop top bar has another one, "bar"; it is hidden on a phone).
   const box = page.locator('[data-city-search="main"]').getByRole('combobox', { name: 'Busque sua cidade' })
   await box.click()
