@@ -11,7 +11,8 @@
  *  - `backHref`       the site path of the page the visitor came from; the link back is `siteHref(backHref)` with the words of `stub.back` (or the family's `backLabel`);
  *  - `data-*` markers `data-page` and the like go to the `<main>`.
  * The loading area (`[data-stub-area]`, a polite status) holds the loading sentence, which a visitor without scripts does not see (`scripting: none`
- * hides it); the default slot lands inside it, for the loader (private#207) to draw into. The `<noscript>` sentence says the page needs scripts and the
+ * hides it); the default slot lands inside it, for the loader (`lib/page-data-loader.ts`, private#207) to draw into; the area carries the loader's three sentences
+ * as `data-arrived`, `data-failed-text` and `data-retry-text`, so the shipped script holds no catalog. The `<noscript>` sentence says the page needs scripts and the
  * link back stays: no blank page. The page is `noindex`: the stubs are parts of the city's pages, not pages to be found.
  */
 import '@/lib/sentences/catalog-shell'
@@ -36,7 +37,7 @@ const canonical = new URL(siteHref(path), siteOrigin()).href
 <Base title={title} noindex canonical={canonical}>
   <PageMain {...attrs}>
     <h1 class="mt-2 font-serif text-step-4 font-normal">{title}</h1>
-    <div class="mt-3" data-stub-area role="status" aria-live="polite">
+    <div class="mt-3" data-stub-area role="status" aria-live="polite" data-arrived={message(voice, 'stub.arrived', { what })} data-failed-text={message(voice, 'stub.failed', { what })} data-retry-text={message(voice, 'stub.retry')}>
       <p class="text-step-2 text-muted-foreground [@media(scripting:none)]:hidden" data-stub-loading>{message(voice, 'stub.loading', { what })}</p>
       <slot />
     </div>
