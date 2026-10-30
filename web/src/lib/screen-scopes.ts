@@ -30,7 +30,7 @@ import { isFixtureDataset, loadBrasil } from '@/lib/brasil-load'
 import { brasilNoJs, brasilShareNote } from '@/lib/sentences/brasil'
 import { cityTexts, type CityTexts } from '@/lib/city-texts-build'
 import { pickQuestion } from '@/lib/question'
-import { defaultView } from '@/slots/city/city-view'
+import { shareSheetContent, shareSheetRecord } from '@/lib/share-sheet-record'
 
 /** The scope of a screen. `scope` is the discriminant; the city carries its route params and name. */
 export type ScreenScope = { scope: 'demo' } | { scope: 'city'; uf: string; slug: string; nome: string } | { scope: 'brasil' }
@@ -159,9 +159,9 @@ const SHARE_SCOPES: Builders<ShareScreenConfig> = {
     const currentEd = await currentEdition()
     const texts = cityTexts(shard, { origin: siteOrigin(), base, fixture, editionDate: currentEd.date })
     // The view the page pre-prints is the card's default; ?ciclo/?turno is the ShareSheet island's business.
-    const view = defaultView((ano, turno) => !!cityShardResult(shard, ano, turno))
-    const result = cityShardResult(shard, view.ano, view.turno)
-    const content = result ? shareContent(result, city, { origin: siteOrigin(), base, fixture, edition: currentEd.id }) : null
+    const record = shareSheetRecord(shard, { origin: siteOrigin(), base, fixture, edition: currentEd.id })
+    const view = record.view
+    const content = shareSheetContent(record)
     return {
       title: `Compartilhar · ${displayName(nome)}`,
       noindex: false,

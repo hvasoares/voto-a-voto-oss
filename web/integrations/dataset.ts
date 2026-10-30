@@ -5,6 +5,9 @@ import { generateShards, shardsModule } from './shards'
 import { copyNerdsShards } from './nerds-shards'
 import { writePageData } from './page-data'
 import { QR_FAMILY, qrPageRecords } from './qr-pages'
+import { SHARE_FAMILY, sharePageRecords } from './share-pages'
+import { siteOrigin } from '../src/lib/share-url'
+import { currentEdition } from '../src/lib/editions-load'
 import { loadCityRoutes } from '../src/lib/city-routes'
 import { datasetFixture } from '../src/lib/shard-files'
 import { normalizeBase } from '../src/paths'
@@ -28,7 +31,12 @@ export function dataset(): AstroIntegration {
         // The per-page data files (private#205): one writer, each family supplies only its records. The QR family is the pilot (private#208);
         // the next families add a line here.
         const cities = await loadCityRoutes()
-        writePageData(resolve(root, 'public/data'), fingerprint, QR_FAMILY, qrPageRecords(cities, await datasetFixture(), normalizeBase(config.base)))
+        const fixture = await datasetFixture()
+        const base = normalizeBase(config.base)
+        writePageData(resolve(root, 'public/data'), fingerprint, QR_FAMILY, qrPageRecords(cities, fixture, base))
+        // The share sheet's family (private#209): the picture's inputs and the message numbers; the page is not changed yet.
+        const build = { origin: siteOrigin(), base, fixture, edition: (await currentEdition()).id }
+        writePageData(resolve(root, 'public/data'), fingerprint, SHARE_FAMILY, await sharePageRecords(cities, build))
       },
     },
   }
