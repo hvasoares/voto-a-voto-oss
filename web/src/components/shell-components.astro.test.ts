@@ -106,6 +106,13 @@ describe('DocHead', () => {
     expect(html).toContain('<meta name="twitter:card" content="summary_large_image">')
   })
 
+  it('draws the canonical link after the description and before the preview tags', async () => {
+    const html = await container.renderToString(DocHead, { props: { title: 'T', description: 'D', canonical: 'https://x.test/p/', preview: { ogTitle: 'OG', description: 'D', url: 'https://x.test/p/' } } })
+    expect(html).toContain('<link rel="canonical" href="https://x.test/p/">')
+    expect(html.indexOf('name="description"')).toBeLessThan(html.indexOf('rel="canonical"'))
+    expect(html.indexOf('rel="canonical"')).toBeLessThan(html.indexOf('og:type'))
+  })
+
   it('a preview with no image is the small card', async () => {
     const html = await container.renderToString(DocHead, { props: { title: 'T', preview: { ogTitle: 'OG', description: 'D', url: 'https://x.test/' } } })
     expect(html).toContain('<meta name="twitter:card" content="summary">')

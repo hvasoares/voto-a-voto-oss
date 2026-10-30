@@ -10,10 +10,11 @@
  *  - `importMap`    the JSON of the CDN import map when the build configures one ('' or absent: no script); Base and QuietDoc pass `virtual:cdn-importmap`,
  *                   imported by the layout itself (a module the head imported would move the order Astro inlines the stylesheets in);
  *  - `noindex`      `<meta name="robots" content="noindex">`: embeds and fragments are parts of other pages, not pages to be found;
- *  - `baseTarget`   `<base target>`: where the document's links open (embed: a new tab, fragment: the parent window).
+ *  - `baseTarget`   `<base target>`: where the document's links open (embed: a new tab, fragment: the parent window);
+ *  - `canonical`    `<link rel="canonical">`, the absolute address of the page (the stubs of the lighter-site milestone, private#206), after the description.
  * The layout writes the `<head>` element itself and draws this inside it (Astro puts the stylesheets of the page at the layout's `<head>`).
  * A component that imports a module the layout used to import moves the order the page's inline styles come in: measured by the all-pages comparison.
- * The tags come out in this order: charset, viewport, robots, base, import map, title, description, preview.
+ * The tags come out in this order: charset, viewport, robots, base, import map, title, description, canonical, preview.
  */
 import type { PreviewHead } from '@/lib/link-preview'
 
@@ -24,8 +25,9 @@ interface Props {
   importMap?: string
   noindex?: boolean
   baseTarget?: '_blank' | '_top'
+  canonical?: string
 }
-const { title, description, preview, importMap, noindex = false, baseTarget } = Astro.props
+const { title, description, preview, importMap, noindex = false, baseTarget, canonical } = Astro.props
 ---
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -34,6 +36,7 @@ const { title, description, preview, importMap, noindex = false, baseTarget } = 
   {importMap && <script type="importmap" is:inline set:html={importMap} />}
   <title>{title}</title>
   {description && <meta name="description" content={description} />}
+  {canonical && <link rel="canonical" href={canonical} />}
   {preview && (
     <>
       <meta property="og:type" content="website" />

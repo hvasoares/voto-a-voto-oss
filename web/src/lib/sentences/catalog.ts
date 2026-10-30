@@ -494,6 +494,10 @@ export const KEYS = [
   'outlier.share.text',
   /** The page shell (#136): the fixture banner, said by `components/FixtureBanner.astro`; the sentence lives in `catalog-shell.ts`. */
   'shell.fixtureBanner',
+  /** The stub page (private#206): the sentences live in `catalog-shell.ts`, said by `components/PageStub.astro`. */
+  'stub.loading',
+  'stub.needsScripts',
+  'stub.back',
   /** The hint above the Home search (#147): one per destination; the words and the one list of their keys are data in `catalog-home.ts`, registered by `catalog-hint.ts`. */
   ...HOME_HINT_KEYS,
 ] as const

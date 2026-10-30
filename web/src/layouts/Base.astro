@@ -20,6 +20,8 @@ interface Props {
   preview?: PreviewHead
   /** The page asks not to be indexed (the two demo screens, #137). */
   noindex?: boolean
+  /** The absolute canonical address, for a page that names one (the stubs, private#206). */
+  canonical?: string
   /**
    * The app header of the phone (#153): `phone` (default) draws it here, above the page; `screen` when the page draws the screen-stylesheet variant
    * of the same component inside its own `.screen` wrapper (the city card, the state page, the three-cycles page, the fact record, the share sheet);
@@ -27,7 +29,7 @@ interface Props {
    */
   header?: 'phone' | 'screen' | 'none'
 }
-const { title, description, preview, noindex, header = 'phone' } = Astro.props
+const { title, description, preview, noindex, canonical, header = 'phone' } = Astro.props
 // Every public page carries a link preview (#151): its own when the page gives one (the city card), else the generic one; a noindex page has none.
 const head = noindex ? undefined : (preview ?? pagePreview({ title, description, pathname: Astro.url.pathname, origin: siteOrigin(), base: siteBase() }))
 // The footer's "Privacidade" link (and the in-banner detail link) open the privacy section of /sobre-os-dados/,
@@ -37,7 +39,7 @@ const privacyHref = siteHref('sobre-os-dados/#privacidade')
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <DocHead title={title} description={description} preview={head} noindex={noindex} importMap={cdnImportMap} />
+    <DocHead title={title} description={description} preview={head} noindex={noindex} canonical={canonical} importMap={cdnImportMap} />
   </head>
   <body>
     {/* Skip link (issue #19): keyboard/screen-reader users reach the content without the tabs/grid. */}
