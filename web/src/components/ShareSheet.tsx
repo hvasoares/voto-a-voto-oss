@@ -15,10 +15,10 @@ const NOTE = 'O link vai no texto da mensagem; a imagem leva só o endereço cur
 
 /**
  * The share sheet's content (ticket #50): owns the picture and the message text around the ShareActions island
- * (which owns the Compartilhar / Baixar imagem / Copiar buttons and the status line). Pre-rendered for the city
- * card's default view; when the address asks another view of the card (?ciclo/?turno), the sheet fetches ONLY this
- * city's own shard (data/v…/city/<uf>/<slug>.json) and shows that view — nothing else is ever fetched. Server-rendered
- * markup keeps the picture and the text working without JavaScript (for the view that was pre-rendered).
+ * (which owns the Compartilhar / Baixar imagem / Copiar buttons and the status line). Drawn by the city's share stub
+ * (`lib/share-sheet-draw.ts`) from its data file for the card's default view; when the address asks another view of the
+ * card (?ciclo/?turno), the sheet fetches ONLY this city's own shard (data/v…/city/<uf>/<slug>.json) and shows that view
+ * — nothing else is ever fetched.
  */
 export interface ShareSheetProps {
   uf: string

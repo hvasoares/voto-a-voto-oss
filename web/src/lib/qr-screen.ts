@@ -4,8 +4,8 @@
  *
  *  - `QrScreenRecord`   what `data/v<fingerprint>/qr/<uf>/<slug>.json` holds for a city: the words, the two links, the fixture flag and the QR
  *                       matrix (packed module bits, `qr-glyph.ts`), so the browser needs no encoder;
- *  - `cityQrRecord`     PURE, build time: the record of a city from its facts (the writer in `integrations/qr-pages.ts` and the city scope of
- *                       `screen-scopes.ts` both call it, so the words and links are written once);
+ *  - `cityQrRecord`     PURE, build time: the record of a city from its facts (the writer in `integrations/qr-pages.ts` calls it, so the words
+ *                       and links are written once);
  *  - `qrScreenHtml`     the screen and the poster as a string: `components/QrScreen.astro` prints it for the demo and Brasil routes, and
  *                       `drawQrScreen` puts it in the stub's area for the city route. No other copy of this markup exists;
  *  - `drawQrScreen`     the QR family's `draw(data, host)` for `loadPageData` (`lib/page-data-loader.ts`): see `scripts/qr-page.ts`.

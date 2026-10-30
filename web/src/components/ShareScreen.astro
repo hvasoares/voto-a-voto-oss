@@ -1,6 +1,6 @@
 ---
 /**
- * The share sheet, the one template of the three share routes (demo /compartilhar/, city /:uf/:slug/compartilhar/, Brasil
+ * The share sheet, the one template of the two pre-rendered share routes (the city's is a stub since private#210) (demo /compartilhar/ and Brasil
  * /brasil/compartilhar/; ticket #137; the frame is the approved Sketch "3 Folha de compartilhamento" of #7/#50/#91): the document (`Base`,
  * titled, described and noindex as the config says), the wrapper element, and `ShareSheetFrame`, which draws the sheet over its backdrop (the page's `backdrop` slot: its real screen, or the demo's stand-in).
  *
@@ -12,7 +12,7 @@ import ShareSheetFrame from '@/components/ShareSheetFrame.astro'
 import type { ShareScreenConfig } from '@/lib/screen-scopes'
 
 interface Props {
-  /** The sheet's config for its scope (the demo, a city or Brasil): `shareScreenConfig(scope)` of `lib/screen-scopes.ts` builds it. */
+  /** The sheet's config for its scope (the demo or Brasil): `shareScreenConfig(scope)` of `lib/screen-scopes.ts` builds it. */
   config: ShareScreenConfig
 }
 const { config } = Astro.props

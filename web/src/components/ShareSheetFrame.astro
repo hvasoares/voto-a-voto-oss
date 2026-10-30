@@ -1,16 +1,13 @@
 ---
 /**
- * What `ShareScreen` draws inside its wrapper (ticket #137): the dimmed backdrop, the dimming layer and the sheet itself, from the config
+ * What `ShareScreen` draws inside its wrapper (ticket #137): the dimmed backdrop, the dimming layer and the sheet itself (the demo and Brasil routes), from the config
  * `lib/screen-scopes.ts` builds. A component of its own because Astro buffers the children of a dynamic tag, which moves the islands'
  * bootstrap script ahead of the wrapper; the wrapper is written as a literal tag in ShareScreen and this streams inside it.
  *
- * The backdrop is the named slot `backdrop` (the page that owns it imports it, so a city page never ships Brasil's styles). The body is
- * a choice by KIND of data, a closed union: the `ShareSheet` island, hydrated on load, which draws its own picture; or the pre-rendered
- * picture and the `ShareActions` island, hydrated when idle. Hydration directive and timing are written here once and do not move per scope.
+ * The backdrop is the named slot `backdrop` (the page that owns it imports it). The body is the pre-rendered picture and the `ShareActions`
+ * island, hydrated when idle; the directive is written here once. The frame's strings are those of `lib/share-frame.ts`, which the city's stub draws too.
  */
-import CityTexts from '@/components/CityTexts.astro'
 import ShareActions from '@/components/ShareActions'
-import ShareSheet from '@/components/ShareSheet'
 import SiteFooter from '@/components/SiteFooter.astro'
 import { shareFrameHead, shareFrameLinks, shareSheetAttrs, SHARE_FOOTER_CLASS } from '@/lib/share-frame'
 import type { ShareScreenConfig } from '@/lib/screen-scopes'
@@ -18,7 +15,7 @@ import type { ShareScreenConfig } from '@/lib/screen-scopes'
 interface Props {
   config: ShareScreenConfig
 }
-const { backdrop, dim, sheet, close, body, qrHref, generatorHref, texts, footer } = Astro.props.config
+const { backdrop, dim, sheet, close, body, qrHref, generatorHref, footer } = Astro.props.config
 ---
 <div data-share-backdrop aria-hidden="true" inert class={backdrop.class} data-ticket={backdrop.ticket}>
   <slot name="backdrop" />
@@ -29,18 +26,12 @@ const { backdrop, dim, sheet, close, body, qrHref, generatorHref, texts, footer 
 
 <section {...shareSheetAttrs(sheet)} class={sheet.class}>
   <Fragment set:html={shareFrameHead({ closeHref: close.href, closeClass: close.class, closeCross: close.cross })} />
-  {body.kind === 'sheet' && <ShareSheet client:load {...body.props} />}
-  {body.kind === 'actions' && (
-    <>
-      <div class="mx-auto mt-2 flex-none md:max-w-[240px] [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" data-share-picture {...body.pictureAttrs} set:html={body.svg} />
-      <p class="mt-3 text-step-1 text-muted-foreground" data-note>{body.note}</p>
-      <noscript><p class="mt-1 text-step-1" data-nojs>{body.noJs}</p></noscript>
-      <ShareActions client:idle text={body.text} svg={body.svg} filename={body.filename} link={body.link} />
-    </>
-  )}
+  <div class="mx-auto mt-2 flex-none md:max-w-[240px] [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" data-share-picture {...body.pictureAttrs} set:html={body.svg} />
+  <p class="mt-3 text-step-1 text-muted-foreground" data-note>{body.note}</p>
+  <noscript><p class="mt-1 text-step-1" data-nojs>{body.noJs}</p></noscript>
+  <ShareActions client:idle text={body.text} svg={body.svg} filename={body.filename} link={body.link} />
   {/* Mostrar QR floats the page's canonical link scannably; it does not depend on the round, so it renders even when the view has no result. */}
   <Fragment set:html={shareFrameLinks({ qrHref, generatorHref })} />
-  {texts && <CityTexts texts={texts.texts} stateHref={texts.stateHref} />}
   {/* The #113 shared footer with this sheet's variant (#114): the about link carries the config's class. */}
   <SiteFooter source={footer.source} separator=" · " aboutClass={footer.aboutClass} class={SHARE_FOOTER_CLASS} />
 </section>

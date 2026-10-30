@@ -5,8 +5,8 @@
  *  - `ShareSheetRecord`   the inputs of `shareContent` (`share-model.ts`) for the city's default view: the card's numbers (the `CityResult` the
  *                         city card shows, untouched), the city's names and the build's address, base, fixture flag and edition. No sentence is
  *                         stored: the headline, the message and the picture's words are drawn from the catalog when the record is read;
- *  - `shareSheetRecord`   PURE, build time: the record from the city's shard (the writer in `integrations/share-pages.ts` and the city scope of
- *                         `screen-scopes.ts` both call it, so the default view and its numbers are chosen once);
+ *  - `shareSheetRecord`   PURE, build time: the record from the city's shard (the writer in `integrations/share-pages.ts` calls it, so the default view
+ *                         and its numbers are chosen once);
  *  - `shareSheetContent`  the record read back: the same `ShareContent` (picture, message, address, file name) the page prints today, by the one
  *                         builder `shareContent`; the parity test pins the SVG string.
  * Since private#210 it also carries what the stub page draws besides the picture: the city's question (the guess card) and the edition's date (the

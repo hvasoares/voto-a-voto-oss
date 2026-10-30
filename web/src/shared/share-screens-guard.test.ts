@@ -1,5 +1,5 @@
 /**
- * Guard (ticket #137, the contract step): the three QR routes and the three share routes draw two screens, and nothing else keeps a copy.
+ * Guard (ticket #137, the contract step): the QR and share routes draw two screens (the city's are stubs), and nothing else keeps a copy.
  *
  *  - markup:  the QR screen's and the share sheet's marker attributes (`data-qr-screen`, `data-poster`, `data-qr-link`, `data-share-sheet`,
  *             `data-share-picture`, `data-share-backdrop`, `data-share-dim`) are written only in `components/QrScreen.astro` and
