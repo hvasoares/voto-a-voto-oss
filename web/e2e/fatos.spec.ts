@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { base, collectRequests, waitReady } from './helpers'
+import { base, collectRequests, gotoFact, waitReady } from './helpers'
 import { noJs } from './presets'
 
 /*
@@ -23,10 +23,10 @@ test.describe('city card: De onde vem este número?', () => {
 
   test('the figures of the fact page are still there for the sentence, the margin and the curiosities: only the links went', async ({ page }) => {
     for (const anchor of ['frase', 'margem']) {
-      await page.goto(`${fato('2026-1')}#${anchor}`)
+      await gotoFact(page, `${fato('2026-1')}#${anchor}`)
       await expect(page.locator(`#${anchor}`)).toBeVisible()
     }
-    await page.goto(`${fato('comparacoes')}`)
+    await gotoFact(page, `${fato('comparacoes')}`)
     await expect(page.locator('.fact').first()).toContainText('posição = 1 + as cidades do grupo')
     await page.goto(`${base}rj/cidade-exemplo-a/?ciclo=2026&turno=1`)
     await expect(page.locator('.curio a.calc')).toHaveCount(0)
@@ -44,7 +44,7 @@ test.describe('city card: De onde vem este número?', () => {
 
 test.describe('the page of the calculation', () => {
   test('shows the record the card pointed at: sentence, inputs with their dataset field, formula, worked line, id', async ({ page }) => {
-    await page.goto(`${fato('2026-1')}#a`)
+    await gotoFact(page, `${fato('2026-1')}#a`)
     const rec = page.locator('#a')
     await expect(rec).toBeVisible()
     await expect(rec.locator('.fact__sentence:visible')).toHaveText('Em Cidade Exemplo, no 1º turno de 2026, Candidato A: 36.400 de 70.000 votos válidos, 52%.')
@@ -58,7 +58,7 @@ test.describe('the page of the calculation', () => {
   })
 
   test('names the source and the edition, and links the dictionary of that edition', async ({ page }) => {
-    await page.goto(fato('2026-1'))
+    await gotoFact(page, fato('2026-1'))
     await expect(page.getByRole('link', { name: /^EXEMPLO: números fictícios/ })).toHaveAttribute('href', 'https://dadosabertos.tse.jus.br/')
     await expect(page.locator('[data-edition-link]').first()).toHaveAttribute('href', new RegExp(`${base}edicoes/[0-9-]+/$`))
     await expect(page.getByRole('link', { name: /^dicionario\.csv/ })).toHaveAttribute('href', new RegExp(`${base}edicoes/[0-9-]+/dados/dicionario\\.csv$`))
@@ -66,23 +66,30 @@ test.describe('the page of the calculation', () => {
   })
 
   test('the margin and the curiosities cite the notes of their methods', async ({ page }) => {
-    await page.goto(fato('comparacoes'))
+    await gotoFact(page, fato('comparacoes'))
     await expect(page.getByRole('link', { name: /Nota do método: curiosidades/ })).toHaveAttribute('href', /web\/docs\/curiosities\.md$/)
   })
 
-  test('is readable without scripts, in the standard register, with the plain sentence in the page for the other', async ({ browser, baseURL }) => {
-    const ctx = await browser.newContext({ ...noJs(), baseURL })
-    const page = await ctx.newPage()
-    await page.goto(fato('2026-2'))
+  test('is readable with scripts in the standard register, with the plain sentence in the page for the other', async ({ page }) => {
+    await gotoFact(page, fato('2026-2'))
     await expect(page.locator('h1')).toHaveText('Cálculo dos números')
     await expect(page.locator('.fact')).toHaveCount(9)
     await expect(page.locator('#votaram .fact__sentence:visible')).toContainText('votaram')
     expect(await page.locator('#votaram .fact__sentence[data-register="plain"]').count()).toBe(1)
+  })
+
+  test('without scripts says the page needs them and keeps the way back, with no copy of the records (private#214)', async ({ browser, baseURL }) => {
+    const ctx = await browser.newContext({ ...noJs(), baseURL })
+    const page = await ctx.newPage()
+    await page.goto(fato('2026-2'))
+    await expect(page.locator('[data-stub-needs-scripts]')).toContainText('JavaScript')
+    await expect(page.getByRole('link', { name: '‹ Cartão da cidade' })).toHaveAttribute('href', `${city}?ciclo=2026&turno=2`)
+    expect(await page.locator('.fact').count()).toBe(0)
     await ctx.close()
   })
 
   test('goes back to the card on the same cycle and round, and has no sideways scroll at 390', async ({ page }) => {
-    await page.goto(`${fato('2026-1')}#votaram`)
+    await gotoFact(page, `${fato('2026-1')}#votaram`)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     await page.getByRole('link', { name: '‹ Cartão da cidade' }).click()
     await expect(page).toHaveURL(`${city}?ciclo=2026&turno=1`)
@@ -94,7 +101,7 @@ test.describe('the page of the calculation', () => {
     const link = page.locator('a.calc')
     await expect(link).toHaveCount(1)
     expect(await link.getAttribute('href')).toMatch(new RegExp(`^${base}fato/metodo/ciclos-anteriores/#votaram$`))
-    await page.goto((await link.getAttribute('href'))!)
+    await gotoFact(page, (await link.getAttribute('href'))!)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     await expect(page.locator('.fact')).toHaveCount(6)
     await expect(page.locator('.fact__formula').first()).toBeVisible()
@@ -103,9 +110,9 @@ test.describe('the page of the calculation', () => {
 
   test('a cycle with no data has no page, and an id keeps the same address across the rounds', async ({ page }) => {
     expect((await page.goto(`${base}fato/mt/boa-esperanca-do-norte/2018-1/`))!.status()).toBe(404)
-    await page.goto(fato('2026-1'))
+    await gotoFact(page, fato('2026-1'))
     const first = await page.locator('.fact').evaluateAll((els) => els.map((e) => e.getAttribute('data-fact')))
-    await page.goto(fato('2026-1'))
+    await gotoFact(page, fato('2026-1'))
     expect(await page.locator('.fact').evaluateAll((els) => els.map((e) => e.getAttribute('data-fact')))).toEqual(first)
     expect(first[1]).toBe('rj/cidade-exemplo/2026-1/votaram')
   })

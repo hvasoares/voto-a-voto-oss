@@ -1,85 +1,41 @@
 ---
 /**
- * The page of the calculation (#61, #62; the Sketch frames "Fato (página do cálculo)" and, on desktop, "Fato com o selo conferido"): the fact records of one
- * page of the site (a city's cycle and round, its comparisons, Brasil e regiões, a comparison, a state's three cycles), each with its sentence,
- * its inputs, its formula, its source and the edition, and the "conferido" seal. Readable without scripts: the the calculation link links land on the record
- * of the figure (`#<medida>`, lit by :target). The records are the ones the pages were drawn from (`lib/facts/pages.ts`).
+ * The page of the calculation (#61, #62; the Sketch frames "Fato (página do cálculo)" and, on desktop, "Fato com o selo conferido"), a STUB plus a data file since
+ * private#214 (the `fato` family of the lighter-site milestone), the pattern of the QR page (private#208) and the share sheet (private#210):
+ *   1. the page is `PageStub` with the family's words and its address: its address, title and `noindex` are the stub's; the link back is the stub's, with the
+ *      catalog's label of the page the numbers are on (`#152`: `scripts/fact-page.ts` binds the way back);
+ *   2. the build writes `data/v<fingerprint>/fato/<scope>/<page>.json` through the one writer (`integrations/fact-pages.ts`), from the records that passed
+ *      `assertPublishable` and got their seal in `loadFactPages` (the gate stays at build time, and so does the seal: the browser draws the file's lines);
+ *   3. the page script (`scripts/fact-page.ts`) hands the file to `drawFactPage` (`lib/fact-page-draw.ts`), which draws every record with the sentence module
+ *      (`lib/sentences/phrase.ts`) and lights the record the fragment `#<medida>` names;
+ *   4. `data-page-path` on the `<main>` is how the script knows which file this page owns.
+ * A visitor without scripts reads the stub's sentence and has the link back. The records are the ones the pages were drawn from (`lib/facts/pages.ts`).
  */
-import Base from '@/layouts/Base.astro'
+import PageStub from '@/components/PageStub.astro'
 import '@/styles/fact.css'
-import Seal from '@/components/Seal.astro'
-import PlaceText from '@/components/PlaceText.astro'
-import SiteFooter from '@/components/SiteFooter.astro'
-import { siteHref } from '@/paths'
-import { loadFactPages, sealOf } from '@/lib/facts/pages'
-import { currentEdition } from '@/lib/editions-load'
-import { editionLabel, editionPath, releasePath } from '@/lib/editions'
-import { registerBootScript } from '@/lib/sentences/register-store'
+import '@/lib/sentences/catalog-shell'
+import '@/lib/sentences/catalog-facts'
 import { message } from '@/lib/sentences/catalog'
-import AppHeader from '@/components/AppHeader.astro'
-import { wayBackScript } from '@/lib/facts/link'
-import FixtureBanner from '@/components/FixtureBanner.astro'
+import { loadFactPages } from '@/lib/facts/pages'
 
 export async function getStaticPaths() {
   return (await loadFactPages()).map((p) => ({ params: { path: `${p.scope}/${p.page}` }, props: { fp: p } }))
 }
 
 const { fp } = Astro.props
-const { facts } = fp
-// The #113 base-path helper.
-const href = siteHref
-const std = (key: Parameters<typeof message>[1], params?: Record<string, string | number>) => message({ locale: 'pt-BR', register: 'standard' }, key, params)
-const edition = await currentEdition()
-const seal = await sealOf(fp)
-const sources = [...new Map(facts.map((f) => [f.source!.url + f.source!.name, f.source!])).values()]
-const methods = [...new Map(facts.flatMap((f) => (f.method ? [[f.method.href, f.method] as const] : []))).values()]
-const title = `${std('fact.title')} · ${fp.title} · Voto a Voto`
+const voice = { locale: 'pt-BR', register: 'standard' } as const
+const title = `${message(voice, 'fact.title')} · ${fp.title} · Voto a Voto`
 ---
-<Base title={title} header="screen">
-  <div class="screen fact-page">
-    <script is:inline set:html={registerBootScript} />
-    <script is:inline set:html={wayBackScript} />
-    <AppHeader variant="screen" />
-    <FixtureBanner show={fp.fixture} class="banner" role="note" wideSeparator />
-    <main class="page__main" id="main">
-      <a class="back" href={href(fp.back.path)} data-back>{fp.back.label}</a>
-      <h1 class="page__title">{std('fact.title')}</h1>
-      <p class="page__subtitle"><PlaceText text={fp.subtitle} /></p>
-      <div class="facts">
-        {facts.map((f) => (
-          <section class="fact" id={f.anchor} data-fact={f.id}>
-            <h2 class="fact__title"><PlaceText text={f.title} /></h2>
-            {(['standard', 'plain'] as const).map((register) => <p class="fact__sentence" data-register={register}><PlaceText text={f.sentences[register]} /></p>)}
-            <h3 class="fact__label">{std('fact.inputs')}</h3>
-            <dl class="fact__inputs">
-              {f.inputs.map((i) => (
-                <div>
-                  <dt><PlaceText text={i.label} />{i.field && <small>{i.field}</small>}</dt>
-                  <dd><PlaceText text={i.value} /></dd>
-                </div>
-              ))}
-            </dl>
-            <h3 class="fact__label">{std('fact.formula')}</h3>
-            <p class="fact__formula"><PlaceText text={f.calculation!.formula} /></p>
-            <ol class="fact__worked">{f.calculation!.worked.map((w) => <li><PlaceText text={w} /></li>)}</ol>
-            {f.shown && f.shown !== f.title && <p class="fact__shown"><PlaceText text={std('fact.shown', { value: f.shown })} /></p>}
-            <p class="fact__id">{std('fact.id')}: <code>{f.id}</code></p>
-          </section>
-        ))}
-      </div>
-      <Seal lines={seal} />
-      <p class="fact__rounding">{std('fact.rounding')}</p>
-      <p class="fact__neutral">{std('fact.neutral')}</p>
-      {fp.note && <p class="fact__neutral" data-limits><PlaceText text={fp.note} /></p>}
-      <h2 class="fact__block">{std('fact.source')}</h2>
-      <ul class="fact__links">
-        {sources.map((s) => <li><a href={s.url}>{s.name} ›</a></li>)}
-        <li><a href={href(editionPath(edition.id))} data-edition-link>{std('fact.edition', { date: editionLabel(edition) })} ›</a></li>
-        <li><a href={href(`${releasePath(edition.id)}dicionario.csv`)}>dicionario.csv ›</a></li>
-        {methods.map((m) => <li><a href={m.href}>{m.name} ›</a></li>)}
-      </ul>
-    </main>
-    {/* The #113 shared footer with this page's variant (#116): the card default (keyboard-only about link, no separator). */}
-    <SiteFooter source={fp.fixture ? std('fact.source.fixture') : std('fact.source.tse')} />
-  </div>
-</Base>
+<PageStub title={title}
+  what={message(voice, 'stub.what.fact')}
+  path={`fato/${fp.scope}/${fp.page}/`}
+  backHref={fp.back.path}
+  backLabel={fp.back.label}
+  md="720"
+  extra="fact-page"
+  data-page="fato"
+  data-page-path={`${fp.scope}/${fp.page}`}
+/>
+<script>
+  import '@/scripts/fact-page'
+</script>

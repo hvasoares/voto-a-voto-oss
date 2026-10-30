@@ -1,10 +1,12 @@
 ---
 /**
  * The "conferido" seal (#62): what the numbers of the page were checked against, one line per check and round, written by `lib/facts/checks.ts` from what
- * the build measured (never typed). Nothing here but markup and the catalog's title and note: the lines arrive finished.
+ * the build measured (never typed). The markup is `lib/facts/seal-markup.ts` (the calculation page's client draws the same block from the data file);
+ * nothing here but the catalog's title and note: the lines arrive finished.
  */
 import '@/lib/sentences/catalog-facts'
 import { message } from '@/lib/sentences/catalog'
+import { sealMarkup } from '@/lib/facts/seal-markup'
 
 interface Props {
   lines: string[]
@@ -12,10 +14,4 @@ interface Props {
 const { lines } = Astro.props
 const voice = { locale: 'pt-BR', register: 'standard' } as const
 ---
-{lines.length > 0 && (
-  <aside class="seal" data-seal aria-labelledby="seal-title">
-    <h2 class="seal__title" id="seal-title"><span aria-hidden="true">✓ </span>{message(voice, 'seal.title')}</h2>
-    <ul class="seal__lines">{lines.map((l) => <li>{l}</li>)}</ul>
-    <p class="seal__note">{message(voice, 'seal.note')}</p>
-  </aside>
-)}
+<Fragment set:html={sealMarkup(lines, { title: message(voice, 'seal.title'), note: message(voice, 'seal.note') })} />

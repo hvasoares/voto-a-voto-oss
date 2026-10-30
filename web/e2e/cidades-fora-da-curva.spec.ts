@@ -6,7 +6,7 @@ import { computePeers } from '../src/lib/peers'
 import { computeOutliers, pickOutliers } from '../src/lib/reports/outliers'
 import { formatInt as intPt } from '../src/lib/reports/format'
 import { displayName, ufLabel } from '../src/shared/city-search'
-import { base, collectRequests, maybeThrottleCpu, violations } from './helpers'
+import { base, collectRequests, gotoFact, maybeThrottleCpu, violations } from './helpers'
 import { PHONE, noJs } from './presets'
 import { shareMock } from './share-mock'
 
@@ -75,7 +75,7 @@ test.describe('Cidades fora da curva: the list', () => {
     await page.goto(PATH)
     await expect(page.locator('[data-outliers] a.calc')).toHaveCount(0)
     await expect(page.locator('a.calc')).toHaveCount(1)
-    await page.goto(`${base}fato/relatorios/cidades-fora-da-curva/${first.uf}/#${first.uf}-${first.slug}`)
+    await gotoFact(page, `${base}fato/relatorios/cidades-fora-da-curva/${first.uf}/#${first.uf}-${first.slug}`)
     const record = page.locator(`#${first.uf}-${first.slug}`)
     await expect(record).toContainText('cidade parecida')
     await expect(record).toContainText('mediana de')

@@ -4,17 +4,12 @@
  */
 import { formatInt } from '@/shared/city-model'
 import type { SourceLine } from './about-data'
+import { formatUtc } from './format-utc'
 
 /** "395389280" -> "395.389.280" (pt-BR thousands separator, like the site's other numbers). */
 export const formatBytes = formatInt
 
-/** ISO date-time -> "26/10/2026 21:55" (UTC as recorded in the manifest; day first, as the pages write). */
-export function formatUtc(iso: string): string {
-  const m = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?/.exec(iso)
-  if (!m) return iso
-  const date = `${m[3]}/${m[2]}/${m[1]}`
-  return m[4] && m[5] ? `${date} ${m[4]}:${m[5]}` : date
-}
+export { formatUtc } from './format-utc'
 
 /** TSE generation timestamp ("2026-10-25T23:27:44", local to the TSE) -> "25/10/2026 23:27". */
 function formatGenerations(iso: string): string {

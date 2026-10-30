@@ -506,6 +506,8 @@ export const KEYS = [
   'stub.what.qr',
   /** What the share-sheet stub says it is loading (private#210); lives in `catalog-shell.ts`. */
   'stub.what.share',
+  /** What the calculation-page stub says it is loading (private#214); lives in `catalog-shell.ts`. */
+  'stub.what.fact',
   /** The hint above the Home search (#147): one per destination; the words and the one list of their keys are data in `catalog-home.ts`, registered by `catalog-hint.ts`. */
   ...HOME_HINT_KEYS,
 ] as const

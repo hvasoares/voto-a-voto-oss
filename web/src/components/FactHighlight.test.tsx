@@ -3,17 +3,33 @@ import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import FactHighlight from './FactHighlight'
+import { pageDataFile } from '@/shared/page-data'
 
-const section = (anchor: string, title: string, shown: string, sentence: string, plain: string) =>
-  `<section class="fact" id="${anchor}"><h2 class="fact__title">${title}</h2><p class="fact__sentence" data-register="standard">${sentence}</p><p class="fact__sentence" data-register="plain">${plain}</p>
-   <dl class="fact__inputs"><div><dt>Votos de Lula<small>votes.csv · votos</small></dt><dd>36.400</dd></div><div><dt>Votos válidos</dt><dd>70.000</dd></div></dl>
-   <p class="fact__formula">votos da linha ÷ votos válidos × 100</p><ol class="fact__worked"><li>36.400 ÷ 70.000 × 100 = 52%</li></ol><p class="fact__shown">No cartão: ${shown}</p></section>`
-const PAGE = `<main>${section('2022-a', '2022 · Lula', '44,8%', 'Em RJ, 2022, Lula: 44,8%.', 'x')}${section('2022-b', '2022 · Bolsonaro', '55,2%', 'Em RJ, 2022, Bolsonaro: 55,2%.', 'x')}${section('2022-variacao', '2022 · Lula', '+12,7 pp', 'Em RJ, 2022, a parcela de Lula foi 44,8%, +12,7 pontos.', 'Em RJ, 2022, Lula teve 44,8%, +12,7 pontos.')}</main>`
+// The words come from the build in the browser (`virtual:fact-words`): here a subset of three test keys, one sentence each in both registers.
+vi.mock('virtual:fact-words', () => ({
+  default: {
+    standard: { 't.a': 'Em RJ, 2022, Lula: 44,8%.', 't.b': 'Em RJ, 2022, Bolsonaro: 55,2%.', 't.v': 'Em RJ, 2022, a parcela de Lula foi 44,8%, +12,7 pontos.' },
+    plain: { 't.a': 'x', 't.b': 'x', 't.v': 'Em RJ, 2022, Lula teve 44,8%, +12,7 pontos.' },
+  },
+}))
+
+const record = (anchor: string, key: string, title: string, shown: string) => ({
+  id: `rj/x/2022-1/${anchor}`,
+  anchor,
+  title,
+  shown,
+  say: { k: key },
+  inputs: [{ label: 'Votos de Lula', field: 'votes.csv · votos', value: '36.400' }, { label: 'Votos válidos', value: '70.000' }],
+  calculation: { formula: 'votos da linha ÷ votos válidos × 100', worked: ['36.400 ÷ 70.000 × 100 = 52%'] },
+})
+const FILE = pageDataFile('fato', 'estado/rj/tres-ciclos', {
+  facts: [record('2022-a', 't.a', '2022 · Lula', '44,8%'), record('2022-b', 't.b', '2022 · Bolsonaro', '55,2%'), record('2022-variacao', 't.v', '2022 · Lula', '+12,7 pp')],
+})
 const SENTENCE = 'Em RJ, 2022, a parcela de Lula foi 44,8%, +12,7 pontos.'
 
 beforeEach(() => {
   document.body.innerHTML = '<div data-seg="2022-a"></div><div data-seg="2022-b"></div>'
-  vi.stubGlobal('fetch', vi.fn(async () => new Response(PAGE)))
+  vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify(FILE))))
 })
 afterEach(() => {
   vi.unstubAllGlobals()

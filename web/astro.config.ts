@@ -6,6 +6,7 @@ import { buildStamp } from './integrations/build-stamp'
 import { cdn } from './integrations/cdn'
 import { desktopShell } from './integrations/desktop-shell'
 import { dataset, shardsModule } from './integrations/dataset'
+import { factWordsModule } from './integrations/fact-words'
 import { factsGate } from './integrations/facts-gate'
 import { interaction } from './integrations/interaction'
 import { previewImages } from './integrations/preview-images'
@@ -26,7 +27,7 @@ export default defineConfig({
   experimental: { parallelPrerender: true },
   integrations: [dataset(), buildStamp(), previewImages(), interaction(), cdn(), react(), factsGate()],
   vite: {
-    plugins: [desktopShell(), shardsModule(), themePlugin(), tailwindcss()],
+    plugins: [desktopShell(), shardsModule(), factWordsModule(), themePlugin(), tailwindcss()],
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),

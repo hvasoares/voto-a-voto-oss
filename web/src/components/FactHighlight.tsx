@@ -1,17 +1,22 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useIslandReady } from '@/components/use-island-ready'
-import { parseFactPage, type FactCard } from '@/lib/facts/parse'
+import { SHARD_VERSION } from 'virtual:data-shards'
+import words from 'virtual:fact-words'
+import { factCardsOf, type FactCard } from '@/lib/facts/parse'
+import type { FactPageRecord } from '@/lib/facts/page-record'
+import { pageDataPath, validatePageData } from '@/shared/page-data'
+import { linkHref, siteBase } from '@/paths'
 
 /**
  * The sentence-to-data highlight of the state's three-cycles page (#62), the page's one island, loaded with `client:media="(min-width: 1024px)"`: a phone
- * downloads none of it. It draws nothing on the server. In the browser it reads the records from the page of the calculation (`href`), lists the sentences
+ * downloads none of it. It draws nothing on the server. In the browser it reads the records from the data file of the page of the calculation (`href`; private#214), lists the sentences
  * as buttons and a small table of the figures; choosing a sentence (click, tap, Enter or Space) lights the bar segment (`[data-seg]` of the page) and the
  * table cell it is about, and writes the calculation beside it. The same text is announced through a polite live region, so a highlighted value is
  * readable by keyboard and by touch, never only by hover. Escape clears it. The words on the buttons are the records' own sentences.
  * Styles are inline on purpose: the phone's stylesheet does not grow for a desktop-only island.
  */
 export interface FactHighlightProps {
-  /** Address of the page of the calculation (base included, no fragment). */
+  /** Address of the page of the calculation (base included, no fragment): its data file is the one the page itself draws from. */
   href: string
 }
 
@@ -33,16 +38,19 @@ export default function FactHighlight({ href }: FactHighlightProps) {
 
   useEffect(() => {
     let live = true
-    fetch(href)
+    const path = href.slice(href.indexOf('fato/') + 'fato/'.length).replace(/\/$/, '')
+    fetch(linkHref(`data/${pageDataPath(SHARD_VERSION, 'fato', path)}`, siteBase()))
       .then((r) => {
         if (!r.ok) throw new Error(`fact page: HTTP ${r.status}`)
-        return r.text()
+        return r.json() as Promise<unknown>
       })
-      .then((html) => {
+      .then((json) => {
+        const check = validatePageData(json, { family: 'fato', path })
+        if (!check.ok) throw new Error(`fact page: ${check.error}`)
         if (!live) return
-        // data-ready (#122): yes once the calculation's page answered (its records are the island's data);
+        // data-ready (#122): yes once the calculation's data file answered (its records are the island's data);
         // a page that cannot be read is the terminal failure - the island simply draws nothing, as before.
-        setCards(parseFactPage(html))
+        setCards(factCardsOf(check.file.data as FactPageRecord, words))
         island.markReady()
       })
       .catch(() => live && island.markFailed('fact page'))

@@ -56,6 +56,18 @@ export async function waitReady(page: Page): Promise<void> {
   await page.waitForFunction(() => document.documentElement.dataset.ready !== undefined)
 }
 
+/** Waits until a stub page (private#206) has drawn its data file: the area says `data-ready="yes"` (the calculation pages, private#214, are stubs). */
+export async function waitStubReady(page: Page): Promise<void> {
+  await page.locator('[data-stub-area][data-ready="yes"]').waitFor()
+}
+
+/** Opens a calculation page (`/fato/...`) and waits for its records to be drawn; the fragment of the address is then resolved. Returns the response. */
+export async function gotoFact(page: Page, url: string) {
+  const response = await page.goto(url)
+  await waitStubReady(page)
+  return response
+}
+
  export async function activateSearch(page: Page) {
   // The page's own search (the desktop top bar has another one, "bar"; it is hidden on a phone).
   const box = page.locator('[data-city-search="main"]').getByRole('combobox', { name: 'Busque sua cidade' })

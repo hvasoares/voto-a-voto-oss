@@ -27,6 +27,7 @@ import { loadOutliers } from '../reports/outliers-load'
 import { displayName } from '@/shared/city-search'
 import { CYCLES } from '@/shared/city-model'
 import { DEFAULT_LOCALE, message } from '../sentences/catalog'
+import { phrase } from '../sentences/phrase'
 
 const std = (key: Parameters<typeof message>[1], params?: Record<string, string | number>) => message({ locale: DEFAULT_LOCALE, register: 'standard' }, key, params)
 
@@ -82,7 +83,7 @@ export function loadFactPages(): Promise<SealedPage[]> {
           scope: `${city.uf}/${city.slug}`,
           page,
           title: found.place.name,
-          subtitle: curiosities ? std('fact.sub.curio', { city: found.place.name }) : std('fact.sub', { city: found.place.name, turno: turno!, ano: ano! }),
+          subtitle: curiosities ? phrase('fact.sub.curio', { city: found.place.name }) : phrase('fact.sub', { city: found.place.name, turno: turno!, ano: ano! }),
           back: { path: curiosities || !CYCLES.includes(ano!) ? `${city.uf}/${city.slug}/` : `${city.uf}/${city.slug}/?ciclo=${ano}&turno=${turno}`, label: std('fact.back') },
           fixture,
           facts,

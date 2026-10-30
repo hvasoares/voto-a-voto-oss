@@ -16,6 +16,12 @@ declare module 'virtual:data-shards' {
   export const SHARD_VERSION: string
 }
 
+declare module 'virtual:fact-words' {
+  /** The subset of the catalog the calculation page draws with (both registers), cut by the build from the records (`integrations/fact-words.ts`). */
+  const words: import('./lib/sentences/phrase').CatalogSubset
+  export default words
+}
+
 interface ImportMetaEnv {
   /** GA4 measurement id of ticket #20 ("G-…"), empty/absent → analytics is a strict no-op and the build passes. */
   readonly PUBLIC_GA_MEASUREMENT_ID?: string

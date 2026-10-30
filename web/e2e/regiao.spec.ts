@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { base } from './helpers'
+import { base, waitStubReady } from './helpers'
 import { useNoJs } from './presets'
 
 /*
@@ -42,6 +42,7 @@ test.describe('region page (fixture build)', () => {
     await expect(calc).toHaveCount(1)
     await calc.click()
     await expect(page).toHaveURL(new RegExp(`${base}fato/regiao/sudeste/2026-2/`))
+    await waitStubReady(page)
     await expect(page.locator('#estado-rj')).toHaveCount(1)
     await expect(page.locator('#estado-sp')).toHaveCount(1)
   })

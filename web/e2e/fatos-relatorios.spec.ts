@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { base, collectRequests } from './helpers'
+import { base, collectRequests, gotoFact } from './helpers'
 
 /*
  * Fact records on the rest of the reports, the hub, the state page and the state recap (#62): "De onde vem este número?" once per page (#155), to a record
@@ -18,20 +18,19 @@ test.describe('De onde vem este número? and the seal on the reports, the hub, t
     ['página do estado', 'rj/'],
     ['resumo do estado', 'rj/resumo/'],
   ] as const) {
-    test(`${name}: the one link goes to a record that exists and the seal names its checks`, async ({ page, request }) => {
+    test(`${name}: the one link goes to a record that exists and the seal names its checks`, async ({ page }) => {
       await page.goto(`${base}${path}`)
       const hrefs = await linksOf(page)
       expect(hrefs).toHaveLength(1)
-      for (const h of new Set(hrefs)) {
-        const [target, fragment] = h.split('#')
-        const res = await request.get(target!)
-        expect(res.status(), h).toBe(200)
-        expect(await res.text(), h).toContain(`id="${fragment}"`)
-      }
       const seal = page.locator('[data-seal]')
       await expect(seal).toBeVisible()
       await expect(seal.locator('li').first()).toContainText(/Contra (o total nacional|a soma dos)/)
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+      // the record exists: the page the entry opens is a stub, so the record is there once its data file is drawn (data-ready)
+      for (const h of new Set(hrefs)) {
+        await gotoFact(page, new URL(h, page.url()).href)
+        await expect(page.locator(`[id="${h.split('#')[1]}"]`), h).toHaveCount(1)
+      }
     })
   }
 
@@ -54,7 +53,7 @@ test.describe('Como cada grupo votou counts cities and says what it does not say
     await expect(limits).toContainText('Isso não diz quem votou em quem nem por quê')
     await expect(limits).toContainText('os grupos não estão em ordem de importância')
     const href = (await linksOf(page))[0]!
-    await page.goto(href)
+    await gotoFact(page, href)
     await expect(page.locator('[data-limits]')).toContainText('Cada número desta página conta cidades')
     const text = (await page.locator('.facts').innerText()).toLowerCase()
     expect(text).toContain('a conta é de cidades, não de pessoas')
@@ -66,7 +65,7 @@ test.describe('the fact pages of the reports', () => {
   test('a report row: inputs from the dataset fields, the formula and the worked lines, and the way back to the report', async ({ page }) => {
     await page.goto(`${base}relatorios/comparecimento/`)
     const first = (await linksOf(page)).find((h) => h.includes('#alto-'))!
-    await page.goto(first)
+    await gotoFact(page, first)
     const rec = page.locator('.fact:target')
     await expect(rec.locator('.fact__inputs')).toContainText('turnout.csv · comparecimento')
     await expect(rec.locator('.fact__formula')).toBeVisible()
@@ -75,7 +74,7 @@ test.describe('the fact pages of the reports', () => {
     await expect(page).toHaveURL(`${base}relatorios/comparecimento/`)
   })
   test('the state page counts the municipalities from cities.csv', async ({ page }) => {
-    await page.goto(`${base}fato/estado/rj/municipios/#municipios`)
+    await gotoFact(page, `${base}fato/estado/rj/municipios/#municipios`)
     await expect(page.locator('#municipios .fact__inputs')).toContainText('cities.csv · cd_municipio')
     await expect(page.locator('#municipios .fact__sentence:visible')).toContainText('Municípios do estado Rio de Janeiro')
   })

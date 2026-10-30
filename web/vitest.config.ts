@@ -5,7 +5,7 @@ import { shardsModule } from './integrations/shards-fingerprint'
 const src = (p: string) => fileURLToPath(new URL(p, import.meta.url))
 
 export default defineConfig({
-  resolve: { alias: { '@': src('./src') } },
+  resolve: { alias: { '@': src('./src'), 'virtual:fact-words': src('./src/test/fact-words-empty.ts') } },
   plugins: [shardsModule()],
   test: {
     include: ['src/**/*.test.{ts,tsx}', 'integrations/**/*.test.ts', 'scripts/**/*.test.ts', 'e2e/**/*.test.ts'],

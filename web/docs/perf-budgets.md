@@ -67,6 +67,8 @@ linhas da legenda, a frase e a linha da margem, nas seis vistas pré-renderizada
 dados 0 B, antes e depois; CSS 15605 -> 15697 B gzip (+92 B, as regras `.calc`, no mesmo arquivo, abaixo do orçamento de 16 KB). A página do cálculo (`/fato/...`) tem o CSS dela
 (`fact.css`, só nessa página) e não tem script próprio.
 
+**A página do cálculo virou stub com arquivo de dados (private#214), nenhum orçamento mudou:** `/fato/...` não é uma das cinco rotas auditadas. O html da página (`fato/rj/cidade-exemplo/2026-2/`, fixture, 390x844, `measure.ts`) foi de 5756 para 3509 bytes gzip (23156 -> 11177 raw), e o arquivo de dados (1661 B gzip) e o script da página (JS 2047 -> 11883 B gzip, das quais 3120 B são as palavras do catálogo que as frases pedem, `virtual:fact-words`) passam a ser pedidos. A primeira carga de uma única página do cálculo ficou mais pesada (20,9 -> 30,1 KB gzip); o que cai é o total do site (a família `fato` inteira, raw, -40% contando os arquivos de dados que já existiam, -23% sem eles). O catálogo inteiro não vai para o navegador.
+
 **G3 (#25 a #29), nenhum orçamento mudou:** as dez novas linhas da tabela de eventos (`analytics/events.ts`, com prosa) fariam o script que toda
 página carrega passar de 3.1 KB (gzip) e estourar o `eagerJs` de home, mapa e relatório. A tabela foi dividida: `analytics/event-props.ts` traz só o
 que o navegador precisa (nome do evento e propriedades permitidas) e `events.ts`, com as descrições, ficou para os testes e a documentação, com um

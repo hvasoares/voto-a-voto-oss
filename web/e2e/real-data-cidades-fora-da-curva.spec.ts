@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { base } from './helpers'
+import { base, gotoFact } from './helpers'
 import { dataGuard } from './presets'
 import { catalogText, citiesWithValidVotes, int, latestRound } from './real-data-oracle'
 
@@ -45,7 +45,7 @@ test.describe('Cidades fora da curva on the real dataset', () => {
   })
 
   test('a record page has the five peers and the calculation, for a city of the default list', async ({ page }) => {
-    await page.goto(`${base}fato/relatorios/cidades-fora-da-curva/ap/`)
+    await gotoFact(page, `${base}fato/relatorios/cidades-fora-da-curva/ap/`)
     const record = page.locator('#ap-itaubal')
     await expect(record).toContainText(catalogText('fact.in.peer', { n: 5 }))
     await expect(record).toContainText('mediana de 5 cidades parecidas')

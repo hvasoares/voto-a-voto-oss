@@ -1,6 +1,7 @@
 import { loadFactPages } from '../src/lib/facts/pages'
 import { factPageRecord } from '../src/lib/facts/page-record'
 import { currentEdition } from '../src/lib/editions-load'
+import { placeExceptions } from '../src/lib/place-except'
 import type { PageRecords } from './page-data'
 
 /** The family name of the calculation pages' data files: `data/v<fingerprint>/fato/<scope>/<page>.json`. */
@@ -13,5 +14,6 @@ export const FACT_FAMILY = 'fato'
  */
 export async function factPageRecords(): Promise<PageRecords[]> {
   const { id, date } = await currentEdition()
-  return (await loadFactPages()).map((p) => ({ path: `${p.scope}/${p.page}`, data: factPageRecord(p, { id, date }) }))
+  const except = await placeExceptions()
+  return (await loadFactPages()).map((p) => ({ path: `${p.scope}/${p.page}`, data: factPageRecord(p, { id, date }, except) }))
 }

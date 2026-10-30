@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { loadBrasil } from '../brasil-load'
 import { buildCompareRows, cycleBlocksFor, stateStats } from '../compare-data'
 import { gateProblems } from './gate'
+import { drawBoth } from './model'
 import { closestRaces, computeReports } from '../reports/compute'
 import { loadReportsData } from '../reports/load'
 import { brasilFacts, compareFacts, OLDER_ANCHORS, olderCyclesFacts, raceFacts, stateCyclesFacts } from './other'
@@ -189,8 +190,9 @@ describe('facts of the other reports, the hub and the state page', async () => {
     const page = cohortFacts(report, true)
     expect(gateProblems(page.facts)).toEqual([])
     expect(page.facts.map((x) => x.anchor)).toContain('fora')
-    expect(page.note).toContain('contam cidades'.replace('contam', 'conta'))
-    expect(page.note).toContain('não diz quem votou em quem')
+    const note = drawBoth(page.note!).standard
+    expect(note).toContain('contam cidades'.replace('contam', 'conta'))
+    expect(note).toContain('não diz quem votou em quem')
     const text = neutral(page.facts)
     expect(text).toContain('cidades')
     expect(text).not.toMatch(/porque|por causa|culpa|devido|merec|melhor|pior/)

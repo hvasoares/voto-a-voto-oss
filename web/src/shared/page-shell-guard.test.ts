@@ -9,7 +9,7 @@
  *                  draw it, so no page adds its own; the screen pages place the screen variant inside their `.screen`); a page opts out of the
  *                  layout's header (`header="none"`) only where named below;
  *  - the search:   the header's plain city-search field (`data-topbar-search`) only in `components/HeaderSearch.astro`;
- *  - the seal:     the "conferido" aside (`class="seal"`, `seal__title|lines|note`) only in `components/Seal.astro`.
+ *  - the seal:     the "conferido" aside (`class="seal"`, `seal__title|lines|note`) only in `lib/facts/seal-markup.ts` (the `Seal` component and the calculation page's client both print it).
  *
  * Token based (the pattern is the token, never a long class literal, so a reordered class is still caught). Every non-test source
  * file of web/src, comments removed, is scanned. Named exceptions carry their reason below and are asserted live (an exemption that
@@ -31,7 +31,7 @@ const RULES: { rule: Rule; pattern: RegExp; use: string }[] = [
   { rule: 'no-header', pattern: /header="none"/, use: 'every public page carries the app header (the layout draws it); a page opts out only where the guard names it' },
   { rule: 'search-field', pattern: /<[a-z]+\s[^>]*data-topbar-search/, use: 'the header search field is <HeaderSearch> (components/HeaderSearch.astro), drawn by the app header and the top bar' },
   { rule: 'home-link', pattern: /‹\s*Início/, use: 'the way home is the wordmark of the app header (components/AppHeader.astro) on every page; no page draws an "Início" link of its own' },
-  { rule: 'seal', pattern: /class="seal\b|\bseal__(?:title|lines|note)\b/, use: 'a page draws <Seal lines={...}> (components/Seal.astro)' },
+  { rule: 'seal', pattern: /class="seal\b|\bseal__(?:title|lines|note)\b/, use: 'a page draws <Seal lines={...}> (components/Seal.astro), which prints lib/facts/seal-markup.ts' },
 ]
 
 /** Where each pattern may live, with the reason. Asserted live below. */
@@ -53,7 +53,6 @@ const ALLOWED: Record<Rule, Record<string, string>> = {
     'components/CityCard.astro': 'the city card draws the screen variant inside its `.screen` (the stylesheet scopes it there)',
     'pages/[uf]/index.astro': 'the state page draws the screen variant inside its `.screen`',
     'pages/[uf]/[slug]/tres-ciclos/index.astro': 'the three-cycles page draws the screen variant inside its `.screen`',
-    'pages/fato/[...path]/index.astro': 'the fact record draws the screen variant inside its `.screen`',
   },
   'no-header': {
     'pages/index.astro': 'Home: its own city search stands where the header search would (a second search field would stack on the first)',
@@ -61,7 +60,7 @@ const ALLOWED: Record<Rule, Record<string, string>> = {
     'components/QrScreen.astro': 'the QR screen is a full-screen sheet (the approved frame)',
   },
   'search-field': { 'components/HeaderSearch.astro': 'the one header search field' },
-  seal: { 'components/Seal.astro': 'the one seal block' },
+  seal: { 'lib/facts/seal-markup.ts': 'the one seal block, printed by Seal.astro and by the calculation page\'s client' },
   'home-link': { 'components/ShareDemoBackdrop.astro': 'an inert, aria-hidden picture of the card behind the share demo: text, not a link' },
 }
 

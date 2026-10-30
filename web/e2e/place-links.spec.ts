@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
-import { base } from './helpers'
+import { base, gotoFact } from './helpers'
 
 /*
  * Every UF and every region mention is a link (#184), fixture build. The guard over every built page is `src/shared/place-links-guard.test.ts`; this spec checks what a browser adds:
@@ -75,7 +75,7 @@ test.describe('Brasil e regiões and the region page', () => {
 
 test.describe('sentences of the catalog and the calculation pages', () => {
   test('a state or a region named in a record is a link, never nested, in both registers', async ({ page }) => {
-    await page.goto(`${base}fato/regiao/sudeste/2026-2/`)
+    await gotoFact(page, `${base}fato/regiao/sudeste/2026-2/`)
     const sentences = page.locator('.fact__sentence')
     await expect(sentences.first().locator('a[data-place="regiao"]')).toHaveAttribute('href', `${base}brasil/sudeste/`)
     await expect(page.locator('#estado-rj .fact__sentence[data-register="plain"] a[data-place="uf"]').first()).toHaveAttribute('href', `${base}rj/`)

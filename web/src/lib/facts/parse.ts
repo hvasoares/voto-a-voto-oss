@@ -1,8 +1,11 @@
 /**
- * Reads the records out of a page of the calculation (`/fato/...`), in the browser: the desktop highlight (#62) shows the calculation of a sentence
- * beside the figure it lights, and the calculation is already written on that page, so the island reads it from there instead of carrying a copy of the
- * records in every page that hosts it (a phone downloads none of it).
+ * The records of a page of the calculation (`/fato/...`) as the cards the desktop highlight (#62) shows beside a figure. Since private#214 the page is a stub and
+ * its records are in the data file the page draws from, so the island reads that file (`factCardsOf`) instead of the page's HTML, and a phone still downloads none of it.
+ * The sentences are drawn by the same module the page uses (`sentences/phrase.ts`), with the same subset of the catalog.
  */
+import { drawPhrase, subsetTemplate, type CatalogSubset } from '../sentences/phrase'
+import type { FactPageRecord } from './page-record'
+
 export interface FactCard {
   anchor: string
   title: string
@@ -10,21 +13,20 @@ export interface FactCard {
   inputs: { label: string; value: string }[]
   formula: string
   worked: string[]
-  /** "No cartão: 52%" without its lead, when the record has it. */
+  /** The figure as the card prints it, when the record shows one apart from its title. */
   shown: string
 }
 
-const text = (el: Element | null | undefined) => (el?.textContent ?? '').replace(/\s+/g, ' ').trim()
-
-export function parseFactPage(html: string): FactCard[] {
-  const doc = new DOMParser().parseFromString(html, 'text/html')
-  return [...doc.querySelectorAll('section.fact')].map((s) => ({
-    anchor: s.id,
-    title: text(s.querySelector('.fact__title')),
-    sentences: { standard: text(s.querySelector('.fact__sentence[data-register="standard"]')), plain: text(s.querySelector('.fact__sentence[data-register="plain"]')) },
-    inputs: [...s.querySelectorAll('.fact__inputs > div')].map((d) => ({ label: text(d.querySelector('dt')?.firstChild as Element | null), value: text(d.querySelector('dd')) })),
-    formula: text(s.querySelector('.fact__formula')),
-    worked: [...s.querySelectorAll('.fact__worked li')].map(text),
-    shown: text(s.querySelector('.fact__shown')).replace(/^[^:]*:\s*/, ''),
+export function factCardsOf(data: Pick<FactPageRecord, 'facts'>, words: CatalogSubset): FactCard[] {
+  const template = subsetTemplate(words)
+  const say = (part: Parameters<typeof drawPhrase>[0], register: 'standard' | 'plain') => drawPhrase(part, { locale: 'pt-BR', register }, template)
+  return data.facts.map((f) => ({
+    anchor: f.anchor,
+    title: f.title,
+    sentences: { standard: say(f.say, 'standard'), plain: say(f.say, 'plain') },
+    inputs: f.inputs.map((i) => ({ label: i.label, value: i.value })),
+    formula: f.calculation?.formula ?? '',
+    worked: f.calculation?.worked ?? [],
+    shown: f.shown && f.shown !== f.title ? f.shown : '',
   }))
 }

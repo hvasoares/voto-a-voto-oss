@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { base, collectRequests, violations } from './helpers'
+import { base, collectRequests, gotoFact, violations } from './helpers'
 import { PHONE, noJs } from './presets'
 
 /*
@@ -34,7 +34,7 @@ test.describe('state season', () => {
     await expect(pivot).toContainText(/Em \d+ das \d+ cidades com os três ciclos o lado com mais votos mudou\.|Em nenhuma das \d+ cidades/)
     await expect(pivot.getByRole('link')).toHaveCount(0)
     expect(await page.getByRole('link', { name: 'De onde vem este número?' }).getAttribute('href')).toContain('/fato/estado/rj/tres-ciclos/#')
-    await page.goto(`${base}fato/estado/rj/tres-ciclos/`)
+    await gotoFact(page, `${base}fato/estado/rj/tres-ciclos/`)
     await expect(page.locator('[id="2026-viradas"]')).toContainText('cidades com os três ciclos')
   })
 

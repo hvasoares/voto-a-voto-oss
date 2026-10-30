@@ -3,7 +3,7 @@
  * `src/voto_a_voto/editions.py` (`make publish-edition`); this file is the site's pure side: the shape of `edition.json`,
  * the order, the addresses, the citation and the Atom feed. Nothing here reads the disk (see `editions-load.ts`).
  */
-import { formatUtc } from './about'
+import { formatUtc } from './format-utc'
 
 /** The `edition.json` of one edition, as the pipeline writes it. */
 export interface Edition {

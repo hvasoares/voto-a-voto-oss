@@ -26,16 +26,16 @@ import { phrase, type PhrasePart } from '../sentences/phrase'
 export interface FactPage {
   scope: string
   page: string
-  /** The `<h1>` subtitle and the way back to the page the numbers are on. */
-  subtitle: string
+  /** The `<h1>` subtitle, as data like a record's sentence (private#214): the data file carries it and the browser draws it with `sentences/phrase.ts`; and the way back to the page the numbers are on. */
+  subtitle: PhrasePart
   title: string
   back: { path: string; label: string }
   fixture: boolean
   facts: Fact[]
   /** What the seal of the page is made of: the checks of its facts and the rounds its numbers belong to. */
   rounds: { ano: number; turno: number }[]
-  /** An extra line of the page (its limits), already written from the catalog. */
-  note?: string
+  /** An extra line of the page (its limits), as data (private#214). */
+  note?: PhrasePart
 }
 
 type Params = Record<string, string | number>
@@ -100,7 +100,7 @@ export function brasilFacts(view: BrasilView, fixture: boolean): FactPage {
           [{ label, field: `turnout.csv · ${key}`, value: int(count) }, { label: std('fact.in.comparecimento'), field: 'turnout.csv · comparecimento', value: int(r.comparecimento) }], std('fact.f.partTurnout'), [dividing(count, r.comparecimento)]),
       )
   }
-  return { scope: c.scope, page: c.page, title: 'Brasil e regiões', subtitle: std('fact.sub.brasil', { ano: view.ano }), back: { path: 'brasil/', label: std('fact.back.brasil') }, fixture, facts, rounds: [{ ano: view.ano, turno: view.turno }] }
+  return { scope: c.scope, page: c.page, title: 'Brasil e regiões', subtitle: phrase('fact.sub.brasil', { ano: view.ano }), back: { path: 'brasil/', label: std('fact.back.brasil') }, fixture, facts, rounds: [{ ano: view.ano, turno: view.turno }] }
 }
 
 /**
@@ -126,7 +126,7 @@ export function regionFacts(page: RegionPage, fixture: boolean): FactPage {
         std('fact.f.regionRow'), [std('fact.w.margin', { a: int(s.votosA2), b: int(s.votosB2), whole: int(s.validos2), pp })]),
     )
   }
-  return { scope: c.scope, page: c.page, title: std('region.title', { name: label }), subtitle: std('fact.sub.regiao', { name: label, ano: page.ano }), back: { path: `brasil/${page.regiao}/`, label: std('fact.back.regiao', { name: label }) }, fixture, facts, rounds: [{ ano: page.ano, turno: page.turno }] }
+  return { scope: c.scope, page: c.page, title: std('region.title', { name: label }), subtitle: phrase('fact.sub.regiao', { name: label, ano: page.ano }), back: { path: `brasil/${page.regiao}/`, label: std('fact.back.regiao', { name: label }) }, fixture, facts, rounds: [{ ano: page.ano, turno: page.turno }] }
 }
 
 /** Comparar com 2022 / 2018: per state, per side, the votes of 2026 and of the compared cycle and the change between them. */
@@ -153,7 +153,7 @@ export function compareFacts(rows: readonly CompareRow[], ciclo: number, fixture
       )
     }),
   )
-  return { scope: c.scope, page: c.page, title: `Comparar com ${ciclo}`, subtitle: std('fact.sub.compare', { ano: ciclo }), back: { path: `comparar/${ciclo}/`, label: std('fact.back.compare', { ano: ciclo }) }, fixture, facts, rounds: [{ ano: 2026, turno: 2 }, { ano: ciclo, turno: 2 }] }
+  return { scope: c.scope, page: c.page, title: `Comparar com ${ciclo}`, subtitle: phrase('fact.sub.compare', { ano: ciclo }), back: { path: `comparar/${ciclo}/`, label: std('fact.back.compare', { ano: ciclo }) }, fixture, facts, rounds: [{ ano: 2026, turno: 2 }, { ano: ciclo, turno: 2 }] }
 }
 
 /** Três ciclos por estado: per cycle with data, each side's share of the valid votes and the change in points against the cycle before. */
@@ -208,7 +208,7 @@ export function stateCyclesFacts(uf: string, blocks: readonly CycleBlock[], fixt
     }
   }
   const rounds = blocks.filter((b) => b.status === 'data').map((b) => ({ ano: b.ano, turno: 2 }))
-  return { scope: c.scope, page: c.page, title: name, subtitle: std('fact.sub.state', { name }), back: { path: `tres-ciclos/${uf}/`, label: std('fact.back.state') }, fixture, facts, rounds }
+  return { scope: c.scope, page: c.page, title: name, subtitle: phrase('fact.sub.state', { name }), back: { path: `tres-ciclos/${uf}/`, label: std('fact.back.state') }, fixture, facts, rounds }
 }
 
 /** Disputas mais apertadas (a report, #62): per city of the shown rows, the votes of the two candidates and the difference between them, as the report prints it. */
@@ -228,7 +228,7 @@ export function raceFacts(races: readonly { nome: string; uf: string; slug: stri
       [std('fact.w.diff', { a: int(Math.max(r.votos.primeiro, r.votos.segundo)), b: int(Math.min(r.votos.primeiro, r.votos.segundo)), d: int(r.diff) })],
     )
   })
-  return { scope: c.scope, page: c.page, title: report, subtitle: std('fact.sub.report', { name: report }), back: { path: 'relatorios/disputas-mais-apertadas/', label: std('fact.back.report', { name: report }) }, fixture, facts, rounds: [{ ano: 2026, turno: 2 }] }
+  return { scope: c.scope, page: c.page, title: report, subtitle: phrase('fact.sub.report', { name: report }), back: { path: 'relatorios/disputas-mais-apertadas/', label: std('fact.back.report', { name: report }) }, fixture, facts, rounds: [{ ano: 2026, turno: 2 }] }
 }
 
 /**
@@ -252,7 +252,7 @@ export function olderCyclesFacts(fixture: boolean, olderRounds: { ano: number; t
   const facts = kinds.map(([anchor, title, formula, inputs]) =>
     rec(c, anchor, title, '', both('fact.old', { measure: title }), inputs.map(([label, field]) => ({ label, ...(field ? { field } : {}), value })), formula, [std('fact.w.old')], anchor === 'margem' ? { name: std(METHOD_DOCS.margin.key), href: METHOD_DOCS.margin.href } : undefined),
   )
-  return { scope: c.scope, page: c.page, title: std('fact.sub.old'), subtitle: std('fact.sub.old'), back: { path: 'sobre-os-dados/', label: std('fact.back.old') }, fixture, facts, rounds: olderRounds }
+  return { scope: c.scope, page: c.page, title: std('fact.sub.old'), subtitle: phrase('fact.sub.old'), back: { path: 'sobre-os-dados/', label: std('fact.back.old') }, fixture, facts, rounds: olderRounds }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -266,8 +266,8 @@ export interface Names {
 }
 type CityLabel = (nome: string, uf: string) => string
 const R2026 = [{ ano: 2026, turno: 1 }, { ano: 2026, turno: 2 }]
-const reportPage = (c: Ctx, name: string, path: string, facts: Fact[], rounds = [{ ano: 2026, turno: 2 }], note?: string): FactPage => ({
-  scope: c.scope, page: c.page, title: name, subtitle: std('fact.sub.report', { name }), back: { path, label: std('fact.back.report', { name }) }, fixture: c.fixture, facts, rounds, note,
+const reportPage = (c: Ctx, name: string, path: string, facts: Fact[], rounds = [{ ano: 2026, turno: 2 }], note?: PhrasePart): FactPage => ({
+  scope: c.scope, page: c.page, title: name, subtitle: phrase('fact.sub.report', { name }), back: { path, label: std('fact.back.report', { name }) }, fixture: c.fixture, facts, rounds, note,
 })
 const countInput = (label: string, n: number): FactInput => ({ label, value: int(n) })
 
@@ -391,7 +391,7 @@ export function cohortFacts(report: CohortReport, fixture: boolean): FactPage {
       [countInput(std('fact.in.grouped'), t.grouped), countInput(std('fact.in.tiesBefore'), report.tieCases.length), countInput(std('fact.in.noData'), report.noData.length)],
       std('fact.f.cohortTotal'), [std('fact.w.cohortTotal', { grouped: int(t.grouped), ties: int(report.tieCases.length), nodata: int(report.noData.length), cities: int(t.cities2026) })]),
   )
-  return reportPage(c, 'Como cada grupo votou', 'relatorios/como-cada-grupo-votou/', facts, [{ ano: 2018, turno: 2 }, { ano: 2022, turno: 2 }, { ano: 2026, turno: 2 }], say({ locale: DEFAULT_LOCALE, register: 'standard' }, 'fact.cohort.limits'))
+  return reportPage(c, 'Como cada grupo votou', 'relatorios/como-cada-grupo-votou/', facts, [{ ano: 2018, turno: 2 }, { ano: 2022, turno: 2 }, { ano: 2026, turno: 2 }], phrase('fact.cohort.limits'))
 }
 
 export interface HubParts {
@@ -429,7 +429,7 @@ export function stateCountFacts(uf: string, name: string, n: number, fixture: bo
   const facts = [
     rec(c, 'municipios', std('fact.in.cities'), int(n), both('fact.state.count', { name, n: int(n) }), [{ label: std('fact.in.cities'), field: 'cities.csv · cd_municipio', value: int(n) }], std('fact.f.stateCount'), [std('fact.w.stateCount', { n: int(n), uf: uf.toUpperCase() })]),
   ]
-  return { scope: c.scope, page: c.page, title: name, subtitle: std('fact.sub.municipios', { name }), back: { path: `${uf}/`, label: std('fact.back.estado') }, fixture, facts, rounds: [{ ano: 2026, turno: 2 }] }
+  return { scope: c.scope, page: c.page, title: name, subtitle: phrase('fact.sub.municipios', { name }), back: { path: `${uf}/`, label: std('fact.back.estado') }, fixture, facts, rounds: [{ ano: 2026, turno: 2 }] }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -504,12 +504,12 @@ export function outlierFactPages(listed: readonly OutlierRow[], counts: readonly
     const c: Ctx = { scope: OUTLIER_SCOPE, page: uf, fixture, checks: ['municipios'] }
     const rows = listed.filter((r) => r.uf === uf)
     const title = `Cidades fora da curva · ${stateName(uf)}`
-    pages.push({ scope: c.scope, page: c.page, title, subtitle: std('fact.sub.report', { name: title }), back: { ...back, label: std('fact.back.report', { name: 'Cidades fora da curva' }) }, fixture, facts: rows.map((r) => outlierRecord(c, r, names, label)), rounds: OUTLIER_ROUNDS })
+    pages.push({ scope: c.scope, page: c.page, title, subtitle: phrase('fact.sub.report', { name: title }), back: { ...back, label: std('fact.back.report', { name: 'Cidades fora da curva' }) }, fixture, facts: rows.map((r) => outlierRecord(c, r, names, label)), rounds: OUTLIER_ROUNDS })
   }
   const c: Ctx = { scope: OUTLIER_SCOPE, page: 'filtros', fixture, checks: ['municipios'] }
   const title = 'Cidades fora da curva'
   pages.push({
-    scope: c.scope, page: c.page, title, subtitle: std('fact.sub.report', { name: title }), back: { ...back, label: std('fact.back.report', { name: title }) }, fixture, rounds: OUTLIER_ROUNDS,
+    scope: c.scope, page: c.page, title, subtitle: phrase('fact.sub.report', { name: title }), back: { ...back, label: std('fact.back.report', { name: title }) }, fixture, rounds: OUTLIER_ROUNDS,
     facts: counts.map((k) => outlierCountRecord(c, `filtro-${k.uf ?? 'todos'}-${k.min}`, k.uf ? { uf: k.uf, name: stateName(k.uf) } : undefined, k.min, k.n)),
   })
   return pages
