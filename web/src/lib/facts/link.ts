@@ -9,5 +9,3 @@ import { DEFAULT_LOCALE, message, type Locale } from '../sentences/catalog'
 export function calcLink(href: string, locale: Locale = DEFAULT_LOCALE): Raw {
   return html`<a class="calc" data-calc href="${href}" aria-label="${message({ locale, register: 'standard' }, 'fact.link')}"><span aria-hidden="true">🔍</span></a>`
 }
-
-export { cameFromSite } from './way-back'

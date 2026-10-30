@@ -1,14 +1,4 @@
-/* The page of the calculation (#61, Sketch frame "Fato (página do cálculo)"). Loaded by that page only: the city card and the phone's first load do not carry it. */
-.fact-page .fact-page .app-header { height: 44px; padding: 0 var(--gutter); gap: 9px; }
-.fact-page .fact-page .app-header__context { font-size: var(--step-1); }
-.fact-page .fact-page .banner { font-size: var(--step-1); font-weight: 700; letter-spacing: 0; line-height: var(--lh-1); padding: 6px var(--gutter) 0; height: 28px; white-space: pre; overflow: hidden; }
-.fact-page .fact-page .page__main { padding: 0 var(--gutter) var(--sp-4); }
-.fact-page .fact-page .back {
-  display: inline-flex; align-items: center; min-width: 84px; min-height: var(--min-tap); margin: 4px 0 8px -8px; padding: 0 12px;
-  border: 1px solid var(--c-rule); border-radius: var(--radius); background: var(--c-paper); color: var(--c-ink); font-size: var(--step-2);
-}
-.fact-page .fact-page .page__title { font-size: var(--step-4); line-height: var(--lh-4); }
-.fact-page .fact-page .page__subtitle { font-size: var(--step-1); line-height: var(--lh-1); margin-top: -4px; padding-bottom: 14px; border-bottom: 1px solid var(--c-rule); }
+/* The page of the calculation (#61, Sketch frame "Fato (página do cálculo)"). Loaded by that page only (the records the page script draws; the shell, header, banner and column are the stub's and the layouts', not styled here): the city card and the phone's first load do not carry it. */
 .fact-page .facts { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
 .fact-page .fact { padding: 14px 16px 16px; border: 1px solid var(--c-rule); border-radius: 12px; scroll-margin-top: 12px; }
 .fact-page .fact:target { background: var(--c-paper-2); border-color: var(--c-accent); }
@@ -29,8 +19,3 @@
 .fact-page .fact__block { font: 400 var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-muted); margin-top: 18px; }
 .fact-page .fact__links { margin-top: 4px; }
 .fact-page .fact__links a { display: flex; align-items: center; min-height: var(--min-tap); font: 700 var(--step-1)/var(--lh-1) var(--font-sans); color: var(--c-accent); }
-@media (min-width: 1024px) {
-  .fact-page .fact-page .back { min-width: 0; min-height: 28px; margin: 0; padding: 0; border: 0; background: none; font-size: var(--step-1); color: var(--c-accent); }
-  .fact-page .page__main { width: 100%; max-width: 720px; margin: 0 auto; padding: 32px 0 40px; }
-  .fact-page .page__title { font-size: var(--step-4); line-height: var(--lh-4); }
-}

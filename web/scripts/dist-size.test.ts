@@ -54,9 +54,9 @@ describe('judgeBudget', () => {
     expect(judgeBudget(1_500_000, 1_000_000).message).toContain('OVER BUDGET: 1.5 MB > 1.0 MB (over by 0.5 MB)')
   })
 
-  it('keeps the recommended final value below the gate, and the gate at the recorded 1.29 GB', () => {
-    expect(DIST_BUDGET_BYTES).toBe(1_290_000_000)
-    expect(RECOMMENDED_FINAL_BYTES).toBeLessThan(DIST_BUDGET_BYTES)
+  it('keeps the gate at the real-data total plus 5% (private#215) and the recommended value untouched', () => {
+    expect(DIST_BUDGET_BYTES).toBe(890_000_000)
+    expect(RECOMMENDED_FINAL_BYTES).toBe(900_000_000)
   })
 })
 

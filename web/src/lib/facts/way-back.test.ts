@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { cameFromSite } from './link'
+import { cameFromSite } from './way-back'
 
 const ORIGIN = 'https://site.test'
 

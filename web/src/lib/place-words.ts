@@ -42,9 +42,6 @@ const WORDS = new Map<string, PlaceRef>([
 /** Every word that names a place, for the test that looks for the ones left outside a link. */
 export const PLACE_WORDS: readonly string[] = [...WORDS.keys()]
 
-/** The place a word names, or undefined for any other word. */
-export const placeOf = (word: string): PlaceRef | undefined => WORDS.get(word)
-
 const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 const BEFORE = '(?<![\\p{L}\\p{N}-])'
 const AFTER = '(?![\\p{L}\\p{N}-])'

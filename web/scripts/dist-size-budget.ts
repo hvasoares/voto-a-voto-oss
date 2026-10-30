@@ -5,10 +5,11 @@
  */
 
 /**
- * Today's gate: the total of the last real-data build, 1.29 GB (private#197), taken from the ticket and not re-measured.
- * The fixture build (about 10 MB) passes it by a wide margin; the gate only bites on a real-data build until the tickets lower it.
+ * Today's gate (private#215): the total of the real-data build measured on 2026-10-29 after the stub families (private#208 to private#214), 847.2 MB
+ * (77,574 files), plus a margin of about 5% = 890 MB. It was 1.29 GB (private#197, the ticket's figure) before. The fixture build (about 8 MB) passes it
+ * by a wide margin; the gate only bites on a real-data build. Do not raise it without the owner.
  */
-export const DIST_BUDGET_BYTES = 1_290_000_000
+export const DIST_BUDGET_BYTES = 890_000_000
 
 /**
  * The recommended final value, 900 MB. TO BE CONFIRMED BY THE OWNER: it is not the gate; it is only the line the

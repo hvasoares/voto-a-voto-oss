@@ -149,7 +149,7 @@ Per ticket numbers: `docs/checkpoints/issue-44.md`, `issue-46.md`, `issue-97.md`
 
 ## Tamanho do site construído por família (private#204)
 
-`npm run check:dist-size` (`make dist-size`; roda depois de um build, não constrói nada) lê `web/dist` (ou a pasta dada como argumento), classifica cada arquivo com `classifyPath` (`src/shared/page-family.ts`, private#203), imprime a tabela (páginas, arquivos, MB, KB médios por arquivo), a contagem de arquivos de dados (família `data-shards`: os stubs somam um JSON por endereço, então arquivos e bytes são contados à parte), o custo de mais uma edição e sai com 1 acima do orçamento. MB são decimais (1 MB = 1 000 000 B). O orçamento é `DIST_BUDGET_BYTES` em `scripts/dist-size-budget.ts`: começa em 1,29 GB (o total do build real, abaixo), cada ticket seguinte do marco o baixa, e o valor final recomendado, `RECOMMENDED_FINAL_BYTES` = 900 MB, **está por ser confirmado pelo dono** (não é o portão; só a segunda linha do cálculo de folga). O build de fixture (cerca de 8 MB) passa com folga enorme: o portão só morde num build de dados reais até os tickets o baixarem.
+`npm run check:dist-size` (`make dist-size`; roda depois de um build, não constrói nada) lê `web/dist` (ou a pasta dada como argumento), classifica cada arquivo com `classifyPath` (`src/shared/page-family.ts`, private#203), imprime a tabela (páginas, arquivos, MB, KB médios por arquivo), a contagem de arquivos de dados (família `data-shards`: os stubs somam um JSON por endereço, então arquivos e bytes são contados à parte), o custo de mais uma edição e sai com 1 acima do orçamento. MB são decimais (1 MB = 1 000 000 B). O orçamento é `DIST_BUDGET_BYTES` em `scripts/dist-size-budget.ts`: começou em 1,29 GB (o total do build real, abaixo) e desde private#215 é 890 MB (o total medido depois dos stubs, 847,2 MB, mais cerca de 5%), e o valor final recomendado, `RECOMMENDED_FINAL_BYTES` = 900 MB, **está por ser confirmado pelo dono** (não é o portão; só a segunda linha do cálculo de folga). O build de fixture (cerca de 8 MB) passa com folga enorme: o portão só morde num build de dados reais até os tickets o baixarem.
 
 **Custo de mais uma edição (estimativa):** as edições são imutáveis, então cada rodada nova soma páginas. O script agrupa os arquivos `fato/**/<ciclo>-<rodada>/index.html` e `data/<versão>/fato/**/<ciclo>-<rodada>.json` pelo rótulo da edição, soma os bytes de cada rótulo e usa a média como custo de uma edição; a folga em edições é (orçamento menos total) dividido por esse custo. É estimativa porque o `dist/` não diz quantas cidades terão a rodada nova; a média é a de edições já construídas. Nenhuma outra família cresce por rodada hoje (cartão, `compartilhar`, `qr` e `tres-ciclos` são por cidade).
 
@@ -165,3 +165,21 @@ Per ticket numbers: `docs/checkpoints/issue-44.md`, `issue-46.md`, `issue-97.md`
 | total do site | | 1 290 |
 
 **Build de fixture, medido em 2026-10-29 (depois de private#210 a private#214):** 182 páginas, 484 arquivos (105 de dados), 8,3 MB; `other` 5,9 MB (inclui `_astro`), `fato` 47 páginas 0,5 MB, `city-card` 14 páginas 0,5 MB, `report` 20 páginas 0,4 MB, `data-shards` 105 arquivos 0,4 MB, `compartilhar` 9 páginas 0,1 MB, `qr` 9 páginas 0,1 MB, `tres-ciclos` 9 páginas 0,2 MB. Uma edição custa em média 0,2 MB na fixture (2 edições). Os números de dados reais ainda têm de vir de um build de dados reais.
+
+**DEPOIS do marco 1.14.3 (build de dados reais, `DATA_DIR=../data OUT_DIR=dist-real`, `npm run check:dist-size dist-real`, medido em 2026-10-29 depois de private#210 a private#214, private#215):** 77 574 arquivos (29 954 de dados), total **847,2 MB** (era 1 290 MB). O orçamento passou de 1,29 GB para 890 MB (847,2 MB mais cerca de 5%). Os 900 MB recomendados continuam **por confirmar pelo dono**; o total medido está 52,8 MB abaixo deles, mas isso não confirma o número. Uma edição custa em média 102,0 MB (2026-1: 103,9; 2026-2: 100,1), então a folga abaixo de 900 MB é de 0 edições.
+
+| Família | Páginas | MB ANTES | MB DEPOIS (páginas) | MB DEPOIS (arquivos de dados do stub) |
+|---|---|---|---|---|
+| `compartilhar` | 5 760 | 330 | 45,8 | 6,3 |
+| `fato` | 12 449 | 293 | 123,6 | 95,6 |
+| `city-card` | 5 814 | 185 | 183,6 | 0 |
+| `qr` | 5 760 | 138 | 45,5 | 3,2 |
+| `tres-ciclos` | 5 760 | 102 | 100,6 | 0 |
+| `previews` (imagens, fora da tabela do ticket) | 0 | n/d | 108,9 | |
+| `other` (inclui `_astro`) | 5 917 | n/d | 102,6 | |
+| `state` / `report` / `region` | 28 / 120 / 5 | n/d | 7,3 / 5,4 / 0,1 | |
+| total do site | 41 613 | 1 290 | 847,2 | (os arquivos de dados somam 123,9 MB em `data-shards`, já dentro do total) |
+
+Leitura: `compartilhar` cai 84% (330 para 52,1 MB com os dados) e `qr` 65% (138 para 48,7 MB); `fato` cai 58% só nas páginas (293 para 123,6 MB) e 25% contando os 95,6 MB de arquivos de dados (219,2 MB), então **não chega aos 80% previstos**: o texto das frases e as entradas de cada registro agora moram no JSON (95,6 MB, 7,7 KB por página) e cada stub continua carregando o casco comum (cabeçalho, rodapé, estilos inline, em média 9,9 KB por página, contra 8,0 KB de `compartilhar`). Reduzir mais exigiria mexer no casco ou no formato do JSON, o que é outro ticket. `city-card` e `tres-ciclos` não mudaram (não fazem parte do marco).
+
+**Limpeza (private#215):** saíram as regras de `fact.css` que só a página antiga usava (`.fact-page .fact-page ...`, que nunca casam no stub, e as de `.page__main`, `.page__title`, `.back`), as chaves de catálogo sem uso (`fact.method`, `fact.others`, `fact.sub.hub`, `fact.back.relatorios`), `registerBootScript`, `placeOf` e o reexport de `cameFromSite` em `facts/link.ts` (o teste foi para `way-back.test.ts`). Ficam, porque ainda têm uso: `Fact.sentences` (o portão de neutralidade e as frases dos relatórios), `FixtureBanner`, `SiteFooter` e `Seal` (outras páginas).
