@@ -419,3 +419,12 @@ D-010 (ballot-number order) and D-011 (type scale) come from the code and its co
 - Supersedes: none
 - Tickets: none
 - Source: the 1.13.2 tickets on the shared pieces, owner decisions of 2026-10-28 and 2026-10-29
+
+### D-043 A stub has no size cap of its own; the QR pages stay unindexable
+- Date: 2026-10-29
+- Status: active
+- Decision: The 5 KB cap on a stub page is dropped. A stub is as small as the shared shell allows (a built QR stub is about 7.9 KB) and the size of the stub families is governed by the family budget of `check:dist-size`, not by a per-page cap. The QR page of every city stays `noindex`, as the PRD already says for the share sheet and the calculation pages.
+- Reason: The shared shell alone is about 5.6 KB, so a 5 KB stub is only possible with a lighter shell on every page; what matters for the Pages limit is the family total. The city QR page had no `noindex` before the stub, but these pages are not meant for search.
+- Supersedes: none
+- Tickets: private#206, private#208
+- Source: owner decision of 2026-10-29 on the `BLOCKED` question of private#206 and on the QR indexing difference reported by private#208
