@@ -8,7 +8,7 @@ import { CYCLES } from '../../shared/city-model'
 import { cityShardResult } from '../city-shard'
 import { factsOf } from '../curiosities'
 import { datasetFixture, loadCityShard, loadCuriositiesFile } from '../shard-files'
-import { curiosityLine } from '../../slots/city/curiosities'
+import { curiosityLineSentence } from '../../slots/city/curiosities'
 import { assertPublishable } from './gate'
 import { CURIOSITIES_PAGE, curiosityFacts, factPage, viewFacts, type Fact, type FactPlace } from './model'
 
@@ -30,7 +30,7 @@ export async function loadCityFacts(uf: string, slug: string): Promise<CityFacts
     }
   const curio = await loadCuriositiesFile()
   const own = curio ? factsOf(curio, uf, slug) : []
-  if (own.length) pages.set(CURIOSITIES_PAGE, curiosityFacts(own, place, (c, register) => curiosityLine(c, register)))
+  if (own.length) pages.set(CURIOSITIES_PAGE, curiosityFacts(own, place, (c) => curiosityLineSentence(c)))
   for (const [page, facts] of pages) assertPublishable(facts, `/fato/${uf}/${slug}/${page}/`)
   return { place, pages }
 }

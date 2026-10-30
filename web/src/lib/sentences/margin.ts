@@ -10,7 +10,8 @@
  *   otherwise                                               -> gap + `margin.fits` (whole times: the margin fits N times)
  */
 import type { CityResult } from '@/shared/city-model'
-import { message as say, type MessageKey } from './catalog'
+import { DEFAULT_LOCALE, template } from './catalog'
+import { drawPhrase, phrase, type PhrasePart } from './phrase'
 import './catalog-margin'
 import { formatInteger } from '../number-format'
 import { voiceOf } from './voice'
@@ -23,18 +24,23 @@ export function marginVotes(r: CityResult): number | undefined {
   return first.votos - second.votos
 }
 
-export function marginLine(r: CityResult | undefined, place: Place): string | undefined {
+/** The margin line as data (private#213); `marginLine` is this, drawn. */
+export function marginSentence(r: CityResult | undefined, place: Omit<Place, 'register'>): PhrasePart | undefined {
   if (!r) return undefined
   const margin = marginVotes(r)
   if (margin === undefined) return undefined
-  const voice = voiceOf(place)
-  const message = (key: MessageKey, params?: Record<string, string | number>, count?: number) => say(voice, key, params, count)
-  if (margin === 0) return message('margin.tie')
-  const int = (n: number) => formatInteger(n, voice.locale)
-  const gap = message('margin.gap', { n: int(margin) }, margin)
-  if (r.naoVotaram <= 0) return gap + message('margin.end')
+  const locale = place.locale ?? DEFAULT_LOCALE
+  if (margin === 0) return phrase('margin.tie')
+  const int = (n: number) => formatInteger(n, locale)
+  const gap = phrase('margin.gap', { n: int(margin) }, margin)
+  if (r.naoVotaram <= 0) return [gap, phrase('margin.end')]
   const m = int(r.naoVotaram)
-  if (margin > r.naoVotaram) return gap + message('margin.exceeds', { m })
+  if (margin > r.naoVotaram) return [gap, phrase('margin.exceeds', { m })]
   const times = Math.floor(r.naoVotaram / margin)
-  return gap + message('margin.fits', { times: int(times), m }, times)
+  return [gap, phrase('margin.fits', { times: int(times), m }, times)]
+}
+
+export function marginLine(r: CityResult | undefined, place: Place): string | undefined {
+  const sentence = marginSentence(r, place)
+  return sentence === undefined ? undefined : drawPhrase(sentence, voiceOf(place), template)
 }

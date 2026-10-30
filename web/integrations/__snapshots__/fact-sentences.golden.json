@@ -1,0 +1,1302 @@
+{
+ "mt/boa-esperanca-do-norte/2026-1/frase": {
+  "standard": "Em Boa Esperança do Norte, no 1º turno de 2026, 25,2% do eleitorado não votou, menos do que o Candidato A, o segundo mais votado, recebeu (37,3%).",
+  "plain": "Em Boa Esperança do Norte, no 1º turno de 2026, 25,2% das pessoas que podiam votar não votaram. Isso é menos do que o Candidato A, o segundo mais votado, recebeu: 37,3%."
+ },
+ "mt/boa-esperanca-do-norte/2026-1/votaram": {
+  "standard": "Em Boa Esperança do Norte, no 1º turno de 2026, votaram 74,8% do eleitorado: 94.433 votos válidos entre 126.283 eleitores aptos.",
+  "plain": "Em Boa Esperança do Norte, no 1º turno de 2026, votaram 74,8% das pessoas que podiam votar. Foram 94.433 votos para candidatos, entre 126.283 pessoas."
+ },
+ "mt/boa-esperanca-do-norte/2026-1/naoVotaram": {
+  "standard": "Em Boa Esperança do Norte, no 1º turno de 2026, 25,2% do eleitorado não votou: 31.850 dos 126.283 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Boa Esperança do Norte, no 1º turno de 2026, 25,2% das pessoas que podiam votar não votaram. São 31.850 entre 126.283 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "mt/boa-esperanca-do-norte/2026-1/a": {
+  "standard": "Em Boa Esperança do Norte, no 1º turno de 2026, Candidato A: 47.148 de 94.433 votos válidos, 49,9%.",
+  "plain": "Em Boa Esperança do Norte, no 1º turno de 2026, Candidato A: 47.148 de 94.433 votos para candidatos, 49,9%."
+ },
+ "mt/boa-esperanca-do-norte/2026-1/b": {
+  "standard": "Em Boa Esperança do Norte, no 1º turno de 2026, Candidato B: 47.285 de 94.433 votos válidos, 50,1%.",
+  "plain": "Em Boa Esperança do Norte, no 1º turno de 2026, Candidato B: 47.285 de 94.433 votos para candidatos, 50,1%."
+ },
+ "mt/boa-esperanca-do-norte/2026-1/abstencao": {
+  "standard": "Em Boa Esperança do Norte, no 1º turno de 2026, Abstenção: 26.167 dos 31.850 eleitores que não votaram, 82,2%.",
+  "plain": "Em Boa Esperança do Norte, no 1º turno de 2026, Abstenção: 26.167 das 31.850 pessoas que não votaram, 82,2%."
+ },
+ "mt/boa-esperanca-do-norte/2026-1/brancos": {
+  "standard": "Em Boa Esperança do Norte, no 1º turno de 2026, Brancos: 2.526 dos 31.850 eleitores que não votaram, 7,9%.",
+  "plain": "Em Boa Esperança do Norte, no 1º turno de 2026, Brancos: 2.526 das 31.850 pessoas que não votaram, 7,9%."
+ },
+ "mt/boa-esperanca-do-norte/2026-1/nulos": {
+  "standard": "Em Boa Esperança do Norte, no 1º turno de 2026, Nulos: 3.157 dos 31.850 eleitores que não votaram, 9,9%.",
+  "plain": "Em Boa Esperança do Norte, no 1º turno de 2026, Nulos: 3.157 das 31.850 pessoas que não votaram, 9,9%."
+ },
+ "mt/boa-esperanca-do-norte/2026-1/margem": {
+  "standard": "Faltaram 137 votos para virar: cabem 232 vezes nos 31.850 que não votaram.",
+  "plain": "Faltaram 137 votos para virar o resultado. Esse número cabe 232 vezes nas 31.850 pessoas que não votaram."
+ },
+ "mt/boa-esperanca-do-norte/2026-2/frase": {
+  "standard": "Em Boa Esperança do Norte, no 2º turno de 2026, 32,9% do eleitorado não votou, quase tanto quanto o mais votado, Candidato A, recebeu (33,6%).",
+  "plain": "Em Boa Esperança do Norte, no 2º turno de 2026, 32,9% das pessoas que podiam votar não votaram. Isso é quase igual ao que Candidato A, o mais votado, recebeu: 33,6%."
+ },
+ "mt/boa-esperanca-do-norte/2026-2/votaram": {
+  "standard": "Em Boa Esperança do Norte, no 2º turno de 2026, votaram 67,1% do eleitorado: 85.154 votos válidos entre 126.971 eleitores aptos.",
+  "plain": "Em Boa Esperança do Norte, no 2º turno de 2026, votaram 67,1% das pessoas que podiam votar. Foram 85.154 votos para candidatos, entre 126.971 pessoas."
+ },
+ "mt/boa-esperanca-do-norte/2026-2/naoVotaram": {
+  "standard": "Em Boa Esperança do Norte, no 2º turno de 2026, 32,9% do eleitorado não votou: 41.817 dos 126.971 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Boa Esperança do Norte, no 2º turno de 2026, 32,9% das pessoas que podiam votar não votaram. São 41.817 entre 126.971 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "mt/boa-esperanca-do-norte/2026-2/a": {
+  "standard": "Em Boa Esperança do Norte, no 2º turno de 2026, Candidato A: 42.667 de 85.154 votos válidos, 50,1%.",
+  "plain": "Em Boa Esperança do Norte, no 2º turno de 2026, Candidato A: 42.667 de 85.154 votos para candidatos, 50,1%."
+ },
+ "mt/boa-esperanca-do-norte/2026-2/b": {
+  "standard": "Em Boa Esperança do Norte, no 2º turno de 2026, Candidato B: 42.487 de 85.154 votos válidos, 49,9%.",
+  "plain": "Em Boa Esperança do Norte, no 2º turno de 2026, Candidato B: 42.487 de 85.154 votos para candidatos, 49,9%."
+ },
+ "mt/boa-esperanca-do-norte/2026-2/abstencao": {
+  "standard": "Em Boa Esperança do Norte, no 2º turno de 2026, Abstenção: 36.104 dos 41.817 eleitores que não votaram, 86,3%.",
+  "plain": "Em Boa Esperança do Norte, no 2º turno de 2026, Abstenção: 36.104 das 41.817 pessoas que não votaram, 86,3%."
+ },
+ "mt/boa-esperanca-do-norte/2026-2/brancos": {
+  "standard": "Em Boa Esperança do Norte, no 2º turno de 2026, Brancos: 2.539 dos 41.817 eleitores que não votaram, 6,1%.",
+  "plain": "Em Boa Esperança do Norte, no 2º turno de 2026, Brancos: 2.539 das 41.817 pessoas que não votaram, 6,1%."
+ },
+ "mt/boa-esperanca-do-norte/2026-2/nulos": {
+  "standard": "Em Boa Esperança do Norte, no 2º turno de 2026, Nulos: 3.174 dos 41.817 eleitores que não votaram, 7,6%.",
+  "plain": "Em Boa Esperança do Norte, no 2º turno de 2026, Nulos: 3.174 das 41.817 pessoas que não votaram, 7,6%."
+ },
+ "mt/boa-esperanca-do-norte/2026-2/margem": {
+  "standard": "Faltaram 180 votos para virar: cabem 232 vezes nos 41.817 que não votaram.",
+  "plain": "Faltaram 180 votos para virar o resultado. Esse número cabe 232 vezes nas 41.817 pessoas que não votaram."
+ },
+ "mt/boa-esperanca-do-norte/comparacoes/ml": {
+  "standard": "1ª, menor diferença entre os dois candidatos no 1º turno. Grupo: 3 cidades · 2026.",
+  "plain": "1ª, menor diferença de votos entre os dois primeiros no 1º turno, entre cidades do mesmo tamanho. Grupo: 3 cidades · 2026."
+ },
+ "rj/cidade-exemplo/2026-1/frase": {
+  "standard": "Em Cidade Exemplo, no 1º turno de 2026, 30% do eleitorado não votou, quase tanto quanto o Candidato B recebeu (33,6%).",
+  "plain": "Em Cidade Exemplo, no 1º turno de 2026, 30% das pessoas que podiam votar não votaram. Isso é quase igual ao que o Candidato B recebeu: 33,6%."
+ },
+ "rj/cidade-exemplo/2026-1/votaram": {
+  "standard": "Em Cidade Exemplo, no 1º turno de 2026, votaram 70% do eleitorado: 70.000 votos válidos entre 100.000 eleitores aptos.",
+  "plain": "Em Cidade Exemplo, no 1º turno de 2026, votaram 70% das pessoas que podiam votar. Foram 70.000 votos para candidatos, entre 100.000 pessoas."
+ },
+ "rj/cidade-exemplo/2026-1/naoVotaram": {
+  "standard": "Em Cidade Exemplo, no 1º turno de 2026, 30% do eleitorado não votou: 30.000 dos 100.000 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Cidade Exemplo, no 1º turno de 2026, 30% das pessoas que podiam votar não votaram. São 30.000 entre 100.000 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "rj/cidade-exemplo/2026-1/a": {
+  "standard": "Em Cidade Exemplo, no 1º turno de 2026, Candidato A: 36.400 de 70.000 votos válidos, 52%.",
+  "plain": "Em Cidade Exemplo, no 1º turno de 2026, Candidato A: 36.400 de 70.000 votos para candidatos, 52%."
+ },
+ "rj/cidade-exemplo/2026-1/b": {
+  "standard": "Em Cidade Exemplo, no 1º turno de 2026, Candidato B: 33.600 de 70.000 votos válidos, 48%.",
+  "plain": "Em Cidade Exemplo, no 1º turno de 2026, Candidato B: 33.600 de 70.000 votos para candidatos, 48%."
+ },
+ "rj/cidade-exemplo/2026-1/abstencao": {
+  "standard": "Em Cidade Exemplo, no 1º turno de 2026, Abstenção: 23.400 dos 30.000 eleitores que não votaram, 78%.",
+  "plain": "Em Cidade Exemplo, no 1º turno de 2026, Abstenção: 23.400 das 30.000 pessoas que não votaram, 78%."
+ },
+ "rj/cidade-exemplo/2026-1/brancos": {
+  "standard": "Em Cidade Exemplo, no 1º turno de 2026, Brancos: 3.000 dos 30.000 eleitores que não votaram, 10%.",
+  "plain": "Em Cidade Exemplo, no 1º turno de 2026, Brancos: 3.000 das 30.000 pessoas que não votaram, 10%."
+ },
+ "rj/cidade-exemplo/2026-1/nulos": {
+  "standard": "Em Cidade Exemplo, no 1º turno de 2026, Nulos: 3.600 dos 30.000 eleitores que não votaram, 12%.",
+  "plain": "Em Cidade Exemplo, no 1º turno de 2026, Nulos: 3.600 das 30.000 pessoas que não votaram, 12%."
+ },
+ "rj/cidade-exemplo/2026-1/margem": {
+  "standard": "Faltaram 2.800 votos para virar: cabem 10 vezes nos 30.000 que não votaram.",
+  "plain": "Faltaram 2.800 votos para virar o resultado. Esse número cabe 10 vezes nas 30.000 pessoas que não votaram."
+ },
+ "rj/cidade-exemplo/2026-2/frase": {
+  "standard": "Em Cidade Exemplo, no 2º turno de 2026, 31,6% do eleitorado não votou, quase tanto quanto o mais votado, Candidato A, recebeu (34,5%).",
+  "plain": "Em Cidade Exemplo, no 2º turno de 2026, 31,6% das pessoas que podiam votar não votaram. Isso é quase igual ao que Candidato A, o mais votado, recebeu: 34,5%."
+ },
+ "rj/cidade-exemplo/2026-2/votaram": {
+  "standard": "Em Cidade Exemplo, no 2º turno de 2026, votaram 68,4% do eleitorado: 68.434 votos válidos entre 100.000 eleitores aptos.",
+  "plain": "Em Cidade Exemplo, no 2º turno de 2026, votaram 68,4% das pessoas que podiam votar. Foram 68.434 votos para candidatos, entre 100.000 pessoas."
+ },
+ "rj/cidade-exemplo/2026-2/naoVotaram": {
+  "standard": "Em Cidade Exemplo, no 2º turno de 2026, 31,6% do eleitorado não votou: 31.566 dos 100.000 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Cidade Exemplo, no 2º turno de 2026, 31,6% das pessoas que podiam votar não votaram. São 31.566 entre 100.000 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "rj/cidade-exemplo/2026-2/a": {
+  "standard": "Em Cidade Exemplo, no 2º turno de 2026, Candidato A: 34.537 de 68.434 votos válidos, 50,5%.",
+  "plain": "Em Cidade Exemplo, no 2º turno de 2026, Candidato A: 34.537 de 68.434 votos para candidatos, 50,5%."
+ },
+ "rj/cidade-exemplo/2026-2/b": {
+  "standard": "Em Cidade Exemplo, no 2º turno de 2026, Candidato B: 33.897 de 68.434 votos válidos, 49,5%.",
+  "plain": "Em Cidade Exemplo, no 2º turno de 2026, Candidato B: 33.897 de 68.434 votos para candidatos, 49,5%."
+ },
+ "rj/cidade-exemplo/2026-2/abstencao": {
+  "standard": "Em Cidade Exemplo, no 2º turno de 2026, Abstenção: 27.066 dos 31.566 eleitores que não votaram, 85,7%.",
+  "plain": "Em Cidade Exemplo, no 2º turno de 2026, Abstenção: 27.066 das 31.566 pessoas que não votaram, 85,7%."
+ },
+ "rj/cidade-exemplo/2026-2/brancos": {
+  "standard": "Em Cidade Exemplo, no 2º turno de 2026, Brancos: 2.000 dos 31.566 eleitores que não votaram, 6,3%.",
+  "plain": "Em Cidade Exemplo, no 2º turno de 2026, Brancos: 2.000 das 31.566 pessoas que não votaram, 6,3%."
+ },
+ "rj/cidade-exemplo/2026-2/nulos": {
+  "standard": "Em Cidade Exemplo, no 2º turno de 2026, Nulos: 2.500 dos 31.566 eleitores que não votaram, 7,9%.",
+  "plain": "Em Cidade Exemplo, no 2º turno de 2026, Nulos: 2.500 das 31.566 pessoas que não votaram, 7,9%."
+ },
+ "rj/cidade-exemplo/2026-2/margem": {
+  "standard": "Faltaram 640 votos para virar: cabem 49 vezes nos 31.566 que não votaram.",
+  "plain": "Faltaram 640 votos para virar o resultado. Esse número cabe 49 vezes nas 31.566 pessoas que não votaram."
+ },
+ "rj/cidade-exemplo/comparacoes/mh": {
+  "standard": "1ª, maior diferença entre os dois candidatos no 1º turno. Grupo: 3 cidades · 2026.",
+  "plain": "1ª, maior diferença de votos entre os dois primeiros no 1º turno, entre cidades do mesmo tamanho. Grupo: 3 cidades · 2026."
+ },
+ "rj/cidade-exemplo/comparacoes/td": {
+  "standard": "1ª, maior queda de comparecimento entre cidades do mesmo porte. Grupo: 2 cidades · 2022 → 2026.",
+  "plain": "1ª, maior queda de comparecimento entre cidades do mesmo tamanho. Grupo: 2 cidades · 2022 → 2026."
+ },
+ "rj/cidade-exemplo/comparacoes/bl": {
+  "standard": "1ª, menor parcela de votos brancos e nulos. Grupo: 2 cidades · 2018, 2022 e 2026.",
+  "plain": "1ª, menor parte de votos em branco e nulos entre cidades do mesmo tamanho. Grupo: 2 cidades · 2018, 2022 e 2026."
+ },
+ "rj/cidade-exemplo-a/2026-1/frase": {
+  "standard": "Em Cidade Exemplo A, no 1º turno de 2026, 32,2% do eleitorado não votou, quase tanto quanto o mais votado, Candidato A, recebeu (36,5%).",
+  "plain": "Em Cidade Exemplo A, no 1º turno de 2026, 32,2% das pessoas que podiam votar não votaram. Isso é quase igual ao que Candidato A, o mais votado, recebeu: 36,5%."
+ },
+ "rj/cidade-exemplo-a/2026-1/votaram": {
+  "standard": "Em Cidade Exemplo A, no 1º turno de 2026, votaram 67,8% do eleitorado: 26.856 votos válidos entre 39.620 eleitores aptos.",
+  "plain": "Em Cidade Exemplo A, no 1º turno de 2026, votaram 67,8% das pessoas que podiam votar. Foram 26.856 votos para candidatos, entre 39.620 pessoas."
+ },
+ "rj/cidade-exemplo-a/2026-1/naoVotaram": {
+  "standard": "Em Cidade Exemplo A, no 1º turno de 2026, 32,2% do eleitorado não votou: 12.764 dos 39.620 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Cidade Exemplo A, no 1º turno de 2026, 32,2% das pessoas que podiam votar não votaram. São 12.764 entre 39.620 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "rj/cidade-exemplo-a/2026-1/a": {
+  "standard": "Em Cidade Exemplo A, no 1º turno de 2026, Candidato A: 14.465 de 26.856 votos válidos, 53,9%.",
+  "plain": "Em Cidade Exemplo A, no 1º turno de 2026, Candidato A: 14.465 de 26.856 votos para candidatos, 53,9%."
+ },
+ "rj/cidade-exemplo-a/2026-1/b": {
+  "standard": "Em Cidade Exemplo A, no 1º turno de 2026, Candidato B: 12.391 de 26.856 votos válidos, 46,1%.",
+  "plain": "Em Cidade Exemplo A, no 1º turno de 2026, Candidato B: 12.391 de 26.856 votos para candidatos, 46,1%."
+ },
+ "rj/cidade-exemplo-a/2026-1/abstencao": {
+  "standard": "Em Cidade Exemplo A, no 1º turno de 2026, Abstenção: 10.981 dos 12.764 eleitores que não votaram, 86%.",
+  "plain": "Em Cidade Exemplo A, no 1º turno de 2026, Abstenção: 10.981 das 12.764 pessoas que não votaram, 86%."
+ },
+ "rj/cidade-exemplo-a/2026-1/brancos": {
+  "standard": "Em Cidade Exemplo A, no 1º turno de 2026, Brancos: 792 dos 12.764 eleitores que não votaram, 6,2%.",
+  "plain": "Em Cidade Exemplo A, no 1º turno de 2026, Brancos: 792 das 12.764 pessoas que não votaram, 6,2%."
+ },
+ "rj/cidade-exemplo-a/2026-1/nulos": {
+  "standard": "Em Cidade Exemplo A, no 1º turno de 2026, Nulos: 991 dos 12.764 eleitores que não votaram, 7,8%.",
+  "plain": "Em Cidade Exemplo A, no 1º turno de 2026, Nulos: 991 das 12.764 pessoas que não votaram, 7,8%."
+ },
+ "rj/cidade-exemplo-a/2026-1/margem": {
+  "standard": "Faltaram 2.074 votos para virar: cabem 6 vezes nos 12.764 que não votaram.",
+  "plain": "Faltaram 2.074 votos para virar o resultado. Esse número cabe 6 vezes nas 12.764 pessoas que não votaram."
+ },
+ "rj/cidade-exemplo-a/2026-2/frase": {
+  "standard": "Em Cidade Exemplo A, no 2º turno de 2026, 30,9% do eleitorado não votou, quase tanto quanto o mais votado, Candidato B, recebeu (34,6%).",
+  "plain": "Em Cidade Exemplo A, no 2º turno de 2026, 30,9% das pessoas que podiam votar não votaram. Isso é quase igual ao que Candidato B, o mais votado, recebeu: 34,6%."
+ },
+ "rj/cidade-exemplo-a/2026-2/votaram": {
+  "standard": "Em Cidade Exemplo A, no 2º turno de 2026, votaram 69,1% do eleitorado: 24.399 votos válidos entre 35.318 eleitores aptos.",
+  "plain": "Em Cidade Exemplo A, no 2º turno de 2026, votaram 69,1% das pessoas que podiam votar. Foram 24.399 votos para candidatos, entre 35.318 pessoas."
+ },
+ "rj/cidade-exemplo-a/2026-2/naoVotaram": {
+  "standard": "Em Cidade Exemplo A, no 2º turno de 2026, 30,9% do eleitorado não votou: 10.919 dos 35.318 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Cidade Exemplo A, no 2º turno de 2026, 30,9% das pessoas que podiam votar não votaram. São 10.919 entre 35.318 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "rj/cidade-exemplo-a/2026-2/a": {
+  "standard": "Em Cidade Exemplo A, no 2º turno de 2026, Candidato A: 12.184 de 24.399 votos válidos, 49,9%.",
+  "plain": "Em Cidade Exemplo A, no 2º turno de 2026, Candidato A: 12.184 de 24.399 votos para candidatos, 49,9%."
+ },
+ "rj/cidade-exemplo-a/2026-2/b": {
+  "standard": "Em Cidade Exemplo A, no 2º turno de 2026, Candidato B: 12.215 de 24.399 votos válidos, 50,1%.",
+  "plain": "Em Cidade Exemplo A, no 2º turno de 2026, Candidato B: 12.215 de 24.399 votos para candidatos, 50,1%."
+ },
+ "rj/cidade-exemplo-a/2026-2/abstencao": {
+  "standard": "Em Cidade Exemplo A, no 2º turno de 2026, Abstenção: 9.330 dos 10.919 eleitores que não votaram, 85,4%.",
+  "plain": "Em Cidade Exemplo A, no 2º turno de 2026, Abstenção: 9.330 das 10.919 pessoas que não votaram, 85,4%."
+ },
+ "rj/cidade-exemplo-a/2026-2/brancos": {
+  "standard": "Em Cidade Exemplo A, no 2º turno de 2026, Brancos: 706 dos 10.919 eleitores que não votaram, 6,5%.",
+  "plain": "Em Cidade Exemplo A, no 2º turno de 2026, Brancos: 706 das 10.919 pessoas que não votaram, 6,5%."
+ },
+ "rj/cidade-exemplo-a/2026-2/nulos": {
+  "standard": "Em Cidade Exemplo A, no 2º turno de 2026, Nulos: 883 dos 10.919 eleitores que não votaram, 8,1%.",
+  "plain": "Em Cidade Exemplo A, no 2º turno de 2026, Nulos: 883 das 10.919 pessoas que não votaram, 8,1%."
+ },
+ "rj/cidade-exemplo-a/2026-2/margem": {
+  "standard": "Faltaram 31 votos para virar: cabem 352 vezes nos 10.919 que não votaram.",
+  "plain": "Faltaram 31 votos para virar o resultado. Esse número cabe 352 vezes nas 10.919 pessoas que não votaram."
+ },
+ "rj/cidade-exemplo-b/2026-1/frase": {
+  "standard": "Em Cidade Exemplo B, no 1º turno de 2026, 26,6% do eleitorado não votou, menos do que o Candidato A, o segundo mais votado, recebeu (32,6%).",
+  "plain": "Em Cidade Exemplo B, no 1º turno de 2026, 26,6% das pessoas que podiam votar não votaram. Isso é menos do que o Candidato A, o segundo mais votado, recebeu: 32,6%."
+ },
+ "rj/cidade-exemplo-b/2026-1/votaram": {
+  "standard": "Em Cidade Exemplo B, no 1º turno de 2026, votaram 73,4% do eleitorado: 36.847 votos válidos entre 50.180 eleitores aptos.",
+  "plain": "Em Cidade Exemplo B, no 1º turno de 2026, votaram 73,4% das pessoas que podiam votar. Foram 36.847 votos para candidatos, entre 50.180 pessoas."
+ },
+ "rj/cidade-exemplo-b/2026-1/naoVotaram": {
+  "standard": "Em Cidade Exemplo B, no 1º turno de 2026, 26,6% do eleitorado não votou: 13.333 dos 50.180 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Cidade Exemplo B, no 1º turno de 2026, 26,6% das pessoas que podiam votar não votaram. São 13.333 entre 50.180 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "rj/cidade-exemplo-b/2026-1/a": {
+  "standard": "Em Cidade Exemplo B, no 1º turno de 2026, Candidato A: 16.362 de 36.847 votos válidos, 44,4%.",
+  "plain": "Em Cidade Exemplo B, no 1º turno de 2026, Candidato A: 16.362 de 36.847 votos para candidatos, 44,4%."
+ },
+ "rj/cidade-exemplo-b/2026-1/b": {
+  "standard": "Em Cidade Exemplo B, no 1º turno de 2026, Candidato B: 20.485 de 36.847 votos válidos, 55,6%.",
+  "plain": "Em Cidade Exemplo B, no 1º turno de 2026, Candidato B: 20.485 de 36.847 votos para candidatos, 55,6%."
+ },
+ "rj/cidade-exemplo-b/2026-1/abstencao": {
+  "standard": "Em Cidade Exemplo B, no 1º turno de 2026, Abstenção: 11.074 dos 13.333 eleitores que não votaram, 83,1%.",
+  "plain": "Em Cidade Exemplo B, no 1º turno de 2026, Abstenção: 11.074 das 13.333 pessoas que não votaram, 83,1%."
+ },
+ "rj/cidade-exemplo-b/2026-1/brancos": {
+  "standard": "Em Cidade Exemplo B, no 1º turno de 2026, Brancos: 1.004 dos 13.333 eleitores que não votaram, 7,5%.",
+  "plain": "Em Cidade Exemplo B, no 1º turno de 2026, Brancos: 1.004 das 13.333 pessoas que não votaram, 7,5%."
+ },
+ "rj/cidade-exemplo-b/2026-1/nulos": {
+  "standard": "Em Cidade Exemplo B, no 1º turno de 2026, Nulos: 1.255 dos 13.333 eleitores que não votaram, 9,4%.",
+  "plain": "Em Cidade Exemplo B, no 1º turno de 2026, Nulos: 1.255 das 13.333 pessoas que não votaram, 9,4%."
+ },
+ "rj/cidade-exemplo-b/2026-1/margem": {
+  "standard": "Faltaram 4.123 votos para virar: cabem 3 vezes nos 13.333 que não votaram.",
+  "plain": "Faltaram 4.123 votos para virar o resultado. Esse número cabe 3 vezes nas 13.333 pessoas que não votaram."
+ },
+ "rj/cidade-exemplo-b/2026-2/frase": {
+  "standard": "Em Cidade Exemplo B, no 2º turno de 2026, 28,1% do eleitorado não votou, menos do que o Candidato A, o segundo mais votado, recebeu (33,6%).",
+  "plain": "Em Cidade Exemplo B, no 2º turno de 2026, 28,1% das pessoas que podiam votar não votaram. Isso é menos do que o Candidato A, o segundo mais votado, recebeu: 33,6%."
+ },
+ "rj/cidade-exemplo-b/2026-2/votaram": {
+  "standard": "Em Cidade Exemplo B, no 2º turno de 2026, votaram 71,9% do eleitorado: 38.320 votos válidos entre 53.294 eleitores aptos.",
+  "plain": "Em Cidade Exemplo B, no 2º turno de 2026, votaram 71,9% das pessoas que podiam votar. Foram 38.320 votos para candidatos, entre 53.294 pessoas."
+ },
+ "rj/cidade-exemplo-b/2026-2/naoVotaram": {
+  "standard": "Em Cidade Exemplo B, no 2º turno de 2026, 28,1% do eleitorado não votou: 14.974 dos 53.294 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Cidade Exemplo B, no 2º turno de 2026, 28,1% das pessoas que podiam votar não votaram. São 14.974 entre 53.294 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "rj/cidade-exemplo-b/2026-2/a": {
+  "standard": "Em Cidade Exemplo B, no 2º turno de 2026, Candidato A: 17.930 de 38.320 votos válidos, 46,8%.",
+  "plain": "Em Cidade Exemplo B, no 2º turno de 2026, Candidato A: 17.930 de 38.320 votos para candidatos, 46,8%."
+ },
+ "rj/cidade-exemplo-b/2026-2/b": {
+  "standard": "Em Cidade Exemplo B, no 2º turno de 2026, Candidato B: 20.390 de 38.320 votos válidos, 53,2%.",
+  "plain": "Em Cidade Exemplo B, no 2º turno de 2026, Candidato B: 20.390 de 38.320 votos para candidatos, 53,2%."
+ },
+ "rj/cidade-exemplo-b/2026-2/abstencao": {
+  "standard": "Em Cidade Exemplo B, no 2º turno de 2026, Abstenção: 12.576 dos 14.974 eleitores que não votaram, 84%.",
+  "plain": "Em Cidade Exemplo B, no 2º turno de 2026, Abstenção: 12.576 das 14.974 pessoas que não votaram, 84%."
+ },
+ "rj/cidade-exemplo-b/2026-2/brancos": {
+  "standard": "Em Cidade Exemplo B, no 2º turno de 2026, Brancos: 1.066 dos 14.974 eleitores que não votaram, 7,1%.",
+  "plain": "Em Cidade Exemplo B, no 2º turno de 2026, Brancos: 1.066 das 14.974 pessoas que não votaram, 7,1%."
+ },
+ "rj/cidade-exemplo-b/2026-2/nulos": {
+  "standard": "Em Cidade Exemplo B, no 2º turno de 2026, Nulos: 1.332 dos 14.974 eleitores que não votaram, 8,9%.",
+  "plain": "Em Cidade Exemplo B, no 2º turno de 2026, Nulos: 1.332 das 14.974 pessoas que não votaram, 8,9%."
+ },
+ "rj/cidade-exemplo-b/2026-2/margem": {
+  "standard": "Faltaram 2.460 votos para virar: cabem 6 vezes nos 14.974 que não votaram.",
+  "plain": "Faltaram 2.460 votos para virar o resultado. Esse número cabe 6 vezes nas 14.974 pessoas que não votaram."
+ },
+ "rj/cidade-exemplo-b/comparacoes/tu": {
+  "standard": "1ª, maior alta de comparecimento entre cidades do mesmo porte. Grupo: 4 cidades · 2022 → 2026.",
+  "plain": "1ª, maior alta de comparecimento entre cidades do mesmo tamanho. Grupo: 4 cidades · 2022 → 2026."
+ },
+ "rj/cidade-exemplo-b/comparacoes/mh": {
+  "standard": "1ª, maior diferença entre os dois candidatos no 1º turno. Grupo: 4 cidades · 2026.",
+  "plain": "1ª, maior diferença de votos entre os dois primeiros no 1º turno, entre cidades do mesmo tamanho. Grupo: 4 cidades · 2026."
+ },
+ "rj/cidade-exemplo-b/comparacoes/bh": {
+  "standard": "1ª, maior parcela de votos brancos e nulos. Grupo: 4 cidades · 2018, 2022 e 2026.",
+  "plain": "1ª, maior parte de votos em branco e nulos entre cidades do mesmo tamanho. Grupo: 4 cidades · 2018, 2022 e 2026."
+ },
+ "rj/cidade-exemplo-c/2026-1/frase": {
+  "standard": "Em Cidade Exemplo C, no 1º turno de 2026, 29,5% do eleitorado não votou, quase tanto quanto o Candidato A recebeu (34,1%).",
+  "plain": "Em Cidade Exemplo C, no 1º turno de 2026, 29,5% das pessoas que podiam votar não votaram. Isso é quase igual ao que o Candidato A recebeu: 34,1%."
+ },
+ "rj/cidade-exemplo-c/2026-1/votaram": {
+  "standard": "Em Cidade Exemplo C, no 1º turno de 2026, votaram 70,5% do eleitorado: 48.324 votos válidos entre 68.587 eleitores aptos.",
+  "plain": "Em Cidade Exemplo C, no 1º turno de 2026, votaram 70,5% das pessoas que podiam votar. Foram 48.324 votos para candidatos, entre 68.587 pessoas."
+ },
+ "rj/cidade-exemplo-c/2026-1/naoVotaram": {
+  "standard": "Em Cidade Exemplo C, no 1º turno de 2026, 29,5% do eleitorado não votou: 20.263 dos 68.587 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Cidade Exemplo C, no 1º turno de 2026, 29,5% das pessoas que podiam votar não votaram. São 20.263 entre 68.587 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "rj/cidade-exemplo-c/2026-1/a": {
+  "standard": "Em Cidade Exemplo C, no 1º turno de 2026, Candidato A: 23.385 de 48.324 votos válidos, 48,4%.",
+  "plain": "Em Cidade Exemplo C, no 1º turno de 2026, Candidato A: 23.385 de 48.324 votos para candidatos, 48,4%."
+ },
+ "rj/cidade-exemplo-c/2026-1/b": {
+  "standard": "Em Cidade Exemplo C, no 1º turno de 2026, Candidato B: 24.939 de 48.324 votos válidos, 51,6%.",
+  "plain": "Em Cidade Exemplo C, no 1º turno de 2026, Candidato B: 24.939 de 48.324 votos para candidatos, 51,6%."
+ },
+ "rj/cidade-exemplo-c/2026-1/abstencao": {
+  "standard": "Em Cidade Exemplo C, no 1º turno de 2026, Abstenção: 17.176 dos 20.263 eleitores que não votaram, 84,8%.",
+  "plain": "Em Cidade Exemplo C, no 1º turno de 2026, Abstenção: 17.176 das 20.263 pessoas que não votaram, 84,8%."
+ },
+ "rj/cidade-exemplo-c/2026-1/brancos": {
+  "standard": "Em Cidade Exemplo C, no 1º turno de 2026, Brancos: 1.372 dos 20.263 eleitores que não votaram, 6,8%.",
+  "plain": "Em Cidade Exemplo C, no 1º turno de 2026, Brancos: 1.372 das 20.263 pessoas que não votaram, 6,8%."
+ },
+ "rj/cidade-exemplo-c/2026-1/nulos": {
+  "standard": "Em Cidade Exemplo C, no 1º turno de 2026, Nulos: 1.715 dos 20.263 eleitores que não votaram, 8,5%.",
+  "plain": "Em Cidade Exemplo C, no 1º turno de 2026, Nulos: 1.715 das 20.263 pessoas que não votaram, 8,5%."
+ },
+ "rj/cidade-exemplo-c/2026-1/margem": {
+  "standard": "Faltaram 1.554 votos para virar: cabem 13 vezes nos 20.263 que não votaram.",
+  "plain": "Faltaram 1.554 votos para virar o resultado. Esse número cabe 13 vezes nas 20.263 pessoas que não votaram."
+ },
+ "rj/cidade-exemplo-c/2026-2/frase": {
+  "standard": "Em Cidade Exemplo C, no 2º turno de 2026, 26,3% do eleitorado não votou, menos do que o Candidato A, o segundo mais votado, recebeu (32%).",
+  "plain": "Em Cidade Exemplo C, no 2º turno de 2026, 26,3% das pessoas que podiam votar não votaram. Isso é menos do que o Candidato A, o segundo mais votado, recebeu: 32%."
+ },
+ "rj/cidade-exemplo-c/2026-2/votaram": {
+  "standard": "Em Cidade Exemplo C, no 2º turno de 2026, votaram 73,7% do eleitorado: 49.986 votos válidos entre 67.868 eleitores aptos.",
+  "plain": "Em Cidade Exemplo C, no 2º turno de 2026, votaram 73,7% das pessoas que podiam votar. Foram 49.986 votos para candidatos, entre 67.868 pessoas."
+ },
+ "rj/cidade-exemplo-c/2026-2/naoVotaram": {
+  "standard": "Em Cidade Exemplo C, no 2º turno de 2026, 26,3% do eleitorado não votou: 17.882 dos 67.868 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Cidade Exemplo C, no 2º turno de 2026, 26,3% das pessoas que podiam votar não votaram. São 17.882 entre 67.868 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "rj/cidade-exemplo-c/2026-2/a": {
+  "standard": "Em Cidade Exemplo C, no 2º turno de 2026, Candidato A: 21.684 de 49.986 votos válidos, 43,4%.",
+  "plain": "Em Cidade Exemplo C, no 2º turno de 2026, Candidato A: 21.684 de 49.986 votos para candidatos, 43,4%."
+ },
+ "rj/cidade-exemplo-c/2026-2/b": {
+  "standard": "Em Cidade Exemplo C, no 2º turno de 2026, Candidato B: 28.302 de 49.986 votos válidos, 56,6%.",
+  "plain": "Em Cidade Exemplo C, no 2º turno de 2026, Candidato B: 28.302 de 49.986 votos para candidatos, 56,6%."
+ },
+ "rj/cidade-exemplo-c/2026-2/abstencao": {
+  "standard": "Em Cidade Exemplo C, no 2º turno de 2026, Abstenção: 14.828 dos 17.882 eleitores que não votaram, 82,9%.",
+  "plain": "Em Cidade Exemplo C, no 2º turno de 2026, Abstenção: 14.828 das 17.882 pessoas que não votaram, 82,9%."
+ },
+ "rj/cidade-exemplo-c/2026-2/brancos": {
+  "standard": "Em Cidade Exemplo C, no 2º turno de 2026, Brancos: 1.357 dos 17.882 eleitores que não votaram, 7,6%.",
+  "plain": "Em Cidade Exemplo C, no 2º turno de 2026, Brancos: 1.357 das 17.882 pessoas que não votaram, 7,6%."
+ },
+ "rj/cidade-exemplo-c/2026-2/nulos": {
+  "standard": "Em Cidade Exemplo C, no 2º turno de 2026, Nulos: 1.697 dos 17.882 eleitores que não votaram, 9,5%.",
+  "plain": "Em Cidade Exemplo C, no 2º turno de 2026, Nulos: 1.697 das 17.882 pessoas que não votaram, 9,5%."
+ },
+ "rj/cidade-exemplo-c/2026-2/margem": {
+  "standard": "Faltaram 6.618 votos para virar: cabem 2 vezes nos 17.882 que não votaram.",
+  "plain": "Faltaram 6.618 votos para virar o resultado. Esse número cabe 2 vezes nas 17.882 pessoas que não votaram."
+ },
+ "rj/cidade-exemplo-c/comparacoes/td": {
+  "standard": "1ª, maior queda de comparecimento entre cidades do mesmo porte. Grupo: 4 cidades · 2022 → 2026.",
+  "plain": "1ª, maior queda de comparecimento entre cidades do mesmo tamanho. Grupo: 4 cidades · 2022 → 2026."
+ },
+ "rj/cidade-exemplo-d/2026-1/frase": {
+  "standard": "Em Cidade Exemplo D, no 1º turno de 2026, 25,5% do eleitorado não votou, menos do que o Candidato A, o segundo mais votado, recebeu (37%).",
+  "plain": "Em Cidade Exemplo D, no 1º turno de 2026, 25,5% das pessoas que podiam votar não votaram. Isso é menos do que o Candidato A, o segundo mais votado, recebeu: 37%."
+ },
+ "rj/cidade-exemplo-d/2026-1/votaram": {
+  "standard": "Em Cidade Exemplo D, no 1º turno de 2026, votaram 74,5% do eleitorado: 63.085 votos válidos entre 84.661 eleitores aptos.",
+  "plain": "Em Cidade Exemplo D, no 1º turno de 2026, votaram 74,5% das pessoas que podiam votar. Foram 63.085 votos para candidatos, entre 84.661 pessoas."
+ },
+ "rj/cidade-exemplo-d/2026-1/naoVotaram": {
+  "standard": "Em Cidade Exemplo D, no 1º turno de 2026, 25,5% do eleitorado não votou: 21.576 dos 84.661 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Cidade Exemplo D, no 1º turno de 2026, 25,5% das pessoas que podiam votar não votaram. São 21.576 entre 84.661 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "rj/cidade-exemplo-d/2026-1/a": {
+  "standard": "Em Cidade Exemplo D, no 1º turno de 2026, Candidato A: 31.345 de 63.085 votos válidos, 49,7%.",
+  "plain": "Em Cidade Exemplo D, no 1º turno de 2026, Candidato A: 31.345 de 63.085 votos para candidatos, 49,7%."
+ },
+ "rj/cidade-exemplo-d/2026-1/b": {
+  "standard": "Em Cidade Exemplo D, no 1º turno de 2026, Candidato B: 31.740 de 63.085 votos válidos, 50,3%.",
+  "plain": "Em Cidade Exemplo D, no 1º turno de 2026, Candidato B: 31.740 de 63.085 votos para candidatos, 50,3%."
+ },
+ "rj/cidade-exemplo-d/2026-1/abstencao": {
+  "standard": "Em Cidade Exemplo D, no 1º turno de 2026, Abstenção: 17.766 dos 21.576 eleitores que não votaram, 82,3%.",
+  "plain": "Em Cidade Exemplo D, no 1º turno de 2026, Abstenção: 17.766 das 21.576 pessoas que não votaram, 82,3%."
+ },
+ "rj/cidade-exemplo-d/2026-1/brancos": {
+  "standard": "Em Cidade Exemplo D, no 1º turno de 2026, Brancos: 1.693 dos 21.576 eleitores que não votaram, 7,8%.",
+  "plain": "Em Cidade Exemplo D, no 1º turno de 2026, Brancos: 1.693 das 21.576 pessoas que não votaram, 7,8%."
+ },
+ "rj/cidade-exemplo-d/2026-1/nulos": {
+  "standard": "Em Cidade Exemplo D, no 1º turno de 2026, Nulos: 2.117 dos 21.576 eleitores que não votaram, 9,8%.",
+  "plain": "Em Cidade Exemplo D, no 1º turno de 2026, Nulos: 2.117 das 21.576 pessoas que não votaram, 9,8%."
+ },
+ "rj/cidade-exemplo-d/2026-1/margem": {
+  "standard": "Faltaram 395 votos para virar: cabem 54 vezes nos 21.576 que não votaram.",
+  "plain": "Faltaram 395 votos para virar o resultado. Esse número cabe 54 vezes nas 21.576 pessoas que não votaram."
+ },
+ "rj/cidade-exemplo-d/2026-2/frase": {
+  "standard": "Em Cidade Exemplo D, no 2º turno de 2026, 31,1% do eleitorado não votou, quase tanto quanto o mais votado, Candidato A, recebeu (36,4%).",
+  "plain": "Em Cidade Exemplo D, no 2º turno de 2026, 31,1% das pessoas que podiam votar não votaram. Isso é quase igual ao que Candidato A, o mais votado, recebeu: 36,4%."
+ },
+ "rj/cidade-exemplo-d/2026-2/votaram": {
+  "standard": "Em Cidade Exemplo D, no 2º turno de 2026, votaram 68,9% do eleitorado: 56.493 votos válidos entre 81.967 eleitores aptos.",
+  "plain": "Em Cidade Exemplo D, no 2º turno de 2026, votaram 68,9% das pessoas que podiam votar. Foram 56.493 votos para candidatos, entre 81.967 pessoas."
+ },
+ "rj/cidade-exemplo-d/2026-2/naoVotaram": {
+  "standard": "Em Cidade Exemplo D, no 2º turno de 2026, 31,1% do eleitorado não votou: 25.474 dos 81.967 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Cidade Exemplo D, no 2º turno de 2026, 31,1% das pessoas que podiam votar não votaram. São 25.474 entre 81.967 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "rj/cidade-exemplo-d/2026-2/a": {
+  "standard": "Em Cidade Exemplo D, no 2º turno de 2026, Candidato A: 29.875 de 56.493 votos válidos, 52,9%.",
+  "plain": "Em Cidade Exemplo D, no 2º turno de 2026, Candidato A: 29.875 de 56.493 votos para candidatos, 52,9%."
+ },
+ "rj/cidade-exemplo-d/2026-2/b": {
+  "standard": "Em Cidade Exemplo D, no 2º turno de 2026, Candidato B: 26.618 de 56.493 votos válidos, 47,1%.",
+  "plain": "Em Cidade Exemplo D, no 2º turno de 2026, Candidato B: 26.618 de 56.493 votos para candidatos, 47,1%."
+ },
+ "rj/cidade-exemplo-d/2026-2/abstencao": {
+  "standard": "Em Cidade Exemplo D, no 2º turno de 2026, Abstenção: 21.786 dos 25.474 eleitores que não votaram, 85,5%.",
+  "plain": "Em Cidade Exemplo D, no 2º turno de 2026, Abstenção: 21.786 das 25.474 pessoas que não votaram, 85,5%."
+ },
+ "rj/cidade-exemplo-d/2026-2/brancos": {
+  "standard": "Em Cidade Exemplo D, no 2º turno de 2026, Brancos: 1.639 dos 25.474 eleitores que não votaram, 6,4%.",
+  "plain": "Em Cidade Exemplo D, no 2º turno de 2026, Brancos: 1.639 das 25.474 pessoas que não votaram, 6,4%."
+ },
+ "rj/cidade-exemplo-d/2026-2/nulos": {
+  "standard": "Em Cidade Exemplo D, no 2º turno de 2026, Nulos: 2.049 dos 25.474 eleitores que não votaram, 8%.",
+  "plain": "Em Cidade Exemplo D, no 2º turno de 2026, Nulos: 2.049 das 25.474 pessoas que não votaram, 8%."
+ },
+ "rj/cidade-exemplo-d/2026-2/margem": {
+  "standard": "Faltaram 3.257 votos para virar: cabem 7 vezes nos 25.474 que não votaram.",
+  "plain": "Faltaram 3.257 votos para virar o resultado. Esse número cabe 7 vezes nas 25.474 pessoas que não votaram."
+ },
+ "rj/cidade-exemplo-d/comparacoes/ml": {
+  "standard": "1ª, menor diferença entre os dois candidatos no 1º turno. Grupo: 4 cidades · 2026.",
+  "plain": "1ª, menor diferença de votos entre os dois primeiros no 1º turno, entre cidades do mesmo tamanho. Grupo: 4 cidades · 2026."
+ },
+ "rj/cidade-exemplo-e/2026-1/frase": {
+  "standard": "Em Cidade Exemplo E, no 1º turno de 2026, 25,9% do eleitorado não votou, menos do que o Candidato B, o segundo mais votado, recebeu (35,9%).",
+  "plain": "Em Cidade Exemplo E, no 1º turno de 2026, 25,9% das pessoas que podiam votar não votaram. Isso é menos do que o Candidato B, o segundo mais votado, recebeu: 35,9%."
+ },
+ "rj/cidade-exemplo-e/2026-1/votaram": {
+  "standard": "Em Cidade Exemplo E, no 1º turno de 2026, votaram 74,1% do eleitorado: 73.528 votos válidos entre 99.217 eleitores aptos.",
+  "plain": "Em Cidade Exemplo E, no 1º turno de 2026, votaram 74,1% das pessoas que podiam votar. Foram 73.528 votos para candidatos, entre 99.217 pessoas."
+ },
+ "rj/cidade-exemplo-e/2026-1/naoVotaram": {
+  "standard": "Em Cidade Exemplo E, no 1º turno de 2026, 25,9% do eleitorado não votou: 25.689 dos 99.217 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Cidade Exemplo E, no 1º turno de 2026, 25,9% das pessoas que podiam votar não votaram. São 25.689 entre 99.217 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "rj/cidade-exemplo-e/2026-1/a": {
+  "standard": "Em Cidade Exemplo E, no 1º turno de 2026, Candidato A: 37.878 de 73.528 votos válidos, 51,5%.",
+  "plain": "Em Cidade Exemplo E, no 1º turno de 2026, Candidato A: 37.878 de 73.528 votos para candidatos, 51,5%."
+ },
+ "rj/cidade-exemplo-e/2026-1/b": {
+  "standard": "Em Cidade Exemplo E, no 1º turno de 2026, Candidato B: 35.650 de 73.528 votos válidos, 48,5%.",
+  "plain": "Em Cidade Exemplo E, no 1º turno de 2026, Candidato B: 35.650 de 73.528 votos para candidatos, 48,5%."
+ },
+ "rj/cidade-exemplo-e/2026-1/abstencao": {
+  "standard": "Em Cidade Exemplo E, no 1º turno de 2026, Abstenção: 21.225 dos 25.689 eleitores que não votaram, 82,6%.",
+  "plain": "Em Cidade Exemplo E, no 1º turno de 2026, Abstenção: 21.225 das 25.689 pessoas que não votaram, 82,6%."
+ },
+ "rj/cidade-exemplo-e/2026-1/brancos": {
+  "standard": "Em Cidade Exemplo E, no 1º turno de 2026, Brancos: 1.984 dos 25.689 eleitores que não votaram, 7,7%.",
+  "plain": "Em Cidade Exemplo E, no 1º turno de 2026, Brancos: 1.984 das 25.689 pessoas que não votaram, 7,7%."
+ },
+ "rj/cidade-exemplo-e/2026-1/nulos": {
+  "standard": "Em Cidade Exemplo E, no 1º turno de 2026, Nulos: 2.480 dos 25.689 eleitores que não votaram, 9,7%.",
+  "plain": "Em Cidade Exemplo E, no 1º turno de 2026, Nulos: 2.480 das 25.689 pessoas que não votaram, 9,7%."
+ },
+ "rj/cidade-exemplo-e/2026-1/margem": {
+  "standard": "Faltaram 2.228 votos para virar: cabem 11 vezes nos 25.689 que não votaram.",
+  "plain": "Faltaram 2.228 votos para virar o resultado. Esse número cabe 11 vezes nas 25.689 pessoas que não votaram."
+ },
+ "rj/cidade-exemplo-e/2026-2/frase": {
+  "standard": "Em Cidade Exemplo E, no 2º turno de 2026, 34% do eleitorado não votou, quase tanto quanto o mais votado, Candidato A, recebeu (35%).",
+  "plain": "Em Cidade Exemplo E, no 2º turno de 2026, 34% das pessoas que podiam votar não votaram. Isso é quase igual ao que Candidato A, o mais votado, recebeu: 35%."
+ },
+ "rj/cidade-exemplo-e/2026-2/votaram": {
+  "standard": "Em Cidade Exemplo E, no 2º turno de 2026, votaram 66% do eleitorado: 62.887 votos válidos entre 95.294 eleitores aptos.",
+  "plain": "Em Cidade Exemplo E, no 2º turno de 2026, votaram 66% das pessoas que podiam votar. Foram 62.887 votos para candidatos, entre 95.294 pessoas."
+ },
+ "rj/cidade-exemplo-e/2026-2/naoVotaram": {
+  "standard": "Em Cidade Exemplo E, no 2º turno de 2026, 34% do eleitorado não votou: 32.407 dos 95.294 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Cidade Exemplo E, no 2º turno de 2026, 34% das pessoas que podiam votar não votaram. São 32.407 entre 95.294 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "rj/cidade-exemplo-e/2026-2/a": {
+  "standard": "Em Cidade Exemplo E, no 2º turno de 2026, Candidato A: 33.326 de 62.887 votos válidos, 53%.",
+  "plain": "Em Cidade Exemplo E, no 2º turno de 2026, Candidato A: 33.326 de 62.887 votos para candidatos, 53%."
+ },
+ "rj/cidade-exemplo-e/2026-2/b": {
+  "standard": "Em Cidade Exemplo E, no 2º turno de 2026, Candidato B: 29.561 de 62.887 votos válidos, 47%.",
+  "plain": "Em Cidade Exemplo E, no 2º turno de 2026, Candidato B: 29.561 de 62.887 votos para candidatos, 47%."
+ },
+ "rj/cidade-exemplo-e/2026-2/abstencao": {
+  "standard": "Em Cidade Exemplo E, no 2º turno de 2026, Abstenção: 28.119 dos 32.407 eleitores que não votaram, 86,8%.",
+  "plain": "Em Cidade Exemplo E, no 2º turno de 2026, Abstenção: 28.119 das 32.407 pessoas que não votaram, 86,8%."
+ },
+ "rj/cidade-exemplo-e/2026-2/brancos": {
+  "standard": "Em Cidade Exemplo E, no 2º turno de 2026, Brancos: 1.906 dos 32.407 eleitores que não votaram, 5,9%.",
+  "plain": "Em Cidade Exemplo E, no 2º turno de 2026, Brancos: 1.906 das 32.407 pessoas que não votaram, 5,9%."
+ },
+ "rj/cidade-exemplo-e/2026-2/nulos": {
+  "standard": "Em Cidade Exemplo E, no 2º turno de 2026, Nulos: 2.382 dos 32.407 eleitores que não votaram, 7,4%.",
+  "plain": "Em Cidade Exemplo E, no 2º turno de 2026, Nulos: 2.382 das 32.407 pessoas que não votaram, 7,4%."
+ },
+ "rj/cidade-exemplo-e/2026-2/margem": {
+  "standard": "Faltaram 3.765 votos para virar: cabem 8 vezes nos 32.407 que não votaram.",
+  "plain": "Faltaram 3.765 votos para virar o resultado. Esse número cabe 8 vezes nas 32.407 pessoas que não votaram."
+ },
+ "rj/cidade-exemplo-e/comparacoes/bl": {
+  "standard": "1ª, menor parcela de votos brancos e nulos. Grupo: 4 cidades · 2018, 2022 e 2026.",
+  "plain": "1ª, menor parte de votos em branco e nulos entre cidades do mesmo tamanho. Grupo: 4 cidades · 2018, 2022 e 2026."
+ },
+ "sp/cidade-exemplo-paulista/2026-1/frase": {
+  "standard": "Em Cidade Exemplo Paulista, no 1º turno de 2026, 29,4% do eleitorado não votou, quase tanto quanto o Candidato B recebeu (34,2%).",
+  "plain": "Em Cidade Exemplo Paulista, no 1º turno de 2026, 29,4% das pessoas que podiam votar não votaram. Isso é quase igual ao que o Candidato B recebeu: 34,2%."
+ },
+ "sp/cidade-exemplo-paulista/2026-1/votaram": {
+  "standard": "Em Cidade Exemplo Paulista, no 1º turno de 2026, votaram 70,6% do eleitorado: 78.625 votos válidos entre 111.388 eleitores aptos.",
+  "plain": "Em Cidade Exemplo Paulista, no 1º turno de 2026, votaram 70,6% das pessoas que podiam votar. Foram 78.625 votos para candidatos, entre 111.388 pessoas."
+ },
+ "sp/cidade-exemplo-paulista/2026-1/naoVotaram": {
+  "standard": "Em Cidade Exemplo Paulista, no 1º turno de 2026, 29,4% do eleitorado não votou: 32.763 dos 111.388 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Cidade Exemplo Paulista, no 1º turno de 2026, 29,4% das pessoas que podiam votar não votaram. São 32.763 entre 111.388 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "sp/cidade-exemplo-paulista/2026-1/a": {
+  "standard": "Em Cidade Exemplo Paulista, no 1º turno de 2026, Candidato A: 40.481 de 78.625 votos válidos, 51,5%.",
+  "plain": "Em Cidade Exemplo Paulista, no 1º turno de 2026, Candidato A: 40.481 de 78.625 votos para candidatos, 51,5%."
+ },
+ "sp/cidade-exemplo-paulista/2026-1/b": {
+  "standard": "Em Cidade Exemplo Paulista, no 1º turno de 2026, Candidato B: 38.144 de 78.625 votos válidos, 48,5%.",
+  "plain": "Em Cidade Exemplo Paulista, no 1º turno de 2026, Candidato B: 38.144 de 78.625 votos para candidatos, 48,5%."
+ },
+ "sp/cidade-exemplo-paulista/2026-1/abstencao": {
+  "standard": "Em Cidade Exemplo Paulista, no 1º turno de 2026, Abstenção: 27.750 dos 32.763 eleitores que não votaram, 84,7%.",
+  "plain": "Em Cidade Exemplo Paulista, no 1º turno de 2026, Abstenção: 27.750 das 32.763 pessoas que não votaram, 84,7%."
+ },
+ "sp/cidade-exemplo-paulista/2026-1/brancos": {
+  "standard": "Em Cidade Exemplo Paulista, no 1º turno de 2026, Brancos: 2.228 dos 32.763 eleitores que não votaram, 6,8%.",
+  "plain": "Em Cidade Exemplo Paulista, no 1º turno de 2026, Brancos: 2.228 das 32.763 pessoas que não votaram, 6,8%."
+ },
+ "sp/cidade-exemplo-paulista/2026-1/nulos": {
+  "standard": "Em Cidade Exemplo Paulista, no 1º turno de 2026, Nulos: 2.785 dos 32.763 eleitores que não votaram, 8,5%.",
+  "plain": "Em Cidade Exemplo Paulista, no 1º turno de 2026, Nulos: 2.785 das 32.763 pessoas que não votaram, 8,5%."
+ },
+ "sp/cidade-exemplo-paulista/2026-1/margem": {
+  "standard": "Faltaram 2.337 votos para virar: cabem 14 vezes nos 32.763 que não votaram.",
+  "plain": "Faltaram 2.337 votos para virar o resultado. Esse número cabe 14 vezes nas 32.763 pessoas que não votaram."
+ },
+ "sp/cidade-exemplo-paulista/2026-2/frase": {
+  "standard": "Em Cidade Exemplo Paulista, no 2º turno de 2026, 32,2% do eleitorado não votou, um pouco mais do que o Candidato B recebeu (28,8%).",
+  "plain": "Em Cidade Exemplo Paulista, no 2º turno de 2026, 32,2% das pessoas que podiam votar não votaram. Isso é um pouco mais do que o Candidato B recebeu: 28,8%."
+ },
+ "sp/cidade-exemplo-paulista/2026-2/votaram": {
+  "standard": "Em Cidade Exemplo Paulista, no 2º turno de 2026, votaram 67,8% do eleitorado: 77.680 votos válidos entre 114.493 eleitores aptos.",
+  "plain": "Em Cidade Exemplo Paulista, no 2º turno de 2026, votaram 67,8% das pessoas que podiam votar. Foram 77.680 votos para candidatos, entre 114.493 pessoas."
+ },
+ "sp/cidade-exemplo-paulista/2026-2/naoVotaram": {
+  "standard": "Em Cidade Exemplo Paulista, no 2º turno de 2026, 32,2% do eleitorado não votou: 36.813 dos 114.493 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Cidade Exemplo Paulista, no 2º turno de 2026, 32,2% das pessoas que podiam votar não votaram. São 36.813 entre 114.493 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "sp/cidade-exemplo-paulista/2026-2/a": {
+  "standard": "Em Cidade Exemplo Paulista, no 2º turno de 2026, Candidato A: 44.737 de 77.680 votos válidos, 57,6%.",
+  "plain": "Em Cidade Exemplo Paulista, no 2º turno de 2026, Candidato A: 44.737 de 77.680 votos para candidatos, 57,6%."
+ },
+ "sp/cidade-exemplo-paulista/2026-2/b": {
+  "standard": "Em Cidade Exemplo Paulista, no 2º turno de 2026, Candidato B: 32.943 de 77.680 votos válidos, 42,4%.",
+  "plain": "Em Cidade Exemplo Paulista, no 2º turno de 2026, Candidato B: 32.943 de 77.680 votos para candidatos, 42,4%."
+ },
+ "sp/cidade-exemplo-paulista/2026-2/abstencao": {
+  "standard": "Em Cidade Exemplo Paulista, no 2º turno de 2026, Abstenção: 31.661 dos 36.813 eleitores que não votaram, 86%.",
+  "plain": "Em Cidade Exemplo Paulista, no 2º turno de 2026, Abstenção: 31.661 das 36.813 pessoas que não votaram, 86%."
+ },
+ "sp/cidade-exemplo-paulista/2026-2/brancos": {
+  "standard": "Em Cidade Exemplo Paulista, no 2º turno de 2026, Brancos: 2.290 dos 36.813 eleitores que não votaram, 6,2%.",
+  "plain": "Em Cidade Exemplo Paulista, no 2º turno de 2026, Brancos: 2.290 das 36.813 pessoas que não votaram, 6,2%."
+ },
+ "sp/cidade-exemplo-paulista/2026-2/nulos": {
+  "standard": "Em Cidade Exemplo Paulista, no 2º turno de 2026, Nulos: 2.862 dos 36.813 eleitores que não votaram, 7,8%.",
+  "plain": "Em Cidade Exemplo Paulista, no 2º turno de 2026, Nulos: 2.862 das 36.813 pessoas que não votaram, 7,8%."
+ },
+ "sp/cidade-exemplo-paulista/2026-2/margem": {
+  "standard": "Faltaram 11.794 votos para virar: cabem 3 vezes nos 36.813 que não votaram.",
+  "plain": "Faltaram 11.794 votos para virar o resultado. Esse número cabe 3 vezes nas 36.813 pessoas que não votaram."
+ },
+ "sp/cidade-exemplo-paulista/comparacoes/bh": {
+  "standard": "1ª, maior parcela de votos brancos e nulos. Grupo: 2 cidades · 2018, 2022 e 2026.",
+  "plain": "1ª, maior parte de votos em branco e nulos entre cidades do mesmo tamanho. Grupo: 2 cidades · 2018, 2022 e 2026."
+ },
+ "zz/exterior-exemplo/2026-1/frase": {
+  "standard": "No exterior, em Exterior (posto exemplo), no 1º turno de 2026, 25,5% do eleitorado não votou, menos do que o Candidato A, o segundo mais votado, recebeu (35,4%).",
+  "plain": "No exterior, em Exterior (posto exemplo), no 1º turno de 2026, 25,5% das pessoas que podiam votar não votaram. Isso é menos do que o Candidato A, o segundo mais votado, recebeu: 35,4%."
+ },
+ "zz/exterior-exemplo/2026-1/votaram": {
+  "standard": "Em Exterior (posto exemplo), no 1º turno de 2026, votaram 74,5% do eleitorado: 105.041 votos válidos entre 140.901 eleitores aptos.",
+  "plain": "Em Exterior (posto exemplo), no 1º turno de 2026, votaram 74,5% das pessoas que podiam votar. Foram 105.041 votos para candidatos, entre 140.901 pessoas."
+ },
+ "zz/exterior-exemplo/2026-1/naoVotaram": {
+  "standard": "Em Exterior (posto exemplo), no 1º turno de 2026, 25,5% do eleitorado não votou: 35.860 dos 140.901 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Exterior (posto exemplo), no 1º turno de 2026, 25,5% das pessoas que podiam votar não votaram. São 35.860 entre 140.901 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "zz/exterior-exemplo/2026-1/a": {
+  "standard": "Em Exterior (posto exemplo), no 1º turno de 2026, Candidato A: 49.843 de 105.041 votos válidos, 47,5%.",
+  "plain": "Em Exterior (posto exemplo), no 1º turno de 2026, Candidato A: 49.843 de 105.041 votos para candidatos, 47,5%."
+ },
+ "zz/exterior-exemplo/2026-1/b": {
+  "standard": "Em Exterior (posto exemplo), no 1º turno de 2026, Candidato B: 55.198 de 105.041 votos válidos, 52,5%.",
+  "plain": "Em Exterior (posto exemplo), no 1º turno de 2026, Candidato B: 55.198 de 105.041 votos para candidatos, 52,5%."
+ },
+ "zz/exterior-exemplo/2026-1/abstencao": {
+  "standard": "Em Exterior (posto exemplo), no 1º turno de 2026, Abstenção: 29.519 dos 35.860 eleitores que não votaram, 82,3%.",
+  "plain": "Em Exterior (posto exemplo), no 1º turno de 2026, Abstenção: 29.519 das 35.860 pessoas que não votaram, 82,3%."
+ },
+ "zz/exterior-exemplo/2026-1/brancos": {
+  "standard": "Em Exterior (posto exemplo), no 1º turno de 2026, Brancos: 2.818 dos 35.860 eleitores que não votaram, 7,9%.",
+  "plain": "Em Exterior (posto exemplo), no 1º turno de 2026, Brancos: 2.818 das 35.860 pessoas que não votaram, 7,9%."
+ },
+ "zz/exterior-exemplo/2026-1/nulos": {
+  "standard": "Em Exterior (posto exemplo), no 1º turno de 2026, Nulos: 3.523 dos 35.860 eleitores que não votaram, 9,8%.",
+  "plain": "Em Exterior (posto exemplo), no 1º turno de 2026, Nulos: 3.523 das 35.860 pessoas que não votaram, 9,8%."
+ },
+ "zz/exterior-exemplo/2026-1/margem": {
+  "standard": "Faltaram 5.355 votos para virar: cabem 6 vezes nos 35.860 que não votaram.",
+  "plain": "Faltaram 5.355 votos para virar o resultado. Esse número cabe 6 vezes nas 35.860 pessoas que não votaram."
+ },
+ "zz/exterior-exemplo/2026-2/frase": {
+  "standard": "No exterior, em Exterior (posto exemplo), no 2º turno de 2026, 25,1% do eleitorado não votou, menos do que o Candidato B, o segundo mais votado, recebeu (35,5%).",
+  "plain": "No exterior, em Exterior (posto exemplo), no 2º turno de 2026, 25,1% das pessoas que podiam votar não votaram. Isso é menos do que o Candidato B, o segundo mais votado, recebeu: 35,5%."
+ },
+ "zz/exterior-exemplo/2026-2/votaram": {
+  "standard": "Em Exterior (posto exemplo), no 2º turno de 2026, votaram 74,9% do eleitorado: 104.995 votos válidos entre 140.246 eleitores aptos.",
+  "plain": "Em Exterior (posto exemplo), no 2º turno de 2026, votaram 74,9% das pessoas que podiam votar. Foram 104.995 votos para candidatos, entre 140.246 pessoas."
+ },
+ "zz/exterior-exemplo/2026-2/naoVotaram": {
+  "standard": "Em Exterior (posto exemplo), no 2º turno de 2026, 25,1% do eleitorado não votou: 35.251 dos 140.246 eleitores aptos (abstenção, brancos e nulos).",
+  "plain": "Em Exterior (posto exemplo), no 2º turno de 2026, 25,1% das pessoas que podiam votar não votaram. São 35.251 entre 140.246 pessoas (não foram, votaram em branco ou anularam)."
+ },
+ "zz/exterior-exemplo/2026-2/a": {
+  "standard": "Em Exterior (posto exemplo), no 2º turno de 2026, Candidato A: 55.212 de 104.995 votos válidos, 52,6%.",
+  "plain": "Em Exterior (posto exemplo), no 2º turno de 2026, Candidato A: 55.212 de 104.995 votos para candidatos, 52,6%."
+ },
+ "zz/exterior-exemplo/2026-2/b": {
+  "standard": "Em Exterior (posto exemplo), no 2º turno de 2026, Candidato B: 49.783 de 104.995 votos válidos, 47,4%.",
+  "plain": "Em Exterior (posto exemplo), no 2º turno de 2026, Candidato B: 49.783 de 104.995 votos para candidatos, 47,4%."
+ },
+ "zz/exterior-exemplo/2026-2/abstencao": {
+  "standard": "Em Exterior (posto exemplo), no 2º turno de 2026, Abstenção: 28.940 dos 35.251 eleitores que não votaram, 82,1%.",
+  "plain": "Em Exterior (posto exemplo), no 2º turno de 2026, Abstenção: 28.940 das 35.251 pessoas que não votaram, 82,1%."
+ },
+ "zz/exterior-exemplo/2026-2/brancos": {
+  "standard": "Em Exterior (posto exemplo), no 2º turno de 2026, Brancos: 2.805 dos 35.251 eleitores que não votaram, 8%.",
+  "plain": "Em Exterior (posto exemplo), no 2º turno de 2026, Brancos: 2.805 das 35.251 pessoas que não votaram, 8%."
+ },
+ "zz/exterior-exemplo/2026-2/nulos": {
+  "standard": "Em Exterior (posto exemplo), no 2º turno de 2026, Nulos: 3.506 dos 35.251 eleitores que não votaram, 9,9%.",
+  "plain": "Em Exterior (posto exemplo), no 2º turno de 2026, Nulos: 3.506 das 35.251 pessoas que não votaram, 9,9%."
+ },
+ "zz/exterior-exemplo/2026-2/margem": {
+  "standard": "Faltaram 5.429 votos para virar: cabem 6 vezes nos 35.251 que não votaram.",
+  "plain": "Faltaram 5.429 votos para virar o resultado. Esse número cabe 6 vezes nas 35.251 pessoas que não votaram."
+ },
+ "metodo/ciclos-anteriores/frase": {
+  "standard": "A frase do cartão: no cartão de uma cidade em 2018 ou 2022, este número vem dos mesmos arquivos do TSE e da mesma conta do ciclo atual. As contas dessas cidades, ciclo a ciclo, não têm página própria; esta é a regra.",
+  "plain": "A frase do cartão: no cartão de uma cidade em 2018 ou 2022, este número vem dos mesmos arquivos do TSE e da mesma conta do ciclo atual. As contas dessas cidades, ciclo a ciclo, não têm página própria. Esta é a regra."
+ },
+ "metodo/ciclos-anteriores/votaram": {
+  "standard": "Votaram: no cartão de uma cidade em 2018 ou 2022, este número vem dos mesmos arquivos do TSE e da mesma conta do ciclo atual. As contas dessas cidades, ciclo a ciclo, não têm página própria; esta é a regra.",
+  "plain": "Votaram: no cartão de uma cidade em 2018 ou 2022, este número vem dos mesmos arquivos do TSE e da mesma conta do ciclo atual. As contas dessas cidades, ciclo a ciclo, não têm página própria. Esta é a regra."
+ },
+ "metodo/ciclos-anteriores/naoVotaram": {
+  "standard": "Não votaram: no cartão de uma cidade em 2018 ou 2022, este número vem dos mesmos arquivos do TSE e da mesma conta do ciclo atual. As contas dessas cidades, ciclo a ciclo, não têm página própria; esta é a regra.",
+  "plain": "Não votaram: no cartão de uma cidade em 2018 ou 2022, este número vem dos mesmos arquivos do TSE e da mesma conta do ciclo atual. As contas dessas cidades, ciclo a ciclo, não têm página própria. Esta é a regra."
+ },
+ "metodo/ciclos-anteriores/candidato": {
+  "standard": "Candidato A, candidato B e outros: no cartão de uma cidade em 2018 ou 2022, este número vem dos mesmos arquivos do TSE e da mesma conta do ciclo atual. As contas dessas cidades, ciclo a ciclo, não têm página própria; esta é a regra.",
+  "plain": "Candidato A, candidato B e outros: no cartão de uma cidade em 2018 ou 2022, este número vem dos mesmos arquivos do TSE e da mesma conta do ciclo atual. As contas dessas cidades, ciclo a ciclo, não têm página própria. Esta é a regra."
+ },
+ "metodo/ciclos-anteriores/parte": {
+  "standard": "Abstenção, brancos e nulos: no cartão de uma cidade em 2018 ou 2022, este número vem dos mesmos arquivos do TSE e da mesma conta do ciclo atual. As contas dessas cidades, ciclo a ciclo, não têm página própria; esta é a regra.",
+  "plain": "Abstenção, brancos e nulos: no cartão de uma cidade em 2018 ou 2022, este número vem dos mesmos arquivos do TSE e da mesma conta do ciclo atual. As contas dessas cidades, ciclo a ciclo, não têm página própria. Esta é a regra."
+ },
+ "metodo/ciclos-anteriores/margem": {
+  "standard": "Quanto faltou para virar: no cartão de uma cidade em 2018 ou 2022, este número vem dos mesmos arquivos do TSE e da mesma conta do ciclo atual. As contas dessas cidades, ciclo a ciclo, não têm página própria; esta é a regra.",
+  "plain": "Quanto faltou para virar: no cartão de uma cidade em 2018 ou 2022, este número vem dos mesmos arquivos do TSE e da mesma conta do ciclo atual. As contas dessas cidades, ciclo a ciclo, não têm página própria. Esta é a regra."
+ },
+ "brasil/2026-2/pais-91": {
+  "standard": "No Brasil, no 2º turno de 2026, Candidato A: 292.152 de 568.348 votos válidos, 51,40%.",
+  "plain": "No Brasil, no 2º turno de 2026, Candidato A: 292.152 de 568.348 votos para candidatos, 51,40%."
+ },
+ "brasil/2026-2/pais-92": {
+  "standard": "No Brasil, no 2º turno de 2026, Candidato B: 276.196 de 568.348 votos válidos, 48,60%.",
+  "plain": "No Brasil, no 2º turno de 2026, Candidato B: 276.196 de 568.348 votos para candidatos, 48,60%."
+ },
+ "brasil/2026-2/sudeste-parcela": {
+  "standard": "Na região Sudeste, no 2º turno de 2026: a região tem 378.199 dos 463.353 votos válidos do país, 81,6%.",
+  "plain": "Na região Sudeste, no 2º turno de 2026: a região tem 378.199 dos 463.353 votos para candidatos do país, 81,6%."
+ },
+ "brasil/2026-2/sudeste-91": {
+  "standard": "Na região Sudeste, no 2º turno de 2026, Candidato A: 194.273 de 378.199 votos válidos, 51,4%.",
+  "plain": "Na região Sudeste, no 2º turno de 2026, Candidato A: 194.273 de 378.199 votos para candidatos, 51,4%."
+ },
+ "brasil/2026-2/sudeste-92": {
+  "standard": "Na região Sudeste, no 2º turno de 2026, Candidato B: 183.926 de 378.199 votos válidos, 48,6%.",
+  "plain": "Na região Sudeste, no 2º turno de 2026, Candidato B: 183.926 de 378.199 votos para candidatos, 48,6%."
+ },
+ "brasil/2026-2/sudeste-comparecimento": {
+  "standard": "Na região Sudeste, no 2º turno de 2026: compareceram 402.868 dos 548.234 eleitores aptos, 73,5%.",
+  "plain": "Na região Sudeste, no 2º turno de 2026: 402.868 das 548.234 pessoas que podiam votar foram votar, 73,5%."
+ },
+ "brasil/2026-2/sudeste-brancos": {
+  "standard": "Na região Sudeste, no 2º turno de 2026: votos em branco somam 10.964 dos 402.868 comparecimentos, 2,7%.",
+  "plain": "Na região Sudeste, no 2º turno de 2026: votos em branco são 10.964 dos 402.868 votos dados, 2,7%."
+ },
+ "brasil/2026-2/sudeste-nulos": {
+  "standard": "Na região Sudeste, no 2º turno de 2026: votos nulos somam 13.705 dos 402.868 comparecimentos, 3,4%.",
+  "plain": "Na região Sudeste, no 2º turno de 2026: votos nulos são 13.705 dos 402.868 votos dados, 3,4%."
+ },
+ "brasil/2026-2/centro-oeste-parcela": {
+  "standard": "Na região Centro-Oeste, no 2º turno de 2026: a região tem 85.154 dos 463.353 votos válidos do país, 18,4%.",
+  "plain": "Na região Centro-Oeste, no 2º turno de 2026: a região tem 85.154 dos 463.353 votos para candidatos do país, 18,4%."
+ },
+ "brasil/2026-2/centro-oeste-91": {
+  "standard": "Na região Centro-Oeste, no 2º turno de 2026, Candidato A: 42.667 de 85.154 votos válidos, 50,1%.",
+  "plain": "Na região Centro-Oeste, no 2º turno de 2026, Candidato A: 42.667 de 85.154 votos para candidatos, 50,1%."
+ },
+ "brasil/2026-2/centro-oeste-92": {
+  "standard": "Na região Centro-Oeste, no 2º turno de 2026, Candidato B: 42.487 de 85.154 votos válidos, 49,9%.",
+  "plain": "Na região Centro-Oeste, no 2º turno de 2026, Candidato B: 42.487 de 85.154 votos para candidatos, 49,9%."
+ },
+ "brasil/2026-2/centro-oeste-comparecimento": {
+  "standard": "Na região Centro-Oeste, no 2º turno de 2026: compareceram 90.867 dos 126.971 eleitores aptos, 71,6%.",
+  "plain": "Na região Centro-Oeste, no 2º turno de 2026: 90.867 das 126.971 pessoas que podiam votar foram votar, 71,6%."
+ },
+ "brasil/2026-2/centro-oeste-brancos": {
+  "standard": "Na região Centro-Oeste, no 2º turno de 2026: votos em branco somam 2.539 dos 90.867 comparecimentos, 2,8%.",
+  "plain": "Na região Centro-Oeste, no 2º turno de 2026: votos em branco são 2.539 dos 90.867 votos dados, 2,8%."
+ },
+ "brasil/2026-2/centro-oeste-nulos": {
+  "standard": "Na região Centro-Oeste, no 2º turno de 2026: votos nulos somam 3.174 dos 90.867 comparecimentos, 3,5%.",
+  "plain": "Na região Centro-Oeste, no 2º turno de 2026: votos nulos são 3.174 dos 90.867 votos dados, 3,5%."
+ },
+ "regiao/centro-oeste/2026-2/91": {
+  "standard": "Na região Centro-Oeste, no 2º turno de 2026, Candidato A: 42.667 de 85.154 votos válidos, 50,1%.",
+  "plain": "Na região Centro-Oeste, no 2º turno de 2026, Candidato A: 42.667 de 85.154 votos para candidatos, 50,1%."
+ },
+ "regiao/centro-oeste/2026-2/92": {
+  "standard": "Na região Centro-Oeste, no 2º turno de 2026, Candidato B: 42.487 de 85.154 votos válidos, 49,9%.",
+  "plain": "Na região Centro-Oeste, no 2º turno de 2026, Candidato B: 42.487 de 85.154 votos para candidatos, 49,9%."
+ },
+ "regiao/centro-oeste/2026-2/estados": {
+  "standard": "A região Centro-Oeste tem 1 estados no conjunto de dados.",
+  "plain": "A região Centro-Oeste tem 1 estados no conjunto de dados."
+ },
+ "regiao/centro-oeste/2026-2/municipios": {
+  "standard": "Municípios dos estados da região Centro-Oeste no conjunto de dados: 1.",
+  "plain": "Municípios dos estados da região Centro-Oeste no conjunto de dados: 1."
+ },
+ "regiao/centro-oeste/2026-2/estado-mt": {
+  "standard": "Em Mato Grosso, no 2º turno de 2026, Candidato A teve 42.667 votos e Candidato B teve 42.487 votos, de 85.154 votos válidos. A diferença de Candidato A sobre Candidato B é de +0,2.",
+  "plain": "Em Mato Grosso, no 2º turno de 2026, Candidato A teve 42.667 votos e Candidato B teve 42.487 votos, entre 85.154 votos para candidatos. A diferença de Candidato A sobre Candidato B é de +0,2."
+ },
+ "regiao/sudeste/2026-2/91": {
+  "standard": "Na região Sudeste, no 2º turno de 2026, Candidato A: 194.273 de 378.199 votos válidos, 51,4%.",
+  "plain": "Na região Sudeste, no 2º turno de 2026, Candidato A: 194.273 de 378.199 votos para candidatos, 51,4%."
+ },
+ "regiao/sudeste/2026-2/92": {
+  "standard": "Na região Sudeste, no 2º turno de 2026, Candidato B: 183.926 de 378.199 votos válidos, 48,6%.",
+  "plain": "Na região Sudeste, no 2º turno de 2026, Candidato B: 183.926 de 378.199 votos para candidatos, 48,6%."
+ },
+ "regiao/sudeste/2026-2/estados": {
+  "standard": "A região Sudeste tem 2 estados no conjunto de dados.",
+  "plain": "A região Sudeste tem 2 estados no conjunto de dados."
+ },
+ "regiao/sudeste/2026-2/municipios": {
+  "standard": "Municípios dos estados da região Sudeste no conjunto de dados: 7.",
+  "plain": "Municípios dos estados da região Sudeste no conjunto de dados: 7."
+ },
+ "regiao/sudeste/2026-2/estado-rj": {
+  "standard": "Em Rio de Janeiro, no 2º turno de 2026, Candidato A teve 149.536 votos e Candidato B teve 150.983 votos, de 300.519 votos válidos. A diferença de Candidato A sobre Candidato B é de -0,5.",
+  "plain": "Em Rio de Janeiro, no 2º turno de 2026, Candidato A teve 149.536 votos e Candidato B teve 150.983 votos, entre 300.519 votos para candidatos. A diferença de Candidato A sobre Candidato B é de -0,5."
+ },
+ "regiao/sudeste/2026-2/estado-sp": {
+  "standard": "Em São Paulo, no 2º turno de 2026, Candidato A teve 44.737 votos e Candidato B teve 32.943 votos, de 77.680 votos válidos. A diferença de Candidato A sobre Candidato B é de +15,2.",
+  "plain": "Em São Paulo, no 2º turno de 2026, Candidato A teve 44.737 votos e Candidato B teve 32.943 votos, entre 77.680 votos para candidatos. A diferença de Candidato A sobre Candidato B é de +15,2."
+ },
+ "comparar/2018/estados/rj-a": {
+  "standard": "Em RJ, no 2º turno, A teve 149.536 votos em 2026 (49,8% dos votos válidos) e 150.582 em 2018 (47,5%): variação de −1.046 votos entre os dois ciclos.",
+  "plain": "Em RJ, no 2º turno, A teve 149.536 votos em 2026 (49,8% dos votos para candidatos) e 150.582 em 2018 (47,5%). A mudança entre as duas eleições é de −1.046 votos."
+ },
+ "comparar/2018/estados/rj-b": {
+  "standard": "Em RJ, no 2º turno, B teve 150.983 votos em 2026 (50,2% dos votos válidos) e 166.292 em 2018 (52,5%): variação de −15.309 votos entre os dois ciclos.",
+  "plain": "Em RJ, no 2º turno, B teve 150.983 votos em 2026 (50,2% dos votos para candidatos) e 166.292 em 2018 (52,5%). A mudança entre as duas eleições é de −15.309 votos."
+ },
+ "comparar/2018/estados/sp-a": {
+  "standard": "Em SP, no 2º turno, A teve 44.737 votos em 2026 (57,6% dos votos válidos) e 40.554 em 2018 (49,3%): variação de +4.183 votos entre os dois ciclos.",
+  "plain": "Em SP, no 2º turno, A teve 44.737 votos em 2026 (57,6% dos votos para candidatos) e 40.554 em 2018 (49,3%). A mudança entre as duas eleições é de +4.183 votos."
+ },
+ "comparar/2018/estados/sp-b": {
+  "standard": "Em SP, no 2º turno, B teve 32.943 votos em 2026 (42,4% dos votos válidos) e 41.736 em 2018 (50,7%): variação de −8.793 votos entre os dois ciclos.",
+  "plain": "Em SP, no 2º turno, B teve 32.943 votos em 2026 (42,4% dos votos para candidatos) e 41.736 em 2018 (50,7%). A mudança entre as duas eleições é de −8.793 votos."
+ },
+ "comparar/2022/estados/rj-a": {
+  "standard": "Em RJ, no 2º turno, A teve 149.536 votos em 2026 (49,8% dos votos válidos) e 160.419 em 2022 (51,7%): variação de −10.883 votos entre os dois ciclos.",
+  "plain": "Em RJ, no 2º turno, A teve 149.536 votos em 2026 (49,8% dos votos para candidatos) e 160.419 em 2022 (51,7%). A mudança entre as duas eleições é de −10.883 votos."
+ },
+ "comparar/2022/estados/rj-b": {
+  "standard": "Em RJ, no 2º turno, B teve 150.983 votos em 2026 (50,2% dos votos válidos) e 150.058 em 2022 (48,3%): variação de +925 votos entre os dois ciclos.",
+  "plain": "Em RJ, no 2º turno, B teve 150.983 votos em 2026 (50,2% dos votos para candidatos) e 150.058 em 2022 (48,3%). A mudança entre as duas eleições é de +925 votos."
+ },
+ "comparar/2022/estados/sp-a": {
+  "standard": "Em SP, no 2º turno, A teve 44.737 votos em 2026 (57,6% dos votos válidos) e 48.768 em 2022 (57,8%): variação de −4.031 votos entre os dois ciclos.",
+  "plain": "Em SP, no 2º turno, A teve 44.737 votos em 2026 (57,6% dos votos para candidatos) e 48.768 em 2022 (57,8%). A mudança entre as duas eleições é de −4.031 votos."
+ },
+ "comparar/2022/estados/sp-b": {
+  "standard": "Em SP, no 2º turno, B teve 32.943 votos em 2026 (42,4% dos votos válidos) e 35.535 em 2022 (42,2%): variação de −2.592 votos entre os dois ciclos.",
+  "plain": "Em SP, no 2º turno, B teve 32.943 votos em 2026 (42,4% dos votos para candidatos) e 35.535 em 2022 (42,2%). A mudança entre as duas eleições é de −2.592 votos."
+ },
+ "relatorios/disputas-mais-apertadas/cidades/rj-cidade-exemplo-a": {
+  "standard": "Em Cidade Exemplo A/RJ, no 2º turno de 2026, 12.184 votos para Candidato A e 12.215 para Candidato B: a diferença entre eles é de 31 votos.",
+  "plain": "Em Cidade Exemplo A/RJ, no 2º turno de 2026, 12.184 votos para Candidato A e 12.215 para Candidato B. A diferença entre eles é de 31 votos."
+ },
+ "relatorios/disputas-mais-apertadas/cidades/mt-boa-esperanca-do-norte": {
+  "standard": "Em Boa Esperança do Norte/MT, no 2º turno de 2026, 42.667 votos para Candidato A e 42.487 para Candidato B: a diferença entre eles é de 180 votos.",
+  "plain": "Em Boa Esperança do Norte/MT, no 2º turno de 2026, 42.667 votos para Candidato A e 42.487 para Candidato B. A diferença entre eles é de 180 votos."
+ },
+ "relatorios/disputas-mais-apertadas/cidades/rj-cidade-exemplo": {
+  "standard": "Em Cidade Exemplo/RJ, no 2º turno de 2026, 34.537 votos para Candidato A e 33.897 para Candidato B: a diferença entre eles é de 640 votos.",
+  "plain": "Em Cidade Exemplo/RJ, no 2º turno de 2026, 34.537 votos para Candidato A e 33.897 para Candidato B. A diferença entre eles é de 640 votos."
+ },
+ "relatorios/disputas-mais-apertadas/cidades/rj-cidade-exemplo-b": {
+  "standard": "Em Cidade Exemplo B/RJ, no 2º turno de 2026, 17.930 votos para Candidato A e 20.390 para Candidato B: a diferença entre eles é de 2.460 votos.",
+  "plain": "Em Cidade Exemplo B/RJ, no 2º turno de 2026, 17.930 votos para Candidato A e 20.390 para Candidato B. A diferença entre eles é de 2.460 votos."
+ },
+ "relatorios/disputas-mais-apertadas/cidades/rj-cidade-exemplo-d": {
+  "standard": "Em Cidade Exemplo D/RJ, no 2º turno de 2026, 29.875 votos para Candidato A e 26.618 para Candidato B: a diferença entre eles é de 3.257 votos.",
+  "plain": "Em Cidade Exemplo D/RJ, no 2º turno de 2026, 29.875 votos para Candidato A e 26.618 para Candidato B. A diferença entre eles é de 3.257 votos."
+ },
+ "relatorios/disputas-mais-apertadas/cidades/rj-cidade-exemplo-e": {
+  "standard": "Em Cidade Exemplo E/RJ, no 2º turno de 2026, 33.326 votos para Candidato A e 29.561 para Candidato B: a diferença entre eles é de 3.765 votos.",
+  "plain": "Em Cidade Exemplo E/RJ, no 2º turno de 2026, 33.326 votos para Candidato A e 29.561 para Candidato B. A diferença entre eles é de 3.765 votos."
+ },
+ "relatorios/disputas-mais-apertadas/cidades/rj-cidade-exemplo-c": {
+  "standard": "Em Cidade Exemplo C/RJ, no 2º turno de 2026, 21.684 votos para Candidato A e 28.302 para Candidato B: a diferença entre eles é de 6.618 votos.",
+  "plain": "Em Cidade Exemplo C/RJ, no 2º turno de 2026, 21.684 votos para Candidato A e 28.302 para Candidato B. A diferença entre eles é de 6.618 votos."
+ },
+ "relatorios/disputas-mais-apertadas/cidades/sp-cidade-exemplo-paulista": {
+  "standard": "Em Cidade Exemplo Paulista/SP, no 2º turno de 2026, 44.737 votos para Candidato A e 32.943 para Candidato B: a diferença entre eles é de 11.794 votos.",
+  "plain": "Em Cidade Exemplo Paulista/SP, no 2º turno de 2026, 44.737 votos para Candidato A e 32.943 para Candidato B. A diferença entre eles é de 11.794 votos."
+ },
+ "relatorios/cidades-que-viraram/cidades/rj-cidade-exemplo-d": {
+  "standard": "Em Cidade Exemplo D/RJ, a margem entre Candidato A e Candidato B foi de -0,6 pp no 1º turno e de +5,8 pp no 2º turno de 2026: variação de +6,4 pp. No 2º turno foram 56.493 votos válidos.",
+  "plain": "Em Cidade Exemplo D/RJ, a diferença entre Candidato A e Candidato B foi de -0,6 pp no 1º turno e de +5,8 pp no 2º turno de 2026. A mudança foi de +6,4 pp. No 2º turno foram 56.493 votos para candidatos."
+ },
+ "relatorios/cidades-que-viraram/cidades/mt-boa-esperanca-do-norte": {
+  "standard": "Em Boa Esperança do Norte/MT, a margem entre Candidato A e Candidato B foi de -0,1 pp no 1º turno e de +0,2 pp no 2º turno de 2026: variação de +0,4 pp. No 2º turno foram 85.154 votos válidos.",
+  "plain": "Em Boa Esperança do Norte/MT, a diferença entre Candidato A e Candidato B foi de -0,1 pp no 1º turno e de +0,2 pp no 2º turno de 2026. A mudança foi de +0,4 pp. No 2º turno foram 85.154 votos para candidatos."
+ },
+ "relatorios/maiores-viradas/cidades/filtro": {
+  "standard": "Cidades com 100.000 ou mais votos válidos no 2º turno de 2026, que entram nesta lista: 0.",
+  "plain": "Cidades com 100.000 ou mais votos para candidatos no 2º turno de 2026, que entram nesta lista: 0."
+ },
+ "relatorios/maiores-viradas/cidades/contrario": {
+  "standard": "Cidades com 100.000 ou mais votos válidos em que a margem foi no sentido de Candidato B, fora da lista: 0.",
+  "plain": "Cidades com 100.000 ou mais votos para candidatos em que a margem foi no sentido de Candidato B, fora da lista: 0."
+ },
+ "relatorios/comparecimento/cidades/alto-rj-cidade-exemplo-c": {
+  "standard": "Em Cidade Exemplo C/RJ, no 2º turno de 2026, compareceram 53.040 dos 67.868 eleitores aptos: 78,2%.",
+  "plain": "Em Cidade Exemplo C/RJ, no 2º turno de 2026, 53.040 das 67.868 pessoas que podiam votar foram votar: 78,2%."
+ },
+ "relatorios/comparecimento/cidades/alto-rj-cidade-exemplo-b": {
+  "standard": "Em Cidade Exemplo B/RJ, no 2º turno de 2026, compareceram 40.718 dos 53.294 eleitores aptos: 76,4%.",
+  "plain": "Em Cidade Exemplo B/RJ, no 2º turno de 2026, 40.718 das 53.294 pessoas que podiam votar foram votar: 76,4%."
+ },
+ "relatorios/comparecimento/cidades/alto-rj-cidade-exemplo-a": {
+  "standard": "Em Cidade Exemplo A/RJ, no 2º turno de 2026, compareceram 25.988 dos 35.318 eleitores aptos: 73,6%.",
+  "plain": "Em Cidade Exemplo A/RJ, no 2º turno de 2026, 25.988 das 35.318 pessoas que podiam votar foram votar: 73,6%."
+ },
+ "relatorios/comparecimento/cidades/alto-rj-cidade-exemplo-d": {
+  "standard": "Em Cidade Exemplo D/RJ, no 2º turno de 2026, compareceram 60.181 dos 81.967 eleitores aptos: 73,4%.",
+  "plain": "Em Cidade Exemplo D/RJ, no 2º turno de 2026, 60.181 das 81.967 pessoas que podiam votar foram votar: 73,4%."
+ },
+ "relatorios/comparecimento/cidades/alto-rj-cidade-exemplo": {
+  "standard": "Em Cidade Exemplo/RJ, no 2º turno de 2026, compareceram 72.934 dos 100.000 eleitores aptos: 72,9%.",
+  "plain": "Em Cidade Exemplo/RJ, no 2º turno de 2026, 72.934 das 100.000 pessoas que podiam votar foram votar: 72,9%."
+ },
+ "relatorios/comparecimento/cidades/alto-sp-cidade-exemplo-paulista": {
+  "standard": "Em Cidade Exemplo Paulista/SP, no 2º turno de 2026, compareceram 82.832 dos 114.493 eleitores aptos: 72,3%.",
+  "plain": "Em Cidade Exemplo Paulista/SP, no 2º turno de 2026, 82.832 das 114.493 pessoas que podiam votar foram votar: 72,3%."
+ },
+ "relatorios/comparecimento/cidades/alto-mt-boa-esperanca-do-norte": {
+  "standard": "Em Boa Esperança do Norte/MT, no 2º turno de 2026, compareceram 90.867 dos 126.971 eleitores aptos: 71,6%.",
+  "plain": "Em Boa Esperança do Norte/MT, no 2º turno de 2026, 90.867 das 126.971 pessoas que podiam votar foram votar: 71,6%."
+ },
+ "relatorios/comparecimento/cidades/alto-rj-cidade-exemplo-e": {
+  "standard": "Em Cidade Exemplo E/RJ, no 2º turno de 2026, compareceram 67.175 dos 95.294 eleitores aptos: 70,5%.",
+  "plain": "Em Cidade Exemplo E/RJ, no 2º turno de 2026, 67.175 das 95.294 pessoas que podiam votar foram votar: 70,5%."
+ },
+ "relatorios/comparecimento/cidades/baixo-rj-cidade-exemplo-e": {
+  "standard": "Em Cidade Exemplo E/RJ, no 2º turno de 2026, compareceram 67.175 dos 95.294 eleitores aptos: 70,5%.",
+  "plain": "Em Cidade Exemplo E/RJ, no 2º turno de 2026, 67.175 das 95.294 pessoas que podiam votar foram votar: 70,5%."
+ },
+ "relatorios/comparecimento/cidades/baixo-mt-boa-esperanca-do-norte": {
+  "standard": "Em Boa Esperança do Norte/MT, no 2º turno de 2026, compareceram 90.867 dos 126.971 eleitores aptos: 71,6%.",
+  "plain": "Em Boa Esperança do Norte/MT, no 2º turno de 2026, 90.867 das 126.971 pessoas que podiam votar foram votar: 71,6%."
+ },
+ "relatorios/comparecimento/cidades/baixo-sp-cidade-exemplo-paulista": {
+  "standard": "Em Cidade Exemplo Paulista/SP, no 2º turno de 2026, compareceram 82.832 dos 114.493 eleitores aptos: 72,3%.",
+  "plain": "Em Cidade Exemplo Paulista/SP, no 2º turno de 2026, 82.832 das 114.493 pessoas que podiam votar foram votar: 72,3%."
+ },
+ "relatorios/comparecimento/cidades/baixo-rj-cidade-exemplo": {
+  "standard": "Em Cidade Exemplo/RJ, no 2º turno de 2026, compareceram 72.934 dos 100.000 eleitores aptos: 72,9%.",
+  "plain": "Em Cidade Exemplo/RJ, no 2º turno de 2026, 72.934 das 100.000 pessoas que podiam votar foram votar: 72,9%."
+ },
+ "relatorios/comparecimento/cidades/baixo-rj-cidade-exemplo-d": {
+  "standard": "Em Cidade Exemplo D/RJ, no 2º turno de 2026, compareceram 60.181 dos 81.967 eleitores aptos: 73,4%.",
+  "plain": "Em Cidade Exemplo D/RJ, no 2º turno de 2026, 60.181 das 81.967 pessoas que podiam votar foram votar: 73,4%."
+ },
+ "relatorios/comparecimento/cidades/baixo-rj-cidade-exemplo-a": {
+  "standard": "Em Cidade Exemplo A/RJ, no 2º turno de 2026, compareceram 25.988 dos 35.318 eleitores aptos: 73,6%.",
+  "plain": "Em Cidade Exemplo A/RJ, no 2º turno de 2026, 25.988 das 35.318 pessoas que podiam votar foram votar: 73,6%."
+ },
+ "relatorios/comparecimento/cidades/baixo-rj-cidade-exemplo-b": {
+  "standard": "Em Cidade Exemplo B/RJ, no 2º turno de 2026, compareceram 40.718 dos 53.294 eleitores aptos: 76,4%.",
+  "plain": "Em Cidade Exemplo B/RJ, no 2º turno de 2026, 40.718 das 53.294 pessoas que podiam votar foram votar: 76,4%."
+ },
+ "relatorios/comparecimento/cidades/baixo-rj-cidade-exemplo-c": {
+  "standard": "Em Cidade Exemplo C/RJ, no 2º turno de 2026, compareceram 53.040 dos 67.868 eleitores aptos: 78,2%.",
+  "plain": "Em Cidade Exemplo C/RJ, no 2º turno de 2026, 53.040 das 67.868 pessoas que podiam votar foram votar: 78,2%."
+ },
+ "relatorios/comparecimento/cidades/filtro": {
+  "standard": "Cidades com 5.000 ou mais eleitores aptos, que entram na comparação: 8.",
+  "plain": "Cidades com 5.000 ou mais pessoas que podiam votar, que entram na comparação: 8."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/primeiro-total": {
+  "standard": "Candidato A: soma, cidade a cidade, dos votos do 2º turno de 2026 menos os de 2022: -14.914 votos. Cidades com diferença positiva: 0; negativa: 7.",
+  "plain": "Candidato A: somando todas as cidades, os votos de 2026 menos os de 2022 dão -14.914 votos. Cidades com diferença positiva: 0; negativa: 7."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/primeiro-perda-rj-cidade-exemplo": {
+  "standard": "Em Cidade Exemplo/RJ, Candidato A teve 34.537 votos no 2º turno de 2026 e 40.451 no de 2022: diferença de -5.914 votos.",
+  "plain": "Em Cidade Exemplo/RJ, Candidato A teve 34.537 votos no 2º turno de 2026 e 40.451 no de 2022. A diferença é de -5.914 votos."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/primeiro-perda-sp-cidade-exemplo-paulista": {
+  "standard": "Em Cidade Exemplo Paulista/SP, Candidato A teve 44.737 votos no 2º turno de 2026 e 48.768 no de 2022: diferença de -4.031 votos.",
+  "plain": "Em Cidade Exemplo Paulista/SP, Candidato A teve 44.737 votos no 2º turno de 2026 e 48.768 no de 2022. A diferença é de -4.031 votos."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/primeiro-perda-rj-cidade-exemplo-a": {
+  "standard": "Em Cidade Exemplo A/RJ, Candidato A teve 12.184 votos no 2º turno de 2026 e 14.032 no de 2022: diferença de -1.848 votos.",
+  "plain": "Em Cidade Exemplo A/RJ, Candidato A teve 12.184 votos no 2º turno de 2026 e 14.032 no de 2022. A diferença é de -1.848 votos."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/primeiro-perda-rj-cidade-exemplo-b": {
+  "standard": "Em Cidade Exemplo B/RJ, Candidato A teve 17.930 votos no 2º turno de 2026 e 19.371 no de 2022: diferença de -1.441 votos.",
+  "plain": "Em Cidade Exemplo B/RJ, Candidato A teve 17.930 votos no 2º turno de 2026 e 19.371 no de 2022. A diferença é de -1.441 votos."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/primeiro-perda-rj-cidade-exemplo-c": {
+  "standard": "Em Cidade Exemplo C/RJ, Candidato A teve 21.684 votos no 2º turno de 2026 e 22.849 no de 2022: diferença de -1.165 votos.",
+  "plain": "Em Cidade Exemplo C/RJ, Candidato A teve 21.684 votos no 2º turno de 2026 e 22.849 no de 2022. A diferença é de -1.165 votos."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/primeiro-perda-rj-cidade-exemplo-d": {
+  "standard": "Em Cidade Exemplo D/RJ, Candidato A teve 29.875 votos no 2º turno de 2026 e 30.271 no de 2022: diferença de -396 votos.",
+  "plain": "Em Cidade Exemplo D/RJ, Candidato A teve 29.875 votos no 2º turno de 2026 e 30.271 no de 2022. A diferença é de -396 votos."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/primeiro-perda-rj-cidade-exemplo-e": {
+  "standard": "Em Cidade Exemplo E/RJ, Candidato A teve 33.326 votos no 2º turno de 2026 e 33.445 no de 2022: diferença de -119 votos.",
+  "plain": "Em Cidade Exemplo E/RJ, Candidato A teve 33.326 votos no 2º turno de 2026 e 33.445 no de 2022. A diferença é de -119 votos."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/segundo-total": {
+  "standard": "Candidato B: soma, cidade a cidade, dos votos do 2º turno de 2026 menos os de 2022: -1.667 votos. Cidades com diferença positiva: 3; negativa: 4.",
+  "plain": "Candidato B: somando todas as cidades, os votos de 2026 menos os de 2022 dão -1.667 votos. Cidades com diferença positiva: 3; negativa: 4."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/segundo-alta-rj-cidade-exemplo": {
+  "standard": "Em Cidade Exemplo/RJ, Candidato B teve 33.897 votos no 2º turno de 2026 e 29.541 no de 2022: diferença de +4.356 votos.",
+  "plain": "Em Cidade Exemplo/RJ, Candidato B teve 33.897 votos no 2º turno de 2026 e 29.541 no de 2022. A diferença é de +4.356 votos."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/segundo-alta-rj-cidade-exemplo-b": {
+  "standard": "Em Cidade Exemplo B/RJ, Candidato B teve 20.390 votos no 2º turno de 2026 e 16.581 no de 2022: diferença de +3.809 votos.",
+  "plain": "Em Cidade Exemplo B/RJ, Candidato B teve 20.390 votos no 2º turno de 2026 e 16.581 no de 2022. A diferença é de +3.809 votos."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/segundo-alta-rj-cidade-exemplo-c": {
+  "standard": "Em Cidade Exemplo C/RJ, Candidato B teve 28.302 votos no 2º turno de 2026 e 25.101 no de 2022: diferença de +3.201 votos.",
+  "plain": "Em Cidade Exemplo C/RJ, Candidato B teve 28.302 votos no 2º turno de 2026 e 25.101 no de 2022. A diferença é de +3.201 votos."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/segundo-perda-rj-cidade-exemplo-e": {
+  "standard": "Em Cidade Exemplo E/RJ, Candidato B teve 29.561 votos no 2º turno de 2026 e 38.205 no de 2022: diferença de -8.644 votos.",
+  "plain": "Em Cidade Exemplo E/RJ, Candidato B teve 29.561 votos no 2º turno de 2026 e 38.205 no de 2022. A diferença é de -8.644 votos."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/segundo-perda-sp-cidade-exemplo-paulista": {
+  "standard": "Em Cidade Exemplo Paulista/SP, Candidato B teve 32.943 votos no 2º turno de 2026 e 35.535 no de 2022: diferença de -2.592 votos.",
+  "plain": "Em Cidade Exemplo Paulista/SP, Candidato B teve 32.943 votos no 2º turno de 2026 e 35.535 no de 2022. A diferença é de -2.592 votos."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/segundo-perda-rj-cidade-exemplo-d": {
+  "standard": "Em Cidade Exemplo D/RJ, Candidato B teve 26.618 votos no 2º turno de 2026 e 28.075 no de 2022: diferença de -1.457 votos.",
+  "plain": "Em Cidade Exemplo D/RJ, Candidato B teve 26.618 votos no 2º turno de 2026 e 28.075 no de 2022. A diferença é de -1.457 votos."
+ },
+ "relatorios/votos-ganhos-e-perdidos/cidades/segundo-perda-rj-cidade-exemplo-a": {
+  "standard": "Em Cidade Exemplo A/RJ, Candidato B teve 12.215 votos no 2º turno de 2026 e 12.555 no de 2022: diferença de -340 votos.",
+  "plain": "Em Cidade Exemplo A/RJ, Candidato B teve 12.215 votos no 2º turno de 2026 e 12.555 no de 2022. A diferença é de -340 votos."
+ },
+ "relatorios/como-cada-grupo-votou/grupos/92-91": {
+  "standard": "Grupo Venceu em 2018: PB. Em 2022: PA. Cidades no grupo: 5. Votos válidos no 2º turno de 2026: 265.326.",
+  "plain": "Grupo Venceu em 2018: PB. Em 2022: PA. Cidades no grupo: 5. Votos para candidatos no 2º turno de 2026: 265.326."
+ },
+ "relatorios/como-cada-grupo-votou/grupos/92-91-91": {
+  "standard": "Grupo Venceu em 2018: PB. Em 2022: PA. Cidades com mais votos para Candidato A no 2º turno de 2026: 3 de 5 cidades com resultado (60%). A conta é de cidades, não de pessoas.",
+  "plain": "Grupo Venceu em 2018: PB. Em 2022: PA. Cidades que deram mais votos a Candidato A no 2º turno de 2026: 3 de 5 cidades com resultado (60%). A conta é de cidades, não de pessoas."
+ },
+ "relatorios/como-cada-grupo-votou/grupos/92-91-92": {
+  "standard": "Grupo Venceu em 2018: PB. Em 2022: PA. Cidades com mais votos para Candidato B no 2º turno de 2026: 2 de 5 cidades com resultado (40%). A conta é de cidades, não de pessoas.",
+  "plain": "Grupo Venceu em 2018: PB. Em 2022: PA. Cidades que deram mais votos a Candidato B no 2º turno de 2026: 2 de 5 cidades com resultado (40%). A conta é de cidades, não de pessoas."
+ },
+ "relatorios/como-cada-grupo-votou/grupos/91-92": {
+  "standard": "Grupo Venceu em 2018: PA. Em 2022: PB. Cidades no grupo: 1. Votos válidos no 2º turno de 2026: 62.887.",
+  "plain": "Grupo Venceu em 2018: PA. Em 2022: PB. Cidades no grupo: 1. Votos para candidatos no 2º turno de 2026: 62.887."
+ },
+ "relatorios/como-cada-grupo-votou/grupos/91-92-91": {
+  "standard": "Grupo Venceu em 2018: PA. Em 2022: PB. Cidades com mais votos para Candidato A no 2º turno de 2026: 1 de 1 cidades com resultado (100%). A conta é de cidades, não de pessoas.",
+  "plain": "Grupo Venceu em 2018: PA. Em 2022: PB. Cidades que deram mais votos a Candidato A no 2º turno de 2026: 1 de 1 cidades com resultado (100%). A conta é de cidades, não de pessoas."
+ },
+ "relatorios/como-cada-grupo-votou/grupos/91-92-92": {
+  "standard": "Grupo Venceu em 2018: PA. Em 2022: PB. Cidades com mais votos para Candidato B no 2º turno de 2026: 0 de 1 cidades com resultado (0%). A conta é de cidades, não de pessoas.",
+  "plain": "Grupo Venceu em 2018: PA. Em 2022: PB. Cidades que deram mais votos a Candidato B no 2º turno de 2026: 0 de 1 cidades com resultado (0%). A conta é de cidades, não de pessoas."
+ },
+ "relatorios/como-cada-grupo-votou/grupos/92-92": {
+  "standard": "Grupo Venceu em 2018 e 2022: PB. Cidades no grupo: 1. Votos válidos no 2º turno de 2026: 49.986.",
+  "plain": "Grupo Venceu em 2018 e 2022: PB. Cidades no grupo: 1. Votos para candidatos no 2º turno de 2026: 49.986."
+ },
+ "relatorios/como-cada-grupo-votou/grupos/92-92-91": {
+  "standard": "Grupo Venceu em 2018 e 2022: PB. Cidades com mais votos para Candidato A no 2º turno de 2026: 0 de 1 cidades com resultado (0%). A conta é de cidades, não de pessoas.",
+  "plain": "Grupo Venceu em 2018 e 2022: PB. Cidades que deram mais votos a Candidato A no 2º turno de 2026: 0 de 1 cidades com resultado (0%). A conta é de cidades, não de pessoas."
+ },
+ "relatorios/como-cada-grupo-votou/grupos/92-92-92": {
+  "standard": "Grupo Venceu em 2018 e 2022: PB. Cidades com mais votos para Candidato B no 2º turno de 2026: 1 de 1 cidades com resultado (100%). A conta é de cidades, não de pessoas.",
+  "plain": "Grupo Venceu em 2018 e 2022: PB. Cidades que deram mais votos a Candidato B no 2º turno de 2026: 1 de 1 cidades com resultado (100%). A conta é de cidades, não de pessoas."
+ },
+ "relatorios/como-cada-grupo-votou/grupos/fora": {
+  "standard": "Cidades do 2º turno de 2026, sem os postos do exterior: 8. Em grupos: 7. Com empate antes de 2026: 0. Sem dados anteriores: 1.",
+  "plain": "Cidades do 2º turno de 2026, sem os postos do exterior: 8. Estão em grupos: 7. Tiveram empate antes de 2026: 0. Não têm dados anteriores: 1."
+ },
+ "relatorios/cidades-fora-da-curva/rj/rj-cidade-exemplo-c": {
+  "standard": "Em Cidade Exemplo C/RJ, no 2º turno de 2026, o comparecimento foi de 78,2%, contra 72,9% típico entre cidades parecidas; a virada desde 2022 foi de -8,5 pp, contra -0,5 pp típico. Foram 49.986 votos válidos.",
+  "plain": "Em Cidade Exemplo C/RJ, no 2º turno de 2026, 78,2% das pessoas que podiam votar foram votar. Entre cidades parecidas, o comum é 72,9%. A virada desde 2022 foi de -8,5 pp. Entre cidades parecidas, o comum é -0,5 pp. Foram 49.986 votos válidos."
+ },
+ "relatorios/cidades-fora-da-curva/rj/rj-cidade-exemplo-e": {
+  "standard": "Em Cidade Exemplo E/RJ, no 2º turno de 2026, o comparecimento foi de 70,5%, contra 72,9% típico entre cidades parecidas; a virada desde 2022 foi de +12,6 pp, contra -4,5 pp típico. Foram 62.887 votos válidos.",
+  "plain": "Em Cidade Exemplo E/RJ, no 2º turno de 2026, 70,5% das pessoas que podiam votar foram votar. Entre cidades parecidas, o comum é 72,9%. A virada desde 2022 foi de +12,6 pp. Entre cidades parecidas, o comum é -4,5 pp. Foram 62.887 votos válidos."
+ },
+ "relatorios/cidades-fora-da-curva/rj/rj-cidade-exemplo-b": {
+  "standard": "Em Cidade Exemplo B/RJ, no 2º turno de 2026, o comparecimento foi de 76,4%, contra 73,4% típico entre cidades parecidas; a virada desde 2022 foi de -14,2 pp, contra -0,5 pp típico. Foram 38.320 votos válidos.",
+  "plain": "Em Cidade Exemplo B/RJ, no 2º turno de 2026, 76,4% das pessoas que podiam votar foram votar. Entre cidades parecidas, o comum é 73,4%. A virada desde 2022 foi de -14,2 pp. Entre cidades parecidas, o comum é -0,5 pp. Foram 38.320 votos válidos."
+ },
+ "relatorios/cidades-fora-da-curva/rj/rj-cidade-exemplo": {
+  "standard": "Em Cidade Exemplo/RJ, no 2º turno de 2026, o comparecimento foi de 72,9%, contra 72,3% típico entre cidades parecidas; a virada desde 2022 foi de -14,7 pp, contra +0,7 pp típico. Foram 68.434 votos válidos.",
+  "plain": "Em Cidade Exemplo/RJ, no 2º turno de 2026, 72,9% das pessoas que podiam votar foram votar. Entre cidades parecidas, o comum é 72,3%. A virada desde 2022 foi de -14,7 pp. Entre cidades parecidas, o comum é +0,7 pp. Foram 68.434 votos válidos."
+ },
+ "relatorios/cidades-fora-da-curva/rj/rj-cidade-exemplo-d": {
+  "standard": "Em Cidade Exemplo D/RJ, no 2º turno de 2026, o comparecimento foi de 73,4%, contra 72,3% típico entre cidades parecidas; a virada desde 2022 foi de +2,0 pp, contra -4,5 pp típico. Foram 56.493 votos válidos.",
+  "plain": "Em Cidade Exemplo D/RJ, no 2º turno de 2026, 73,4% das pessoas que podiam votar foram votar. Entre cidades parecidas, o comum é 72,3%. A virada desde 2022 foi de +2,0 pp. Entre cidades parecidas, o comum é -4,5 pp. Foram 56.493 votos válidos."
+ },
+ "relatorios/cidades-fora-da-curva/rj/rj-cidade-exemplo-a": {
+  "standard": "Em Cidade Exemplo A/RJ, no 2º turno de 2026, o comparecimento foi de 73,6%, contra 73,4% típico entre cidades parecidas; a virada desde 2022 foi de -5,7 pp, contra -8,5 pp típico. Foram 24.399 votos válidos.",
+  "plain": "Em Cidade Exemplo A/RJ, no 2º turno de 2026, 73,6% das pessoas que podiam votar foram votar. Entre cidades parecidas, o comum é 73,4%. A virada desde 2022 foi de -5,7 pp. Entre cidades parecidas, o comum é -8,5 pp. Foram 24.399 votos válidos."
+ },
+ "relatorios/cidades-fora-da-curva/sp/sp-cidade-exemplo-paulista": {
+  "standard": "Em Cidade Exemplo Paulista/SP, no 2º turno de 2026, o comparecimento foi de 72,3%, contra 72,9% típico entre cidades parecidas; a virada desde 2022 foi de -0,5 pp, contra -3,3 pp típico. Foram 77.680 votos válidos.",
+  "plain": "Em Cidade Exemplo Paulista/SP, no 2º turno de 2026, 72,3% das pessoas que podiam votar foram votar. Entre cidades parecidas, o comum é 72,9%. A virada desde 2022 foi de -0,5 pp. Entre cidades parecidas, o comum é -3,3 pp. Foram 77.680 votos válidos."
+ },
+ "relatorios/cidades-fora-da-curva/filtros/filtro-todos-1000": {
+  "standard": "Cidades comparadas com cidades parecidas (em todo o país), com 1.000 ou mais votos válidos no 2º turno de 2026: 7.",
+  "plain": "Cidades comparadas com cidades parecidas (em todo o país), com 1.000 ou mais votos válidos no 2º turno de 2026: 7."
+ },
+ "relatorios/cidades-fora-da-curva/filtros/filtro-todos-5000": {
+  "standard": "Cidades comparadas com cidades parecidas (em todo o país), com 5.000 ou mais votos válidos no 2º turno de 2026: 7.",
+  "plain": "Cidades comparadas com cidades parecidas (em todo o país), com 5.000 ou mais votos válidos no 2º turno de 2026: 7."
+ },
+ "relatorios/cidades-fora-da-curva/filtros/filtro-todos-20000": {
+  "standard": "Cidades comparadas com cidades parecidas (em todo o país), com 20.000 ou mais votos válidos no 2º turno de 2026: 7.",
+  "plain": "Cidades comparadas com cidades parecidas (em todo o país), com 20.000 ou mais votos válidos no 2º turno de 2026: 7."
+ },
+ "relatorios/cidades-fora-da-curva/filtros/filtro-todos-50000": {
+  "standard": "Cidades comparadas com cidades parecidas (em todo o país), com 50.000 ou mais votos válidos no 2º turno de 2026: 4.",
+  "plain": "Cidades comparadas com cidades parecidas (em todo o país), com 50.000 ou mais votos válidos no 2º turno de 2026: 4."
+ },
+ "relatorios/cidades-fora-da-curva/filtros/filtro-rj-1000": {
+  "standard": "Cidades comparadas com cidades parecidas (em Rio de Janeiro), com 1.000 ou mais votos válidos no 2º turno de 2026: 6.",
+  "plain": "Cidades comparadas com cidades parecidas (em Rio de Janeiro), com 1.000 ou mais votos válidos no 2º turno de 2026: 6."
+ },
+ "relatorios/cidades-fora-da-curva/filtros/filtro-rj-5000": {
+  "standard": "Cidades comparadas com cidades parecidas (em Rio de Janeiro), com 5.000 ou mais votos válidos no 2º turno de 2026: 6.",
+  "plain": "Cidades comparadas com cidades parecidas (em Rio de Janeiro), com 5.000 ou mais votos válidos no 2º turno de 2026: 6."
+ },
+ "relatorios/cidades-fora-da-curva/filtros/filtro-rj-20000": {
+  "standard": "Cidades comparadas com cidades parecidas (em Rio de Janeiro), com 20.000 ou mais votos válidos no 2º turno de 2026: 6.",
+  "plain": "Cidades comparadas com cidades parecidas (em Rio de Janeiro), com 20.000 ou mais votos válidos no 2º turno de 2026: 6."
+ },
+ "relatorios/cidades-fora-da-curva/filtros/filtro-rj-50000": {
+  "standard": "Cidades comparadas com cidades parecidas (em Rio de Janeiro), com 50.000 ou mais votos válidos no 2º turno de 2026: 3.",
+  "plain": "Cidades comparadas com cidades parecidas (em Rio de Janeiro), com 50.000 ou mais votos válidos no 2º turno de 2026: 3."
+ },
+ "relatorios/cidades-fora-da-curva/filtros/filtro-sp-1000": {
+  "standard": "Cidades comparadas com cidades parecidas (em São Paulo), com 1.000 ou mais votos válidos no 2º turno de 2026: 1.",
+  "plain": "Cidades comparadas com cidades parecidas (em São Paulo), com 1.000 ou mais votos válidos no 2º turno de 2026: 1."
+ },
+ "relatorios/cidades-fora-da-curva/filtros/filtro-sp-5000": {
+  "standard": "Cidades comparadas com cidades parecidas (em São Paulo), com 5.000 ou mais votos válidos no 2º turno de 2026: 1.",
+  "plain": "Cidades comparadas com cidades parecidas (em São Paulo), com 5.000 ou mais votos válidos no 2º turno de 2026: 1."
+ },
+ "relatorios/cidades-fora-da-curva/filtros/filtro-sp-20000": {
+  "standard": "Cidades comparadas com cidades parecidas (em São Paulo), com 20.000 ou mais votos válidos no 2º turno de 2026: 1.",
+  "plain": "Cidades comparadas com cidades parecidas (em São Paulo), com 20.000 ou mais votos válidos no 2º turno de 2026: 1."
+ },
+ "relatorios/cidades-fora-da-curva/filtros/filtro-sp-50000": {
+  "standard": "Cidades comparadas com cidades parecidas (em São Paulo), com 50.000 ou mais votos válidos no 2º turno de 2026: 1.",
+  "plain": "Cidades comparadas com cidades parecidas (em São Paulo), com 50.000 ou mais votos válidos no 2º turno de 2026: 1."
+ },
+ "relatorios/resumo/cidades-que-viraram": {
+  "standard": "Candidato A: cidades em que a margem sobre o outro candidato foi negativa no 1º turno e positiva no 2º turno de 2026: 2.",
+  "plain": "Candidato A: cidades em que ficou atrás do outro candidato no 1º turno e à frente no 2º turno de 2026: 2."
+ },
+ "relatorios/resumo/cidades-que-viraram-2": {
+  "standard": "Candidato B: cidades em que a margem sobre o outro candidato foi negativa no 1º turno e positiva no 2º turno de 2026: 1.",
+  "plain": "Candidato B: cidades em que ficou atrás do outro candidato no 1º turno e à frente no 2º turno de 2026: 1."
+ },
+ "relatorios/resumo/votos-ganhos-e-perdidos": {
+  "standard": "Candidato A: soma, cidade a cidade, dos votos do 2º turno de 2026 menos os de 2022: -14.914 votos. Cidades com diferença positiva: 0; negativa: 7.",
+  "plain": "Candidato A: somando todas as cidades, os votos de 2026 menos os de 2022 dão -14.914 votos. Cidades com diferença positiva: 0; negativa: 7."
+ },
+ "relatorios/resumo/disputas-mais-apertadas": {
+  "standard": "Em Cidade Exemplo A/RJ, no 2º turno de 2026, 12.184 votos para Candidato A e 12.215 para Candidato B: a diferença entre eles é de 31 votos.",
+  "plain": "Em Cidade Exemplo A/RJ, no 2º turno de 2026, 12.184 votos para Candidato A e 12.215 para Candidato B. A diferença entre eles é de 31 votos."
+ },
+ "relatorios/resumo/comparecimento": {
+  "standard": "Em Cidade Exemplo C/RJ, no 2º turno de 2026, compareceram 53.040 dos 67.868 eleitores aptos: 78,2%.",
+  "plain": "Em Cidade Exemplo C/RJ, no 2º turno de 2026, 53.040 das 67.868 pessoas que podiam votar foram votar: 78,2%."
+ },
+ "relatorios/resumo/comparecimento-baixo": {
+  "standard": "Em Cidade Exemplo E/RJ, no 2º turno de 2026, compareceram 67.175 dos 95.294 eleitores aptos: 70,5%.",
+  "plain": "Em Cidade Exemplo E/RJ, no 2º turno de 2026, 67.175 das 95.294 pessoas que podiam votar foram votar: 70,5%."
+ },
+ "relatorios/resumo/cidades-fora-da-curva": {
+  "standard": "Cidades comparadas com cidades parecidas (em todo o país), com 5.000 ou mais votos válidos no 2º turno de 2026: 7.",
+  "plain": "Cidades comparadas com cidades parecidas (em todo o país), com 5.000 ou mais votos válidos no 2º turno de 2026: 7."
+ },
+ "estado/mt/municipios/municipios": {
+  "standard": "Municípios do estado Mato Grosso no conjunto de dados: 1.",
+  "plain": "Municípios do estado Mato Grosso no conjunto de dados: 1."
+ },
+ "estado/rj/municipios/municipios": {
+  "standard": "Municípios do estado Rio de Janeiro no conjunto de dados: 6.",
+  "plain": "Municípios do estado Rio de Janeiro no conjunto de dados: 6."
+ },
+ "estado/sp/municipios/municipios": {
+  "standard": "Municípios do estado São Paulo no conjunto de dados: 1.",
+  "plain": "Municípios do estado São Paulo no conjunto de dados: 1."
+ },
+ "estado/rj/tres-ciclos/2018-a": {
+  "standard": "Em RJ, no 2º turno de 2018, A: 150.582 de 316.874 votos válidos, 47,5%.",
+  "plain": "Em RJ, no 2º turno de 2018, A: 150.582 de 316.874 votos para candidatos, 47,5%."
+ },
+ "estado/rj/tres-ciclos/2018-b": {
+  "standard": "Em RJ, no 2º turno de 2018, B: 166.292 de 316.874 votos válidos, 52,5%.",
+  "plain": "Em RJ, no 2º turno de 2018, B: 166.292 de 316.874 votos para candidatos, 52,5%."
+ },
+ "estado/rj/tres-ciclos/2018-variacao": {
+  "standard": "Em RJ, no 2º turno de 2018, A teve 47,5% dos votos válidos: ponto de partida da série.",
+  "plain": "Em RJ, no 2º turno de 2018, A teve 47,5% dos votos para candidatos: é o começo da série."
+ },
+ "estado/rj/tres-ciclos/2022-a": {
+  "standard": "Em RJ, no 2º turno de 2022, A: 160.419 de 310.477 votos válidos, 51,7%.",
+  "plain": "Em RJ, no 2º turno de 2022, A: 160.419 de 310.477 votos para candidatos, 51,7%."
+ },
+ "estado/rj/tres-ciclos/2022-b": {
+  "standard": "Em RJ, no 2º turno de 2022, B: 150.058 de 310.477 votos válidos, 48,3%.",
+  "plain": "Em RJ, no 2º turno de 2022, B: 150.058 de 310.477 votos para candidatos, 48,3%."
+ },
+ "estado/rj/tres-ciclos/2022-variacao": {
+  "standard": "Em RJ, no 2º turno de 2022, a parcela de A nos votos válidos foi 51,7%, +4,1 pontos percentuais em relação a 2018.",
+  "plain": "Em RJ, no 2º turno de 2022, A teve 51,7% dos votos para candidatos: +4,1 pontos de diferença em relação a 2018."
+ },
+ "estado/rj/tres-ciclos/2026-a": {
+  "standard": "Em RJ, no 2º turno de 2026, A: 149.536 de 300.519 votos válidos, 49,8%.",
+  "plain": "Em RJ, no 2º turno de 2026, A: 149.536 de 300.519 votos para candidatos, 49,8%."
+ },
+ "estado/rj/tres-ciclos/2026-b": {
+  "standard": "Em RJ, no 2º turno de 2026, B: 150.983 de 300.519 votos válidos, 50,2%.",
+  "plain": "Em RJ, no 2º turno de 2026, B: 150.983 de 300.519 votos para candidatos, 50,2%."
+ },
+ "estado/rj/tres-ciclos/2026-variacao": {
+  "standard": "Em RJ, no 2º turno de 2026, a parcela de A nos votos válidos foi 49,8%, -1,9 pontos percentuais em relação a 2022.",
+  "plain": "Em RJ, no 2º turno de 2026, A teve 49,8% dos votos para candidatos: -1,9 pontos de diferença em relação a 2022."
+ },
+ "estado/rj/tres-ciclos/2026-viradas": {
+  "standard": "Em RJ, entre 2022 e 2026, o lado com mais votos no 2º turno mudou em 3 das 6 cidades com os três ciclos.",
+  "plain": "Em RJ, de 2022 para 2026, o lado com mais votos no 2º turno mudou em 3 das 6 cidades com os três ciclos."
+ },
+ "estado/rj/tres-ciclos/2022-viradas": {
+  "standard": "Em RJ, o lado com mais votos no 2º turno mudou entre 2018 e 2022: 5 das 6 cidades com os três ciclos.",
+  "plain": "Em RJ, o lado com mais votos no 2º turno mudou de 2018 para 2022: 5 das 6 cidades com os três ciclos."
+ },
+ "estado/rj/tres-ciclos/voltaram": {
+  "standard": "Em RJ, o lado com mais votos mudou em 2022 e em 2026 voltou ao de 2018: 3 das 6 cidades com os três ciclos.",
+  "plain": "Em RJ, o lado com mais votos mudou em 2022 e em 2026 voltou a ser o de 2018: 3 das 6 cidades com os três ciclos."
+ },
+ "estado/rj/tres-ciclos/sem-mudanca": {
+  "standard": "Em RJ, o lado com mais votos no 2º turno foi o mesmo nos três ciclos: 1 das 6 cidades com os três ciclos.",
+  "plain": "Em RJ, o lado com mais votos no 2º turno foi o mesmo nos três ciclos: 1 das 6 cidades com os três ciclos."
+ },
+ "estado/mt/tres-ciclos/2026-a": {
+  "standard": "Em MT, no 2º turno de 2026, A: 42.667 de 85.154 votos válidos, 50,1%.",
+  "plain": "Em MT, no 2º turno de 2026, A: 42.667 de 85.154 votos para candidatos, 50,1%."
+ },
+ "estado/mt/tres-ciclos/2026-b": {
+  "standard": "Em MT, no 2º turno de 2026, B: 42.487 de 85.154 votos válidos, 49,9%.",
+  "plain": "Em MT, no 2º turno de 2026, B: 42.487 de 85.154 votos para candidatos, 49,9%."
+ },
+ "estado/mt/tres-ciclos/2026-variacao": {
+  "standard": "Em MT, no 2º turno de 2026, A teve 50,1% dos votos válidos: ponto de partida da série.",
+  "plain": "Em MT, no 2º turno de 2026, A teve 50,1% dos votos para candidatos: é o começo da série."
+ },
+ "estado/sp/tres-ciclos/2018-a": {
+  "standard": "Em SP, no 2º turno de 2018, A: 40.554 de 82.290 votos válidos, 49,3%.",
+  "plain": "Em SP, no 2º turno de 2018, A: 40.554 de 82.290 votos para candidatos, 49,3%."
+ },
+ "estado/sp/tres-ciclos/2018-b": {
+  "standard": "Em SP, no 2º turno de 2018, B: 41.736 de 82.290 votos válidos, 50,7%.",
+  "plain": "Em SP, no 2º turno de 2018, B: 41.736 de 82.290 votos para candidatos, 50,7%."
+ },
+ "estado/sp/tres-ciclos/2018-variacao": {
+  "standard": "Em SP, no 2º turno de 2018, A teve 49,3% dos votos válidos: ponto de partida da série.",
+  "plain": "Em SP, no 2º turno de 2018, A teve 49,3% dos votos para candidatos: é o começo da série."
+ },
+ "estado/sp/tres-ciclos/2022-a": {
+  "standard": "Em SP, no 2º turno de 2022, A: 48.768 de 84.303 votos válidos, 57,8%.",
+  "plain": "Em SP, no 2º turno de 2022, A: 48.768 de 84.303 votos para candidatos, 57,8%."
+ },
+ "estado/sp/tres-ciclos/2022-b": {
+  "standard": "Em SP, no 2º turno de 2022, B: 35.535 de 84.303 votos válidos, 42,2%.",
+  "plain": "Em SP, no 2º turno de 2022, B: 35.535 de 84.303 votos para candidatos, 42,2%."
+ },
+ "estado/sp/tres-ciclos/2022-variacao": {
+  "standard": "Em SP, no 2º turno de 2022, a parcela de A nos votos válidos foi 57,8%, +8,6 pontos percentuais em relação a 2018.",
+  "plain": "Em SP, no 2º turno de 2022, A teve 57,8% dos votos para candidatos: +8,6 pontos de diferença em relação a 2018."
+ },
+ "estado/sp/tres-ciclos/2026-a": {
+  "standard": "Em SP, no 2º turno de 2026, A: 44.737 de 77.680 votos válidos, 57,6%.",
+  "plain": "Em SP, no 2º turno de 2026, A: 44.737 de 77.680 votos para candidatos, 57,6%."
+ },
+ "estado/sp/tres-ciclos/2026-b": {
+  "standard": "Em SP, no 2º turno de 2026, B: 32.943 de 77.680 votos válidos, 42,4%.",
+  "plain": "Em SP, no 2º turno de 2026, B: 32.943 de 77.680 votos para candidatos, 42,4%."
+ },
+ "estado/sp/tres-ciclos/2026-variacao": {
+  "standard": "Em SP, no 2º turno de 2026, a parcela de A nos votos válidos foi 57,6%, -0,3 pontos percentuais em relação a 2022.",
+  "plain": "Em SP, no 2º turno de 2026, A teve 57,6% dos votos para candidatos: -0,3 pontos de diferença em relação a 2022."
+ },
+ "estado/sp/tres-ciclos/2026-viradas": {
+  "standard": "Em SP, entre 2022 e 2026, o lado com mais votos no 2º turno mudou em 0 das 1 cidades com os três ciclos.",
+  "plain": "Em SP, de 2022 para 2026, o lado com mais votos no 2º turno mudou em 0 das 1 cidades com os três ciclos."
+ },
+ "estado/sp/tres-ciclos/2022-viradas": {
+  "standard": "Em SP, o lado com mais votos no 2º turno mudou entre 2018 e 2022: 1 das 1 cidades com os três ciclos.",
+  "plain": "Em SP, o lado com mais votos no 2º turno mudou de 2018 para 2022: 1 das 1 cidades com os três ciclos."
+ },
+ "estado/sp/tres-ciclos/voltaram": {
+  "standard": "Em SP, o lado com mais votos mudou em 2022 e em 2026 voltou ao de 2018: 0 das 1 cidades com os três ciclos.",
+  "plain": "Em SP, o lado com mais votos mudou em 2022 e em 2026 voltou a ser o de 2018: 0 das 1 cidades com os três ciclos."
+ },
+ "estado/sp/tres-ciclos/sem-mudanca": {
+  "standard": "Em SP, o lado com mais votos no 2º turno foi o mesmo nos três ciclos: 0 das 1 cidades com os três ciclos.",
+  "plain": "Em SP, o lado com mais votos no 2º turno foi o mesmo nos três ciclos: 0 das 1 cidades com os três ciclos."
+ }
+}

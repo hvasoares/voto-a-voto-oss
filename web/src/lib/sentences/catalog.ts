@@ -17,6 +17,7 @@
 import { DEFAULT_REGISTER, REGISTERS, type Register } from './register'
 import { DEFAULT_LOCALE } from './voice'
 import { HOME_HINT_KEYS } from './catalog-home'
+import { fill, pluralCategory } from './phrase'
 
 export const KEYS = [
   /** Shown instead of a sentence when the city has no data in the cycle, on the card and in the share and generator islands. */
@@ -811,18 +812,10 @@ export function template({ locale, register }: Voice, key: Key): string {
   return CATALOG[locale]?.[register]?.[key] ?? CATALOG[locale]?.standard?.[key] ?? CATALOG['pt-BR'][register][key] ?? (ptBR as Record<string, string>)[key]!
 }
 
-/** Fills `{slot}`s; an unknown slot is left visible as `{slot}` so a typo cannot pass silently in a test. */
-export function fill(tpl: string, params: Record<string, string | number>): string {
-  return tpl.replace(/\{(\w+)\}/g, (whole, name: string) => (name in params ? String(params[name]) : whole))
-}
+export { fill, pluralCategory }
 
 /** The keys that come as a `.one` / `.other` pair. */
 export type PluralKey = 'region.states' | 'region.cities' | 'nobodyTurnedOut' | 'nonVoters.count' | 'votes.count' | 'margin.gap' | 'margin.fits' | 'stat.margin'
-
-/** Zero reads as "other" ("0 votos"), although CLDR files 0 under "one" for Portuguese. */
-export function pluralCategory(locale: Locale, count: number): 'one' | 'other' {
-  return count !== 0 && new Intl.PluralRules(locale).select(count) === 'one' ? 'one' : 'other'
-}
 
 /** What `message` takes: a key, or the base of a plural pair (then `count` picks `.one` or `.other`). */
 export type MessageKey = Exclude<Key, `${string}.one` | `${string}.other`> | PluralKey

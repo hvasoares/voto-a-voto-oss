@@ -8,7 +8,7 @@ import { cityShardResult, type CityShard } from '../src/lib/city-shard'
 import { factsOf, type CuriositiesFile } from '../src/lib/curiosities'
 import { gateProblems } from '../src/lib/facts/gate'
 import { curiosityFacts, factPage, viewFacts, type Fact } from '../src/lib/facts/model'
-import { curiosityLine } from '../src/slots/city/curiosities'
+import { curiosityLineSentence } from '../src/slots/city/curiosities'
 import { displayName } from '../src/shared/city-search'
 import { CYCLES } from '../src/shared/city-model'
 
@@ -30,7 +30,7 @@ for (const s of shards) {
   const own = factsOf(curio, place.uf, place.slug)
   if (own.length) {
     pages++
-    all.push(...curiosityFacts(own, place, curiosityLine))
+    all.push(...curiosityFacts(own, place, (c) => curiosityLineSentence(c)))
   }
 }
 const problems = gateProblems(all)

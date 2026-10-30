@@ -12,11 +12,12 @@ import type { CityResult, Segment } from '@/shared/city-model'
 import { CYCLES, formatInt, formatPct } from '@/shared/city-model'
 import type { Fact as Curiosity } from '../curiosities'
 import type { CheckKind } from './checks'
-import { headline } from '../sentences/headline'
-import { marginLine, marginVotes } from '../sentences/margin'
+import { headlineSentence } from '../sentences/headline'
+import { marginSentence, marginVotes } from '../sentences/margin'
+import { drawPhrase, phrase, type PhrasePart } from '../sentences/phrase'
 import '../sentences/catalog-facts'
 import { formatDecimal } from '../number-format'
-import { DEFAULT_LOCALE, message as say, REGISTERS, type Locale, type MessageKey, type Register } from '../sentences/catalog'
+import { DEFAULT_LOCALE, message as say, REGISTERS, template, type Locale, type MessageKey, type Register } from '../sentences/catalog'
 
 /** The page of the facts of the curiosities card: it is the city's, not a cycle's. */
 export const CURIOSITIES_PAGE = 'comparacoes'
@@ -68,6 +69,9 @@ export interface Fact {
   title: string
   /** The figure as the card prints it ("70%", "36.400 · 52% dos votos", "3ª"). */
   shown: string
+  /** The record's sentence as data (private#213): what the data file of the page carries, and what the browser draws in either register with the same code (`sentences/phrase.ts`). */
+  say: PhrasePart
+  /** The same sentence drawn in both registers, from `say` (`drawBoth`): what the page prints today. */
   sentences: Record<Register, string>
   inputs: FactInput[]
   /** Optional on purpose: the gate reports a record that arrives without one (it never leaves the build). */
@@ -94,6 +98,10 @@ export const factId = (scope: string, page: string, anchor: string) => `${scope}
 export const factPath = (scope: string, page: string) => `fato/${scope}/${page}/`
 export const factHref = (f: Pick<Fact, 'scope' | 'page' | 'anchor'>, base = '/') => `${base}${factPath(f.scope, f.page)}#${f.anchor}`
 
+/** A sentence drawn in both registers from the catalog: how a record's `sentences` are made from its `say`, in the build. */
+export const drawBoth = (part: PhrasePart, locale: Locale = DEFAULT_LOCALE): Record<Register, string> =>
+  Object.fromEntries(REGISTERS.map((register) => [register, drawPhrase(part, { locale, register }, template)])) as Record<Register, string>
+
 const share = (part: number, whole: number) => (whole > 0 ? (part / whole) * 100 : 0)
 const int = (n: number) => formatInt(n)
 
@@ -105,19 +113,18 @@ export function viewFacts(r: CityResult | undefined, place: FactPlace): Fact[] {
   if (!r) return []
   const locale = place.locale ?? DEFAULT_LOCALE
   const page = factPage(r.ano, r.turno)
-  const say1 = (register: Register) => (key: MessageKey, params: Record<string, string | number> = {}, count?: number) => say({ locale, register }, key, params, count)
-  const std = say1('standard')
+  const std = (key: MessageKey, params: Record<string, string | number> = {}) => say({ locale, register: 'standard' }, key, params)
   const source: FactSource = { name: std(place.fixture ? 'fact.source.fixture' : 'fact.source.tse'), url: TSE_URL }
   const where = { city: place.name, turno: r.turno, ano: r.ano }
-  const both = (build: (m: ReturnType<typeof say1>) => string): Record<Register, string> => ({ standard: build(say1('standard')), plain: build(say1('plain')) })
-  const make = (anchor: string, title: string, shown: string, sentences: Record<Register, string>, inputs: FactInput[], formula: string, worked: string[], extra: Partial<Fact> = {}): Fact => ({
+  const make = (anchor: string, title: string, shown: string, sentence: PhrasePart, inputs: FactInput[], formula: string, worked: string[], extra: Partial<Fact> = {}): Fact => ({
     id: factId(`${place.uf}/${place.slug}`, page, anchor),
     scope: `${place.uf}/${place.slug}`,
     page,
     anchor,
     title,
     shown,
-    sentences,
+    say: sentence,
+    sentences: drawBoth(sentence, locale),
     inputs,
     calculation: { formula, worked },
     source,
@@ -139,7 +146,7 @@ export function viewFacts(r: CityResult | undefined, place: FactPlace): Fact[] {
       'frase',
       std('fact.measure.frase'),
       '',
-      { standard: headline(r, { cityName: place.name, overseas: place.overseas, locale, register: 'standard' }), plain: headline(r, { cityName: place.name, overseas: place.overseas, locale, register: 'plain' }) },
+      headlineSentence(r, { cityName: place.name, overseas: place.overseas, locale }),
       [aptos, naoVotaram, ...(first ? [{ label: std('fact.in.first'), field: 'votes.csv · votos', value: int(first.votos) }] : []), ...(second ? [{ label: std('fact.in.second'), field: 'votes.csv · votos', value: int(second.votos) }] : [])],
       std('fact.f.frase'),
       [dividing(r.naoVotaram, r.aptos), ...(first ? [dividing(first.votos, r.aptos)] : []), ...(second ? [dividing(second.votos, r.aptos)] : [])],
@@ -151,7 +158,7 @@ export function viewFacts(r: CityResult | undefined, place: FactPlace): Fact[] {
       'votaram',
       std('fact.measure.votaram'),
       `${r.votedPct}%`,
-      both((m) => m('fact.votaram', { ...where, pct: formatPct(r.votedShare), validos: int(r.validos), aptos: int(r.aptos) })),
+      phrase('fact.votaram', { ...where, pct: formatPct(r.votedShare), validos: int(r.validos), aptos: int(r.aptos) }),
       [aptos, validos],
       std('fact.f.votaram'),
       [dividing(r.validos, r.aptos)],
@@ -160,7 +167,7 @@ export function viewFacts(r: CityResult | undefined, place: FactPlace): Fact[] {
       'naoVotaram',
       std('fact.measure.naoVotaram'),
       `${r.notVotedPct}%`,
-      both((m) => m('fact.naoVotaram', { ...where, pct: formatPct(r.notVotedShare), n: int(r.naoVotaram), aptos: int(r.aptos) })),
+      phrase('fact.naoVotaram', { ...where, pct: formatPct(r.notVotedShare), n: int(r.naoVotaram), aptos: int(r.aptos) }),
       [aptos, validos],
       std('fact.f.naoVotaram'),
       [std('fact.w.diff', { a: int(r.aptos), b: int(r.validos), d: int(r.naoVotaram) }), dividing(r.naoVotaram, r.aptos)],
@@ -174,7 +181,7 @@ export function viewFacts(r: CityResult | undefined, place: FactPlace): Fact[] {
         segmentAnchor(s),
         s.label,
         `${int(s.votos)} · ${s.pct}% dos votos`,
-        both((m) => m('fact.candidate', { ...where, name: s.label, votos: int(s.votos), validos: int(r.validos), pct: formatPct(share(s.votos, r.validos)) })),
+        phrase('fact.candidate', { ...where, name: s.label, votos: int(s.votos), validos: int(r.validos), pct: formatPct(share(s.votos, r.validos)) }),
         [row, validos],
         std('fact.f.candidate'),
         [dividing(s.votos, r.validos)],
@@ -192,7 +199,7 @@ export function viewFacts(r: CityResult | undefined, place: FactPlace): Fact[] {
         segmentAnchor(s),
         s.label,
         `${int(s.votos)} · ${s.pct}% dos que não votaram`,
-        both((m) => m('fact.notVotedPart', { ...where, label: s.label, votos: int(s.votos), n: int(r.naoVotaram), pct: formatPct(share(s.votos, r.naoVotaram)) })),
+        phrase('fact.notVotedPart', { ...where, label: s.label, votos: int(s.votos), n: int(r.naoVotaram), pct: formatPct(share(s.votos, r.naoVotaram)) }),
         [{ label: std('fact.in.part', { label: s.label }), field, value: int(s.votos) }, naoVotaram],
         std('fact.f.notVotedPart'),
         steps,
@@ -202,8 +209,8 @@ export function viewFacts(r: CityResult | undefined, place: FactPlace): Fact[] {
 
   // The margin line, when the round has a pair to compare.
   const margin = marginVotes(r)
-  const marginSentence = (register: Register) => marginLine(r, { cityName: place.name, locale, register })
-  if (margin !== undefined && marginSentence('standard')) {
+  const marginPhrase = marginSentence(r, { cityName: place.name, locale })
+  if (margin !== undefined && marginPhrase) {
     const [a, b] = r.ranking as unknown as [{ votos: number }, { votos: number }]
     const fits = margin > 0 && r.naoVotaram > 0 && margin <= r.naoVotaram
     const times = formatDecimal(r.naoVotaram / (margin || 1), locale)
@@ -216,7 +223,7 @@ export function viewFacts(r: CityResult | undefined, place: FactPlace): Fact[] {
         'margem',
         std('fact.measure.margem'),
         int(margin),
-        { standard: marginSentence('standard')!, plain: marginSentence('plain')! },
+        marginPhrase,
         [{ label: std('fact.in.first'), field: 'votes.csv · votos', value: int(a.votos) }, { label: std('fact.in.second'), field: 'votes.csv · votos', value: int(b.votos) }, naoVotaram],
         fits ? `${std('fact.f.margin')}; ${std('fact.f.fits')}` : std('fact.f.margin'),
         worked,
@@ -231,21 +238,22 @@ export function viewFacts(r: CityResult | undefined, place: FactPlace): Fact[] {
  * The records of the curiosities card of a city: the rank, what it is the rank of, the group and the cycles. They rest on the
  * methods of `curiosities.md` and `peer-similarity.md` (the size band), which they cite.
  */
-export function curiosityFacts(curiosities: readonly Curiosity[], place: FactPlace, describe: (c: Curiosity, register: Register) => { what: string; group: string }): Fact[] {
+export function curiosityFacts(curiosities: readonly Curiosity[], place: FactPlace, describe: (c: Curiosity) => { what: PhrasePart; group: PhrasePart }): Fact[] {
   const locale = place.locale ?? DEFAULT_LOCALE
   const std = (key: MessageKey, params: Record<string, string | number> = {}) => say({ locale, register: 'standard' }, key, params)
   const source: FactSource = { name: std(place.fixture ? 'fact.source.fixture' : 'fact.source.tse'), url: TSE_URL }
-  return curiosities.map((c) => ({
+  return curiosities.map((c) => {
+    const d = describe(c)
+    const sentence = phrase('fact.curio', { rank: phrase('curio.rank', { n: c.rank }), what: d.what, group: d.group })
+    return {
     id: factId(`${place.uf}/${place.slug}`, CURIOSITIES_PAGE, c.code),
     scope: `${place.uf}/${place.slug}`,
     page: CURIOSITIES_PAGE,
     anchor: c.code,
     title: std('curio.rank', { n: c.rank }),
     shown: std('curio.rank', { n: c.rank }),
-    sentences: Object.fromEntries(REGISTERS.map((register) => {
-      const d = describe(c, register)
-      return [register, say({ locale, register }, 'fact.curio', { rank: say({ locale, register }, 'curio.rank', { n: c.rank }), what: d.what, group: d.group })]
-    })) as Record<Register, string>,
+    say: sentence,
+    sentences: drawBoth(sentence, locale),
     inputs: [
       { label: std('fact.in.rank'), value: std('curio.rank', { n: c.rank }) },
       { label: std('fact.in.group'), value: int(c.n) },
@@ -255,5 +263,6 @@ export function curiosityFacts(curiosities: readonly Curiosity[], place: FactPla
     source,
     checks: ['municipios'],
     method: { name: std(METHOD_DOCS.curio.key), href: METHOD_DOCS.curio.href },
-  }))
+    }
+  })
 }

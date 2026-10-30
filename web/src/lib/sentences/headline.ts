@@ -16,7 +16,8 @@
  * Overseas posts use the `lead.overseas` start ("No exterior, em ...") and the same figures.
  */
 import type { CandidateTally, CityResult } from '@/shared/city-model'
-import { message as say, type Locale, type MessageKey, type Register, type Voice } from './catalog'
+import { DEFAULT_LOCALE, template, type Locale, type Register, type Voice } from './catalog'
+import { drawPhrase, phrase, phraseWord, type PhrasePart } from './phrase'
 import './catalog-headline'
 import { formatInteger, formatShare } from '../number-format'
 import { voiceOf } from './voice'
@@ -47,22 +48,22 @@ function band(n: number, x: number): Band {
 
 const round1 = (x: number) => Math.round(x * 10) / 10
 
-export function headline(r: CityResult | undefined, place: Place): string {
-  const voice: Voice = voiceOf(place)
-  const locale = voice.locale
-  const message = (key: MessageKey, params?: Record<string, string | number>, count?: number) => say(voice, key, params, count)
+/** The headline as data (private#213): the catalog keys and the numbers it is made of, drawn in either register by `drawPhrase`; `headline` is this, drawn. */
+export function headlineSentence(r: CityResult | undefined, place: Omit<Place, 'register'>): PhrasePart {
+  const locale = place.locale ?? DEFAULT_LOCALE
+  const message = phrase
   if (!r) return message('noData')
 
   const int = (n: number) => formatInteger(n, locale)
   /** 33.6 -> "33,6%"; a non-zero part never reads as 0% and a partial one never as 100%. */
-  const pct = (x: number): string => {
+  const pct = (x: number): PhrasePart => {
     const v = round1(x)
     if (x > 0 && v === 0) return message('pct.lessThan', { pct: formatShare(0.001, locale) })
     if (x < 100 && v >= 100) return message('pct.moreThan', { pct: formatShare(0.999, locale) })
     return formatShare(v / 100, locale)
   }
   const names = new Intl.ListFormat(locale, { style: 'long', type: 'conjunction' })
-  const ref = (nome: string) => (/^Candidat[oa]\b/.test(nome) ? message('label.article', { name: nome }) : nome)
+  const ref = (nome: string): PhrasePart => (/^Candidat[oa]\b/.test(nome) ? message('label.article', { name: nome }) : nome)
 
   const lead = message(place.overseas ? 'lead.overseas' : 'lead.city', { city: place.cityName, turno: r.turno, ano: r.ano })
   if (r.aptos <= 0) return message('noElectorate', { lead })
@@ -73,7 +74,7 @@ export function headline(r: CityResult | undefined, place: Place): string {
   const tiny = r.aptos < TINY_ELECTORATE
   // measure(votes) is what the sentence compares: the electorate share (one decimal) or a head count.
   const measure = (votos: number) => (tiny ? votos : round1((votos / r.aptos) * 100))
-  const show = (votos: number) => (tiny ? message('votes.count', { n: int(votos) }, votos) : pct((votos / r.aptos) * 100))
+  const show = (votos: number): PhrasePart => (tiny ? message('votes.count', { n: int(votos) }, votos) : pct((votos / r.aptos) * 100))
   const nonVoters = tiny
     ? message('nonVoters.count', { n: int(r.naoVotaram), aptos: int(r.aptos) }, r.naoVotaram)
     : message('nonVoters.share', { share: pct(r.notVotedShare) })
@@ -98,7 +99,12 @@ export function headline(r: CityResult | undefined, place: Place): string {
   const who =
     runners.length === 1
       ? ref(second.nome)
-      : message('runnerUp.tied', { count: message('numberWords').split('|')[runners.length] ?? runners.length, names: names.format(runners.map((c) => c.nome)) })
+      : message('runnerUp.tied', { count: phraseWord('numberWords', runners.length), names: names.format(runners.map((c) => c.nome)) })
   const role = (rel === 'above' || rel === 'below') && runners.length === 1 ? message('runnerUp.role') : ''
   return message('vsRunnerUp', { lead, nonVoters, phrase: message(`phrase.${rel}`), who, role, value: show(second.votos) })
+}
+
+export function headline(r: CityResult | undefined, place: Place): string {
+  const voice: Voice = voiceOf(place)
+  return drawPhrase(headlineSentence(r, place), voice, template)
 }

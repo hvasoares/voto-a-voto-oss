@@ -17,9 +17,10 @@ import { citiesChanged } from '../season'
 import { formatSwing } from '../margins'
 import { formatInt, formatPct } from '@/shared/city-model'
 import '../sentences/catalog-facts'
-import { DEFAULT_LOCALE, message as say, REGISTERS, type MessageKey, type Register } from '../sentences/catalog'
+import { DEFAULT_LOCALE, message as say, type MessageKey } from '../sentences/catalog'
 import type { CheckKind } from './checks'
-import { factId, METHOD_DOCS, TSE_URL, type Fact, type FactInput } from './model'
+import { drawBoth, factId, METHOD_DOCS, TSE_URL, type Fact, type FactInput } from './model'
+import { phrase, type PhrasePart } from '../sentences/phrase'
 
 /** One page of records and what its page needs to be drawn. */
 export interface FactPage {
@@ -39,7 +40,8 @@ export interface FactPage {
 
 type Params = Record<string, string | number>
 const std = (key: MessageKey, params: Params = {}) => say({ locale: DEFAULT_LOCALE, register: 'standard' }, key, params)
-const both = (key: MessageKey, params: Params): Record<Register, string> => Object.fromEntries(REGISTERS.map((r) => [r, say({ locale: DEFAULT_LOCALE, register: r }, key, params)])) as Record<Register, string>
+/** The sentence of a record as data (private#213): the key and its slots, drawn in either register by `drawBoth` in the build and by the same code in the browser. */
+const both = (key: MessageKey, params: Record<string, PhrasePart>): PhrasePart => phrase(key, params)
 const share = (part: number, whole: number) => (whole > 0 ? (part / whole) * 100 : 0)
 const int = formatInt
 /** `part ÷ whole × 100 = x%`; the exact value has one decimal, or two where the page prints two (the national bar). */
@@ -52,14 +54,15 @@ export interface Ctx {
   fixture: boolean
   checks: CheckKind[]
 }
-const rec = (c: Ctx, anchor: string, title: string, shown: string, sentences: Record<Register, string>, inputs: FactInput[], formula: string, worked: string[], method?: Fact['method']): Fact => ({
+const rec = (c: Ctx, anchor: string, title: string, shown: string, sentence: PhrasePart, inputs: FactInput[], formula: string, worked: string[], method?: Fact['method']): Fact => ({
   id: factId(c.scope, c.page, anchor),
   scope: c.scope,
   page: c.page,
   anchor,
   title,
   shown,
-  sentences,
+  say: sentence,
+  sentences: drawBoth(sentence),
   inputs,
   calculation: { formula, worked },
   source: { name: std(c.fixture ? 'fact.source.fixture' : 'fact.source.tse'), url: TSE_URL },
@@ -199,7 +202,7 @@ export function stateCyclesFacts(uf: string, blocks: readonly CycleBlock[], fixt
     ] as const) {
       const what = std(key)
       facts.push(
-        rec(c, anchor, std('fact.in.arc', { what }), `${count} de ${total}`, Object.fromEntries(REGISTERS.map((r) => [r, say({ locale: DEFAULT_LOCALE, register: r }, 'fact.state.arc', { name, what: say({ locale: DEFAULT_LOCALE, register: r }, key), n: int(count), total: int(total) })])) as Record<Register, string>,
+        rec(c, anchor, std('fact.in.arc', { what }), `${count} de ${total}`, phrase('fact.state.arc', { name, what: phrase(key), n: int(count), total: int(total) }),
           [{ label: std('fact.in.arc', { what }), value: int(count) }, { label: std('fact.in.arcTotal'), value: int(total) }], std('fact.f.arc'), [std('fact.w.arc', { n: int(count), total: int(total) })], method),
       )
     }
@@ -474,11 +477,10 @@ export function outlierRecord(c: Ctx, r: OutlierRow, names: Names, label: CityLa
 
 /** The count a list states ("Mostrando N de M cidades"), or the hub's headline: the cities the filter compared. */
 export function outlierCountRecord(c: Ctx, anchor: string, state: { uf: string; name: string } | undefined, min: number, n: number): Fact {
-  const where = state ? std('fact.out.where.uf', { name: state.name }) : std('fact.out.where.all')
-  const plainWhere = state ? say({ locale: DEFAULT_LOCALE, register: 'plain' }, 'fact.out.where.uf', { name: state.name }) : say({ locale: DEFAULT_LOCALE, register: 'plain' }, 'fact.out.where.all')
+  const whereSaid = state ? phrase('fact.out.where.uf', { name: state.name }) : phrase('fact.out.where.all')
   return rec(
     c, anchor, std('fact.in.cities'), int(n),
-    { standard: std('fact.count.outliers', { where, min: int(min), n: int(n) }), plain: say({ locale: DEFAULT_LOCALE, register: 'plain' }, 'fact.count.outliers', { where: plainWhere, min: int(min), n: int(n) }) },
+    phrase('fact.count.outliers', { where: whereSaid, min: int(min), n: int(n) }),
     [countInput(std('fact.in.cities'), n), { label: std('fact.in.minimum'), field: 'turnout.csv · validos', value: int(min) }],
     std('fact.f.outCount'), [std('fact.w.count', { n: int(n), min: int(min) })],
     { name: std(METHOD_DOCS.outliers.key), href: METHOD_DOCS.outliers.href },

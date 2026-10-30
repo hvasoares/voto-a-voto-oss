@@ -1,18 +1,28 @@
-import { DEFAULT_LOCALE, message, type Locale, type MessageKey, type Register } from '../../lib/sentences/catalog'
+import { DEFAULT_LOCALE, message, template, type Locale, type MessageKey, type Register } from '../../lib/sentences/catalog'
+import { drawPhrase, phrase, type PhrasePart } from '../../lib/sentences/phrase'
 import { CARD_REGISTER } from '../../lib/sentences/register'
 import type { Fact } from '../../lib/curiosities'
 import { html, type Raw } from '../../shared/html'
 
 /** The cycles of a fact as the card prints them: "2022 → 2026" for a change, "2026", "2018, 2022 e 2026". */
 function cyclesText(f: Fact, voice: { locale: Locale; register: Register }): string {
-  if (f.code === 'td' || f.code === 'tu') return message(voice, 'curio.cycles.change', { from: f.cycles[0]!, to: f.cycles[1]! })
-  return new Intl.ListFormat(voice.locale, { style: 'long', type: 'conjunction' }).format(f.cycles.map(String))
+  return drawPhrase(cyclesSentence(f, voice.locale), voice, template)
+}
+function cyclesSentence(f: Fact, locale: Locale): PhrasePart {
+  if (f.code === 'td' || f.code === 'tu') return phrase('curio.cycles.change', { from: f.cycles[0]!, to: f.cycles[1]! })
+  return new Intl.ListFormat(locale, { style: 'long', type: 'conjunction' }).format(f.cycles.map(String))
 }
 
-/** What a fact ranks and the group it ranks in, in one register: the words of the card, also the sentence of the fact record. */
+/** What a fact ranks and the group it ranks in, as data (private#213): drawn in either register by `drawPhrase`, in the build and in the browser. */
+export function curiosityLineSentence(f: Fact, locale: Locale = DEFAULT_LOCALE): { what: PhrasePart; group: PhrasePart } {
+  return { what: phrase(`curio.${f.code}` as MessageKey), group: phrase('curio.group', { n: f.n, cycles: cyclesSentence(f, locale) }) }
+}
+
+/** What a fact ranks and the group it ranks in, in one register: the words of the card. */
 export function curiosityLine(f: Fact, register: Register, locale: Locale = DEFAULT_LOCALE): { what: string; group: string } {
   const voice = { locale, register }
-  return { what: message(voice, `curio.${f.code}`), group: message(voice, 'curio.group', { n: f.n, cycles: cyclesText(f, voice) }) }
+  const { what, group } = curiosityLineSentence(f, locale)
+  return { what: drawPhrase(what, voice, template), group: drawPhrase(group, voice, template) }
 }
 
 /**

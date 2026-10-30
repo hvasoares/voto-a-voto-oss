@@ -2,8 +2,9 @@
  * A calculation page as DATA (private#212, the lighter-site milestone): what `data/v<fingerprint>/fato/<scope>/<page>.json` holds. PURE, no file system.
  * It is the page's sealed record, made of what the page prints that is not a sentence: for each fact its id, anchor, title, the figure as shown, the
  * inputs (label, dataset field, value), the formula and its worked lines, the source, the method note and the checks it names; for the page the places
- * it belongs to, the rounds, the seal and the edition. The two registers' sentences, the subtitle, the way-back label and the page's limits note are
- * NOT in it: they are drawn from the catalog (private#213), so no wording is stored twice. Nothing is computed here; it only drops the sentence fields.
+ * it belongs to, the rounds, the seal and the edition. The sentence of a fact is not stored as text: `say` holds the catalog keys and the numbers it is made
+ * of (private#213), and `lib/sentences/phrase.ts` draws it in either register, the same code in the build and in the browser, so no wording is stored twice.
+ * The subtitle, the way-back label and the page's limits note are not in the file yet. Nothing is computed here; it only drops the drawn sentences.
  */
 import type { Fact } from './model'
 import type { SealedPage } from './pages'
