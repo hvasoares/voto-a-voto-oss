@@ -20,6 +20,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
@@ -36,17 +37,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-web
-      - run: npm test
+      # No `npm test` here (private#201): the unit tests run in the `ci` workflow, and the `ci-green` job below
+      # keeps the deploy from going out unless that workflow is green on this same commit.
       - name: Cache the link-preview rasters
         uses: actions/cache@v4
         with:
           path: web/.cache/previews
-          # Exact match only, no restore-keys: the build reuses a cached raster by its city path alone, so a raster
-          # drawn by older code or from an older dataset must never be restored. The key is the dataset (its manifest
-          # holds the digest of every table) plus the code that draws the picture (integrations/preview-images.ts,
-          # link-preview, share-card and its sentences, the city model); tests are left out so editing one does not
-          # throw the cache away.
-          key: previews-${{ hashFiles('data/manifest.json', 'web/integrations/preview-images.ts', 'web/src/lib/link-preview.ts', 'web/src/lib/share-*.ts', 'web/src/lib/stat-card.ts', 'web/src/lib/city-shard.ts', 'web/src/lib/sentences/**', 'web/src/shared/city-model.ts', 'web/src/data/**', 'web/src/slots/city/city-view.ts', '!**/*.test.ts') }}
+          # Content-addressed (private#201): integrations/preview-images.ts names every cached raster by the digest of its
+          # own picture, so a restored folder can never serve a stale picture and a prefix restore is safe. The key
+          # holds only what changes a picture: the code that draws it (not its tests) and the city tables. data/manifest.json
+          # (national references) is left out, so a commit that touches only it restores the cache whole. A change to a
+          # table or to the drawing saves a new entry; the restore-key starts it from the latest one, and the build
+          # redraws only the pictures whose digest is new.
+          key: previews-${{ hashFiles('web/integrations/preview-images.ts', 'web/src/lib/link-preview.ts', 'web/src/lib/share-*.ts', 'web/src/lib/stat-card.ts', 'web/src/lib/city-shard.ts', 'web/src/lib/sentences/**', 'web/src/shared/city-model.ts', 'web/src/data/**', 'web/src/slots/city/city-view.ts', 'web/package-lock.json', 'data/candidates.csv', 'data/cities.csv', 'data/turnout.csv', 'data/votes.csv', '!**/*.test.ts') }}
+          restore-keys: previews-
       - name: Build static site
         run: npm run build
         env:
@@ -69,8 +73,31 @@ jobs:
         with:
           path: web/dist
 
+  # The deploy follows a green `ci` of the same commit (private#201). The build above runs in parallel and does not
+  # wait; only the publish does. A `workflow_dispatch` run is checked the same way, on the commit it was started from.
+  ci-green:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for the ci workflow of this commit and require it green
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          for attempt in $(seq 1 60); do
+            read -r status conclusion < <(gh run list --workflow ci.yml --commit "$GITHUB_SHA" --event push --limit 1 --json status,conclusion --jq '.[0] // {status: "missing", conclusion: ""} | "\(.status) \(.conclusion)"')
+            echo "ci on $GITHUB_SHA: status=$status conclusion=${conclusion:-none} (check $attempt of 60)"
+            if [ "$status" = completed ]; then
+              [ "$conclusion" = success ] && exit 0
+              echo "::error::the ci workflow of this commit ended as $conclusion; fix it before deploying"
+              exit 1
+            fi
+            sleep 30
+          done
+          echo "::error::the ci workflow of this commit did not finish in 30 minutes"
+          exit 1
+
   deploy:
-    needs: build
+    needs: [build, ci-green]
     runs-on: ubuntu-latest
     environment:
       name: github-pages

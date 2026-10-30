@@ -149,6 +149,7 @@ e2e-sample:
 	  DATA_DIR=.sample-data EDITIONS_DIR=.sample-editions E2E_PREBUILT=1 OUT_DIR=dist-sample npx playwright test --project=sample
 
 # deploy.yml: o build de publicação — exatamente o `astro build` que roda no Actions com os envs de produção.
+# O deploy.yml não repete os testes unitários (ficam no ci.yml; o job ci-green só publica com o ci verde no mesmo commit).
 build-deploy:
 	DATA_DIR=../data SITE_BASE=/ SITE_ORIGIN=https://voto-a-voto.com npm --prefix web run build
 

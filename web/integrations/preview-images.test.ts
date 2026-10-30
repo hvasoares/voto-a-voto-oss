@@ -8,6 +8,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import sharp from 'sharp'
 import { buildShards } from './shards'
+import { createHash } from 'node:crypto'
 import { generatePreviews, PREVIEW_SPEC, rasterizePreview, type PreviewPlanItem } from './preview-images'
 import { previewSvg } from '../src/lib/link-preview'
 import { cityShardResult } from '../src/lib/city-shard'
@@ -15,6 +16,10 @@ import { defaultView } from '../src/slots/city/city-view'
 
 const plan = (svgs: (string | undefined)[]): PreviewPlanItem[] =>
   svgs.map((svg, i) => ({ uf: 'rj', slug: `cidade-${i}`, nome: `Cidade ${i}`, svg }))
+
+/** The cache file of the picture `svg` of city `n`: the city path plus the digest of the svg. */
+const cachedFile = (n: number, svg: string) =>
+  `content/rj/cidade-${n}.${createHash('sha256').update(svg).digest('hex').slice(0, 16)}.png`
 
 const one = 'rj/cidade-0.png'
 const two = 'rj/cidade-1.png'
@@ -43,12 +48,12 @@ describe('generatePreviews: cache and copies', () => {
     expect(existsSync(resolve(h.out, one))).toBe(true)
     expect(existsSync(resolve(h.out, two))).toBe(true)
     expect(existsSync(resolve(h.out, '.generator'))).toBe(true)
-    expect(existsSync(resolve(h.cache, 'vaaaa0000aaaa0000', 'rj/cidade-0.png'))).toBe(true)
-    expect(existsSync(resolve(h.cache, 'vaaaa0000aaaa0000', 'rj/cidade-2.png'))).toBe(false)
+    expect(existsSync(resolve(h.cache, cachedFile(0, 'a')))).toBe(true)
+    expect(readdirSync(resolve(h.cache, 'content/rj'))).toHaveLength(2)
     expect(readFileSync(resolve(h.out, '.generator'), 'utf8')).toBe(`${PREVIEW_SPEC} aaaa0000aaaa0000\n`)
-    expect(readFileSync(resolve(h.cache, 'vaaaa0000aaaa0000', '.generator'), 'utf8')).toBe(`${PREVIEW_SPEC}\n`)
+    expect(readFileSync(resolve(h.cache, 'content', '.generator'), 'utf8')).toBe(`${PREVIEW_SPEC}\n`)
     // the published copy IS the cached raster
-    expect(readFileSync(resolve(h.out, one))).toEqual(readFileSync(resolve(h.cache, 'vaaaa0000aaaa0000', 'rj/cidade-0.png')))
+    expect(readFileSync(resolve(h.out, one))).toEqual(readFileSync(resolve(h.cache, cachedFile(0, 'a'))))
   })
 
   it('a rebuild of the same dataset rasterises nothing (reused = every drawable city)', async () => {
@@ -70,27 +75,32 @@ describe('generatePreviews: cache and copies', () => {
     expect(report.files).toBe(2)
     expect(existsSync(out1)).toBe(true)
     expect(statSync(out1).size).toBe(bytes)
-    expect(readFileSync(out1)).toEqual(readFileSync(resolve(h.cache, 'vaaaa0000aaaa0000', 'rj/cidade-0.png')))
+    expect(readFileSync(out1)).toEqual(readFileSync(resolve(h.cache, cachedFile(0, 'a'))))
   })
 
   it('a crashed run leaves no half raster behind and the next run redraws only what the cache lacks', async () => {
     const h = harness()
     await h.run(plan(['a', 'b', undefined]))
-    rmSync(resolve(h.cache, 'vaaaa0000aaaa0000', 'rj/cidade-1.png'))
+    rmSync(resolve(h.cache, cachedFile(1, 'b')))
     const report = await h.run(plan(['a', 'b', undefined]))
     expect(report).toMatchObject({ drawn: 1, reused: 1 })
-    expect(existsSync(resolve(h.cache, 'vaaaa0000aaaa0000', 'rj/cidade-1.png'))).toBe(true)
+    expect(existsSync(resolve(h.cache, cachedFile(1, 'b')))).toBe(true)
   })
 
-  it('a dataset change (new fingerprint) rasterises again and the cache keeps no older version directories', async () => {
+  it('a dataset change that leaves a city\'s picture as it was rasterises nothing for that city (private#201)', async () => {
     const h = harness()
-    await h.run(plan(['a']), 'aaaa0000aaaa0000')
-    expect(existsSync(resolve(h.cache, 'vaaaa0000aaaa0000'))).toBe(true)
-    const report = await h.run(plan(['a']), 'bbbb0000bbbb0000')
-    expect(report).toMatchObject({ fingerprint: 'bbbb0000bbbb0000', drawn: 1 })
-    expect(readdirSync(h.cache)).toEqual(['vbbbb0000bbbb0000'])
-    expect(existsSync(resolve(h.out, 'vaaaa0000aaaa0000'))).toBe(false)
+    await h.run(plan(['a', 'b']), 'aaaa0000aaaa0000')
+    const report = await h.run(plan(['a', 'b']), 'bbbb0000bbbb0000')
+    expect(report).toMatchObject({ fingerprint: 'bbbb0000bbbb0000', drawn: 0, reused: 2 })
     expect(readFileSync(resolve(h.out, '.generator'), 'utf8')).toBe(`${PREVIEW_SPEC} bbbb0000bbbb0000\n`)
+  })
+
+  it('a changed picture is redrawn alone, and the cache keeps no file of a picture the plan no longer has', async () => {
+    const h = harness()
+    await h.run(plan(['a', 'b']))
+    const report = await h.run(plan(['a', 'b2']), 'bbbb0000bbbb0000')
+    expect(report).toMatchObject({ drawn: 1, reused: 1 })
+    expect(readdirSync(resolve(h.cache, 'content/rj')).sort()).toEqual([cachedFile(0, 'a'), cachedFile(1, 'b2')].map((f) => f.replace('content/rj/', '')).sort())
   })
 
   it('files of cities the dataset no longer has do not survive the rebuild (a published stale image would still resolve)', async () => {
@@ -106,11 +116,11 @@ describe('generatePreviews: cache and copies', () => {
   it('a raster written by another PREVIEW_SPEC contract is redrawn, not served', async () => {
     const h = harness()
     await h.run(plan(['a']), 'aaaa0000aaaa0000')
-    const cachedFile = resolve(h.cache, 'vaaaa0000aaaa0000', 'rj/cidade-0.png')
-    writeFileSync(resolve(h.cache, 'vaaaa0000aaaa0000', '.generator'), `voto-previews/0\n`)
+    const cached = resolve(h.cache, cachedFile(0, 'a'))
+    writeFileSync(resolve(h.cache, 'content', '.generator'), `voto-previews/0\n`)
     const report = await h.run(plan(['a']), 'aaaa0000aaaa0000')
     expect(report.drawn).toBe(1)
-    expect(existsSync(cachedFile)).toBe(true)
+    expect(existsSync(cached)).toBe(true)
   })
 
   it('no scratch file survives: rasterisations and copies land atomically, nothing partial remains', async () => {

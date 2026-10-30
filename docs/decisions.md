@@ -428,3 +428,12 @@ D-010 (ballot-number order) and D-011 (type scale) come from the code and its co
 - Supersedes: none
 - Tickets: private#206, private#208
 - Source: owner decision of 2026-10-29 on the `BLOCKED` question of private#206 and on the QR indexing difference reported by private#208
+
+### D-044 The Pages build does not repeat the unit tests; a deploy follows a green ci on the same commit
+- Date: 2026-10-29
+- Status: active
+- Decision: `deploy.yml` builds and publishes only; the unit tests stay in `ci.yml`. The deploy job waits for a `ci-green` job that requires the `ci` workflow run of the same commit to have succeeded. The preview-picture cache is content-addressed (each raster is named by the digest of its own picture) and its Actions cache key holds only the picture code and the city tables, with a prefix restore.
+- Reason: The deploy repeated about 90 s of tests the `ci` run had just done, and its cache key changed with any dataset file (the manifest included), so a commit that changed no picture redrew every one.
+- Supersedes: none
+- Tickets: private#201
+- Source: the plan of private#196

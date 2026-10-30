@@ -8,14 +8,18 @@
  * Runs at `astro:config:setup` (like the shards generator of #49) — before Astro copies `public/` into the
  * output: it writes `public/preview/` and reads the shards that `dataset()` (registered BEFORE it) wrote.
  *
- * CACHE (resumable builds): rasters live in `.cache/previews/v<shard-fingerprint>/<uf>/<slug>.png` — the
- * fingerprint keys the dataset, the path keys the city. A rebuild without a dataset change rasterises only
- * the cities its cache has no file for (writes go to a `.part` temp + atomic rename, so a crashed run
- * leaves no half raster); the published copies are reused when they already match the cache. `.cache/` is
- * gitignored and machine-local: rasters are not byte-identical across machines (system fonts differ) and
- * no published page depends on their bytes — the og tags reference the files, not their content.
+ * CACHE (resumable builds, private#201): rasters live in `.cache/previews/content/<uf>/<slug>.<digest>.png`, where
+ * the digest is that of the picture's own svg (its per-city inputs: result, names, origin, base, drawing code). A
+ * rebuild rasterises only the cities whose picture has no file; a commit that changes the dataset but not a city's
+ * picture (the manifest, a table of another city, the centroids) redraws nothing for that city, and the Pages
+ * workflow restores the folder from the Actions cache. Files no picture of the plan maps to are removed after each
+ * run, so one dataset in means one set out. Writes go to a `.part` temp + atomic rename, so a crashed run leaves no
+ * half raster; the published copies are reused when they already match the cache. `.cache/` is gitignored:
+ * rasters are not byte-identical across machines (system fonts differ) and no published page depends on their
+ * bytes — the og tags reference the files, not their content.
  */
 import type { AstroIntegration } from 'astro'
+import { createHash } from 'node:crypto'
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import sharp from 'sharp'
@@ -30,7 +34,7 @@ import { previewFile, previewSvg } from '../src/lib/link-preview'
 import type { Turno } from '../src/data'
 
 /** Version of the rasteriser's contract (format, size, quality of the picture): cached version directories are rebuilt when it changes. */
-export const PREVIEW_SPEC = 'voto-previews/1'
+export const PREVIEW_SPEC = 'voto-previews/2'
 /** Parallel rasterisations (sharp keeps its own libvips thread pool; a small pool is enough to saturate it). */
 export const PREVIEW_CONCURRENCY = 8
 
@@ -98,6 +102,29 @@ async function mapPool<T, R>(items: T[], concurrency: number, fn: (item: T, inde
   return out
 }
 
+const CACHE_FOLDER = 'content'
+
+/** The cache file of one picture: the city's path plus the digest of its svg, so the name says what the picture was drawn from. */
+function cachedName(item: { uf: string; slug: string; svg: string }): string {
+  const digest = createHash('sha256').update(item.svg).digest('hex').slice(0, 16)
+  return previewFile(item.uf, item.slug).replace(/\.png$/, `.${digest}.png`)
+}
+
+/** Removes the cached rasters (and stray temp files) that no picture of the current plan maps to. */
+function pruneCache(dir: string, wanted: Set<string>, rel = ''): void {
+  let entries
+  try {
+    entries = readdirSync(resolve(dir, rel), { withFileTypes: true })
+  } catch {
+    return
+  }
+  for (const e of entries) {
+    const path = rel ? `${rel}/${e.name}` : e.name
+    if (e.isDirectory()) pruneCache(dir, wanted, path)
+    else if (path !== '.generator' && !wanted.has(path)) rmSync(resolve(dir, path), { force: true })
+  }
+}
+
 /** The directory's `.generator` line: the version of the contract, and for the published one the dataset too. */
 const cacheSentinel = `${PREVIEW_SPEC}\n`
 const outSentinel = (fingerprint: string) => `${PREVIEW_SPEC} ${fingerprint}\n`
@@ -125,14 +152,13 @@ export async function generatePreviews(o: {
   rasterize: Rasterize
   concurrency?: number
 }): Promise<PreviewReport> {
-  const version = `v${o.fingerprint}`
-  const cacheVersion = resolve(o.cacheDir, version)
+  const cacheVersion = resolve(o.cacheDir, CACHE_FOLDER)
 
-  // A cache version directory written by another contract (or half-written) is rebuilt from scratch, and
-  // older version directories never accumulate: one dataset in, one directory out.
+  // A cache folder written by another contract (or half-written) is rebuilt from scratch; folders of the older
+  // layouts (one per dataset fingerprint) are dropped.
   if (dirIsStale(cacheVersion, cacheSentinel)) rmSync(cacheVersion, { recursive: true, force: true })
   try {
-    for (const entry of readdirSync(o.cacheDir)) if (entry !== version) rmSync(resolve(o.cacheDir, entry), { recursive: true, force: true })
+    for (const entry of readdirSync(o.cacheDir)) if (entry !== CACHE_FOLDER) rmSync(resolve(o.cacheDir, entry), { recursive: true, force: true })
   } catch {
     // no cache yet
   }
@@ -145,7 +171,7 @@ export async function generatePreviews(o: {
   const drawable = o.plan.filter((item): item is PreviewPlanItem & { svg: string } => item.svg !== undefined)
   let drawn = 0
   await mapPool(drawable, o.concurrency ?? PREVIEW_CONCURRENCY, async (item) => {
-    const cached = resolve(cacheVersion, previewFile(item.uf, item.slug))
+    const cached = resolve(cacheVersion, cachedName(item))
     if (existsSync(cached)) return
     drawn++
     const buf = await o.rasterize(item.svg)
@@ -158,7 +184,7 @@ export async function generatePreviews(o: {
   let bytes = 0
   for (const item of drawable) {
     const rel = previewFile(item.uf, item.slug)
-    const cached = resolve(cacheVersion, rel)
+    const cached = resolve(cacheVersion, cachedName(item))
     const out = resolve(o.publicPreview, rel)
     const size = statSync(cached).size
     if (!existsSync(out) || statSync(out).size !== size) {
@@ -169,6 +195,8 @@ export async function generatePreviews(o: {
     }
     bytes += size
   }
+
+  pruneCache(cacheVersion, new Set(drawable.map(cachedName)))
 
   // The sentinels go in last: an interrupted run leaves its work stale and the next rebuild starts over,
   // redrawing nothing (the cache already holds every raster the interrupted run managed to finish).
