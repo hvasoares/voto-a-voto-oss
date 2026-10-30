@@ -5,6 +5,7 @@ import { generateShards, shardsModule } from './shards'
 import { copyNerdsShards } from './nerds-shards'
 import { writePageData } from './page-data'
 import { QR_FAMILY, qrPageRecords } from './qr-pages'
+import { FACT_FAMILY, factPageRecords } from './fact-pages'
 import { SHARE_FAMILY, sharePageRecords } from './share-pages'
 import { siteOrigin } from '../src/lib/share-url'
 import { currentEdition } from '../src/lib/editions-load'
@@ -38,6 +39,8 @@ export function dataset(): AstroIntegration {
         const edition = await currentEdition()
         const build = { origin: siteOrigin(), base, fixture, edition: edition.id, editionDate: edition.date }
         writePageData(resolve(root, 'public/data'), fingerprint, SHARE_FAMILY, await sharePageRecords(cities, build))
+        // The calculation pages' family (private#212): the numbers, sources, formulas and seal of every /fato/ page, from the records that passed the gate.
+        writePageData(resolve(root, 'public/data'), fingerprint, FACT_FAMILY, await factPageRecords())
       },
     },
   }

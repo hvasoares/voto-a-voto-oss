@@ -53,9 +53,20 @@ export async function sealOf(page: Pick<FactPage, 'facts' | 'rounds' | 'scope' |
   return sealLines(checks, kinds, page.rounds, await currentEdition())
 }
 
-let memo: Promise<FactPage[]> | undefined
-/** The pages of records of the whole site, each checked by the gate. Memoised per build. */
-export function loadFactPages(): Promise<FactPage[]> {
+/**
+ * The gate and the seal over a set of pages, in one place (private#212): every page passes `assertPublishable` and gets its seal, or the build fails.
+ * The calculation pages and their data files (`integrations/fact-pages.ts`) both come from what this returns, so a record that fails still fails the build.
+ */
+export async function sealFactPages(pages: readonly FactPage[]): Promise<SealedPage[]> {
+  for (const p of pages) assertPublishable(p.facts, `/fato/${p.scope}/${p.page}/`)
+  const sealed: SealedPage[] = []
+  for (const p of pages) sealed.push({ ...p, seal: await sealOf(p) })
+  return sealed
+}
+
+let memo: Promise<SealedPage[]> | undefined
+/** The pages of records of the whole site, each checked by the gate and sealed. Memoised per build. */
+export function loadFactPages(): Promise<SealedPage[]> {
   return (memo ??= (async () => {
     const out: FactPage[] = []
     const fixture = await datasetFixture()
@@ -111,9 +122,7 @@ export function loadFactPages(): Promise<FactPage[]> {
     }
     const arcsOf = await loadArcsFile()
     for (const { uf } of stateOrder(stats)) out.push(stateCyclesFacts(uf, cycleBlocksFor(stats.find((s) => s.uf === uf)!), fixture, arcsOf?.byState[uf]))
-    for (const p of out) assertPublishable(p.facts, `/fato/${p.scope}/${p.page}/`)
-    for (const p of out) await sealOf(p)
-    return out
+    return sealFactPages(out)
   })())
 }
 
