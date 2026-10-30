@@ -41,6 +41,11 @@ export function checksum(data: unknown): string {
   return (h >>> 0).toString(16).padStart(8, '0')
 }
 
+/** Where a page's file lives, relative to the `data` folder (the writer writes it, the page script fetches it): `v<fingerprint>/<family>/<path>.json`. */
+export function pageDataPath(fingerprint: string, family: string, path: string): string {
+  return `v${fingerprint}/${family}/${path}.json`
+}
+
 /** The file for one page (what the writer serialises with `stableJson`). */
 export function pageDataFile<T>(family: string, path: string, data: T): PageDataFile<T> {
   return { v: PAGE_DATA_VERSION, family, path, data, sum: checksum(data) }

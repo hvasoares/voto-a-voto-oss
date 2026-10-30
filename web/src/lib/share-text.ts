@@ -23,10 +23,7 @@ export interface ShareTextOptions {
   url: string
 }
 
-/** `https://votoavoto.exemplo.br/rj/cidade-exemplo/` -> `votoavoto.exemplo.br/rj/cidade-exemplo` (what the picture shows). */
-export function shortAddress(url: string): string {
-  return url.replace(/^[a-z][a-z0-9+.-]*:\/\//i, '').replace(/\/+$/, '')
-}
+export { shortAddress } from './short-address'
 
 export function shareText(r: CityResult, o: ShareTextOptions): string {
   const place = { cityName: o.cityName, overseas: o.overseas, register: o.register, locale: o.locale }

@@ -5,7 +5,7 @@
  */
 import { registerSentences, type Key } from './catalog'
 
-export const SHELL_KEYS = ['shell.fixtureBanner', 'stub.loading', 'stub.needsScripts', 'stub.back', 'stub.arrived', 'stub.failed', 'stub.retry'] as const satisfies readonly Key[]
+export const SHELL_KEYS = ['shell.fixtureBanner', 'stub.loading', 'stub.needsScripts', 'stub.back', 'stub.arrived', 'stub.failed', 'stub.retry', 'stub.what.qr'] as const satisfies readonly Key[]
 
 export const SHELL_STANDARD: Record<(typeof SHELL_KEYS)[number], string> = {
   'shell.fixtureBanner': 'EXEMPLO · DADOS FICTÍCIOS, NÃO SÃO RESULTADOS REAIS',
@@ -15,6 +15,7 @@ export const SHELL_STANDARD: Record<(typeof SHELL_KEYS)[number], string> = {
   'stub.arrived': '{what} pronto.',
   'stub.failed': '{what} não carregou. Tente de novo ou volte.',
   'stub.retry': 'Tentar de novo',
+  'stub.what.qr': 'o QR da cidade',
 }
 
 export const SHELL_PLAIN: Record<(typeof SHELL_KEYS)[number], string> = {
@@ -25,6 +26,7 @@ export const SHELL_PLAIN: Record<(typeof SHELL_KEYS)[number], string> = {
   'stub.arrived': 'Pronto: {what} já está na tela.',
   'stub.failed': 'Não deu para carregar {what}. Tente de novo ou volte para a página anterior.',
   'stub.retry': 'Tentar de novo',
+  'stub.what.qr': 'o QR da cidade',
 }
 
 registerSentences('pt-BR', 'standard', SHELL_STANDARD)

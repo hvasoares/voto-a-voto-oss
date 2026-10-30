@@ -501,6 +501,8 @@ export const KEYS = [
   'stub.arrived',
   'stub.failed',
   'stub.retry',
+  /** What the QR stub says it is loading (private#208), the `{what}` of the stub's sentences; lives in `catalog-shell.ts`. */
+  'stub.what.qr',
   /** The hint above the Home search (#147): one per destination; the words and the one list of their keys are data in `catalog-home.ts`, registered by `catalog-hint.ts`. */
   ...HOME_HINT_KEYS,
 ] as const

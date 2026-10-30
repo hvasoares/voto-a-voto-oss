@@ -21,16 +21,17 @@ const MARKERS = /\bdata-(?:qr-screen|poster|qr-link|share-sheet|share-picture|sh
 
 /** Where the markers may live, with the reason. Asserted live below. */
 const ALLOWED: Record<string, string> = {
-  'components/QrScreen.astro': 'the one QR screen (and its poster)',
+  'lib/qr-screen.ts': 'the one QR screen (and its poster) as a string: QrScreen.astro prints it for the demo and Brasil, the city stub draws it from its data file (private#208)',
   'components/ShareSheetFrame.astro': 'the one share sheet',
   'components/ShareSheet.tsx': 'the city sheet island: it draws the picture inside the sheet and reads the sheet element',
   'pages/imprensa/cartaz/[uf]/index.astro': 'the press poster is a different page that happens to name its section data-poster',
 }
 
 /** The six routes and the component each one draws. */
-const ROUTES: Record<string, 'QrScreen' | 'ShareScreen'> = {
+const ROUTES: Record<string, 'QrScreen' | 'ShareScreen' | 'PageStub'> = {
   'pages/qr.astro': 'QrScreen',
-  'pages/[uf]/[slug]/qr/index.astro': 'QrScreen',
+  // The city's QR route is a stub whose script draws the same string (private#208).
+  'pages/[uf]/[slug]/qr/index.astro': 'PageStub',
   'pages/brasil/qr/index.astro': 'QrScreen',
   'pages/compartilhar.astro': 'ShareScreen',
   'pages/[uf]/[slug]/compartilhar/index.astro': 'ShareScreen',

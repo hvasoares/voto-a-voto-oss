@@ -28,6 +28,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { withBuildLock } from '../../scripts/build-lock'
 import { walkFiles } from '../../scripts/walk'
 import { FOOTER_LINK, NAV_CHIP } from './link-classes'
+import { classifyPath, type PageFamily } from './page-family'
 
 const SITE_FOOTER = 'components/SiteFooter.astro'
 
@@ -35,7 +36,7 @@ const SITE_FOOTER = 'components/SiteFooter.astro'
 const FOOTER_ALLOWED: Record<string, string> = {
   'shared/footer.ts': 'the builders: the one place the footer markup is written',
   'components/nerds/PanelFrame.astro': 'a panel footer (<footer data-panel-footer>) holding a definition list, not the page source line',
-  'components/QrScreen.astro': 'the print line of the QR sheet: paper sizing in millimetres the shared footer does not carry',
+  'lib/qr-screen.ts': 'the print line of the QR sheet: paper sizing in millimetres the shared footer does not carry',
 }
 const BASE_ALLOWED: Record<string, string> = {
   'paths.ts': 'the one reader of import.meta.env.BASE_URL, and the helpers built on it',
@@ -53,6 +54,8 @@ const NO_FOOTER: Record<string, string> = {
   'dados-para-nerds/geometria/': 'the geometry viewer is a full-bleed tool page',
   'overlay/tela/': 'the stream overlay is a transparent full-screen document',
 }
+/** The families that are a stub plus a data file (the lighter-site milestone): the document carries no `<footer>` element until the script draws the screen (the QR's source line is part of its poster). Each family ticket adds its name. */
+const STUB_FAMILIES: readonly PageFamily[] = ['qr']
 /** Built documents with more than one page footer: the city share page embeds the card (its footer) behind the sheet. */
 const TWO_FOOTERS = /^(?:[a-z]{2}\/[^/]+\/compartilhar\/)index\.html$/
 
@@ -183,7 +186,7 @@ describe('no page keeps its own footer, base-path helper or nav-link class (#117
 export function checkBuiltPage(html: string, rel: string, base: string): string[] {
   const problems: string[] = []
   const footers = (html.match(/<footer\b[^>]*>/g) ?? []).filter((t) => !/aria-hidden|data-panel-footer/.test(t))
-  const exempt = Object.keys(NO_FOOTER).some((prefix) => rel === prefix || rel.startsWith(prefix))
+  const exempt = Object.keys(NO_FOOTER).some((prefix) => rel === prefix || rel.startsWith(prefix)) || STUB_FAMILIES.includes(classifyPath(rel))
   const expected = exempt ? 0 : TWO_FOOTERS.test(rel) ? 2 : 1
   if (footers.length !== expected)
     problems.push(`${rel}: ${footers.length} page footers, expected ${expected} — render <SiteFooter> (${SITE_FOOTER}) once, or list the document in NO_FOOTER with a reason`)

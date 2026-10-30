@@ -18,9 +18,9 @@ import type ShareSheet from '@/components/ShareSheet'
 import { displayName } from '@/shared/city-search'
 import { FOOTER_LINK } from '@/shared/link-classes'
 import { siteBase, siteHref } from '@/paths'
-import { glyphSvg, qrGlyph } from '@/lib/qr-code'
+import { qrGlyph } from '@/lib/qr-code'
+import { cityQrLinks, qrSvgOf } from '@/lib/qr-screen'
 import { cityUrl, siteOrigin } from '@/lib/share-url'
-import { shortAddress } from '@/lib/share-text'
 import { datasetFixture, fixtureCityShards, loadCityShard } from '@/lib/shard-files'
 import { cityShardResult } from '@/lib/city-shard'
 import { shareContent } from '@/lib/share-model'
@@ -61,7 +61,7 @@ export interface QrScreenConfig {
 }
 
 /** The QR drawing of a link: the SVG draws 1 module of quiet zone and the card's padding completes it (docs/checkpoints/issue-09.md). */
-const qrOf = (url: string) => glyphSvg(qrGlyph(url), { label: `QR de ${shortAddress(url)}`, margin: 1, paper: '#ffffff' })
+const qrOf = (url: string) => qrSvgOf(qrGlyph(url))
 
 const QR_SCOPES: Builders<QrScreenConfig> = {
   // "Fechar" of the demo has no city card to return to: it points at home; "Voltar" goes to the demo sheet.
@@ -72,7 +72,7 @@ const QR_SCOPES: Builders<QrScreenConfig> = {
   },
   city: async ({ uf, slug, nome }) => {
     const url = cityUrl(siteOrigin(), siteBase(), uf, slug)
-    return { cityName: displayName(nome), url, qr: qrOf(url), fixture: await datasetFixture(), closeHref: siteHref(`/${uf}/${slug}/`), backHref: siteHref(`/${uf}/${slug}/compartilhar/`), noindex: false }
+    return { cityName: displayName(nome), url, qr: qrOf(url), fixture: await datasetFixture(), ...cityQrLinks(uf, slug, siteBase()), noindex: false }
   },
   brasil: async () => {
     const url = brasilUrl(siteOrigin(), siteBase())

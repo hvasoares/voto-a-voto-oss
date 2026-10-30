@@ -3,6 +3,11 @@ import { resolve } from 'node:path'
 import { writeEditions } from './editions'
 import { generateShards, shardsModule } from './shards'
 import { copyNerdsShards } from './nerds-shards'
+import { writePageData } from './page-data'
+import { QR_FAMILY, qrPageRecords } from './qr-pages'
+import { loadCityRoutes } from '../src/lib/city-routes'
+import { datasetFixture } from '../src/lib/shard-files'
+import { normalizeBase } from '../src/paths'
 
 /**
  * The dataset side of the build: writes the shards of the chosen dataset under `public/data` (wiping older
@@ -14,12 +19,16 @@ export function dataset(): AstroIntegration {
   return {
     name: 'voto-dataset',
     hooks: {
-      'astro:config:setup': ({ config }) => {
+      'astro:config:setup': async ({ config }) => {
         const root = new URL(config.root).pathname
         const fingerprint = generateShards(resolve(root, 'public/data'), process.env, root)
         copyNerdsShards(resolve(root, 'public/data'), fingerprint, process.env, root)
         // The editions (#59) are served beside the shards: committed in editions/, copied unchanged.
         writeEditions(resolve(root, 'public'))
+        // The per-page data files (private#205): one writer, each family supplies only its records. The QR family is the pilot (private#208);
+        // the next families add a line here.
+        const cities = await loadCityRoutes()
+        writePageData(resolve(root, 'public/data'), fingerprint, QR_FAMILY, qrPageRecords(cities, await datasetFixture(), normalizeBase(config.base)))
       },
     },
   }

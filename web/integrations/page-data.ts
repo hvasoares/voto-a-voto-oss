@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import { pageDataFile, stableJson } from '../src/shared/page-data'
+import { pageDataFile, pageDataPath, stableJson } from '../src/shared/page-data'
 
 /**
  * The one writer of the per-page data files (private#205): given a family and its pages with their records, it
@@ -14,14 +14,12 @@ export interface PageRecords<T = unknown> {
   data: T
 }
 
+export { pageDataPath }
+
 export interface PageDataOutput {
   /** Relative to `public/data`. */
   path: string
   json: string
-}
-
-export function pageDataPath(fingerprint: string, family: string, path: string): string {
-  return `v${fingerprint}/${family}/${path}.json`
 }
 
 /** Pure half: the files (path and text) for a family. Two pages with the same address are a build error. */

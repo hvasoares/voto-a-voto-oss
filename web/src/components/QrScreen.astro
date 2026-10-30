@@ -1,72 +1,27 @@
 ---
 /**
- * The Mostrar QR screen + printable poster, the one template of the three QR routes (demo /qr/, city /:uf/:slug/qr/, Brasil /brasil/qr/;
- * #137): it draws the config it is handed (`lib/screen-scopes.ts` builds one per scope) and never looks at which scope it is. The QR is a
- * deterministic build-time glyph from src/lib/qr-code.ts (its SVG arrives built), the poster is CSS
- * (@media print / @page A4) and printing comes from the browser's own print command. The analytics events
- * (qr_screen_shown, poster_printed — ticket #20) are wired by the dedicated script src/scripts/qr-analytics.ts,
- * which the pages carrying this template import; they only reach a provider after the consent boot (#20).
+ * The Mostrar QR screen + printable poster for the demo (/qr/) and Brasil (/brasil/qr/) routes (#137): it draws the config it is handed
+ * (`lib/screen-scopes.ts` builds one per scope) and never looks at which scope it is. The markup is `qrScreenHtml` of `lib/qr-screen.ts`, the
+ * ONE template of the screen: the city route (`/:uf/:slug/qr/`) is a stub whose script draws the same string from its data file (private#208).
+ * The QR is a deterministic build-time glyph from src/lib/qr-code.ts (its SVG arrives built), the poster is CSS (@media print / @page A4) and
+ * printing comes from the browser's own print command. The analytics events (qr_screen_shown, poster_printed, ticket #20) are wired by the
+ * dedicated script src/scripts/qr-analytics.ts, which the pages carrying this template import; they only reach a provider after the consent boot (#20).
  */
 import Base from '@/layouts/Base.astro'
-import { shortAddress } from '@/lib/share-text'
+import { qrScreenHtml } from '@/lib/qr-screen'
+import { shortAddress } from '@/lib/short-address'
 import type { QrScreenConfig } from '@/lib/screen-scopes'
 
 interface Props {
-  /** The screen's config for its scope (the demo, a city or Brasil): `qrScreenConfig(scope)` of `lib/screen-scopes.ts` builds everything that differs, as data. */
+  /** The screen's config for its scope (the demo or Brasil): `qrScreenConfig(scope)` of `lib/screen-scopes.ts` builds everything that differs, as data. */
   config: QrScreenConfig
 }
 const { cityName, url, qr, fixture, closeHref, backHref, noindex } = Astro.props.config
-const address = shortAddress(url)
+const screen = qrScreenHtml({ cityName, url, address: shortAddress(url), fixture, closeHref, backHref, qr, brand: true })
 ---
 <Base title={`Mostrar QR · ${cityName}`} noindex={noindex} header="none">
   <main class="min-w-0 flex-1" id="main">
-    <section data-qr-screen class="print:hidden" aria-label="Mostrar QR">
-      {/* Header metrics match the frame exactly (brand band y14-29; divider a 1px rule at x132 spanning it). */}
-      <header class="flex items-baseline px-5 pt-2 lg:hidden" data-header>
-        <span class="font-serif text-step-3 font-bold tracking-[-0.8px]">Voto a Voto</span>
-        <span class="mx-[9.5px] h-[13px] w-px flex-none self-center bg-border" aria-hidden="true"></span>
-        <span class="relative -top-1 font-sans text-step-1 font-normal text-muted-foreground">Presidente 2026</span>
-      </header>
-      {fixture && <p class="mt-[7px] py-[7px] text-center text-step-1 font-bold tracking-wide lg:hidden" style="background: var(--c-flag); color: var(--c-ink)" data-banner>EXEMPLO · QR ILUSTRATIVO, NÃO ESCANEÁVEL</p>}
-      <div class="px-5 pb-6 lg:mx-auto lg:flex lg:max-w-[720px] lg:flex-col lg:pt-6">
-        {/* The frame draws this button 8px left of the Voltar gutter (x12 vs x20) — kept on purpose. */}
-        <a class="mt-1 ml-[-8px] inline-flex min-h-11 items-center rounded-md border border-border bg-background pl-[11px] pr-[17px] text-step-2 text-foreground lg:hidden" href={closeHref} data-close>‹ Fechar</a>
-        {/* The desktop frame's back link: to the share dialog the visitor came from. */}
-        <a class="hidden min-h-8 items-center self-start text-step-1 text-primary lg:inline-flex" href={backHref} data-close-desktop>‹ Compartilhar</a>
-        <h1 class="mt-[11px] text-center font-serif text-step-4 lg:mt-2">Mostrar QR</h1>
-        <p class="text-center text-step-1 text-muted-foreground lg:text-step-2" data-subtitle>Presidente 2026 · {cityName}</p>
-        {fixture && <p class="mx-auto mt-3 hidden w-fit rounded-sm px-2 py-[3px] text-step-1 font-bold tracking-wide lg:block" style="background: var(--c-flag); color: var(--c-ink)" data-banner-desktop>EXEMPLO · QR ILUSTRATIVO, NÃO ESCANEÁVEL</p>}
-        <div class="mx-auto mt-[30px] max-w-[280px] lg:mt-6 lg:max-w-[360px] rounded-md border border-border bg-white px-[7px] py-[7px] [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" data-qr data-url={url} set:html={qr} />
-        <p class="mt-10 text-center text-step-2 font-bold wrap-anywhere lg:mt-8 lg:text-step-3" data-address>{address}</p>
-        <p class="mx-auto mt-[19px] text-center text-step-1 text-muted-foreground lg:text-step-2" data-explain>
-          Use esta tela para mostrar o QR a outra pessoa,<br />
-          em outra tela, ou para imprimir. Se você vai<br />
-          enviar por mensagem, use o botão Compartilhar.
-        </p>
-        <div class="lg:mt-9 lg:flex lg:justify-center lg:gap-5">
-          {/* Print (desktop): the browser's own print command opens the one-page poster below; no script of ours, so the button is not drawn where scripting is off. */}
-          <button type="button" class="hidden min-h-[52px] w-[200px] cursor-pointer items-center justify-center rounded-md border border-primary bg-primary text-step-2 font-bold text-primary-foreground lg:flex [@media(scripting:none)]:lg:hidden" onclick="window.print()" data-print>Imprimir cartaz</button>
-          <a class="mt-[84px] flex min-h-12 items-center justify-center rounded-md border border-border bg-background text-step-2 text-foreground lg:mt-0 lg:min-h-[52px] lg:w-[200px]" href={backHref} data-back>Voltar</a>
-        </div>
-        {/* Events of ticket #20 via src/scripts/qr-analytics.ts: qr_screen_shown on load, poster_printed on print. */}
-        <div data-events="qr_screen_shown,poster_printed" hidden></div>
-      </div>
-    </section>
-
-    {/* The poster is static markup; printing is the browser's own print command. */}
-    <section data-poster class="hidden print:block print:h-[273mm] print:flex print:flex-col" aria-label="Pôster para imprimir">
-      <p class="text-[4.4mm] font-bold font-sans">Voto a Voto <span class="font-normal text-[3.6mm]">· Presidente 2026</span></p>
-      <h1 class="mt-[18mm] text-center font-serif text-[13mm] leading-[16mm]" data-poster-city>{cityName}</h1>
-      <p class="mt-[2mm] text-center text-[4.4mm] text-muted-foreground" data-poster-sub>Presidente 2026</p>
-      <div class="mx-auto mt-[12mm] w-[140mm] [&>svg]:mx-auto [&>svg]:block [&>svg]:h-auto [&>svg]:w-full" data-poster-qr set:html={qr} />
-      <p class="mt-[12mm] text-center text-[6mm] font-bold wrap-anywhere" data-poster-address>{address}</p>
-      <p class="mx-auto mt-[6mm] max-w-[150mm] text-center text-[4.4mm] text-muted-foreground" data-poster-note>
-        Aponte a câmera para o código para abrir a cidade no Voto a Voto.
-      </p>
-      <footer class="print:mt-auto pb-[2mm] text-center text-[3.6mm] text-muted-foreground" data-component="source-footer">
-        {fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais'}
-      </footer>
-    </section>
+    <Fragment set:html={screen} />
 
     <style is:global>
       /* The one-page poster (ticket #9): every screen layer hides on print and this section is the page. */

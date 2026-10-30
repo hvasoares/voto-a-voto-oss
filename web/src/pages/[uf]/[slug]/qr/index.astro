@@ -1,10 +1,20 @@
 ---
 /**
- * Real Mostrar QR route (ticket #9): the one QrScreen template (`components/QrScreen.astro`) with the city scope (#137); the QR is a
- * build-time glyph of this city's canonical link.
+ * The city's Mostrar QR route (ticket #9), a STUB plus a data file since private#208 (the pilot of the lighter-site milestone). The pattern every
+ * stub family copies, in four pieces:
+ *   1. the page is `PageStub` (components/PageStub.astro) with the family's words (title, `what` from the catalog) and its address; its address,
+ *      title and `noindex` are the stub's, the canonical link names this route;
+ *   2. the build writes `data/v<fingerprint>/qr/<uf>/<slug>.json` through the one writer (`integrations/page-data.ts`, called from
+ *      `integrations/dataset.ts` with `integrations/qr-pages.ts`'s records);
+ *   3. the page script (`scripts/qr-page.ts`) calls `bootPageData` (`lib/page-data-boot.ts`), which fetches and checks the file with the one loader
+ *      and hands the record to `drawQrScreen` (`lib/qr-screen.ts`); the area says `data-ready` when the screen is drawn;
+ *   4. `data-page-path` on the `<main>` is how the script knows which file this page owns.
+ * The screen is the same template as the demo and Brasil routes (`qrScreenHtml`); the QR arrives as the matrix bits in the file, so no encoder ships.
  */
-import QrScreen from '@/components/QrScreen.astro'
-import { qrScreenConfig } from '@/lib/screen-scopes'
+import PageStub from '@/components/PageStub.astro'
+import '@/lib/sentences/catalog-shell'
+import { message } from '@/lib/sentences/catalog'
+import { displayName } from '@/shared/city-search'
 import { loadCityRoutes } from '@/lib/city-routes'
 
 export async function getStaticPaths() {
@@ -13,6 +23,17 @@ export async function getStaticPaths() {
 
 const { uf, slug } = Astro.params
 const { nome } = Astro.props as { nome: string }
-const config = await qrScreenConfig({ scope: 'city', uf: uf!, slug: slug!, nome })
+const voice = { locale: 'pt-BR', register: 'standard' } as const
 ---
-<QrScreen config={config} />
+<PageStub title={`Mostrar QR · ${displayName(nome)}`}
+  what={message(voice, 'stub.what.qr')}
+  path={`${uf}/${slug}/qr/`}
+  backHref={`${uf}/${slug}/compartilhar/`}
+  md="720"
+  data-page="qr"
+  data-page-path={`${uf}/${slug}`}
+/>
+<script>
+  import '@/scripts/qr-analytics'
+  import '@/scripts/qr-page'
+</script>
