@@ -1,13 +1,18 @@
 ---
 /**
- * Real share route (the approved Sketch frame "3 Folha de compartilhamento", ticket #7's route wired by #50): the one ShareScreen with the
- * city scope (#137). The sheet floats over the real city card as backdrop (aria-hidden and inert). Pre-rendered for the city card's default
- * view; when the address asks another card view (?ciclo/?turno), the ShareSheet island fetches ONLY this city's own shard and re-derives the
- * picture, the text and the file name (nothing else is ever fetched). The demo is /compartilhar/.
+ * The city's share sheet (the approved Sketch frame "3 Folha de compartilhamento"), a STUB plus a data file since private#210 (the `compartilhar` family
+ * of the lighter-site milestone), the pattern of the QR page (private#208, see `[uf]/[slug]/qr/index.astro`):
+ *   1. the page is `PageStub` with the family's words and its address: its address, title and `noindex` are the stub's;
+ *   2. the build writes `data/v<fingerprint>/compartilhar/<uf>/<slug>.json` through the one writer (`integrations/share-pages.ts`);
+ *   3. the page script (`scripts/share-page.ts`) hands the file to `drawShareSheet` (`lib/share-sheet-draw.ts`), which renders the `ShareSheet` island:
+ *      the picture and its PNG are made when the sheet is drawn, before the visitor taps Share (the iOS gesture rule of `lib/share-flow.ts`);
+ *   4. `data-page-path` on the `<main>` is how the script knows which file this page owns.
+ * When the address asks another card view (?ciclo/?turno) the island fetches that city's own shard, as before. The demo is /compartilhar/.
  */
-import ShareScreen from '@/components/ShareScreen.astro'
-import CityCard from '@/components/CityCard.astro'
-import { shareScreenConfig } from '@/lib/screen-scopes'
+import PageStub from '@/components/PageStub.astro'
+import '@/lib/sentences/catalog-shell'
+import { message } from '@/lib/sentences/catalog'
+import { displayName } from '@/shared/city-search'
 import { loadCityRoutes } from '@/lib/city-routes'
 
 export async function getStaticPaths() {
@@ -16,9 +21,16 @@ export async function getStaticPaths() {
 
 const { uf, slug } = Astro.params
 const { nome } = Astro.props as { nome: string }
-
-const config = await shareScreenConfig({ scope: 'city', uf: uf!, slug: slug!, nome })
+const voice = { locale: 'pt-BR', register: 'standard' } as const
 ---
-<ShareScreen config={config}>
-  <CityCard slot="backdrop" uf={uf!} slug={slug!} backdrop />
-</ShareScreen>
+<PageStub title={`Compartilhar · ${displayName(nome)}`}
+  what={message(voice, 'stub.what.share')}
+  path={`${uf}/${slug}/compartilhar/`}
+  backHref={`${uf}/${slug}/`}
+  md="720"
+  data-page="compartilhar"
+  data-page-path={`${uf}/${slug}`}
+/>
+<script>
+  import '@/scripts/share-page'
+</script>

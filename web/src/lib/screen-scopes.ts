@@ -31,6 +31,7 @@ import { brasilNoJs, brasilShareNote } from '@/lib/sentences/brasil'
 import { cityTexts, type CityTexts } from '@/lib/city-texts-build'
 import { pickQuestion } from '@/lib/question'
 import { shareSheetContent, shareSheetRecord } from '@/lib/share-sheet-record'
+import { SHARE_CLOSE_CLASS, shareFooterSource } from '@/lib/share-frame'
 
 /** The scope of a screen. `scope` is the discriminant; the city carries its route params and name. */
 export type ScreenScope = { scope: 'demo' } | { scope: 'city'; uf: string; slug: string; nome: string } | { scope: 'brasil' }
@@ -119,13 +120,13 @@ const FIXED_SHEET =
 const FLOW_SHEET =
   '-mt-4 relative rounded-t-2xl border border-border bg-background px-5 pt-2 pb-6 shadow-[0_-4px_16px_rgba(28,27,24,0.25)] md:mx-auto md:mt-6 md:max-w-[480px] md:rounded-2xl md:px-7 md:pt-6'
 const BACKDROP = 'pointer-events-none select-none opacity-35'
-const CLOSE = 'min-h-11 px-1 pt-1 text-step-2 font-bold'
+const CLOSE = SHARE_CLOSE_CLASS
 const CLOSE_FLEX = 'inline-flex min-h-11 items-center px-1 text-step-2 font-bold'
 /** The round of the Sketch frame "3 Folha de compartilhamento". */
 const DEMO_VIEW = { ano: 2026, turno: 1 as const }
 const DEMO_NOTE = 'O link vai no texto da mensagem; a imagem leva só o endereço curto, sem QR.'
 const DEMO_NOJS = 'Compartilhar e baixar a imagem precisam de JavaScript; o texto abaixo pode ser copiado e enviado com o endereço.'
-const footerSource = (fixture: boolean) => (fixture ? 'Dados fictícios para ilustrar o layout. Fonte real: TSE.' : 'Fonte: TSE, dados finais')
+const footerSource = shareFooterSource
 
 const SHARE_SCOPES: Builders<ShareScreenConfig> = {
   demo: async () => {
@@ -159,7 +160,7 @@ const SHARE_SCOPES: Builders<ShareScreenConfig> = {
     const currentEd = await currentEdition()
     const texts = cityTexts(shard, { origin: siteOrigin(), base, fixture, editionDate: currentEd.date })
     // The view the page pre-prints is the card's default; ?ciclo/?turno is the ShareSheet island's business.
-    const record = shareSheetRecord(shard, { origin: siteOrigin(), base, fixture, edition: currentEd.id })
+    const record = shareSheetRecord(shard, { origin: siteOrigin(), base, fixture, edition: currentEd.id, editionDate: currentEd.date })
     const view = record.view
     const content = shareSheetContent(record)
     return {

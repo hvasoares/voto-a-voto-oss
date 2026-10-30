@@ -82,7 +82,8 @@ test.describe('share sheet: the guess card', () => {
     expect(violations(seen, [new URL(baseURL!).origin])).toEqual([])
     // no request carries the guess: every one is a GET (violations() above), and none has a query or a fragment at all
     expect(seen.filter((r) => new URL(r.url).search !== '' || new URL(r.url).hash !== '')).toEqual([])
-    expect(seen.filter((r) => /\/data\//.test(r.url))).toEqual([])
+    // the only data request is the sheet's own file (private#210): the guess is read from this browser and nothing is fetched for it
+    expect(seen.filter((r) => /\/data\//.test(r.url)).map((r) => new URL(r.url).pathname)).toEqual([expect.stringMatching(/\/data\/v[0-9a-f]+\/compartilhar\/rj\/cidade-exemplo\.json$/)])
   })
 
   test('with the palpite answered, the guess card and the city card each share their own picture', async ({ page }) => {

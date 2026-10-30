@@ -9,12 +9,14 @@
  *                         `screen-scopes.ts` both call it, so the default view and its numbers are chosen once);
  *  - `shareSheetContent`  the record read back: the same `ShareContent` (picture, message, address, file name) the page prints today, by the one
  *                         builder `shareContent`; the parity test pins the SVG string.
- * No file system, no fetch: it runs in Node and in the browser.
+ * Since private#210 it also carries what the stub page draws besides the picture: the city's question (the guess card) and the edition's date (the
+ * ready-made texts); the sentences of the sheet are still all drawn from the catalog. No file system, no fetch: it runs in Node and in the browser.
  */
 import type { CityResult } from '@/shared/city-model'
 import { cityShardResult, type CityShard } from './city-shard'
 import { shareContent, type ShareContent } from './share-model'
 import { defaultView } from '@/slots/city/city-view'
+import { pickQuestion, type Question } from './question'
 
 export interface ShareSheetRecord {
   uf: string
@@ -29,14 +31,18 @@ export interface ShareSheetRecord {
   base: string
   fixture: boolean
   edition: string
+  /** `edition.date` (YYYY-MM-DD): the "Textos prontos" block dates its source line with it (`cityTextsOf`). */
+  editionDate: string
+  /** The city's question (#44): with a guess kept in this browser the sheet draws the guess card instead of the bars. */
+  question: Question
 }
 
-export type ShareSheetBuild = Pick<ShareSheetRecord, 'origin' | 'base' | 'fixture' | 'edition'>
+export type ShareSheetBuild = Pick<ShareSheetRecord, 'origin' | 'base' | 'fixture' | 'edition' | 'editionDate'>
 
 export function shareSheetRecord(shard: CityShard, build: ShareSheetBuild): ShareSheetRecord {
   const { uf, slug, nome } = shard.city
   const view = defaultView((ano, turno) => !!cityShardResult(shard, ano, turno))
-  return { uf, slug, nome, view, result: cityShardResult(shard, view.ano, view.turno) ?? null, ...build }
+  return { uf, slug, nome, view, result: cityShardResult(shard, view.ano, view.turno) ?? null, question: pickQuestion(shard), ...build }
 }
 
 export function shareSheetContent({ uf, slug, nome, result, origin, base, fixture, edition }: ShareSheetRecord): ShareContent | null {

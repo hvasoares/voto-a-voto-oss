@@ -54,10 +54,8 @@ const NO_FOOTER: Record<string, string> = {
   'dados-para-nerds/geometria/': 'the geometry viewer is a full-bleed tool page',
   'overlay/tela/': 'the stream overlay is a transparent full-screen document',
 }
-/** The families that are a stub plus a data file (the lighter-site milestone): the document carries no `<footer>` element until the script draws the screen (the QR's source line is part of its poster). Each family ticket adds its name. */
-const STUB_FAMILIES: readonly PageFamily[] = ['qr']
-/** Built documents with more than one page footer: the city share page embeds the card (its footer) behind the sheet. */
-const TWO_FOOTERS = /^(?:[a-z]{2}\/[^/]+\/compartilhar\/)index\.html$/
+/** The families that are a stub plus a data file (the lighter-site milestone): the document carries no `<footer>` element until the script draws the screen (the QR's source line is part of its poster, the share sheet's is drawn with the sheet). Each family ticket adds its name. */
+const STUB_FAMILIES: readonly PageFamily[] = ['qr', 'compartilhar']
 
 /** The source with comments blanked (same length, newlines kept), so doc comments never classify. */
 const stripComments = (src: string): string =>
@@ -187,7 +185,7 @@ export function checkBuiltPage(html: string, rel: string, base: string): string[
   const problems: string[] = []
   const footers = (html.match(/<footer\b[^>]*>/g) ?? []).filter((t) => !/aria-hidden|data-panel-footer/.test(t))
   const exempt = Object.keys(NO_FOOTER).some((prefix) => rel === prefix || rel.startsWith(prefix)) || STUB_FAMILIES.includes(classifyPath(rel))
-  const expected = exempt ? 0 : TWO_FOOTERS.test(rel) ? 2 : 1
+  const expected = exempt ? 0 : 1
   if (footers.length !== expected)
     problems.push(`${rel}: ${footers.length} page footers, expected ${expected} — render <SiteFooter> (${SITE_FOOTER}) once, or list the document in NO_FOOTER with a reason`)
   if (base !== '/') {
@@ -212,7 +210,7 @@ describe('the built output has one footer per page and every internal link carri
     ['an inert backdrop copy beside the real footer', '<footer aria-hidden="true">a</footer><footer>b</footer>', 'x/index.html', '/'],
     ['a nerds panel footer beside the page footer', '<footer data-panel-footer>p</footer><footer>b</footer>', 'x/index.html', '/'],
     ['a listed document with no footer', '<p>embed</p>', 'embed/rj/x/index.html', '/'],
-    ['the city share page with its two footers', '<footer>a</footer><footer>b</footer>', 'rj/cidade-exemplo/compartilhar/index.html', '/'],
+    ['a city share stub with no footer until its script draws the sheet', '<p>stub</p>', 'rj/cidade-exemplo/compartilhar/index.html', '/'],
   ])('lets %s pass', (_label, html, rel, base) => {
     expect(checkBuiltPage(html, rel, base)).toEqual([])
   })

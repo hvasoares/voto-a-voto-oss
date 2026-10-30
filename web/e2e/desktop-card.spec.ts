@@ -103,13 +103,11 @@ async function openShare(page: Page, mode: ShareMode) {
 }
 
 test.describe('share dialog', () => {
-  test('at 1440 it is a centered 480 px dialog over a dimmed page, with the card behind it', async ({ page }) => {
+  test('at 1440 it is a centered 480 px sheet (the stub draws it in the page, with no card behind it)', async ({ page }) => {
     await openShare(page, 'absent')
     const box = await page.locator('[data-share-sheet]').boundingBox()
     expect(Math.round(box!.width)).toBe(480)
     expect(Math.round(box!.x * 2 + box!.width)).toBe(1440)
-    await expect(page.locator('[data-share-dim]')).toBeVisible()
-    await expect(page.locator('[data-share-backdrop] [data-city-card]')).toBeVisible()
   })
 
   test('without the Web Share API: Copiar link, Baixar imagem and Mostrar QR; no native share button', async ({ page, context }) => {
@@ -173,9 +171,9 @@ test.describe('Mostrar QR', () => {
 
   test.describe('without JavaScript', () => {
     useNoJs()
-    test('the QR, the address and Voltar are there; a print button that could not work is not', async ({ page }) => {
+    test('the QR page is the stub (private#208): it says it needs scripts, Voltar is there and no print button is drawn', async ({ page }) => {
       await page.goto(`${city}qr/`)
-      await expect(page.locator('[data-qr]')).toBeVisible()
+      await expect(page.locator('[data-stub-needs-scripts]')).toContainText('JavaScript')
       await expect(page.getByRole('link', { name: 'Voltar' })).toBeVisible()
       await expect(page.getByRole('button', { name: 'Imprimir cartaz' })).toBeHidden()
     })

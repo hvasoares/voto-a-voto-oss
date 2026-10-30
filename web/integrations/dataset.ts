@@ -34,8 +34,9 @@ export function dataset(): AstroIntegration {
         const fixture = await datasetFixture()
         const base = normalizeBase(config.base)
         writePageData(resolve(root, 'public/data'), fingerprint, QR_FAMILY, qrPageRecords(cities, fixture, base))
-        // The share sheet's family (private#209): the picture's inputs and the message numbers; the page is not changed yet.
-        const build = { origin: siteOrigin(), base, fixture, edition: (await currentEdition()).id }
+        // The share sheet's family (private#209): the picture's inputs, the message numbers and what the stub draws around them (private#210).
+        const edition = await currentEdition()
+        const build = { origin: siteOrigin(), base, fixture, edition: edition.id, editionDate: edition.date }
         writePageData(resolve(root, 'public/data'), fingerprint, SHARE_FAMILY, await sharePageRecords(cities, build))
       },
     },

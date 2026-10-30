@@ -12,6 +12,7 @@ import CityTexts from '@/components/CityTexts.astro'
 import ShareActions from '@/components/ShareActions'
 import ShareSheet from '@/components/ShareSheet'
 import SiteFooter from '@/components/SiteFooter.astro'
+import { shareFrameHead, shareFrameLinks, shareSheetAttrs, SHARE_FOOTER_CLASS } from '@/lib/share-frame'
 import type { ShareScreenConfig } from '@/lib/screen-scopes'
 
 interface Props {
@@ -26,12 +27,8 @@ const { backdrop, dim, sheet, close, body, qrHref, generatorHref, texts, footer 
 {/* From 768 px the sheet is a centered dialog over a dimmed page (from 1024 px the top bar stays above the dimming). */}
 {dim && <div class="fixed inset-0 z-40 hidden bg-[rgba(28,27,24,0.45)] md:block lg:top-16" aria-hidden="true" data-share-dim></div>}
 
-<section data-share-sheet id="main" data-uf={sheet.uf} data-slug={sheet.slug} data-view={sheet.view} data-filename={sheet.filename} class={sheet.class}>
-  <span class="mx-auto block h-1.5 w-16 rounded-full bg-muted md:hidden" aria-hidden="true"></span>
-  <div class="flex items-baseline justify-between">
-    <h1 class="font-serif text-step-4 font-normal">Compartilhar resultado</h1>
-    <a class={close.class} href={close.href} data-close>Fechar{close.cross && <span class="hidden md:inline" aria-hidden="true"> ×</span>}</a>
-  </div>
+<section {...shareSheetAttrs(sheet)} class={sheet.class}>
+  <Fragment set:html={shareFrameHead({ closeHref: close.href, closeClass: close.class, closeCross: close.cross })} />
   {body.kind === 'sheet' && <ShareSheet client:load {...body.props} />}
   {body.kind === 'actions' && (
     <>
@@ -42,15 +39,8 @@ const { backdrop, dim, sheet, close, body, qrHref, generatorHref, texts, footer 
     </>
   )}
   {/* Mostrar QR floats the page's canonical link scannably; it does not depend on the round, so it renders even when the view has no result. */}
-  <a class="mt-2 flex min-h-11 w-full items-center justify-center rounded-md border border-border bg-background text-step-2 font-bold text-foreground" href={qrHref} data-qr-link>
-    Mostrar QR
-  </a>
-  {generatorHref && (
-    <a class="mt-1 flex min-h-11 w-full items-center justify-center text-step-2 font-bold text-primary" href={generatorHref} data-generator-link>
-      Criar um cartão com uma medida ›
-    </a>
-  )}
+  <Fragment set:html={shareFrameLinks({ qrHref, generatorHref })} />
   {texts && <CityTexts texts={texts.texts} stateHref={texts.stateHref} />}
   {/* The #113 shared footer with this sheet's variant (#114): the about link carries the config's class. */}
-  <SiteFooter source={footer.source} separator=" · " aboutClass={footer.aboutClass} class="mt-2 border-t border-border pt-2 text-center text-step-1 text-primary" />
+  <SiteFooter source={footer.source} separator=" · " aboutClass={footer.aboutClass} class={SHARE_FOOTER_CLASS} />
 </section>

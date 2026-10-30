@@ -2,6 +2,7 @@
  * Build time only: the ready-made texts (#65) of one city shard in both registers, with the build gate. A page or a file that prints them calls this, so a block
  * over the limit or a bulletin with a number in digits fails the build instead of reaching the site.
  */
+import type { CityResult } from '@/shared/city-model'
 import type { CityShard } from './city-shard'
 import { cityShardResult } from './city-shard'
 import { radioBulletin, textProblems, whatsappText } from './city-texts'
@@ -28,10 +29,26 @@ export interface CityTexts {
   bulletin: Record<Register, string>
 }
 
+/** What the texts of a city are written from: its names and the numbers of its default view (a shard gives them; so does the share sheet's data file). */
+export interface TextsSource {
+  uf: string
+  slug: string
+  nome: string
+  view: { ano: number; turno: 1 | 2 }
+  result: CityResult | null | undefined
+}
+
 export function cityTexts(shard: CityShard, ctx: TextsContext): CityTexts {
   const { city } = shard
   const view = defaultView((ano, turno) => !!cityShardResult(shard, ano, turno))
-  const result = cityShardResult(shard, view.ano, view.turno)
+  return cityTextsOf({ uf: city.uf, slug: city.slug, nome: city.nome, view, result: cityShardResult(shard, view.ano, view.turno) }, ctx)
+}
+
+/** The texts from a source: the one function behind `cityTexts` (build) and the share sheet stub (browser, from its data file). */
+export function cityTextsOf(src: TextsSource, ctx: TextsContext): CityTexts {
+  const city = { uf: src.uf, slug: src.slug, nome: src.nome }
+  const { view } = src
+  const result = src.result ?? undefined
   const url = cityUrl(ctx.origin, ctx.base, city.uf, city.slug)
   const base = { result, cityName: displayName(city.nome), ufLabel: ufLabel(city.uf), overseas: city.uf === 'zz', url, edition: { date: ctx.editionDate }, fixture: ctx.fixture, ano: view.ano, turno: view.turno }
   const whatsapp = {} as Record<Register, string>

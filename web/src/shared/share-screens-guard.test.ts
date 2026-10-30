@@ -22,7 +22,8 @@ const MARKERS = /\bdata-(?:qr-screen|poster|qr-link|share-sheet|share-picture|sh
 /** Where the markers may live, with the reason. Asserted live below. */
 const ALLOWED: Record<string, string> = {
   'lib/qr-screen.ts': 'the one QR screen (and its poster) as a string: QrScreen.astro prints it for the demo and Brasil, the city stub draws it from its data file (private#208)',
-  'components/ShareSheetFrame.astro': 'the one share sheet',
+  'components/ShareSheetFrame.astro': 'the share sheet of the demo and Brasil routes (its attributes and links are the strings of lib/share-frame.ts)',
+  'lib/share-frame.ts': 'the one frame of a share sheet as strings: ShareSheetFrame.astro prints them, the city stub draws them (private#210)',
   'components/ShareSheet.tsx': 'the city sheet island: it draws the picture inside the sheet and reads the sheet element',
   'pages/imprensa/cartaz/[uf]/index.astro': 'the press poster is a different page that happens to name its section data-poster',
 }
@@ -34,7 +35,8 @@ const ROUTES: Record<string, 'QrScreen' | 'ShareScreen' | 'PageStub'> = {
   'pages/[uf]/[slug]/qr/index.astro': 'PageStub',
   'pages/brasil/qr/index.astro': 'QrScreen',
   'pages/compartilhar.astro': 'ShareScreen',
-  'pages/[uf]/[slug]/compartilhar/index.astro': 'ShareScreen',
+  // The city's share sheet is a stub whose script draws the sheet from its data file (private#210).
+  'pages/[uf]/[slug]/compartilhar/index.astro': 'PageStub',
   'pages/brasil/compartilhar/index.astro': 'ShareScreen',
 }
 const SCREEN_COMPONENTS = ['components/QrScreen.astro', 'components/ShareScreen.astro', 'components/ShareSheetFrame.astro', 'components/ShareDemoBackdrop.astro']

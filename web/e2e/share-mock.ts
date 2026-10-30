@@ -141,9 +141,10 @@ export function shareMock(page: Page): ShareMock {
       await page.waitForFunction(({ attr, want }) => document.documentElement.dataset[attr] === want, { attr: SHARE_ATTRIBUTE, want: mode }, { timeout: 5000 }).catch(() => {
         throw new Error(notInstalled(mode))
       })
+      // The page is ready when its island hydrated, or, on a stub page (the city sheet, private#210), when the stub says its data arrived.
       await page.waitForFunction(() => {
         const island = document.querySelector('astro-island')
-        return !!island && !island.hasAttribute('ssr')
+        return document.querySelector('[data-stub-area]')?.getAttribute('data-ready') === 'yes' || (!!island && !island.hasAttribute('ssr'))
       })
     },
     calls,

@@ -9,10 +9,18 @@ import { noJs } from './presets'
 const share = `${base}rj/cidade-exemplo/compartilhar/`
 
 test.describe('Textos prontos', () => {
-  test('without JavaScript the WhatsApp block and the bulletin are printed, with no copy button', async ({ browser }) => {
+  test('without JavaScript the page is the stub: it says it needs scripts and links back (the texts are drawn from the data file, private#210)', async ({ browser }) => {
     const ctx = await browser.newContext(noJs())
     const page = await ctx.newPage()
     await page.goto(share)
+    await expect(page.locator('[data-stub-needs-scripts]')).toContainText('JavaScript')
+    await expect(page.locator('[data-text]')).toHaveCount(0)
+    await ctx.close()
+  })
+
+  test('both texts are drawn in the page with the plain words', async ({ page }) => {
+    await page.goto(share)
+    await expect(page.locator('[data-stub-area]')).toHaveAttribute('data-ready', 'yes')
     const wa = page.locator('[data-text="whatsapp"]:visible')
     await expect(wa).toContainText('Foram votar 68.434 de 100.000 eleitores')
     await expect(wa).toContainText('Dados fictícios, só de exemplo. Fonte real: TSE.')
@@ -20,8 +28,6 @@ test.describe('Textos prontos', () => {
     const radio = page.locator('[data-text="radio"]:visible')
     await expect(radio).toContainText('Eram cem mil eleitores aptos a votar.')
     expect(await radio.innerText()).not.toMatch(/\d/)
-    await expect(page.locator('[data-copy]:visible')).toHaveCount(0)
-    await ctx.close()
   })
 
   test('the copy buttons copy the plain text on screen', async ({ browser }) => {

@@ -18,7 +18,11 @@ const SIG = '137,80,78,71,13,10,26,10'
 async function openRaw(page: Page, mode: ShareMode, route = path) {
   await shareMock(page).install(mode)
   await page.goto(route)
-  await page.waitForFunction(() => { const i = document.querySelector('astro-island'); return !!i && !i.hasAttribute('ssr') })
+  // The demo hydrates its island; the city sheet is a stub that says `data-ready` once the sheet is drawn (private#210).
+  await page.waitForFunction(() => {
+    const i = document.querySelector('astro-island')
+    return document.querySelector('[data-stub-area]')?.getAttribute('data-ready') === 'yes' || (!!i && !i.hasAttribute('ssr'))
+  })
 }
 
 /** openRaw plus the PNG-made signal; a view without data has no picture and never gets ready. */
@@ -157,14 +161,14 @@ test.describe('share: layout and requests', () => {
   })
 })
 
-test.describe('share: the real route (the city card as backdrop, #50)', () => {
+test.describe('share: the real route (the city stub and its data file, #50, private#210)', () => {
   const real = `${base}rj/cidade-exemplo/compartilhar/`
   const views = [
     ['?ciclo=2018&turno=2', '2018 · 2º turno', 'voto-a-voto-rj-cidade-exemplo-2018-turno-2.png'],
     ['?ciclo=2022&turno=1', '2022 · 1º turno', 'voto-a-voto-rj-cidade-exemplo-2022-turno-1.png'],
   ] as const
   for (const [query, label, filename] of views) {
-    test(`${query} makes the island re-derive the card view fetching ONLY the own city shard`, async ({ page }) => {
+    test(`${query} makes the island re-derive the card view fetching ONLY the own city shard besides the sheet's data file`, async ({ page }) => {
       const seen = collectRequests(page)
       await open(page, 'shares', real + query)
       await page.waitForLoadState('networkidle')
@@ -172,23 +176,22 @@ test.describe('share: the real route (the city card as backdrop, #50)', () => {
       expect(t).toContain(label)
       await expect(page.locator('[data-share-sheet]')).toHaveAttribute('data-filename', filename)
       const data = seen.map((r) => new URL(r.url).pathname).filter((p) => p.includes('/data/'))
-      expect(data).toEqual([expect.stringMatching(/\/data\/v[0-9a-f]+\/city\/rj\/cidade-exemplo\.json$/)])
+      expect(data).toEqual([expect.stringMatching(/\/data\/v[0-9a-f]+\/compartilhar\/rj\/cidade-exemplo\.json$/), expect.stringMatching(/\/data\/v[0-9a-f]+\/city\/rj\/cidade-exemplo\.json$/)])
       await page.getByRole('button', { name: 'Compartilhar' }).click()
       expect((await shareMock(page).waitForCalls(1))[0]!.text).toContain(`${URL_TEXT}rj/cidade-exemplo/`)
     })
   }
 
-  test('without a query the default view needs no /data/ request at all', async ({ page }) => {
+  test('without a query the default view needs only the sheet\'s own data file', async ({ page }) => {
     const seen = collectRequests(page)
     await open(page, 'shares', real)
     await page.waitForLoadState('networkidle')
-    expect(seen.map((r) => new URL(r.url).pathname).filter((p) => p.includes('/data/'))).toEqual([])
+    expect(seen.map((r) => new URL(r.url).pathname).filter((p) => p.includes('/data/'))).toEqual([expect.stringMatching(/\/data\/v[0-9a-f]+\/compartilhar\/rj\/cidade-exemplo\.json$/)])
   })
 
-  test('"Fechar" returns to the city card, which is the dimmed backdrop', async ({ page }) => {
+  test('"Fechar" returns to the city card', async ({ page }) => {
     await open(page, 'shares', real)
     await expect(page.getByRole('link', { name: 'Fechar' })).toHaveAttribute('href', `${base}rj/cidade-exemplo/`)
-    await expect(page.locator('[data-share-backdrop] [data-city-card]')).toBeVisible()
   })
 
   test('an address of another card view without data (Boa Esperança do Norte) says so', async ({ page }) => {

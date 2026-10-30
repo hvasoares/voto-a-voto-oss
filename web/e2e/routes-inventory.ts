@@ -251,6 +251,8 @@ export function appHeaderPagesOnDisk(webRoot: string): string[] {
 export const NO_PREVIEW_EXCLUSIONS: Readonly<Record<string, string>> = {
   '/compartilhar/': 'the share-sheet demo (#137): noindex, linked from nowhere',
   '/qr/': 'the QR demo (#137): noindex, linked from nowhere',
+  '/:uf/:slug/qr/': 'a stub plus a data file (private#208): noindex by the owner ruling D-043, a part of the city\'s pages, not a page to be found',
+  '/:uf/:slug/compartilhar/': 'a stub plus a data file (private#210): noindex by the owner ruling D-043, a part of the city\'s pages, not a page to be found',
   '/embed/:uf/:slug/': 'an EmbedDoc document: a part of other pages, not a page to be shared',
   '/overlay/tela/': 'an EmbedDoc broadcast overlay: a part of other pages, not a page to be shared',
   '/fragmentos/mapa-por-estado/ficaram-em-casa/:ciclo/': 'a FragmentDoc fragment: noindex, drawn inside a lazy iframe',
