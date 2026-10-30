@@ -57,6 +57,10 @@ jobs:
       - name: check:perf on the fixture build (base /)
         if: always()
         run: npm run check:perf
+      # private#204: the size of the whole built site by family against the budget in web/scripts/dist-size-budget.ts. Builds nothing; reads the same fixture web/dist. Local: `make dist-size`.
+      - name: check:dist-size on the fixture build
+        if: always()
+        run: npm run check:dist-size
       - uses: actions/upload-artifact@v4
         if: always()
         with:

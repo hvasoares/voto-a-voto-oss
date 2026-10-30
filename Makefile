@@ -1,5 +1,5 @@
 .PHONY: test tse-scrape data data-outlines data-nerds data-2018 data-2022 data-2026 data-check publish-edition rollback-edition nonvoters deploy \
-        install typecheck web-test browser e2e e2e-port e2e-pages e2e-real build-deploy ci web-install pytest perf \
+        install typecheck web-test browser e2e e2e-port e2e-pages e2e-real build-deploy ci web-install pytest perf dist-size \
         worktree-setup worktree-teardown releases releases-check decisions-check status ci-failures test-summary
 
 test:
@@ -106,6 +106,12 @@ pytest:
 perf:
 	npm --prefix web run check:perf
 
+# ci.yml (job e2e-root): npm run check:dist-size. Lê web/dist (não constrói nada): tabela de páginas e MB por família, contagem de
+# arquivos, custo de mais uma edição, e falha acima do orçamento de web/scripts/dist-size-budget.ts. Roda DEPOIS de um build
+# (o `e2e` constrói o de fixture; para um build de dados reais: `make build-deploy` e depois este alvo).
+dist-size:
+	npm --prefix web run check:dist-size
+
 # ci.yml: npm run typecheck
 typecheck:
 	npm --prefix web run typecheck
@@ -154,7 +160,7 @@ build-deploy:
 	DATA_DIR=../data SITE_BASE=/ SITE_ORIGIN=https://voto-a-voto.com npm --prefix web run build
 
 # ci.yml inteiro, passo a passo, na mesma ordem (python → web-unit → e2e-root → e2e-pages).
-ci: pytest typecheck web-test browser e2e perf e2e-pages
+ci: pytest typecheck web-test browser e2e perf dist-size e2e-pages
 
 # Publica: empurra main para origin (voto-a-voto-oss); o GitHub Actions constrói e publica o site no Pages.
 deploy:

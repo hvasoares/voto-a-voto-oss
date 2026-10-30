@@ -46,6 +46,7 @@
     "test:summary": "tsx scripts/test-summary.ts",
     "check:shards": "tsx scripts/shard-check.ts",
     "check:perf": "tsx scripts/perf-budgets.ts",
+    "check:dist-size": "tsx scripts/dist-size.ts",
     "check:peers": "tsx scripts/peers-check.ts",
     "check:margin": "tsx scripts/margin-check.ts",
     "check:curiosities": "tsx scripts/curiosities-check.ts",
